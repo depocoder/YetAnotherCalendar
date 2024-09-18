@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "calendarit"
+version = "0.1.0"
+description = ""
+authors = ["Popov, Ivan <ma1n.py@yandex.ru>"]
+license = "GNU"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^5.1.1"
+requests = "^2.32.3"
+undetected-chromedriver = "^3.5.5"
+environs = "^11.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
