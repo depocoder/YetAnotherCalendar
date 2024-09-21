@@ -2,6 +2,7 @@ import requests
 
 
 def auth_netology(username, password):
+    """auth in Netology, required username and password"""
     s = requests.session()
     response = s.post('https://netology.ru/backend/api/user/sign_in', data={
         'login': username,
