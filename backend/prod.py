@@ -19,7 +19,7 @@ if __name__ == "__main__":
     port = int(os.environ.get("APP_PORT", 8000))
 
     console = Console()
-    console.rule("[bold yellow]Running for prod development", align="left")
+    console.rule("[bold yellow]Running for production", align="left")
     console.print(f"[bold yellow]Visit http://{host}:{port}/")
 
     uvicorn.run(
