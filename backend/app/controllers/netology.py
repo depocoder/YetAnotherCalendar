@@ -32,5 +32,5 @@ class NetologyController(Controller):
         """
         try:
             return self.json(netology.auth_netology(item.value.username, item.value.password))
-        except RequestException:
-            return self.json({"error": "can't authenticate"}, status=400)
+        except RequestException as e:
+            return self.json({"error": f"can't authenticate {e}"}, status=400)
