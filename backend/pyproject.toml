@@ -20,6 +20,8 @@ uvicorn = "0.22.0"
 pydantic-settings = "^2.5.2"
 markupsafe = "2.1.3"
 pydantic = "^2.9.2"
+mypy = "^1.11.2"
+types-requests = "^2.32.0.20240914"
 
 
 [build-system]
