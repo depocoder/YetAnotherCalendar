@@ -1,0 +1,11 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: modeus-backend
+    restart: always
+    environment:
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "8000"
+    ports:
+      - 8000:8000
