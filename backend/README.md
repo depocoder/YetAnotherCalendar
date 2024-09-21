@@ -18,4 +18,16 @@ poetry install
 poetry run python dev.py
 ```
 
+### Running with Docker Compose
+
+```bash
+docker compose up -d
+```
+
+If code was changed, rebuild images:
+
+```bash
+docker compose up --build -d
+```
+
 ### Open [OpenAPI](http://localhost:44777/docs)
