@@ -91,7 +91,7 @@ class ModeusCredentials:
             self._auth_url,
             params=auth_data,
             cookies={"commonAuthId": self._auth_id},
-            allow_redirects=False,
+            follow_redirects=False,
         )
         token = self._extract_token_from_url(URL(r.headers["Location"]).fragment)
         if token is None:
@@ -99,7 +99,7 @@ class ModeusCredentials:
         self._token = token
 
     async def relogin(self, login: str, password: str) -> None:
-        self._token = (await self.login(login, password)).token
+        self._token = (await self.login(login, password))['token']
 
     @classmethod
     async def login(cls, login: str, password: str) -> dict:
@@ -141,7 +141,7 @@ class ModeusCredentials:
         continue_auth_url = "https://auth.modeus.org/commonauth"
         for el in form.find_all("input", type="hidden"):
             auth_data[el["name"]] = el["value"]  # Collecting form data
-        r = await session.post(continue_auth_url, data=auth_data, allow_redirects=False)
+        r = await session.post(continue_auth_url, data=auth_data, follow_redirects=False)
         h = {"Referer": "https://fs.utmn.ru/"}
         auth_id = r.cookies.get("commonAuthId")
         # This auth request redirects to another URL, which redirects to Modeus home page,

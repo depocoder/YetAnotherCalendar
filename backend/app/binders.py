@@ -25,17 +25,18 @@ class PageOptionsBinder(Binder):
     handle = PageOptions
 
     async def get_value(self, request: Request) -> PageOptions:
-        page = request.query.get("page")
-        limit = request.query.get("limit")
-        continuation_id = request.query.get("continuation_id")
-        if page is None:
+        pages = request.query.get("page")
+        limits = request.query.get("limit")
+        continuation_ids = request.query.get("continuation_id")
+        if pages is None:
             page = 1
         else:
-            page = page[0]
-        if limit is None:
+            page = int(pages[0])
+        if limits is None:
             limit = 100
         else:
-            limit = limit[0]
-        if continuation_id is not None:
-            continuation_id = int(continuation_id[0])
+            limit = int(limits[0])
+        continuation_id = None
+        if continuation_ids is not None:
+            continuation_id = int(continuation_ids[0])
         return PageOptions(page=page, limit=limit, continuation_id=continuation_id)

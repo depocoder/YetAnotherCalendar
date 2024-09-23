@@ -22,6 +22,8 @@ markupsafe = "2.1.3"
 pydantic = "^2.9.2"
 mypy = "^1.11.2"
 types-requests = "^2.32.0.20240914"
+types-beautifulsoup4 = "^4.12.0.20240907"
+uvloop = "^0.20.0"
 
 
 [build-system]
