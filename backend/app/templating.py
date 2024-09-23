@@ -1,24 +1,23 @@
+"""Template module."""
 from datetime import datetime
 
 from blacksheep.server import Application
-from blacksheep.server.rendering.jinja2 import JinjaRenderer
 from blacksheep.settings.html import html_settings
 
 from app.settings import Settings
 
 
+def get_copy(settings) -> str:
+    """Get copy."""
+    now = datetime.now()
+    return "{0} {1}".format(now.year, settings.site.copyright)
+
+
 def configure_templating(application: Application, settings: Settings) -> None:
-    """
-    Configures server side rendering for HTML views.
-    """
+    """Configures server side rendering for HTML views."""
     renderer = html_settings.renderer
-    assert isinstance(renderer, JinjaRenderer)
 
-    def get_copy() -> str:
-        now = datetime.now()
-        return "{} {}".format(now.year, settings.site.copyright)
-
-    helpers = {"_": lambda x: x, "copy": get_copy}
+    helpers = {"_": lambda data: data, "copy": get_copy(settings)}
 
     env = renderer.env
     env.globals.update(helpers)
