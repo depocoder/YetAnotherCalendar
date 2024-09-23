@@ -26,6 +26,7 @@ class PageOptionsBinder(Binder):
     handle = PageOptions
 
     async def get_value(self, request: Request) -> PageOptions:
+        """Get value."""
         pages = request.query.get("page")
         limits = request.query.get("limit")
         continuation_ids = request.query.get("continuation_id")

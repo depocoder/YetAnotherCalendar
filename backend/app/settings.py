@@ -11,7 +11,8 @@ from environs import Env
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-env = Env()
+environment = Env()
+environment.read_env()
 
 
 class APIInfo(BaseModel):
@@ -24,7 +25,7 @@ class APIInfo(BaseModel):
 class App(BaseModel):
     """App information."""
 
-    show_error_details: bool = env.bool("SHOW_ERROR_DETAILS", False)
+    show_error_details: bool = environment.bool("SHOW_ERROR_DETAILS", False)
 
 
 class Site(BaseModel):
@@ -47,12 +48,10 @@ class Settings(BaseSettings):
     site: Site = Site()
 
     model_config = SettingsConfigDict(env_prefix="APP_")
-
-    modeus_username = env.str("MODEUS_USERNAME")
-    modeus_password = env.str("MODEUS_PASSWORD")
+    modeus_username: str = environment.str("MODEUS_USERNAME")
+    modeus_password: str = environment.str("MODEUS_PASSWORD")
 
 
 def load_settings() -> Settings:
     """Load app settings."""
-    env.read_env()
     return Settings()

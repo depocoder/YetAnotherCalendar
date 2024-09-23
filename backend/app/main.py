@@ -18,7 +18,8 @@ def configure_application(
     settings: Settings,
 ) -> Application:
     app = Application(
-        services=services, show_error_details=settings.app.show_error_details
+        services=services,
+        show_error_details=settings.app.show_error_details,
     )
 
     app.serve_files("app/static")

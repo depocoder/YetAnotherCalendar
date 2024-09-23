@@ -26,7 +26,10 @@ def set_binders_docs(docs: OpenAPIHandler) -> None:
                 ParameterLocation.QUERY,
                 description="Number of results per page.",
                 schema=Schema(
-                    minimum=0, maximum=1000, format=ValueFormat.INT32, default=100
+                    minimum=0,
+                    maximum=1000,
+                    format=ValueFormat.INT32,
+                    default=100,
                 ),
             ),
             Parameter(

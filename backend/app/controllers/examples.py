@@ -8,12 +8,16 @@ from blacksheep.server.controllers import Controller, get, post
 
 
 class ExamplesController(Controller):
+    """Example API controller."""
+
     @classmethod
     def route(cls) -> Optional[str]:
+        """Return example route."""
         return "/api/examples"
 
     @classmethod
     def class_name(cls) -> str:
+        """Class name."""
         return "Examples"
 
     @get()
@@ -21,7 +25,7 @@ class ExamplesController(Controller):
         """
         Gets a list of examples.
         """
-        return list(f"example {i}" for i in range(3))
+        return [f"example {number}" for number in range(3)]
 
     @post()
     async def add_example(self, example: str) -> None:

@@ -1,5 +1,6 @@
 """
 Use this module to register required services.
+
 Services registered inside a `rodi.Container` are automatically injected into request
 handlers.
 
@@ -15,9 +16,7 @@ from rodi import Container
 from app.settings import Settings
 
 
-def configure_services(
-    settings: Settings,
-) -> Tuple[Container, Settings]:
+def configure_services(settings: Settings) -> Tuple[Container, Settings]:
     container = Container()
 
     container.add_instance(settings)

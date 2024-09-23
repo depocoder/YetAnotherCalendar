@@ -14,17 +14,23 @@ from integration import netology
 
 
 class NetologyCreds(BaseModel):
+    """Netology creds."""
+
     username: str
     password: str
 
 
 class NetologyController(Controller):
+    """Controller for Netology API."""
+
     @classmethod
     def route(cls) -> Optional[str]:
+        """Get route."""
         return "/api/netology"
 
     @classmethod
     def class_name(cls) -> str:
+        """Get class name."""
         return "Netology"
 
     @post()
@@ -34,7 +40,10 @@ class NetologyController(Controller):
         """
         try:
             return self.json(
-                netology.auth_netology(item.value.username, item.value.password)
+                netology.auth_netology(
+                    item.value.username,
+                    item.value.password,
+                ),
             )
-        except RequestException as e:
-            return self.json({"error": f"can't authenticate {e}"}, status=400)
+        except RequestException as exception:
+            return self.json({"error": f"can't authenticate {exception}"}, status=400)
