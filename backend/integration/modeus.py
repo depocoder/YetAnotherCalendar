@@ -91,7 +91,7 @@ async def login(username: str, __password: str, timeout: int = 15) -> Dict[str, 
     response = await session.post(
         continue_auth_url,
         data=auth_data,
-        follow_redirects=False,
+        allow_redirects=False,
     )
     headers = {"Referer": "https://fs.utmn.ru/"}
     auth_id = response.cookies.get("commonAuthId")
