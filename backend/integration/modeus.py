@@ -1,4 +1,5 @@
 """Modeus API implementation."""
+
 from __future__ import annotations
 
 import re
@@ -50,7 +51,9 @@ async def get_auth_form(session: AsyncClient, username: str, password: str):
     """
     post_url = await get_post_url(session)
     login_data = {
-        "UserName": username, "Password": password, "AuthMethod": "FormsAuthentication",
+        "UserName": username,
+        "Password": password,
+        "AuthMethod": "FormsAuthentication",
     }
     response = await session.post(post_url, data=login_data)
     response.raise_for_status()
@@ -74,7 +77,9 @@ async def login(username: str, password: str, timeout=15) -> Dict[str, Any]:
     Raises:
         CannotAuthenticateError: if something changed in API
     """
-    session = AsyncClient(http2=True, base_url="https://utmn.modeus.org/", timeout=timeout)
+    session = AsyncClient(
+        http2=True, base_url="https://utmn.modeus.org/", timeout=timeout,
+    )
 
     form = await get_auth_form(session, username, password)
     auth_data = {}
@@ -82,7 +87,9 @@ async def login(username: str, password: str, timeout=15) -> Dict[str, Any]:
     for input_html in form.find_all("input", type="hidden"):
         auth_data[input_html["name"]] = input_html["value"]
     response = await session.post(
-        continue_auth_url, data=auth_data, follow_redirects=False,
+        continue_auth_url,
+        data=auth_data,
+        follow_redirects=False,
     )
     headers = {"Referer": "https://fs.utmn.ru/"}
     auth_id = response.cookies.get("commonAuthId")

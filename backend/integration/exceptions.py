@@ -1,19 +1,19 @@
-class ModeusException(Exception):
-    pass
+"""Module for custom exceptions."""
 
 
-class ModeusUpstreamException(ModeusException):
-    pass
+class ModeusError(Exception):
+    """Modeus global exception."""
 
 
-class LoginFailed(ModeusUpstreamException):
-    pass
+class LoginFailedError(ModeusError):
+    """Login failed, check username and password."""
+
+    def __init__(self) -> None:
+        super().__init__("Login failed, check username and password.")
 
 
-class InternalError(ModeusException):
-    pass
+class CannotAuthenticateError(ModeusError):
+    """Internal error."""
 
-
-class CannotAuthenticateError(InternalError):
     def __init__(self) -> None:
         super().__init__("Something went wrong. Maybe auth flow has changed?")
