@@ -6,7 +6,7 @@ information, used to generate OpenAPI documentation.
 """
 from blacksheep import Application
 from blacksheep.server.openapi.v3 import OpenAPIHandler
-from openapidocs.v3 import Info
+from openapidocs.v3 import Info  # type: ignore[import-untyped]
 
 from app.docs.binders import set_binders_docs
 from app.settings import Settings
