@@ -120,13 +120,8 @@ async def get_events(__jwt: str, body: ModeusSearchEvents, timeout: int = 15) ->
         base_url="https://utmn.modeus.org/",
         timeout=timeout,
     )
-    headers = {
-        "Authorization": f"Bearer {__jwt}",
-        "accept": "application/json",
-        "content-type": "application/json"
-    }
+    session.headers["Authorization"] = f"Bearer {__jwt}"
+    session.headers["content-type"] = "application/json"
     response = await session.post("/schedule-calendar-v2/api/calendar/events/search",
-                                  headers=headers,
-                                  json=body.json(by_alias=True))
-    print(response.text)
+                                  data=body.model_dump_json(by_alias=True))
     return response.json()
