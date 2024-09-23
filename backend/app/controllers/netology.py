@@ -7,16 +7,10 @@ from typing import Optional
 from blacksheep import Response
 from blacksheep.server.bindings import FromJson
 from blacksheep.server.controllers import Controller, post
-from integration import netology
-from pydantic import BaseModel
 from requests import RequestException
 
-
-class NetologyCreds(BaseModel):
-    """Netology creds."""
-
-    username: str
-    password: str
+from integration import netology
+from . import models
 
 
 class NetologyController(Controller):
@@ -33,7 +27,7 @@ class NetologyController(Controller):
         return "Netology"
 
     @post()
-    async def get_netology_cookies(self, item: FromJson[NetologyCreds]) -> Response:
+    async def get_netology_cookies(self, item: FromJson[models.NetologyCreds]) -> Response:
         """
         Auth in Netology and return cookies.
         """

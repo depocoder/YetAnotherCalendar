@@ -9,7 +9,10 @@ from typing import Any, Dict
 import httpx
 from bs4 import BeautifulSoup, Tag
 from httpx import URL, AsyncClient
+
+from app.controllers.models import ModeusSearchEvents
 from integration.exceptions import CannotAuthenticateError, LoginFailedError
+
 
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
 _AUTH_URL = "https://auth.modeus.org/oauth2/authorize"
@@ -108,3 +111,22 @@ def _extract_token_from_url(url: str, match_index: int = 1) -> str | None:
     if (match := _token_re.search(url)) is None:
         return None
     return match[match_index]
+
+
+async def get_events(__jwt: str, body: ModeusSearchEvents, timeout: int = 15) -> list | None:
+    """Get events for student in modeus"""
+    session = AsyncClient(
+        http2=True,
+        base_url="https://utmn.modeus.org/",
+        timeout=timeout,
+    )
+    headers = {
+        "Authorization": f"Bearer {__jwt}",
+        "accept": "application/json",
+        "content-type": "application/json"
+    }
+    response = await session.post("/schedule-calendar-v2/api/calendar/events/search",
+                                  headers=headers,
+                                  json=body.json(by_alias=True))
+    print(response.text)
+    return response.json()
