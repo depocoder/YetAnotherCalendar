@@ -8,9 +8,6 @@ class ModeusError(Exception):
 class LoginFailedError(ModeusError):
     """Login failed, check username and password."""
 
-    def __init__(self) -> None:
-        super().__init__("Login failed, check username and password.")
-
 
 class CannotAuthenticateError(ModeusError):
     """Internal error."""

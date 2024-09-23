@@ -6,16 +6,16 @@ import re
 from secrets import token_hex
 from typing import Any, Dict
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from httpx import URL, AsyncClient
 
-from integration.exceptions import CannotAuthenticateError, LoginFailed
+from integration.exceptions import CannotAuthenticateError, LoginFailedError
 
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
 _AUTH_URL = "https://auth.modeus.org/oauth2/authorize"
 
 
-async def get_post_url(session: AsyncClient, token_length=16) -> URL:
+async def get_post_url(session: AsyncClient, token_length: int = 16) -> URL:
     """
     Get auth post url for log in.
 
@@ -41,13 +41,13 @@ async def get_post_url(session: AsyncClient, token_length=16) -> URL:
     return post_url
 
 
-async def get_auth_form(session: AsyncClient, username: str, password: str):
+async def get_auth_form(session: AsyncClient, username: str, password: str) -> Tag:
     """
     Get auth form.
 
     Raises:
         CannotAuthenticateError: if something changed in API
-        LoginFailed: if username or password incorrect
+        LoginFailedError: if username or password incorrect
     """
     post_url = await get_post_url(session)
     login_data = {
@@ -62,7 +62,7 @@ async def get_auth_form(session: AsyncClient, username: str, password: str):
     html = BeautifulSoup(html_text, "lxml")
     error_tag = html.find(id="errorText")
     if error_tag is not None and error_tag.text != "":
-        raise LoginFailed(error_tag.text)
+        raise LoginFailedError(error_tag.text)
 
     form = html.form
     if form is None:
@@ -70,7 +70,7 @@ async def get_auth_form(session: AsyncClient, username: str, password: str):
     return form
 
 
-async def login(username: str, password: str, timeout=15) -> Dict[str, Any]:
+async def login(username: str, password: str, timeout: int = 15) -> Dict[str, Any]:
     """
     Log in Modeus.
 

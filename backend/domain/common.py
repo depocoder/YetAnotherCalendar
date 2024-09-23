@@ -7,7 +7,7 @@ from typing import Generic, Iterator, TypeVar
 
 from pydantic import BaseModel, Field, conint
 
-type_var = TypeVar("T")
+type_var = TypeVar("type_var")
 
 
 @dataclass(slots=True)
