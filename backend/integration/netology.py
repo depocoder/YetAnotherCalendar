@@ -1,7 +1,10 @@
+from typing import Dict, List, Any
+
 import requests
 
 
-def auth_netology(username, password):
+
+def auth_netology(username: str, password: str) -> Dict[str, str]:
     """auth in Netology, required username and password"""
     s = requests.session()
     response = s.post(
@@ -16,7 +19,7 @@ def auth_netology(username, password):
     return s.cookies.get_dict()
 
 
-def get_program_ids(session: requests.Session):
+def get_program_ids(session: requests.Session) -> List[str]:
     response = session.get(
         "https://netology.ru/backend/api/user/programs/calendar/filters",
     )
@@ -27,7 +30,7 @@ def get_program_ids(session: requests.Session):
     return program_ids
 
 
-def get_calendar(session: requests.Session, calendar_id):
+def get_calendar(session: requests.Session, calendar_id: str) -> Dict[str, Any]:
     response = session.get(
         "https://netology.ru/backend/api/user/programs/calendar",
         params={"program_ids[]": f"{calendar_id}"},

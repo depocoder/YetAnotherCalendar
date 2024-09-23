@@ -14,7 +14,7 @@ def configure_templating(application: Application, settings: Settings) -> None:
     renderer = html_settings.renderer
     assert isinstance(renderer, JinjaRenderer)
 
-    def get_copy():
+    def get_copy() -> str:
         now = datetime.now()
         return "{} {}".format(now.year, settings.site.copyright)
 

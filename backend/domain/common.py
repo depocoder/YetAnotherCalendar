@@ -5,7 +5,7 @@ Common domain models reused across several API endpoints.
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Iterator
 
 from pydantic import BaseModel, Field, conint
 
@@ -17,7 +17,7 @@ class PaginatedSet(Generic[T]):
     items: list[T]
     total: int
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[T]:
         yield from self.items
 
     def __len__(self) -> int:

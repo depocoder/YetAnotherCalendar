@@ -1,9 +1,10 @@
 from blacksheep.server.controllers import Controller, get
+from blacksheep import Response
 
 
 class Home(Controller):
     @get()
-    def index(self):
+    def index(self) -> Response:
         # Since the @get() decorator is used without arguments, the URL path
         # is by default "/"
 
@@ -13,7 +14,7 @@ class Home(Controller):
         return self.view()
 
     @get(None)
-    def example(self):
+    def example(self) -> Response:
         # Since the @get() decorator is used explicitly with None, the URL path
         # is obtained from the method name: "/example"
 

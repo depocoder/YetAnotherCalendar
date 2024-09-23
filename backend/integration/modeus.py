@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from secrets import token_hex
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, cast, Dict, Optional, Any
 
 import jwt
 from bs4 import BeautifulSoup
@@ -104,7 +104,7 @@ class ModeusCredentials:
         self._token = (await self.login(login, password))["token"]
 
     @classmethod
-    async def login(cls, login: str, password: str) -> dict:
+    async def login(cls, login: str, password: str) -> Dict[str, Any]:
         session = AsyncClient(
             http2=True, base_url="https://utmn.modeus.org/", timeout=15
         )

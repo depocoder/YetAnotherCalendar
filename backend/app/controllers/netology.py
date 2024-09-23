@@ -4,6 +4,7 @@ Netology API implemented using a controller.
 
 from typing import Optional
 
+from blacksheep import Response
 from blacksheep.server.bindings import FromJson
 from blacksheep.server.controllers import Controller, post
 from pydantic import BaseModel
@@ -27,7 +28,7 @@ class NetologyController(Controller):
         return "Netology"
 
     @post()
-    async def get_netology_cookies(self, item: FromJson[NetologyCreds]):
+    async def get_netology_cookies(self, item: FromJson[NetologyCreds]) -> Response:
         """
         Auth in Netology and return cookies.
         """
