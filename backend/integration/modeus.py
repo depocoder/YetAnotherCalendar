@@ -34,7 +34,7 @@ async def get_post_url(session: AsyncClient, token_length: int = 16) -> URL:
         "state": token_hex(token_length),
     }
     response = await session.get(auth_url, params=auth_data)
-    response.raise_for_status()
+    # response.raise_for_status()
     post_url = response.url
     if post_url is None:
         raise CannotAuthenticateError
@@ -56,7 +56,7 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
         "AuthMethod": "FormsAuthentication",
     }
     response = await session.post(post_url, data=login_data)
-    response.raise_for_status()
+    # response.raise_for_status()
     html_text = response.text
 
     html = BeautifulSoup(html_text, "lxml")
@@ -70,7 +70,7 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
     return form
 
 
-async def login(username: str, password: str, timeout: int = 15) -> Dict[str, Any]:
+async def login(username: str, __password: str, timeout: int = 15) -> Dict[str, Any]:
     """
     Log in Modeus.
 
@@ -83,7 +83,7 @@ async def login(username: str, password: str, timeout: int = 15) -> Dict[str, An
         timeout=timeout,
     )
 
-    form = await get_auth_form(session, username, password)
+    form = await get_auth_form(session, username, __password)
     auth_data = {}
     continue_auth_url = "https://auth.modeus.org/commonauth"
     for input_html in form.find_all("input", type="hidden"):
