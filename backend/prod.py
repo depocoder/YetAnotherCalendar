@@ -7,7 +7,6 @@ import os
 import uvicorn
 from rich.console import Console
 
-
 if __name__ == "__main__":
     os.environ["APP_ENV"] = "prod"
     host = os.environ.get("APP_HOST", "0.0.0.0")
