@@ -1,8 +1,7 @@
 """Auth module."""
 
-from blacksheep import Application
-
 from app.settings import Settings
+from blacksheep import Application
 
 
 def configure_authentication(app: Application, settings: Settings) -> None:

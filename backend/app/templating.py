@@ -2,11 +2,10 @@
 
 from datetime import datetime
 
+from app.settings import Settings
 from blacksheep.server import Application
 from blacksheep.server.rendering.jinja2 import JinjaRenderer
 from blacksheep.settings.html import html_settings
-
-from app.settings import Settings
 
 
 def get_copy(settings: Settings) -> str:

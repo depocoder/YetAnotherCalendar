@@ -5,12 +5,11 @@ It exposes a docs object that can be used to decorate request handlers with addi
 information, used to generate OpenAPI documentation.
 """
 
-from blacksheep import Application
-from blacksheep.server.openapi.v3 import OpenAPIHandler
-from openapidocs.v3 import Info
-
 from app.docs.binders import set_binders_docs
 from app.settings import Settings
+from blacksheep import Application
+from blacksheep.server.openapi.v3 import OpenAPIHandler
+from openapidocs.v3 import Info  # type: ignore[import-untyped]
 
 
 def configure_docs(app: Application, settings: Settings) -> None:

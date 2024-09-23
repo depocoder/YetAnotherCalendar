@@ -7,10 +7,9 @@ from typing import Optional
 from blacksheep import Response
 from blacksheep.server.bindings import FromJson
 from blacksheep.server.controllers import Controller, post
+from integration import netology
 from pydantic import BaseModel
 from requests import RequestException
-
-from integration import netology
 
 
 class NetologyCreds(BaseModel):

@@ -7,11 +7,10 @@ from typing import Optional
 from blacksheep import Response
 from blacksheep.server.bindings import FromJson
 from blacksheep.server.controllers import Controller, post
-from pydantic import BaseModel
-from requests import RequestException
-
 from integration import modeus
 from integration.exceptions import ModeusError
+from pydantic import BaseModel
+from requests import RequestException
 
 
 class ModeusCreds(BaseModel):

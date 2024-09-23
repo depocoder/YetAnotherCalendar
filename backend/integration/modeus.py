@@ -8,7 +8,6 @@ from typing import Any, Dict
 
 from bs4 import BeautifulSoup, Tag
 from httpx import URL, AsyncClient
-
 from integration.exceptions import CannotAuthenticateError, LoginFailedError
 
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")

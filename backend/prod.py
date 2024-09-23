@@ -8,7 +8,7 @@ import uvicorn
 from rich.console import Console
 
 try:
-    import uvloop
+    import uvloop  # type: ignore
 except ModuleNotFoundError:
     pass
 else:

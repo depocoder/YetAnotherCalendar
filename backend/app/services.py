@@ -11,9 +11,8 @@ For more information and documentation, see `rodi` Wiki and examples:
 
 from typing import Tuple
 
-from rodi import Container
-
 from app.settings import Settings
+from rodi import Container
 
 
 def configure_services(settings: Settings) -> Tuple[Container, Settings]:
