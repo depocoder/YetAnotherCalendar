@@ -1,5 +1,5 @@
-from blacksheep.server.controllers import Controller, get
 from blacksheep import Response
+from blacksheep.server.controllers import Controller, get
 
 
 class Home(Controller):

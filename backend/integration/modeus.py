@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from secrets import token_hex
-from typing import TYPE_CHECKING, cast, Dict, Optional, Any
+from typing import TYPE_CHECKING, Any, Dict, Optional, cast
 
 import jwt
 from bs4 import BeautifulSoup

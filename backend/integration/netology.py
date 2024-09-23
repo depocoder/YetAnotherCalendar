@@ -1,7 +1,6 @@
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 import requests
-
 
 
 def auth_netology(username: str, password: str) -> Dict[str, str]:

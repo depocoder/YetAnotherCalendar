@@ -5,7 +5,7 @@ Common domain models reused across several API endpoints.
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Generic, TypeVar, Iterator
+from typing import Generic, Iterator, TypeVar
 
 from pydantic import BaseModel, Field, conint
 
