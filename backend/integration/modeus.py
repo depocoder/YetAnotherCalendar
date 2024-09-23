@@ -32,7 +32,7 @@ async def get_post_url(session: AsyncClient, token_length: int = 16) -> URL:
         "nonce": token_hex(token_length),
         "state": token_hex(token_length),
     }
-    response = await session.get(auth_url, params=auth_data)
+    response = await session.get(auth_url, params=auth_data, follow_redirects=True)
     # response.raise_for_status()
     post_url = response.url
     if post_url is None:
@@ -54,7 +54,7 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
         "Password": password,
         "AuthMethod": "FormsAuthentication",
     }
-    response = await session.post(post_url, data=login_data)
+    response = await session.post(post_url, data=login_data, follow_redirects=True)
     # response.raise_for_status()
     html_text = response.text
 
@@ -76,12 +76,11 @@ async def login(username: str, __password: str, timeout: int = 15) -> Dict[str, 
     Raises:
         CannotAuthenticateError: if something changed in API
     """
-    session = AsyncClient(
-        http2=True,
-        base_url="https://utmn.modeus.org/",
-        timeout=timeout,
-    )
-
+    # with AsyncClient(http2=True, base_url="https://utmn.modeus.org/", timeout=timeout,) as session:
+    #      pass
+    session = AsyncClient(http2=True, base_url="https://utmn.modeus.org/", timeout=timeout, headers={
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0',
+    }, follow_redirects=True,)
     form = await get_auth_form(session, username, __password)
     auth_data = {}
     continue_auth_url = "https://auth.modeus.org/commonauth"
@@ -90,7 +89,7 @@ async def login(username: str, __password: str, timeout: int = 15) -> Dict[str, 
     response = await session.post(
         continue_auth_url,
         data=auth_data,
-        allow_redirects=False,
+        follow_redirects=False,
     )
     headers = {"Referer": "https://fs.utmn.ru/"}
     auth_id = response.cookies.get("commonAuthId")
