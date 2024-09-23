@@ -1,6 +1,7 @@
 """
 This module configures the BlackSheep application before it starts.
 """
+
 from blacksheep import Application
 from rodi import Container
 

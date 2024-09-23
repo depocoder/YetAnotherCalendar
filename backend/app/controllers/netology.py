@@ -1,6 +1,7 @@
 """
 Netology API implemented using a controller.
 """
+
 from typing import Optional
 
 from pydantic import BaseModel
@@ -31,6 +32,8 @@ class NetologyController(Controller):
         Auth in Netology and return cookies.
         """
         try:
-            return self.json(netology.auth_netology(item.value.username, item.value.password))
+            return self.json(
+                netology.auth_netology(item.value.username, item.value.password)
+            )
         except RequestException as e:
             return self.json({"error": f"can't authenticate {e}"}, status=400)

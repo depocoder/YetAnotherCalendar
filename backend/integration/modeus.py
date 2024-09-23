@@ -29,7 +29,9 @@ class ModeusCredentials:
         self._token = token
         self._auth_id = common_auth_id
         if session is None:
-            session = AsyncClient(http2=True, base_url="https://utmn.modeus.org/", timeout=15)
+            session = AsyncClient(
+                http2=True, base_url="https://utmn.modeus.org/", timeout=15
+            )
         self._session = session
         self._client_id = client_id
         self._auth_url = auth_url
@@ -99,15 +101,17 @@ class ModeusCredentials:
         self._token = token
 
     async def relogin(self, login: str, password: str) -> None:
-        self._token = (await self.login(login, password))['token']
+        self._token = (await self.login(login, password))["token"]
 
     @classmethod
     async def login(cls, login: str, password: str) -> dict:
-        session = AsyncClient(http2=True, base_url="https://utmn.modeus.org/", timeout=15)
+        session = AsyncClient(
+            http2=True, base_url="https://utmn.modeus.org/", timeout=15
+        )
         # Getting app config
-        r = await session.get("/schedule-calendar/assets/app.config.json")
-        client_id = r.json()["wso"]["clientId"]
-        auth_url = r.json()["wso"]["loginUrl"]
+        response = await session.get("/schedule-calendar/assets/app.config.json")
+        client_id = response.json()["wso"]["clientId"]
+        auth_url = response.json()["wso"]["loginUrl"]
         # Getting auth URL
         auth_data = dict(
             client_id=client_id,
@@ -117,14 +121,16 @@ class ModeusCredentials:
             nonce=token_hex(16),
             state=token_hex(16),
         )
-        r = await session.get(auth_url, params=auth_data)
-        post_url = r.url
+        response = await session.get(auth_url, params=auth_data)
+        post_url = response.url
         assert post_url is not None
 
         # Trying to log in
-        login_data = dict(UserName=login, Password=password, AuthMethod="FormsAuthentication")
-        r = await session.post(post_url, data=login_data)
-        html_text = r.text
+        login_data = dict(
+            UserName=login, Password=password, AuthMethod="FormsAuthentication"
+        )
+        response = await session.post(post_url, data=login_data)
+        html_text = response.text
 
         # Parsing response
         html = BeautifulSoup(html_text, "lxml")
@@ -141,15 +147,17 @@ class ModeusCredentials:
         continue_auth_url = "https://auth.modeus.org/commonauth"
         for el in form.find_all("input", type="hidden"):
             auth_data[el["name"]] = el["value"]  # Collecting form data
-        r = await session.post(continue_auth_url, data=auth_data, follow_redirects=False)
+        response = await session.post(
+            continue_auth_url, data=auth_data, follow_redirects=False
+        )
         h = {"Referer": "https://fs.utmn.ru/"}
-        auth_id = r.cookies.get("commonAuthId")
+        auth_id = response.cookies.get("commonAuthId")
         # This auth request redirects to another URL, which redirects to Modeus home page,
         #  so we use HEAD in the latter one to get only target URL and extract the token
-        r = await session.head(r.headers["Location"], headers=h)
-        if r.url is None:
+        response = await session.head(response.headers["Location"], headers=h)
+        if response.url is None:
             raise CannotAuthenticate
-        token = cls._extract_token_from_url(r.url.fragment)  # Yay! We got it!
+        token = cls._extract_token_from_url(response.url.fragment)  # Yay! We got it!
         if token is None:
             raise CannotAuthenticate
         return {"token": token, "auth_id": auth_id}

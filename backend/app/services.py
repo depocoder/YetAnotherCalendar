@@ -7,6 +7,7 @@ For more information and documentation, see `rodi` Wiki and examples:
     https://github.com/Neoteroi/rodi/wiki
     https://github.com/Neoteroi/rodi/tree/main/examples
 """
+
 from typing import Tuple
 
 from rodi import Container

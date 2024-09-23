@@ -6,6 +6,7 @@ values.
 
 https://docs.pydantic.dev/latest/usage/settings/
 """
+
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -34,7 +35,7 @@ class Settings(BaseSettings):
 
     site: Site = Site()
 
-    model_config = SettingsConfigDict(env_prefix='APP_')
+    model_config = SettingsConfigDict(env_prefix="APP_")
 
 
 def load_settings() -> Settings:

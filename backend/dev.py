@@ -4,6 +4,7 @@ application for production.
 
 Refer to https://www.uvicorn.org/deployment/ for production deployments.
 """
+
 import os
 
 import uvicorn

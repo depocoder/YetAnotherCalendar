@@ -7,9 +7,7 @@ from blacksheep.settings.html import html_settings
 from app.settings import Settings
 
 
-def configure_templating(
-    application: Application, settings: Settings
-) -> None:
+def configure_templating(application: Application, settings: Settings) -> None:
     """
     Configures server side rendering for HTML views.
     """

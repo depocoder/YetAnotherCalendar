@@ -1,6 +1,7 @@
 """
 Example API implemented using a controller.
 """
+
 from typing import List, Optional
 
 from blacksheep.server.controllers import Controller, get, post
