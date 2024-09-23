@@ -1,0 +1,32 @@
+name: build
+on:
+  push:
+    branches: 
+      - "*"
+    paths-ignore:
+      - "README.md"
+  workflow_dispatch:
+
+env:
+  REGISTRY_URL: ghcr.io
+  REGISTRY_USERNAME: azamatkomaev
+  REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login with Github Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY_URL }}
+          username: ${{ env.REGISTRY_USERNAME }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+      - name: Build & Publish to Github Container registry
+        run: |
+          docker build ./backend --tag $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:latest \
+                                 --tag $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:$IMAGE_TAG
+          docker push $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:latest
+          docker push $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:$IMAGE_TAG
