@@ -6,6 +6,7 @@ import re
 from secrets import token_hex
 from typing import Any, Dict
 
+import httpx
 from bs4 import BeautifulSoup, Tag
 from httpx import URL, AsyncClient
 from integration.exceptions import CannotAuthenticateError, LoginFailedError
@@ -76,32 +77,30 @@ async def login(username: str, __password: str, timeout: int = 15) -> Dict[str, 
     Raises:
         CannotAuthenticateError: if something changed in API
     """
-    # with AsyncClient(http2=True, base_url="https://utmn.modeus.org/", timeout=timeout,) as session:
-    #      pass
-    session = AsyncClient(http2=True, base_url="https://utmn.modeus.org/", timeout=timeout, headers={
+    async with httpx.AsyncClient(base_url="https://utmn.modeus.org/", timeout=timeout, headers={
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0',
-    }, follow_redirects=True,)
-    form = await get_auth_form(session, username, __password)
-    auth_data = {}
-    continue_auth_url = "https://auth.modeus.org/commonauth"
-    for input_html in form.find_all("input", type="hidden"):
-        auth_data[input_html["name"]] = input_html["value"]
-    response = await session.post(
-        continue_auth_url,
-        data=auth_data,
-        follow_redirects=False,
-    )
-    headers = {"Referer": "https://fs.utmn.ru/"}
-    auth_id = response.cookies.get("commonAuthId")
-    # This auth request redirects to another URL, which redirects to Modeus home page,
-    #  so we use HEAD in the latter one to get only target URL and extract the token
-    response = await session.head(response.headers["Location"], headers=headers)
-    if response.url is None:
-        raise CannotAuthenticateError
-    token = _extract_token_from_url(response.url.fragment)
-    if token is None:
-        raise CannotAuthenticateError
-    return {"token": token, "auth_id": auth_id}
+    }, follow_redirects=True,) as session:
+        form = await get_auth_form(session, username, __password)
+        auth_data = {}
+        continue_auth_url = "https://auth.modeus.org/commonauth"
+        for input_html in form.find_all("input", type="hidden"):
+            auth_data[input_html["name"]] = input_html["value"]
+        response = await session.post(
+            continue_auth_url,
+            data=auth_data,
+            follow_redirects=False,
+        )
+        headers = {"Referer": "https://fs.utmn.ru/"}
+        auth_id = response.cookies.get("commonAuthId")
+        # This auth request redirects to another URL, which redirects to Modeus home page,
+        #  so we use HEAD in the latter one to get only target URL and extract the token
+        response = await session.head(response.headers["Location"], headers=headers)
+        if response.url is None:
+            raise CannotAuthenticateError
+        token = _extract_token_from_url(response.url.fragment)
+        if token is None:
+            raise CannotAuthenticateError
+        return {"token": token, "auth_id": auth_id}
 
 
 def _extract_token_from_url(url: str, match_index: int = 1) -> str | None:
