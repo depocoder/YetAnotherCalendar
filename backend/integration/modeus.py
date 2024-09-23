@@ -78,7 +78,9 @@ async def login(username: str, password: str, timeout: int = 15) -> Dict[str, An
         CannotAuthenticateError: if something changed in API
     """
     session = AsyncClient(
-        http2=True, base_url="https://utmn.modeus.org/", timeout=timeout,
+        http2=True,
+        base_url="https://utmn.modeus.org/",
+        timeout=timeout,
     )
 
     form = await get_auth_form(session, username, password)

@@ -52,10 +52,12 @@ class PageOptions(BaseModel):
 
     page: conint(gt=0) = Field(1, description="Page number.")  # type: ignore
     limit: conint(gt=0, le=1000) = Field(  # type: ignore
-        100, description="Maximum number of results per page.",
+        100,
+        description="Maximum number of results per page.",
     )
     continuation_id: int | None = Field(
-        None, description="If provided, the ID of the last object that was retrieved.",
+        None,
+        description="If provided, the ID of the last object that was retrieved.",
     )
     sort_order: SortOrder = SortOrder.ASC
 

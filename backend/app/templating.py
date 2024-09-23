@@ -1,4 +1,5 @@
 """Template module."""
+
 from datetime import datetime
 
 from blacksheep.server import Application
