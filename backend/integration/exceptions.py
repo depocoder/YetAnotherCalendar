@@ -14,6 +14,6 @@ class InternalError(ModeusException):
     pass
 
 
-class CannotAuthenticate(InternalError):
+class CannotAuthenticateError(InternalError):
     def __init__(self) -> None:
         super().__init__("Something went wrong. Maybe auth flow has changed?")

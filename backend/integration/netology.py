@@ -1,12 +1,23 @@
+"""Netology API implementation."""
+
 from typing import Any, Dict, List
 
 import requests
 
 
 def auth_netology(username: str, password: str) -> Dict[str, str]:
-    """auth in Netology, required username and password"""
-    s = requests.session()
-    response = s.post(
+    """
+    Auth in Netology, required username and password.
+
+    Args:
+        username (str): Netology username.
+        password (str): Netology password.
+
+    Returns:
+        dict: Cookies for API.
+    """
+    session = requests.session()
+    response = session.post(
         "https://netology.ru/backend/api/user/sign_in",
         data={
             "login": username,
@@ -15,21 +26,22 @@ def auth_netology(username: str, password: str) -> Dict[str, str]:
         },
     )
     response.raise_for_status()
-    return s.cookies.get_dict()
+    return session.cookies.get_dict()
 
 
 def get_program_ids(session: requests.Session) -> List[str]:
+    """Get your Netology program ids."""
     response = session.get(
         "https://netology.ru/backend/api/user/programs/calendar/filters",
     )
     response.raise_for_status()
     serialized_response = response.json()
     programs = serialized_response["programs"]
-    program_ids = [program["id"] for program in programs]
-    return program_ids
+    return [program["id"] for program in programs]
 
 
 def get_calendar(session: requests.Session, calendar_id: str) -> Dict[str, Any]:
+    """Get your calendar events."""
     response = session.get(
         "https://netology.ru/backend/api/user/programs/calendar",
         params={"program_ids[]": f"{calendar_id}"},

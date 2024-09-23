@@ -7,6 +7,13 @@ import os
 import uvicorn
 from rich.console import Console
 
+try:
+    import uvloop
+except ModuleNotFoundError:
+    pass
+else:
+    uvloop.install()
+
 if __name__ == "__main__":
     os.environ["APP_ENV"] = "prod"
     host = os.environ.get("APP_HOST", "0.0.0.0")
