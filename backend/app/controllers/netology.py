@@ -27,7 +27,9 @@ class NetologyController(Controller):
         return "Netology"
 
     @post()
-    async def get_netology_cookies(self, item: FromJson[models.NetologyCreds]) -> Response:
+    async def get_netology_cookies(
+        self, item: FromJson[models.NetologyCreds]
+    ) -> Response:
         """
         Auth in Netology and return cookies.
         """

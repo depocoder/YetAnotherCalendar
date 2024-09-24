@@ -2,7 +2,6 @@
 Modeus API implemented using a controller.
 """
 
-
 from typing import Optional
 
 from blacksheep import Response
@@ -45,17 +44,16 @@ class ModeusController(Controller):
             return self.json({"error": f"can't authenticate {exception}"}, status=400)
 
     @post("/events/")
-    async def get_modeus_events(self, auth: FromAuthorizationHeader, item: FromJson[models.ModeusSearchEvents]) -> Response:
+    async def get_modeus_events(
+        self, auth: FromAuthorizationHeader, item: FromJson[models.ModeusSearchEvents]
+    ) -> Response:
         """
         Get events from Modeus.
         """
         try:
             jwt = auth.value.split()[1]
-            return self.json(
-                await modeus.get_events(jwt, item.value)
-            )
+            return self.json(await modeus.get_events(jwt, item.value))
         except IndexError as exception:
             return self.json({"error": "cannot parse authorization header"})
         except (RequestException, ModeusError) as exception:
             return self.json({"error": f"can't authenticate {exception}"}, status=400)
-
