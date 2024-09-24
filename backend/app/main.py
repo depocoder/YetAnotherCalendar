@@ -7,7 +7,6 @@ from app.docs import configure_docs
 from app.errors import configure_error_handlers
 from app.services import configure_services
 from app.settings import Settings, load_settings
-from app.templating import configure_templating
 from blacksheep import Application
 from rodi import Container
 

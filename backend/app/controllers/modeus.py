@@ -54,6 +54,6 @@ class ModeusController(Controller):
             jwt = auth.value.split()[1]
             return self.json(await modeus.get_events(jwt, item.value))
         except IndexError as exception:
-            return self.json({"error": "cannot parse authorization header"})
+            return self.json({"error": f"cannot parse authorization header {exception}"})
         except (RequestException, ModeusError) as exception:
             return self.json({"error": f"can't authenticate {exception}"}, status=400)
