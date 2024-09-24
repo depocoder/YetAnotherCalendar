@@ -3,7 +3,6 @@ Modeus API implemented using a controller.
 """
 
 
-from datetime import datetime
 from typing import Optional
 
 from blacksheep import Response
