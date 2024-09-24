@@ -1,6 +1,7 @@
 """
 Runs the application for production development.
 """
+
 import os
 
 import uvicorn

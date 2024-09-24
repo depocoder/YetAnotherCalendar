@@ -1,13 +1,19 @@
 """
 This module configures OpenAPI Documentation for custom binders.
 """
-from blacksheep.server.openapi.v3 import OpenAPIHandler
-from openapidocs.v3 import Parameter, ParameterLocation, Schema, ValueFormat, ValueType   # type: ignore[import-untyped]
 
 from app.binders import PageOptionsBinder
+from blacksheep.server.openapi.v3 import OpenAPIHandler
+from openapidocs.v3 import (
+    Parameter,
+    ParameterLocation,
+    Schema,
+    ValueFormat,
+    ValueType,
+)
 
 
-def set_binders_docs(docs: OpenAPIHandler):
+def set_binders_docs(docs: OpenAPIHandler) -> None:
     """
     This function configures OpenAPI Documentation for custom application binders.
     """
@@ -25,7 +31,10 @@ def set_binders_docs(docs: OpenAPIHandler):
                 ParameterLocation.QUERY,
                 description="Number of results per page.",
                 schema=Schema(
-                    minimum=0, maximum=1000, format=ValueFormat.INT32, default=100
+                    minimum=0,
+                    maximum=1000,
+                    format=ValueFormat.INT32,
+                    default=100,
                 ),
             ),
             Parameter(

@@ -2,9 +2,9 @@
 This module contains definitions of custom binders, used to bind request input
 parameters into instances of objects, injected to request handlers.
 """
+
 from blacksheep import FromHeader, Request
 from blacksheep.server.bindings import Binder
-
 from domain.common import PageOptions
 
 
@@ -25,6 +25,7 @@ class PageOptionsBinder(Binder):
     handle = PageOptions
 
     async def get_value(self, request: Request) -> PageOptions:
+        """Get value."""
         pages = request.query.get("page")
         limits = request.query.get("limit")
         continuation_ids = request.query.get("continuation_id")
