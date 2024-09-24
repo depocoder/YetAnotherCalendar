@@ -15,7 +15,7 @@ from . import models
 
 
 class FromAuthorizationHeader(FromHeader[str]):
-    name = "Authorization"
+    name = "bearer-token"
 
 
 class ModeusController(Controller):
