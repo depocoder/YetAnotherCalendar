@@ -14,7 +14,9 @@ from essentials.exceptions import (
 
 def configure_error_handlers(app: Application) -> None:
     async def not_found_handler(
-        app: Application, request: Request, exception: Exception
+        app: Application,
+        request: Request,
+        exception: Exception,
     ) -> Response:
         return text(str(exception) or "Not found", 404)
 
@@ -37,5 +39,5 @@ def configure_error_handlers(app: Application) -> None:
             UnauthorizedException: unauthorized,
             ForbiddenException: forbidden,
             AcceptedException: accepted,
-        }
+        },
     )
