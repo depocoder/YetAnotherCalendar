@@ -24,9 +24,16 @@ jobs:
           registry: ${{ env.REGISTRY_URL }}
           username: ${{ env.REGISTRY_USERNAME }}
           password: ${{ env.REGISTRY_PASSWORD }}
-      - name: Build & Publish to Github Container registry
+      - name: Build & Publish backend to Github Container registry
         run: |
           docker build ./backend --tag $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:latest \
                                  --tag $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:$IMAGE_TAG
           docker push $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:latest
           docker push $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:$IMAGE_TAG
+
+      - name: Build & Publish frontend to Github Container registry
+        run: |
+          docker build ./frontend --tag $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-frontend:latest \
+                                 --tag $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-frontend:$IMAGE_TAG
+          docker push $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-frontend:latest
+          docker push $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-frontend:$IMAGE_TAG
