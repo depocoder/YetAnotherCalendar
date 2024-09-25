@@ -20,6 +20,7 @@ def configure_application(
         show_error_details=settings.app.show_error_details,
     )
 
+    app.serve_files("app/static")
     configure_error_handlers(app)
     configure_authentication(app, settings)
     configure_docs(app, settings)
