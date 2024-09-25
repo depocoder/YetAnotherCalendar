@@ -32,7 +32,7 @@ class Location(BaseModel):
     id: uuid.UUID = Field(alias="eventId")
     custom_location: str = Field(alias="customLocation")
 
-    @computed_field
+    @computed_field  # type: ignore
     @property
     def is_lxp(self) -> float:
         return self.custom_location == 'LXP'
@@ -50,7 +50,7 @@ class Event(BaseModel):
 class Link(BaseModel):
     href: str
 
-    @computed_field
+    @computed_field  # type: ignore
     @property
     def id(self) -> uuid.UUID:
         return uuid.UUID(self.href.replace('/', ''))
@@ -96,6 +96,6 @@ class ModeusCalendar(BaseModel):
             location = locations[event.id]
             full_events.append(FullEvent(**{
                 "teacher_full_name": teacher_full_name,
-                **event.model_dump(by_alias=True), **location.model_dump(by_alias=True)
+                **event.model_dump(by_alias=True), **location.model_dump(by_alias=True),
             }))
         return full_events
