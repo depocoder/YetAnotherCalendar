@@ -47,7 +47,7 @@ class Event(BaseModel):
     id: uuid.UUID
 
 
-class Link(BaseModel):
+class Href(BaseModel):
     href: str
 
     @computed_field  # type: ignore
@@ -55,9 +55,13 @@ class Link(BaseModel):
     def id(self) -> uuid.UUID:
         return uuid.UUID(self.href.replace('/', ''))
 
+class Link(BaseModel):
+    self: Href
+    event: Href
+    person: Href
 
 class Attender(BaseModel):
-    links: dict[str, Link] = Field(alias="_links")
+    links: Link = Field(alias="_links")
 
 
 class Teacher(BaseModel):
@@ -84,12 +88,12 @@ class ModeusCalendar(BaseModel):
     def parse_modeus_response(self) -> list[FullEvent]:
         locations = {location.id: location for location in self.embedded.locations}
         teachers = {teacher.id: teacher for teacher in self.embedded.teacher}
-        teachers_with_events = {teacher.links['event'].id: teacher.links for teacher in self.embedded.attendees}
+        teachers_with_events = {teacher.links.event.id: teacher.links for teacher in self.embedded.attendees}
         full_events = []
         for event in self.embedded.events:
             try:
                 teacher_event = teachers_with_events[event.id]
-                teacher = teachers[teacher_event['person'].id]
+                teacher = teachers[teacher_event.person.id]
                 teacher_full_name = teacher.full_name
             except KeyError:
                 teacher_full_name = 'unknown'
