@@ -11,7 +11,7 @@ from blacksheep.settings.html import html_settings
 def get_copy(settings: Settings) -> str:
     """Get copy."""
     now = datetime.now()
-    return "{0} {1}".format(now.year, settings.site.copyright)
+    return f"{now.year} {settings.site.copyright}"
 
 
 def configure_templating(application: Application, settings: Settings) -> None:

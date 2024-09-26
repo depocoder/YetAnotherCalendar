@@ -4,7 +4,7 @@ This module configures OpenAPI Documentation for custom binders.
 
 from app.binders import PageOptionsBinder
 from blacksheep.server.openapi.v3 import OpenAPIHandler
-from openapidocs.v3 import (  # type: ignore[import-untyped]
+from openapidocs.v3 import (
     Parameter,
     ParameterLocation,
     Schema,
