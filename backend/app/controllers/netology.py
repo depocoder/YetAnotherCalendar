@@ -7,10 +7,13 @@ from typing import Optional
 from blacksheep import Response
 from blacksheep.server.bindings import FromJson
 from blacksheep.server.controllers import Controller, post
+from httpx import HTTPStatusError
 from requests import RequestException
 
 from integration import netology
+from integration.exceptions import NetologyUnauthorizedError
 from . import models
+from .models import NetologyCookies
 
 
 class NetologyController(Controller):
@@ -35,11 +38,33 @@ class NetologyController(Controller):
         Auth in Netology and return cookies.
         """
         try:
+            cookies = await netology.auth_netology(
+                item.value.username,
+                item.value.password,
+            )
             return self.json(
-                netology.auth_netology(
-                    item.value.username,
-                    item.value.password,
-                ),
+                cookies.model_dump(by_alias=True),
             )
         except RequestException as exception:
             return self.json({"error": f"can't authenticate {exception}"}, status=400)
+        except NetologyUnauthorizedError as exception:
+            return self.json({"error": f"{exception}"}, status=401)
+
+
+    @post('/utmn_course/')
+    async def get_course(
+            self,
+            cookies: FromJson[NetologyCookies],
+    ) -> Response:
+        """
+        Auth in Netology and return cookies.
+        """
+        try:
+            course = await netology.get_utmn_course(cookies.value)
+            return self.json(
+                course,
+            )
+        except (RequestException, HTTPStatusError) as exception:
+            return self.json({"error": f"can't authenticate {exception}"}, status=400)
+        except NetologyUnauthorizedError as exception:
+            return self.json({"error": f"{exception}"}, status=401)

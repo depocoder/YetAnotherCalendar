@@ -4,12 +4,41 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, computed_field
 
+from app.settings import load_settings
+
+settings = load_settings()
+
 
 class NetologyCreds(BaseModel):
     """Netology creds."""
 
     username: str
     password: str
+
+
+class NetologyCookies(BaseModel):
+    rails_session: str = Field(alias="_netology-on-rails_session")
+    sg_payment_exist: str
+    sg_reg_date: str
+    sg_uid: str
+    remember_user_token: str
+    http_x_authentication: str
+
+
+class NetologyProgram(BaseModel):
+    id: int
+    title: str
+    url_code: str = Field(alias="urlcode")
+    type: str
+
+
+class NetologyPrograms(BaseModel):
+    programs: list[NetologyProgram]
+
+    def get_utmn_program(self) -> Optional[NetologyProgram]:
+        for program in self.programs:
+            if settings.netology_course_name in program.title:
+                return program
 
 
 class ModeusCreds(BaseModel):

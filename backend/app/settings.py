@@ -50,6 +50,9 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="APP_")
     modeus_username: str = environment.str("MODEUS_USERNAME")
     modeus_password: str = environment.str("MODEUS_PASSWORD")
+    netology_course_name: str = environment.str(
+        "NETOLOGY_COURSE_NAME", "Разработка IT-продуктов и информационных систем",
+    )
 
 
 def load_settings() -> Settings:

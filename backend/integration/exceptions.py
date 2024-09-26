@@ -4,6 +4,14 @@
 class ModeusError(Exception):
     """Modeus global exception."""
 
+class NetologyError(Exception):
+    ...
+
+class NetologyNotFoundError(NetologyError):
+    ...
+
+class NetologyUnauthorizedError(NetologyError):
+    ...
 
 class LoginFailedError(ModeusError):
     """Login failed, check username and password."""
