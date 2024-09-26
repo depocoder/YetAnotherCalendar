@@ -23,6 +23,15 @@ def configure_application(
     configure_error_handlers(app)
     configure_authentication(app, settings)
     configure_docs(app, settings)
+    configure_templating(app, settings)
+
+    app.use_cors(
+        allow_methods="*",
+        allow_origins="*",
+        allow_headers="*",
+        max_age=300,
+    )
+    
     return app
 
 
