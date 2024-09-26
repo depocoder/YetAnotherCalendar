@@ -1,7 +1,7 @@
 import flatpickr from "flatpickr";
 import { useCallback, useRef } from "react";
 
-function Calendar() {
+const Calendar = () => {
     const fp1 = useRef();
 
     const inputRef = useCallback((node) => {
