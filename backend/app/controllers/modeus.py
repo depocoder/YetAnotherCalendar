@@ -12,7 +12,9 @@ from requests import RequestException
 from integration import modeus
 from integration.exceptions import ModeusError
 from . import models
+from ..settings import load_settings
 
+settings = load_settings()
 
 class FromAuthorizationHeader(FromHeader[str]):
     name = "bearer-token"
@@ -61,3 +63,19 @@ class ModeusController(Controller):
             )
         except (RequestException, ModeusError) as exception:
             return self.json({"error": f"can't authenticate {exception}"}, status=400)
+
+    
+    @post("/events_blank/")
+    async def get_modeus_events_blank(
+        self,
+        item: FromJson[models.ModeusSearchEvents],
+    ) -> Response:
+        """
+        Get events from Modeus when no account.
+        """
+        try:
+            jwt_token = (await modeus.login(settings.modeus_username, settings.modeus_password))['token']
+        except (RequestException, ModeusError) as exception:
+            return self.json({"error": f"can't authenticate {exception}"}, status=400)
+        auth = FromAuthorizationHeader(value=f"Bearer {jwt_token}")
+        return await self.get_modeus_events(item=item, auth=auth)

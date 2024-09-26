@@ -97,7 +97,6 @@ async def login(username: str, __password: str, timeout: int = 15) -> dict[str, 
             follow_redirects=False,
         )
         headers = {"Referer": "https://fs.utmn.ru/"}
-        auth_id = response.cookies.get("commonAuthId")
         # This auth request redirects to another URL, which redirects to Modeus home page,
         #  so we use HEAD in the latter one to get only target URL and extract the token
         response = await session.head(response.headers["Location"], headers=headers)
@@ -106,7 +105,7 @@ async def login(username: str, __password: str, timeout: int = 15) -> dict[str, 
         token = _extract_token_from_url(response.url.fragment)
         if token is None:
             raise CannotAuthenticateError
-        return {"token": token, "auth_id": auth_id}
+        return {"token": token}
 
 
 def _extract_token_from_url(url: str, match_index: int = 1) -> str | None:
