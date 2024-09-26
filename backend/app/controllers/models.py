@@ -121,12 +121,12 @@ class ModeusCalendar(BaseModel):
 
 class StudentsSpeciality(BaseModel):
     id: uuid.UUID = Field(alias="personId")
-    flow_code: str = Field(alias="flowCode")
+    flow_code: Optional[str] = Field(alias="flowCode")
     learning_start_date: Optional[datetime.datetime] = Field(alias="learningStartDate")
     learning_end_date: Optional[datetime.datetime] = Field(alias="learningEndDate")
-    specialty_code: str = Field(alias="specialtyCode")
-    specialty_name: str = Field(alias="specialtyName")
-    specialty_profile: str = Field(alias="specialtyProfile")
+    specialty_code: Optional[str] = Field(alias="specialtyCode")
+    specialty_name: Optional[str] = Field(alias="specialtyName")
+    specialty_profile: Optional[str] = Field(alias="specialtyProfile")
 
 
 class ExtendedPerson(StudentsSpeciality, ShortPerson):
@@ -134,8 +134,8 @@ class ExtendedPerson(StudentsSpeciality, ShortPerson):
 
 
 class PeopleEmbedded(BaseModel):
-    persons: list[ShortPerson]
-    students: list[StudentsSpeciality]
+    persons: list[ShortPerson] = Field(default=[])
+    students: list[StudentsSpeciality] = Field(default=[])
 
 
 class SearchPeople(BaseModel):

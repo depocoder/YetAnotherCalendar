@@ -115,7 +115,7 @@ def _extract_token_from_url(url: str, match_index: int = 1) -> str | None:
     return match[match_index]
 
 
-async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15):
+async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -> str:
     session = AsyncClient(
         http2=True,
         base_url="https://utmn.modeus.org/",
