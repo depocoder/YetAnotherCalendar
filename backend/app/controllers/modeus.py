@@ -5,22 +5,20 @@ Modeus API implemented using a controller.
 from typing import Optional
 
 from blacksheep import Response
-from blacksheep.server.bindings import FromJson
+from blacksheep.server.bindings import FromJson, FromHeader
 from blacksheep.server.controllers import Controller, post
-from integration import modeus
-from integration.exceptions import ModeusError
-from pydantic import BaseModel
 from requests import RequestException
 
-
-class ModeusCreds(BaseModel):
-    """Modeus creds."""
-
-    username: str
-    password: str
+from integration import modeus
+from integration.exceptions import ModeusError
+from . import models
 
 
-class NetologyController(Controller):
+class FromAuthorizationHeader(FromHeader[str]):
+    name = "bearer-token"
+
+
+class ModeusController(Controller):
     """Controller for Modeus API."""
 
     @classmethod
@@ -34,13 +32,32 @@ class NetologyController(Controller):
         return "Modeus"
 
     @post()
-    async def get_modeus_cookies(self, item: FromJson[ModeusCreds]) -> Response:
+    async def get_modeus_cookies(self, item: FromJson[models.ModeusCreds]) -> Response:
         """
         Auth in Modeus and return cookies.
         """
         try:
             return self.json(
                 await modeus.login(item.value.username, item.value.password),
+            )
+        except (RequestException, ModeusError) as exception:
+            return self.json({"error": f"can't authenticate {exception}"}, status=400)
+
+    @post("/events/")
+    async def get_modeus_events(
+        self,
+        auth: FromAuthorizationHeader,
+        item: FromJson[models.ModeusSearchEvents],
+    ) -> Response:
+        """
+        Get events from Modeus.
+        """
+        try:
+            jwt = auth.value.split()[1]
+            return self.json(await modeus.get_events(jwt, item.value))
+        except IndexError as exception:
+            return self.json(
+                {"error": f"cannot parse authorization header {exception}"},
             )
         except (RequestException, ModeusError) as exception:
             return self.json({"error": f"can't authenticate {exception}"}, status=400)

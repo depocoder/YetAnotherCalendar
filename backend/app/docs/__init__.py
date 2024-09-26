@@ -9,7 +9,7 @@ from app.docs.binders import set_binders_docs
 from app.settings import Settings
 from blacksheep import Application
 from blacksheep.server.openapi.v3 import OpenAPIHandler
-from openapidocs.v3 import Info  # type: ignore[import-untyped]
+from openapidocs.v3 import Info
 
 
 def configure_docs(app: Application, settings: Settings) -> None:

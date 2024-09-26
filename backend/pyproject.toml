@@ -23,13 +23,23 @@ pydantic = "^2.9.2"
 mypy = "^1.11.2"
 types-requests = "^2.32.0.20240914"
 types-beautifulsoup4 = "^4.12.0.20240907"
-wemake-python-styleguide = "^0.19.2"
-isort = "^5.13.2"
 black = "^24.8.0"
 lxml = "^5.3.0"
 python-multipart = "^0.0.10"
 pyyaml = "^6.0.2"
+flake8-docstrings = "^1.7.0"
+ruff = "^0.6.7"
+pyflakes = "^3.2.0"
+pycodestyle = "^2.12.1"
+flake8-debugger = "^4.1.2"
+flake8-logging = "^1.6.0"
+flake8-print = "^5.0.0"
+pep8-naming = "^0.14.1"
+pylint = "^3.3.1"
 
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.27.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -50,3 +60,33 @@ implicit_reexport = true
 allow_untyped_decorators = true
 warn_return_any = false
 warn_no_return = false
+
+[tool.ruff]
+lint.select = [
+    "A",  # prevent using keywords that clobber python builtins
+    "N",  # pep8-naming
+    "B",  # bugbear: security warnings
+    "E",  # pycodestyle
+    "F",  # pyflakes
+    "ISC",  # implicit string concatenation
+    "UP",  # alert you when better syntax is available in your python version
+    "RUF",  # the ruff developer's own rules
+
+    "T20",  # flake8-print
+    "T10",  # flake8-debugger
+    "LOG",  # flake8-logging
+    "COM",  # flake8-logging
+    "ASYNC",  # flake8-async
+    "ANN",  # flake8-annotations
+    "PL",  # Pylint
+]
+line-length = 119
+lint.ignore = [
+    "ANN101",
+    "ANN401",
+    "ANN102"
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 119

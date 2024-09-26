@@ -1,15 +1,16 @@
 """Modeus API implementation."""
 
-from __future__ import annotations
-
 import re
 from secrets import token_hex
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 from bs4 import BeautifulSoup, Tag
 from httpx import URL, AsyncClient
+
+from app.controllers.models import ModeusSearchEvents, ModeusCalendar, FullEvent
 from integration.exceptions import CannotAuthenticateError, LoginFailedError
+
 
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
 _AUTH_URL = "https://auth.modeus.org/oauth2/authorize"
@@ -70,16 +71,21 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
     return form
 
 
-async def login(username: str, __password: str, timeout: int = 15) -> Dict[str, Any]:
+async def login(username: str, __password: str, timeout: int = 15) -> dict[str, Any]:
     """
     Log in Modeus.
 
     Raises:
         CannotAuthenticateError: if something changed in API
     """
-    async with httpx.AsyncClient(base_url="https://utmn.modeus.org/", timeout=timeout, headers={
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0',
-    }, follow_redirects=True,) as session:
+    async with httpx.AsyncClient(
+        base_url="https://utmn.modeus.org/",
+        timeout=timeout,
+        headers={
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0",
+        },
+        follow_redirects=True,
+    ) as session:
         form = await get_auth_form(session, username, __password)
         auth_data = {}
         continue_auth_url = "https://auth.modeus.org/commonauth"
@@ -108,3 +114,24 @@ def _extract_token_from_url(url: str, match_index: int = 1) -> str | None:
     if (match := _token_re.search(url)) is None:
         return None
     return match[match_index]
+
+
+async def get_events(
+    __jwt: str,
+    body: ModeusSearchEvents,
+    timeout: int = 15,
+) -> list[FullEvent]:
+    """Get events for student in modeus"""
+    session = AsyncClient(
+        http2=True,
+        base_url="https://utmn.modeus.org/",
+        timeout=timeout,
+    )
+    session.headers["Authorization"] = f"Bearer {__jwt}"
+    session.headers["content-type"] = "application/json"
+    response = await session.post(
+        "/schedule-calendar-v2/api/calendar/events/search",
+        content=body.model_dump_json(by_alias=True),
+    )
+    modeus_calendar = ModeusCalendar.model_validate_json(response.text)
+    return modeus_calendar.parse_modeus_response()
