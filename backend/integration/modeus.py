@@ -8,7 +8,7 @@ import httpx
 from bs4 import BeautifulSoup, Tag
 from httpx import URL, AsyncClient
 
-from app.controllers.models import ModeusSearchEvents
+from app.controllers.models import ModeusSearchEvents, ModeusCalendar, FullEvent
 from integration.exceptions import CannotAuthenticateError, LoginFailedError
 
 
@@ -120,7 +120,7 @@ async def get_events(
     __jwt: str,
     body: ModeusSearchEvents,
     timeout: int = 15,
-) -> list[str] | None:
+) -> list[FullEvent]:
     """Get events for student in modeus"""
     session = AsyncClient(
         http2=True,
@@ -133,4 +133,5 @@ async def get_events(
         "/schedule-calendar-v2/api/calendar/events/search",
         content=body.model_dump_json(by_alias=True),
     )
-    return response.json()
+    modeus_calendar = ModeusCalendar.model_validate_json(response.text)
+    return modeus_calendar.parse_modeus_response()
