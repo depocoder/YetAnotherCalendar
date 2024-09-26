@@ -5,7 +5,7 @@ function App() {
     <div>
       <DatePicker/>
     </div>
-  );  
+  ); 
 }
 
 export default App;
