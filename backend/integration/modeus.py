@@ -8,9 +8,9 @@ import httpx
 from bs4 import BeautifulSoup, Tag
 from httpx import URL, AsyncClient
 
-from app.controllers.models import ModeusSearchEvents, ModeusCalendar, FullEvent
+from app.controllers.models import ModeusEventsBody, ModeusCalendar, FullEvent, ModeusPersonSearch, \
+    FullModeusPersonSearch, SearchPeople, ExtendedPerson
 from integration.exceptions import CannotAuthenticateError, LoginFailedError
-
 
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
 _AUTH_URL = "https://auth.modeus.org/oauth2/authorize"
@@ -79,12 +79,12 @@ async def login(username: str, __password: str, timeout: int = 15) -> dict[str, 
         CannotAuthenticateError: if something changed in API
     """
     async with httpx.AsyncClient(
-        base_url="https://utmn.modeus.org/",
-        timeout=timeout,
-        headers={
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0",
-        },
-        follow_redirects=True,
+            base_url="https://utmn.modeus.org/",
+            timeout=timeout,
+            headers={
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0",
+            },
+            follow_redirects=True,
     ) as session:
         form = await get_auth_form(session, username, __password)
         auth_data = {}
@@ -97,7 +97,6 @@ async def login(username: str, __password: str, timeout: int = 15) -> dict[str, 
             follow_redirects=False,
         )
         headers = {"Referer": "https://fs.utmn.ru/"}
-        auth_id = response.cookies.get("commonAuthId")
         # This auth request redirects to another URL, which redirects to Modeus home page,
         #  so we use HEAD in the latter one to get only target URL and extract the token
         response = await session.head(response.headers["Location"], headers=headers)
@@ -106,7 +105,7 @@ async def login(username: str, __password: str, timeout: int = 15) -> dict[str, 
         token = _extract_token_from_url(response.url.fragment)
         if token is None:
             raise CannotAuthenticateError
-        return {"token": token, "auth_id": auth_id}
+        return {"token": token}
 
 
 def _extract_token_from_url(url: str, match_index: int = 1) -> str | None:
@@ -116,12 +115,7 @@ def _extract_token_from_url(url: str, match_index: int = 1) -> str | None:
     return match[match_index]
 
 
-async def get_events(
-    __jwt: str,
-    body: ModeusSearchEvents,
-    timeout: int = 15,
-) -> list[FullEvent]:
-    """Get events for student in modeus"""
+async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -> str:
     session = AsyncClient(
         http2=True,
         base_url="https://utmn.modeus.org/",
@@ -130,8 +124,30 @@ async def get_events(
     session.headers["Authorization"] = f"Bearer {__jwt}"
     session.headers["content-type"] = "application/json"
     response = await session.post(
-        "/schedule-calendar-v2/api/calendar/events/search",
+        url_part,
         content=body.model_dump_json(by_alias=True),
     )
-    modeus_calendar = ModeusCalendar.model_validate_json(response.text)
-    return modeus_calendar.parse_modeus_response()
+    response.raise_for_status()
+    return response.text
+
+
+async def get_events(
+        __jwt: str,
+        body: ModeusEventsBody,
+
+) -> list[FullEvent]:
+    """Get events for student in modeus"""
+    response = await post_modeus(__jwt, body, "/schedule-calendar-v2/api/calendar/events/search")
+    modeus_calendar = ModeusCalendar.model_validate_json(response)
+    return modeus_calendar.serialize_modeus_response()
+
+
+async def get_people(
+        __jwt: str,
+        body: ModeusPersonSearch,
+) -> list[ExtendedPerson]:
+    """Get people from modeus"""
+    full_body = FullModeusPersonSearch(**(body.model_dump(by_alias=True)))
+    response = await post_modeus(__jwt, full_body, "/schedule-calendar-v2/api/people/persons/search")
+    search_people = SearchPeople.model_validate_json(response)
+    return search_people.serialize_modeus_response()

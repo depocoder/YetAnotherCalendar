@@ -20,10 +20,10 @@ def configure_application(
         show_error_details=settings.app.show_error_details,
     )
 
+    app.serve_files("app/static", root_path='/static/')
     configure_error_handlers(app)
     configure_authentication(app, settings)
     configure_docs(app, settings)
-    configure_templating(app, settings)
 
     app.use_cors(
         allow_methods="*",

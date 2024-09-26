@@ -12,7 +12,9 @@ from requests import RequestException
 from integration import modeus
 from integration.exceptions import ModeusError
 from . import models
+from ..settings import load_settings
 
+settings = load_settings()
 
 class FromAuthorizationHeader(FromHeader[str]):
     name = "bearer-token"
@@ -32,13 +34,13 @@ class ModeusController(Controller):
         return "Modeus"
 
     @post()
-    async def get_modeus_cookies(self, item: FromJson[models.ModeusCreds]) -> Response:
+    async def get_modeus_cookies(self, body: FromJson[models.ModeusCreds]) -> Response:
         """
         Auth in Modeus and return cookies.
         """
         try:
             return self.json(
-                await modeus.login(item.value.username, item.value.password),
+                await modeus.login(body.value.username, body.value.password),
             )
         except (RequestException, ModeusError) as exception:
             return self.json({"error": f"can't authenticate {exception}"}, status=400)
@@ -47,17 +49,47 @@ class ModeusController(Controller):
     async def get_modeus_events(
         self,
         auth: FromAuthorizationHeader,
-        item: FromJson[models.ModeusSearchEvents],
+        body: FromJson[models.ModeusEventsBody],
     ) -> Response:
         """
         Get events from Modeus.
         """
         try:
             jwt = auth.value.split()[1]
-            return self.json(await modeus.get_events(jwt, item.value))
+            return self.json(await modeus.get_events(jwt, body.value))
         except IndexError as exception:
             return self.json(
                 {"error": f"cannot parse authorization header {exception}"},
             )
+        except (RequestException, ModeusError) as exception:
+            return self.json({"error": f"can't authenticate {exception}"}, status=400)
+
+    
+    @post("/events_blank/")
+    async def get_modeus_events_blank(
+        self,
+        body: FromJson[models.ModeusEventsBody],
+    ) -> Response:
+        """
+        Get events from Modeus when no account.
+        """
+        try:
+            jwt_token = (await modeus.login(settings.modeus_username, settings.modeus_password))['token']
+        except (RequestException, ModeusError) as exception:
+            return self.json({"error": f"can't authenticate {exception}"}, status=400)
+        auth = FromAuthorizationHeader(value=f"Bearer {jwt_token}")
+        return await self.get_modeus_events(body=body, auth=auth)
+
+    @post("/search_blank/")
+    async def search_blank(
+        self,
+        body: FromJson[models.ModeusPersonSearch],
+    ) -> Response:
+        """
+        Search people from Modeus when no account.
+        """
+        try:
+            jwt_token = (await modeus.login(settings.modeus_username, settings.modeus_password))['token']
+            return self.json(await modeus.get_people(jwt_token, body.value))
         except (RequestException, ModeusError) as exception:
             return self.json({"error": f"can't authenticate {exception}"}, status=400)
