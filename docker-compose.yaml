@@ -7,9 +7,18 @@ services:
     environment:
       APP_HOST: "0.0.0.0"
       APP_PORT: "8000"
-    env_file:
-      - .env
+      MODEUS_USERNAME: test
+      MODEUS_PASSWORD: test
     volumes:
       - ./backend:/app/
     ports:
       - 8000:8000
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: calendar-frontend
+    restart: always
+    ports:
+      - 3000:80
+
