@@ -4,7 +4,7 @@ Netology API implemented using a controller.
 
 from typing import Optional
 
-from blacksheep import Response
+from blacksheep import Response, FromQuery
 from blacksheep.server.bindings import FromJson
 from blacksheep.server.controllers import Controller, post
 from httpx import HTTPStatusError
@@ -61,6 +61,25 @@ class NetologyController(Controller):
         """
         try:
             course = await netology.get_utmn_course(cookies.value)
+            return self.json(
+                course,
+            )
+        except (RequestException, HTTPStatusError) as exception:
+            return self.json({"error": f"can't authenticate {exception}"}, status=400)
+        except NetologyUnauthorizedError as exception:
+            return self.json({"error": f"{exception}"}, status=401)
+
+    @post('/calendar/')
+    async def get_calendar(
+            self,
+            program_id: FromQuery[int],
+            cookies: FromJson[NetologyCookies],
+    ) -> Response:
+        """
+        Auth in Netology and return cookies.
+        """
+        try:
+            course = await netology.get_calendar(cookies.value, program_id.value)
             return self.json(
                 course,
             )

@@ -1,9 +1,8 @@
 """Netology API implementation."""
 from http.client import UNAUTHORIZED
-from typing import List, Any
+from typing import Any
 
 import httpx
-import requests
 from httpx import AsyncClient
 
 from app.controllers.models import NetologyCookies, NetologyPrograms, NetologyProgram
@@ -30,11 +29,11 @@ async def auth_netology(username: str, password: str, timeout: int = 15) -> Neto
         timeout=timeout,
     )
     response = await session.post('/backend/api/user/sign_in', data={
-            "login": username,
-            "password": password,
-            "remember": "1",
-        },
-    )
+        "login": username,
+        "password": password,
+        "remember": "1",
+    },
+                                  )
     if response.status_code == UNAUTHORIZED:
         raise NetologyUnauthorizedError('Username/password is incorrect.')
     response.raise_for_status()
@@ -57,25 +56,13 @@ async def send_request(
     return response.json()
 
 
-def get_program_ids(session: requests.Session) -> List[str]:
-    """Get your Netology program ids."""
-    response = session.get(
-        "https://netology.ru/backend/api/user/programs/calendar/filters",
-    )
-    response.raise_for_status()
-    serialized_response = response.json()
-    programs = serialized_response["programs"]
-    return [program["id"] for program in programs]
-
-
-def get_calendar(session: requests.Session, calendar_id: str) -> NetologyCookies:
+async def get_calendar(cookies: NetologyCookies, calendar_id: int) -> dict[str, Any]:
     """Get your calendar events."""
-    response = session.get(
-        "https://netology.ru/backend/api/user/programs/calendar",
-        params={"program_ids[]": f"{calendar_id}"},
-    )
-    response.raise_for_status()
-    return NetologyCookies.model_validate_json(response.text)
+    response = await send_request(cookies, request_settings={
+        'method': 'GET', 'url': '/backend/api/user/programs/calendar',
+        'params': {'program_ids[]': calendar_id},
+    })
+    return response
 
 
 async def get_utmn_course(cookies: NetologyCookies) -> NetologyProgram:
