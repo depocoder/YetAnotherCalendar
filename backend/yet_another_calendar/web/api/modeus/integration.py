@@ -12,7 +12,7 @@ from starlette import status
 
 from .schema import (
     ModeusEventsBody, ModeusCalendar,
-    FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson
+    FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson,
 )
 
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
@@ -64,7 +64,7 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
 
     form = html.form
     if form is None:
-        raise HTTPException(detail=f"Can't get form.", status_code=response.status_code)
+        raise HTTPException(detail="Can't get form.", status_code=response.status_code)
     return form
 
 
@@ -104,7 +104,7 @@ async def login(username: str, __password: str, timeout: int = 15) -> str:
         token = _extract_token_from_url(response.url.fragment)
         if token is None:
             raise HTTPException(
-                detail=f"Can't get token. Response: {response.text}", status_code=response.status_code
+                detail=f"Can't get token. Response: {response.text}", status_code=response.status_code,
             )
         return token
 
