@@ -7,8 +7,9 @@ from typing import Any
 import httpx
 from bs4 import BeautifulSoup, Tag
 from httpx import URL, AsyncClient
+from starlette import status
 
-from yet_another_calendar.web.api.netology.schema import ModeusEventsBody, ModeusCalendar, FullEvent, ModeusPersonSearch, \
+from .schema import ModeusEventsBody, ModeusCalendar, FullEvent, ModeusPersonSearch, \
     FullModeusPersonSearch, SearchPeople, ExtendedPerson
 from yet_another_calendar.integration.exceptions import CannotAuthenticateError, LoginFailedError
 
@@ -57,7 +58,7 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
         "AuthMethod": "FormsAuthentication",
     }
     response = await session.post(post_url, data=login_data, follow_redirects=True)
-    # response.raise_for_status()
+    response.raise_for_status()
     html_text = response.text
 
     html = BeautifulSoup(html_text, "lxml")
@@ -71,7 +72,7 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
     return form
 
 
-async def login(username: str, __password: str, timeout: int = 15) -> dict[str, Any]:
+async def login(username: str, __password: str, timeout: int = 15) -> str:
     """
     Log in Modeus.
 
@@ -96,6 +97,8 @@ async def login(username: str, __password: str, timeout: int = 15) -> dict[str, 
             data=auth_data,
             follow_redirects=False,
         )
+        if response.status_code >= status.HTTP_400_BAD_REQUEST:
+            response.raise_for_status()
         headers = {"Referer": "https://fs.utmn.ru/"}
         # This auth request redirects to another URL, which redirects to Modeus home page,
         #  so we use HEAD in the latter one to get only target URL and extract the token
@@ -105,7 +108,7 @@ async def login(username: str, __password: str, timeout: int = 15) -> dict[str, 
         token = _extract_token_from_url(response.url.fragment)
         if token is None:
             raise CannotAuthenticateError
-        return {"token": token}
+        return token
 
 
 def _extract_token_from_url(url: str, match_index: int = 1) -> str | None:

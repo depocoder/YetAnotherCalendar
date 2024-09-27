@@ -6,17 +6,18 @@ from fastapi import HTTPException
 from httpx import AsyncClient
 from starlette import status
 
-from yet_another_calendar.web.api.netology.schema import NetologyCookies, NetologyPrograms, NetologyProgram
+from . import schema
 from yet_another_calendar.settings import settings
 
 
-async def auth_netology(username: str, password: str, timeout: int = 15) -> NetologyCookies:
+async def auth_netology(username: str, password: str, timeout: int = 15) -> schema.NetologyCookies:
     """
     Auth in Netology, required username and password.
 
     Args:
         username (str): Netology username.
         password (str): Netology password.
+        timeout (str): Netology service timeout.
 
     Returns:
         dict: Cookies for API.
@@ -35,11 +36,11 @@ async def auth_netology(username: str, password: str, timeout: int = 15) -> Neto
     if response.status_code == status.HTTP_401_UNAUTHORIZED:
         raise HTTPException(detail='Username/password is incorrect.', status_code=response.status_code)
     response.raise_for_status()
-    return NetologyCookies(**session.cookies)
+    return schema.NetologyCookies(**session.cookies)
 
 
 async def send_request(
-        cookies: NetologyCookies, request_settings: dict[str, Any], timeout: int = 15) -> dict[str, Any]:
+        cookies: schema.NetologyCookies, request_settings: dict[str, Any], timeout: int = 15) -> dict[str, Any]:
     """Send request from httpx."""
     session = AsyncClient(
         http2=True,
@@ -54,7 +55,7 @@ async def send_request(
     return response.json()
 
 
-async def get_calendar(cookies: NetologyCookies, calendar_id: int) -> dict[str, Any]:
+async def get_calendar(cookies: schema.NetologyCookies, calendar_id: int) -> dict[str, Any]:
     """Get your calendar events."""
     response = await send_request(cookies, request_settings={
         'method': 'GET', 'url': '/backend/api/user/programs/calendar',
@@ -63,12 +64,12 @@ async def get_calendar(cookies: NetologyCookies, calendar_id: int) -> dict[str, 
     return response
 
 
-async def get_utmn_course(cookies: NetologyCookies) -> NetologyProgram:
+async def get_utmn_course(cookies: schema.NetologyCookies) -> schema.NetologyProgram:
     """Get utmn course from netology API."""
     request_settings = {'method': 'GET', 'url': '/backend/api/user/programs/calendar/filters'}
 
     response = await send_request(cookies, request_settings=request_settings)
-    netology_program = NetologyPrograms(**response).get_utmn_program()
+    netology_program = schema.NetologyPrograms(**response).get_utmn_program()
     if not netology_program:
         raise HTTPException(detail=f"Can't find netology program {settings.netology_course_name}",
                             status_code=status.HTTP_404_NOT_FOUND)
