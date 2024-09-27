@@ -48,7 +48,7 @@ class ModeusController(Controller):
     @post("/events/")
     async def get_modeus_events(
         self,
-        auth: FromAuthorizationHeader,
+        auth: FromHeader[models.ModeusCreds],
         body: FromJson[models.ModeusEventsBody],
     ) -> Response:
         """

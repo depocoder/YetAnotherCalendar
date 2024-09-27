@@ -46,7 +46,6 @@ class Settings(BaseSettings):
     app: App = App()
 
     site: Site = Site()
-
     model_config = SettingsConfigDict(env_prefix="APP_")
     modeus_username: str = environment.str("MODEUS_USERNAME")
     modeus_password: str = environment.str("MODEUS_PASSWORD")

@@ -6,14 +6,14 @@ from typing import Optional
 
 from blacksheep import Response, FromQuery
 from blacksheep.server.bindings import FromJson
-from blacksheep.server.controllers import Controller, post
+from blacksheep.server.controllers import Controller, post, get
 from httpx import HTTPStatusError
 from requests import RequestException
 
 from integration import netology
 from integration.exceptions import NetologyUnauthorizedError
 from . import models
-from .models import NetologyCookies
+from .models import NetologyCookies, NetologyCookiesHeader
 
 
 class NetologyController(Controller):
@@ -69,11 +69,12 @@ class NetologyController(Controller):
         except NetologyUnauthorizedError as exception:
             return self.json({"error": f"{exception}"}, status=401)
 
-    @post('/calendar/')
+    @get('/calendar/')
     async def get_calendar(
             self,
+            request,
             program_id: FromQuery[int],
-            cookies: FromJson[NetologyCookies],
+            cookies: NetologyCookiesHeader,
     ) -> Response:
         """
         Auth in Netology and return cookies.

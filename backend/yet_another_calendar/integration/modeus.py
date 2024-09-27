@@ -8,9 +8,9 @@ import httpx
 from bs4 import BeautifulSoup, Tag
 from httpx import URL, AsyncClient
 
-from app.controllers.models import ModeusEventsBody, ModeusCalendar, FullEvent, ModeusPersonSearch, \
+from yet_another_calendar.web.api.netology.schema import ModeusEventsBody, ModeusCalendar, FullEvent, ModeusPersonSearch, \
     FullModeusPersonSearch, SearchPeople, ExtendedPerson
-from integration.exceptions import CannotAuthenticateError, LoginFailedError
+from yet_another_calendar.integration.exceptions import CannotAuthenticateError, LoginFailedError
 
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
 _AUTH_URL = "https://auth.modeus.org/oauth2/authorize"

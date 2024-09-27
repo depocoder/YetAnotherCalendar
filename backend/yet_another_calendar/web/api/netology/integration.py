@@ -1,15 +1,13 @@
 """Netology API implementation."""
-from http.client import UNAUTHORIZED
 from typing import Any
 
 import httpx
+from fastapi import HTTPException
 from httpx import AsyncClient
+from starlette import status
 
-from app.controllers.models import NetologyCookies, NetologyPrograms, NetologyProgram
-from app.settings import load_settings
-from integration.exceptions import NetologyNotFoundError, NetologyUnauthorizedError
-
-settings = load_settings()
+from yet_another_calendar.web.api.netology.schema import NetologyCookies, NetologyPrograms, NetologyProgram
+from yet_another_calendar.settings import settings
 
 
 async def auth_netology(username: str, password: str, timeout: int = 15) -> NetologyCookies:
@@ -34,8 +32,8 @@ async def auth_netology(username: str, password: str, timeout: int = 15) -> Neto
         "remember": "1",
     },
                                   )
-    if response.status_code == UNAUTHORIZED:
-        raise NetologyUnauthorizedError('Username/password is incorrect.')
+    if response.status_code == status.HTTP_401_UNAUTHORIZED:
+        raise HTTPException(detail='Username/password is incorrect.', status_code=response.status_code)
     response.raise_for_status()
     return NetologyCookies(**session.cookies)
 
@@ -50,8 +48,8 @@ async def send_request(
     )
     session.cookies = httpx.Cookies(cookies.model_dump(by_alias=True))
     response = await session.request(**request_settings)
-    if response.status_code == UNAUTHORIZED:
-        raise NetologyUnauthorizedError('Cookies expired.')
+    if response.status_code == status.HTTP_401_UNAUTHORIZED:
+        raise HTTPException(detail='Cookies expired.', status_code=response.status_code)
     response.raise_for_status()
     return response.json()
 
@@ -72,5 +70,6 @@ async def get_utmn_course(cookies: NetologyCookies) -> NetologyProgram:
     response = await send_request(cookies, request_settings=request_settings)
     netology_program = NetologyPrograms(**response).get_utmn_program()
     if not netology_program:
-        raise NetologyNotFoundError(f"Can't find netology program {settings.netology_course_name}")
+        raise HTTPException(detail=f"Can't find netology program {settings.netology_course_name}",
+                            status_code=status.HTTP_404_NOT_FOUND)
     return netology_program

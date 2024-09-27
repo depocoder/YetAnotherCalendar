@@ -1,12 +1,11 @@
 import datetime
 import uuid
-from typing import Optional
+from typing import Optional, Annotated
 
+from fastapi import Header
 from pydantic import BaseModel, Field, computed_field
 
-from app.settings import load_settings
-
-settings = load_settings()
+from yet_another_calendar.settings import settings
 
 
 class NetologyCreds(BaseModel):
@@ -23,6 +22,27 @@ class NetologyCookies(BaseModel):
     sg_uid: str
     remember_user_token: str
     http_x_authentication: str
+
+    # class Config:
+    #     allow_population_by_field_name = False
+
+
+async def get_cookies_from_headers(
+        rails_session: Annotated[str, Header(alias="_netology-on-rails_session")],
+        sg_payment_exist: Annotated[str, Header()],
+        sg_reg_date: Annotated[str, Header()],
+        sg_uid: Annotated[str, Header()],
+        remember_user_token: Annotated[str, Header()],
+        http_x_authentication: Annotated[str, Header()],
+):
+    return NetologyCookies.model_validate({
+        "_netology-on-rails_session": rails_session,
+        "sg_payment_exist": sg_payment_exist,
+        "sg_reg_date": sg_reg_date,
+        "sg_uid": sg_uid,
+        "remember_user_token": remember_user_token,
+        "http_x_authentication": http_x_authentication, }
+    )
 
 
 class NetologyProgram(BaseModel):

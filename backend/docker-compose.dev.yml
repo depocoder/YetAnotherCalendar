@@ -1,0 +1,13 @@
+services:
+  api:
+    ports:
+      # Exposes application port.
+    - "8000:8000"
+    build:
+      context: .
+    volumes:
+      # Adds current directory as volume.
+    - .:/app/src/
+    environment:
+      # Enables autoreload.
+      YET_ANOTHER_CALENDAR_RELOAD: "True"
