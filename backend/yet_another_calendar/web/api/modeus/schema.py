@@ -49,8 +49,8 @@ class ModeusEventsBody(BaseModel):
 
     @model_validator(mode='after')
     def check_passwords_match(self) -> Self:
-        delta = self.time_min - self.time_max
-        if delta.days == 7:
+        delta = self.time_max - self.time_min
+        if delta.days != 6:
             raise ValueError("Defence between dates must be 7 days.")
         return self
 
