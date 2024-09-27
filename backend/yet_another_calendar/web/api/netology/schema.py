@@ -1,9 +1,7 @@
-import datetime
-import uuid
 from typing import Optional, Annotated
 
 from fastapi import Header
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field
 
 from yet_another_calendar.settings import settings
 
@@ -34,7 +32,7 @@ async def get_cookies_from_headers(
         sg_uid: Annotated[str, Header()],
         remember_user_token: Annotated[str, Header()],
         http_x_authentication: Annotated[str, Header()],
-):
+) -> NetologyCookies:
     return NetologyCookies.model_validate({
         "_netology-on-rails_session": rails_session,
         "sg_payment_exist": sg_payment_exist,
