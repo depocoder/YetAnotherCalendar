@@ -27,13 +27,9 @@ class ModeusEventsBody(BaseModel):
                                         examples=["2024-09-29T23:59:59+03:00"])
     attendee_person_id: list[str] = Field(alias="attendeePersonId", default=["d69c87c8-aece-4f39-b6a2-7b467b968211"])
 
-
-class ModeusPersonSearch(BaseModel):
+class FullModeusPersonSearch(BaseModel):
     """Modeus search events body."""
     full_name: str = Field(alias="fullName", examples=["Комаев Азамат Олегович"])
-
-
-class FullModeusPersonSearch(ModeusPersonSearch):
     sort: str = Field(default="+fullName")
     size: int = Field(default=10)
     page: int = Field(default=0)

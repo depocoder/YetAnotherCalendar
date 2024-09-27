@@ -10,9 +10,10 @@ from fastapi import HTTPException
 from httpx import URL, AsyncClient
 from starlette import status
 
-from .schema import ModeusEventsBody, ModeusCalendar, FullEvent, ModeusPersonSearch, \
-    FullModeusPersonSearch, SearchPeople, ExtendedPerson
-from yet_another_calendar.integration.exceptions import CannotAuthenticateError, LoginFailedError
+from .schema import (
+    ModeusEventsBody, ModeusCalendar,
+    FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson
+)
 
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
 _AUTH_URL = "https://auth.modeus.org/oauth2/authorize"
@@ -144,10 +145,10 @@ async def get_events(
 
 async def get_people(
         __jwt: str,
-        body: ModeusPersonSearch,
+        body: FullModeusPersonSearch,
 ) -> list[ExtendedPerson]:
     """Get people from modeus"""
-    full_body = FullModeusPersonSearch(**(body.model_dump(by_alias=True)))
-    response = await post_modeus(__jwt, full_body, "/schedule-calendar-v2/api/people/persons/search")
+
+    response = await post_modeus(__jwt, body, "/schedule-calendar-v2/api/people/persons/search")
     search_people = SearchPeople.model_validate_json(response)
     return search_people.serialize_modeus_response()
