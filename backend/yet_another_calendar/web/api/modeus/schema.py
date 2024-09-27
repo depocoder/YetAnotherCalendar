@@ -1,8 +1,8 @@
 import datetime
 import uuid
-from typing import Optional
+from typing import Optional, Self
 
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field, model_validator, field_validator
 
 from . import integration
 from yet_another_calendar.settings import settings
@@ -19,13 +19,41 @@ class ModeusCreds(BaseModel):
     password: str
 
 
+# noinspection PyNestedDecorators
 class ModeusEventsBody(BaseModel):
     """Modeus search events body."""
     size: int = Field(default=50)
     time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+03:00"])
     time_max: datetime.datetime = Field(alias="timeMax",
                                         examples=["2024-09-29T23:59:59+03:00"])
-    attendee_person_id: list[str] = Field(alias="attendeePersonId", default=["d69c87c8-aece-4f39-b6a2-7b467b968211"])
+    attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId",
+                                                default=["d69c87c8-aece-4f39-b6a2-7b467b968211"])
+
+    @field_validator("time_min")
+    @classmethod
+    def validate_time_min(cls, time_min: datetime.datetime) -> datetime.datetime:
+        if time_min.weekday() != 0:
+            raise ValueError("Weekday time_min must be Monday.")
+        if time_min.second or time_min.hour or time_min.minute:
+            raise ValueError("Time must me 00:00:00.")
+        return time_min
+
+    @field_validator("time_max")
+    @classmethod
+    def validate_time_max(cls, time_max: datetime.datetime) -> datetime.datetime:
+        if time_max.weekday() != 6:
+            raise ValueError("Weekday time_min must be Sunday.")
+        if time_max.hour != 23 or time_max.second != 59 or time_max.minute != 59:
+            raise ValueError("Time must me 23:59:59.")
+        return time_max
+
+    @model_validator(mode='after')
+    def check_passwords_match(self) -> Self:
+        delta = self.time_min - self.time_max
+        if delta.days == 7:
+            raise ValueError("Defence between dates must be 7 days.")
+        return self
+
 
 class FullModeusPersonSearch(BaseModel):
     """Modeus search events body."""
