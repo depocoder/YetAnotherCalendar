@@ -40,4 +40,4 @@ async def search_blank(
     """
     Search people from Modeus when no account.
     """
-    return await integration.get_people(jwt_token, schema.FullModeusPersonSearch(**{"fullName": full_name}))
+    return await integration.get_people(jwt_token, schema.FullModeusPersonSearch.model_validate({"fullName": full_name}))
