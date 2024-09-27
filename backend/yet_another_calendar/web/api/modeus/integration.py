@@ -6,6 +6,7 @@ from typing import Any
 
 import httpx
 from bs4 import BeautifulSoup, Tag
+from fastapi import HTTPException
 from httpx import URL, AsyncClient
 from starlette import status
 
@@ -21,8 +22,6 @@ async def get_post_url(session: AsyncClient, token_length: int = 16) -> URL:
     """
     Get auth post url for log in.
 
-    Raises:
-        CannotAuthenticateError: if something changed in API
     """
     response = await session.get("/schedule-calendar/assets/app.config.json")
     client_id = response.json()["wso"]["clientId"]
@@ -39,17 +38,13 @@ async def get_post_url(session: AsyncClient, token_length: int = 16) -> URL:
     # response.raise_for_status()
     post_url = response.url
     if post_url is None:
-        raise CannotAuthenticateError
+        raise HTTPException(detail=f"Can't get post_url. Response: {response.text}", status_code=response.status_code)
     return post_url
 
 
 async def get_auth_form(session: AsyncClient, username: str, password: str) -> Tag:
     """
     Get auth form.
-
-    Raises:
-        CannotAuthenticateError: if something changed in API
-        LoginFailedError: if username or password incorrect
     """
     post_url = await get_post_url(session)
     login_data = {
@@ -64,11 +59,11 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
     html = BeautifulSoup(html_text, "lxml")
     error_tag = html.find(id="errorText")
     if error_tag is not None and error_tag.text != "":
-        raise LoginFailedError(error_tag.text)
+        raise HTTPException(detail=error_tag.text, status_code=response.status_code)
 
     form = html.form
     if form is None:
-        raise CannotAuthenticateError
+        raise HTTPException(detail=f"Can't get form.", status_code=response.status_code)
     return form
 
 
@@ -104,10 +99,12 @@ async def login(username: str, __password: str, timeout: int = 15) -> str:
         #  so we use HEAD in the latter one to get only target URL and extract the token
         response = await session.head(response.headers["Location"], headers=headers)
         if response.url is None:
-            raise CannotAuthenticateError
+            raise HTTPException(detail='Username/password is incorrect.', status_code=response.status_code)
         token = _extract_token_from_url(response.url.fragment)
         if token is None:
-            raise CannotAuthenticateError
+            raise HTTPException(
+                detail=f"Can't get token. Response: {response.text}", status_code=response.status_code
+            )
         return token
 
 
