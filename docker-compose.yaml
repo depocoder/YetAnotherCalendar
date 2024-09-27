@@ -1,18 +1,35 @@
 services:
-  backend:
+  api: &main_app
+    ports:
+      - "8000:8000"
     build:
-      context: ./backend
-    container_name: calendar-backend
+      context: backend/
+      dockerfile: Dockerfile
+    image: yet_another_calendar:${YET_ANOTHER_CALENDAR_VERSION:-latest}
+    restart: always
+    volumes:
+      - ./backend:/app/src/
+    env_file:
+      - backend/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      YET_ANOTHER_CALENDAR_HOST: 0.0.0.0
+      YET_ANOTHER_CALENDAR_REDIS_HOST: yet_another_calendar-redis
+      YET_ANOTHER_CALENDAR_RELOAD: "True"
+
+  redis:
+    image: redis:latest
+    hostname: "yet_another_calendar-redis"
     restart: always
     environment:
-      APP_HOST: "0.0.0.0"
-      APP_PORT: "8000"
-      MODEUS_USERNAME: test
-      MODEUS_PASSWORD: test
-    volumes:
-      - ./backend:/app/
-    ports:
-      - 8000:8000
+      ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 50
 
   frontend:
     build:
@@ -20,5 +37,5 @@ services:
     container_name: calendar-frontend
     restart: always
     ports:
-      - 3000:80
+      - "3000:80"
 
