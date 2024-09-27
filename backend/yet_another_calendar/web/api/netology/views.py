@@ -19,14 +19,14 @@ async def get_netology_cookies(
     """
     cookies = await integration.auth_netology(
         item.username,
-        item.password
+        item.password,
     )
     return cookies
 
 
 @router.get('/utmn_course/')
 async def get_course(
-        cookies: NetologyCookies = Depends(get_cookies_from_headers)
+        cookies: NetologyCookies = Depends(get_cookies_from_headers),
 ) -> NetologyProgram:
     """
     Auth in Netology and return cookies.
@@ -37,7 +37,7 @@ async def get_course(
 @router.get('/calendar/{program_id}')
 async def get_calendar(
         program_id: int,
-        cookies: NetologyCookies = Depends(get_cookies_from_headers)
+        cookies: NetologyCookies = Depends(get_cookies_from_headers),
 ) -> dict:
     """
     Auth in Netology and return cookies.

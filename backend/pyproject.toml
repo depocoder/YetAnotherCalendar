@@ -23,6 +23,7 @@ aiofiles = "^24.1.0"
 httptools = "^0.6.1"
 pymongo = "^4.8.0"
 loguru = "^0"
+mypy = "^1.11.2"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -51,9 +52,8 @@ pretty = true
 show_error_codes = true
 implicit_reexport = true
 allow_untyped_decorators = true
-warn_unused_ignores = false
 warn_return_any = false
-namespace_packages = true
+warn_no_return = false
 
 # Remove this and add `types-redis`
 # when the issue https://github.com/python/typeshed/issues/8242 is resolved.
@@ -75,56 +75,35 @@ env = [
 ]
 
 [tool.ruff]
-# List of enabled rulsets.
-# See https://docs.astral.sh/ruff/rules/ for more information.
 lint.select = [
-    "E",   # Error
-    "F",   # Pyflakes
-    "W",   # Pycodestyle
-    "C90", # McCabe complexity
-    "I",   # Isort
-    "N",   # pep8-naming
-    "D",   # Pydocstyle
-    "ANN", # Pytype annotations
-    "S",   # Bandit
-    "B",   # Bugbear
-    "COM", # Commas
-    "C4",  # Comprehensions
-    "ISC", # Implicit string concat
-    "PIE", # Unnecessary code
-    "T20", # Catch prints
-    "PYI", # validate pyi files
-    "Q",   # Checks for quotes
-    "RSE", # Checks raise statements
-    "RET", # Checks return statements
-    "SLF", # Self checks
-    "SIM", # Simplificator
-    "PTH", # Pathlib checks
-    "ERA", # Checks for commented out code
-    "PL",  # PyLint checks
-    "RUF", # Specific to Ruff checks
+    "A",  # prevent using keywords that clobber python builtins
+    "N",  # pep8-naming
+    "B",  # bugbear: security warnings
+    "E",  # pycodestyle
+    "F",  # pyflakes
+    "ISC",  # implicit string concatenation
+    "UP",  # alert you when better syntax is available in your python version
+    "RUF",  # the ruff developer's own rules
+
+    "T20",  # flake8-print
+    "T10",  # flake8-debugger
+    "LOG",  # flake8-logging
+    "COM",  # flake8-logging
+    "ASYNC",  # flake8-async
+    "ANN",  # flake8-annotations
+    "PL",  # Pylint
 ]
+line-length = 119
 lint.ignore = [
-    "D105",    # Missing docstring in magic method
-    "D107",    # Missing docstring in __init__
-    "B008",    # Do not perform function calls in argument defaults
-    "D211",    # No blank lines allowed before class docstring
-    "D212",    # Multi-line docstring summary should start at the first line
-    "D401",    # First line should be in imperative mood
-    "D104",    # Missing docstring in public package
-    "D100",    # Missing docstring in public module
-    "D202",    # No blank lines allowed after function docstring
-    "ANN102",  # Missing type annotation for self in method
-    "ANN101",  # Missing type annotation for argument
-    "ANN401",  # typing.Any are disallowed in `**kwargs
-    "PLR0913", # Too many arguments for function call
-    "D106",    # Missing docstring in public nested class
+    "ANN101",
+    "ANN401",
+    "ANN102",
+    "B008",  # Depends
+    "PLR0913"  # Depends
 ]
 exclude = [
     ".venv/"
 ]
-lint.mccabe = { max-complexity = 10 }
-line-length = 88
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [

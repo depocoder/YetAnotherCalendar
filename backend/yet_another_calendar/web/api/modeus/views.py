@@ -1,6 +1,8 @@
 """
 Modeus API implemented using a controller.
 """
+from typing import Annotated
+
 from fastapi import APIRouter
 from fastapi.params import Depends
 
@@ -21,7 +23,7 @@ async def get_modeus_cookies(body: schema.ModeusCreds) -> str:
 @router.post("/events/")
 async def get_modeus_events_blank(
         body: schema.ModeusEventsBody,
-        jwt_token: str = Depends(schema.get_cookies_from_headers)
+        jwt_token: Annotated[str, Depends(schema.get_cookies_from_headers)],
 ) -> list[schema.FullEvent]:
     """
     Get events from Modeus when no account.
@@ -33,7 +35,7 @@ async def get_modeus_events_blank(
 @router.post("/search_blank/")
 async def search_blank(
         body: schema.ModeusPersonSearch,
-        jwt_token: str = Depends(schema.get_cookies_from_headers)
+        jwt_token: Annotated[str, Depends(schema.get_cookies_from_headers)],
 ) -> list[schema.ExtendedPerson]:
     """
     Search people from Modeus when no account.
