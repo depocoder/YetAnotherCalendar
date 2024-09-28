@@ -10,7 +10,7 @@ def main() -> None:
         workers=settings.workers_count,
         host=settings.host,
         port=settings.port,
-        reload=settings.reload,
+        reload=settings.debug,
         log_level=settings.log_level.value.lower(),
         factory=True,
     )

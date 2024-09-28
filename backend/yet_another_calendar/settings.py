@@ -36,8 +36,6 @@ class Settings(BaseSettings):
     # quantity of workers for uvicorn
     workers_count: int = 1
     # Enable uvicorn reloading
-    reload: bool = env.bool("YET_ANOTHER_CALENDAR_RELOAD", False)
-
     debug: bool = env.bool("YET_ANOTHER_CALENDAR_DEBUG", False)
 
     log_level: LogLevel = LogLevel.INFO
