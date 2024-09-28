@@ -11,7 +11,6 @@ import reportWebVitals from "./reportWebVitals";
 import LoginRoute from "./routes/LoginRoute";
 import CalendarRoute from "./routes/CalendarRoute";
 
-import Header from "./components/Header/Header";
 import "./index.css";
 import ModeusLoginForm from "./components/Login/ModeusLoginForm";
 
