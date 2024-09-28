@@ -1,15 +1,26 @@
 import { useState } from "react";
-import { loginModeus } from "../../services/api/login";
+import { loginModeus,  searchModeus} from "../../services/api/login";
 
 const ModeusLoginForm = () => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  // const [fullName, setName] = useState(null);
+
+
+  const onClickSearch = async (fullName) => {
+    let response = await searchModeus(fullName);
+    if (response.status !== 200) {
+      alert("Бэк взорвался!");
+      return;
+    }
+    console.log(response.data)
+  };
 
   const onClickLogin = async () => {
     let response = await loginModeus(email, password);
 
     if (response.status !== 200) {
-      alert("Ты лох, введи правильные креды");
+      alert("Ты лох, введи правильные креды. Азамат тоже лох!");
       return;
     }
 
@@ -20,10 +31,11 @@ const ModeusLoginForm = () => {
     <div className="login-container">
       <div>
         <input
-          className="input-email"
-          id="search"
+          className="input-name"
+          id="text"
           type="text"
           placeholder="ФИО для Модеуса"
+          onChange={(e) => onClickSearch(e.target.value)}
         />
       </div>
       <div className="login-netologiya">
@@ -43,6 +55,9 @@ const ModeusLoginForm = () => {
         />
         <button className="login-btn-log" id="login" onClick={onClickLogin}>
           Войти
+        </button>
+        <button className="login-btn-log" id="login" onClick={onClickSearch}>
+          Поиск
         </button>
       </div>
     </div>
