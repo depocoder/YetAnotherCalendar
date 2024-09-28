@@ -36,6 +36,8 @@ class Settings(BaseSettings):
     # quantity of workers for uvicorn
     workers_count: int = 1
     # Enable uvicorn reloading
+    reload: bool = env.bool("YET_ANOTHER_CALENDAR_RELOAD", False)
+
     debug: bool = env.bool("YET_ANOTHER_CALENDAR_DEBUG", False)
 
     log_level: LogLevel = LogLevel.INFO
@@ -46,8 +48,13 @@ class Settings(BaseSettings):
     redis_user: Optional[str] = None
     redis_pass: Optional[str] = None
     redis_base: Optional[int] = None
+    redis_cookie_key: str = "MODEUS_JWT"
+    redis_jwt_time_live: int = 60 * 60 * 12  # 12 hours
+    redis_events_time_live: int = 60 * 60 * 24 * 14  # 2 weeks
+
     modeus_username: str = env.str("MODEUS_USERNAME")
     modeus_password: str = env.str("MODEUS_PASSWORD")
+    netology_default_course_id: int = env.int("NETOLOGY_DEFAULT_COURSE_ID", 45526)
     netology_course_name: str = env.str(
         "NETOLOGY_COURSE_NAME", "Разработка IT-продуктов и информационных систем",
     )

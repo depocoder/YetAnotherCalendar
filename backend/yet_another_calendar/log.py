@@ -54,6 +54,7 @@ def configure_logging() -> None:  # pragma: no cover
     # change handler for default uvicorn logger
     logging.getLogger("uvicorn").handlers = [intercept_handler]
     logging.getLogger("uvicorn.access").handlers = [intercept_handler]
+    logging.getLogger("fastapi_cache").setLevel(logging.ERROR)
     if not settings.debug:
         logging.getLogger("httpx").setLevel(logging.WARNING)
 

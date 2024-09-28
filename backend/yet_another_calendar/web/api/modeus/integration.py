@@ -7,9 +7,11 @@ from typing import Any
 import httpx
 from bs4 import BeautifulSoup, Tag
 from fastapi import HTTPException
+from fastapi_cache.decorator import cache
 from httpx import URL, AsyncClient
 from starlette import status
 
+from yet_another_calendar.settings import settings
 from .schema import (
     ModeusEventsBody, ModeusCalendar,
     FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson,
@@ -68,6 +70,7 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
     return form
 
 
+@cache(expire=settings.redis_jwt_time_live)
 async def login(username: str, __password: str, timeout: int = 15) -> str:
     """
     Log in Modeus.
@@ -132,6 +135,7 @@ async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -
     return response.text
 
 
+@cache(expire=settings.redis_events_time_live)
 async def get_events(
         __jwt: str,
         body: ModeusEventsBody,

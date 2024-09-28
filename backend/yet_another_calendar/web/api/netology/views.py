@@ -4,6 +4,7 @@ Netology API implemented using a controller.
 
 from fastapi import APIRouter, Depends
 
+from yet_another_calendar.settings import settings
 from . import integration
 from .schema import NetologyCookies, NetologyCreds, NetologyProgram, get_cookies_from_headers
 
@@ -34,9 +35,9 @@ async def get_course(
     return await integration.get_utmn_course(cookies)
 
 
-@router.get('/calendar/{program_id}')
+@router.get('/calendar/')
 async def get_calendar(
-        program_id: int,
+        program_id: int = settings.netology_default_course_id,
         cookies: NetologyCookies = Depends(get_cookies_from_headers),
 ) -> dict:
     """
