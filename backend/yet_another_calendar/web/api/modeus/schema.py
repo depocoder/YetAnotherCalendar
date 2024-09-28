@@ -11,13 +11,10 @@ from . import integration
 from yet_another_calendar.settings import settings
 
 
-
-
-async def get_cookies_from_headers(redis_pool: ConnectionPool = Depends(get_redis_pool), ) -> str:
+async def get_cookies_from_headers(redis_pool: ConnectionPool = Depends(get_redis_pool)) -> str:
     async with Redis(connection_pool=redis_pool) as redis:
         redis_value = await redis.get(settings.redis_cookie_key)
         if redis_value:
-            redis_value: bytes
             return redis_value.decode()
         jwt_token = await integration.login(settings.modeus_username, settings.modeus_password)
         await redis.set(name=settings.redis_cookie_key, value=jwt_token, ex=settings.redis_jwt_time_live)

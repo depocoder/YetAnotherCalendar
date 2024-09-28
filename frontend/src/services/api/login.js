@@ -16,7 +16,9 @@ export async function loginModeus(username, password) {
 
 export async function searchModeus(fullName) {
     try {
-        return await axios.get(`${BACKEND_URL}/api/modeus/search_blank/${fullName}`);
+        const params = new URLSearchParams();
+        params.append('full_name', fullName);
+        return await axios.get(`${BACKEND_URL}/api/modeus/search_blank/`, params);
     } catch (e) {
         return e.response;
     }

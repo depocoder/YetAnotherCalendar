@@ -32,7 +32,7 @@ async def get_modeus_events_blank(
     return await integration.get_events(jwt_token, body)
 
 
-@router.get("/search_blank/{full_name}")
+@router.get("/search_blank/")
 async def search_blank(
         jwt_token: Annotated[str, Depends(schema.get_cookies_from_headers)],
         full_name: str = "Комаев Азамат Олегович",
@@ -41,5 +41,5 @@ async def search_blank(
     Search people from Modeus when no account.
     """
     return await integration.get_people(
-        jwt_token, schema.FullModeusPersonSearch.model_validate({"fullName": full_name})
+        jwt_token, schema.FullModeusPersonSearch.model_validate({"fullName": full_name}),
     )
