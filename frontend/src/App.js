@@ -1,11 +1,11 @@
-import DatePicker from './components/DataPicker';
+import DatePicker from "./components/DataPicker";
 
 function App() {
   return (
     <div>
-      <DatePicker/>
+      <DatePicker />
     </div>
-  ); 
+  );
 }
 
 export default App;

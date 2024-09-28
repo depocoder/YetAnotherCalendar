@@ -1,35 +1,58 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import React from "react";
+import ReactDOM from "react-dom/client";
 import {
   createBrowserRouter,
   RouterProvider,
+  Routes,
+  Route,
+  Router,
 } from "react-router-dom";
+import reportWebVitals from "./reportWebVitals";
+import LoginRoute from "./routes/LoginRoute";
+import CalendarRoute from "./routes/CalendarRoute";
 
-import reportWebVitals from './reportWebVitals';
-import LoginRoute from './routes/LoginRoute';
-import CalendarRoute from './routes/CalendarRoute';
+import "./index.css";
+import ModeusLoginForm from "./components/Login/ModeusLoginForm";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+import Header from "./components/Header/Header";
+import "./index.css";
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <div>Hello world!</div>,
+    element: (
+      <div className="wrapper">
+        <Header />
+      </div>
+    ),
   },
   {
     path: "/login",
-    element: <LoginRoute/>,
+    element: <LoginRoute />,
   },
   {
     path: "/calendar",
-    element: <CalendarRoute/>
-  }
+    element: <CalendarRoute />,
+  },
 ]);
-
 
 root.render(
   <React.StrictMode>
     <RouterProvider router={router} />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
+
+const App = () => {
+  return (
+    <dev>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LoginRoute />} />
+        </Routes>
+      </Router>
+    </dev>
+  );
+};
 
 reportWebVitals();

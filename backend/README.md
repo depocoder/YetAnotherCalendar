@@ -1,6 +1,5 @@
-# CalendarIT
-Project template for [BlackSheep](https://github.com/Neoteroi/BlackSheep)
-web framework to start Web APIs.
+# YetAnotherCalendar
+This project is created to replace Modeus/Netology calendars
 
 ## Getting started
 
@@ -15,7 +14,7 @@ curl -sSL https://install.python-poetry.org | python3 -
 
 poetry install
 
-poetry run python dev.py
+poetry run python -m yet_another_calendar
 ```
 
 ### Running with Docker Compose
@@ -30,4 +29,4 @@ If code was changed, rebuild images:
 docker compose up --build -d
 ```
 
-### Open [OpenAPI](http://localhost:44777/docs)
+### Open [OpenAPI](http://localhost:8000/api/docs)
