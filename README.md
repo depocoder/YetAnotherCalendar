@@ -8,6 +8,6 @@ This product can replace Modeus calendar & Netology calendar.
 
 ### How to run?
 ```
-docker-compose up
+docker compose up
 ```
 

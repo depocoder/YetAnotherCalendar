@@ -54,6 +54,8 @@ def configure_logging() -> None:  # pragma: no cover
     # change handler for default uvicorn logger
     logging.getLogger("uvicorn").handlers = [intercept_handler]
     logging.getLogger("uvicorn.access").handlers = [intercept_handler]
+    if not settings.debug:
+        logging.getLogger("httpx").setLevel(logging.WARNING)
 
     # set logs output, level and format
     logger.remove()

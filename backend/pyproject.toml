@@ -3,7 +3,8 @@ name = "yet_another_calendar"
 version = "0.1.0"
 description = ""
 authors = [
-
+    "AzamatKomaev <azamatkomaev15@gmail.com>",
+    "Ivan Popov <ma1n.py@yandex.ru>"
 ]
 maintainers = [
 
