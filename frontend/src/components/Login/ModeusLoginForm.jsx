@@ -1,29 +1,52 @@
-import { useState } from "react"
-import { loginModeus } from "../../services/api/login"
+import { useState } from "react";
+import { loginModeus } from "../../services/api/login";
 
 const ModeusLoginForm = () => {
-    const [email, setEmail] = useState(null)
-    const [password, setPassword] = useState(null)
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
 
-    const onClickLogin = async() => {
-        let response = await loginModeus(email, password)
-        
-        if (response.status !== 200) {
-            alert("Ты лох, введи правильные креды")
-            return;
-        }
+  const onClickLogin = async () => {
+    let response = await loginModeus(email, password);
 
-        localStorage.setItem('token', response.data?.token)
+    if (response.status !== 200) {
+      alert("Ты лох, введи правильные креды");
+      return;
     }
 
-    return (
-        <div>
-            <p>Modeus Login</p><br/>
-            <input id="email" type="email" onChange={(e) => setEmail(e.target.value)}/>
-            <input id="password" type="password" onChange={(e) => setPassword(e.target.value)}/>
-            <button id="login" onClick={onClickLogin}>Login</button>
-        </div>
-    )   
-}
+    localStorage.setItem("token", response.data?.token);
+  };
 
-export default ModeusLoginForm
+  return (
+    <div className="login-container">
+      <div>
+        <input
+          className="input-email"
+          id="search"
+          type="text"
+          placeholder="ФИО для Модеуса"
+        />
+      </div>
+      <div className="login-netologiya">
+        <input
+          className="input-email"
+          id="email"
+          type="email"
+          placeholder="Логин от Нетологии"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          className="input-email"
+          id="password"
+          type="password"
+          placeholder="Пароль от Нетологии"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button className="login-btn-log" id="login" onClick={onClickLogin}>
+          Войти
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default ModeusLoginForm;
