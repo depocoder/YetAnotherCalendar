@@ -34,9 +34,3 @@ async def lifespan_setup(
     finally:
         await redis.close()
 
-    app.middleware_stack = None
-    init_redis(app)
-    app.middleware_stack = app.build_middleware_stack()
-
-    yield
-    await shutdown_redis(app)
