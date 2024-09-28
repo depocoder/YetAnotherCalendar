@@ -13,3 +13,11 @@ export async function loginModeus(username, password) {
         return e.response;
     }
 } 
+
+export async function searchModeus(fullName) {
+    try {
+        return await axios.get(`${BACKEND_URL}/api/modeus/search_blank/${fullName}`);
+    } catch (e) {
+        return e.response;
+    }
+} 
