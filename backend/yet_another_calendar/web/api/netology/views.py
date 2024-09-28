@@ -43,9 +43,3 @@ async def get_calendar(
     Auth in Netology and return cookies.
     """
     return await integration.get_calendar(cookies, program_id)
-
-
-@router.get("/echo_cookies")
-async def receive_netology_cookies(cookies: NetologyCookies = Depends(get_cookies_from_headers)) -> NetologyCookies:
-    """Check cookies injection."""
-    return cookies

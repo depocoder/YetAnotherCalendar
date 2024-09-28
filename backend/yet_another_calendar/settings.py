@@ -38,8 +38,7 @@ class Settings(BaseSettings):
     # Enable uvicorn reloading
     reload: bool = env.bool("YET_ANOTHER_CALENDAR_RELOAD", False)
 
-    # Current environment
-    environment: str = "dev"
+    debug: bool = env.bool("YET_ANOTHER_CALENDAR_DEBUG", False)
 
     log_level: LogLevel = LogLevel.INFO
 
