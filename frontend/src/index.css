@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Unbounded:wght@200..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Unbounded:wght@200..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap");
+
 html {
     height: 100%;
 }
@@ -21,13 +23,14 @@ code {
 }
 
 .wrapper {
+    width: 100%;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    margin: 20px 120px;
+    margin-top: 20px;
 }
 
 .header-line {
@@ -42,6 +45,7 @@ code {
 }
 
 header .raspisanie {
+    margin-left: 120px;
     font-family: "Unbounded", sans-serif;
     font-weight: 500;
     font-size: 32px;
@@ -62,11 +66,13 @@ header .export-btn {
     margin-left: 18px;
     transition: color 0.2s linear;
 }
+
 header .export-btn:hover {
     background-color: #4745b5;
 }
 
 header .login-btn {
+    margin-right: 120px;
     cursor: pointer;
     border: none;
     background-color: #5856d6;
@@ -134,6 +140,9 @@ header .login-btn:hover {
 }
 
 .calendar {
+    position: absolute;
+    top: 165px;
+    right: 248px;
     background-color: #ecedf0;
     width: 406px;
     height: 32px;
@@ -147,4 +156,56 @@ header .login-btn:hover {
 }
 .calendar:hover {
     background-color: #e7e7ea;
+}
+
+.raspisanie-table {
+    width: 100%;
+    margin-top: 170px;
+    border-spacing: 1px;
+}
+.days {
+    padding-left: 30px;
+    font-family: "Unbounded", sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    border: 1px;
+    border-bottom: 1px dotted #adadad;
+}
+.vertical {
+    text-align: center;
+    border-bottom: 1px dotted #adadad;
+}
+.vertical-zagolovok {
+    padding-left: 47px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 400;
+    font-size: 12px;
+    width: 0;
+    border-bottom: 1px dotted #adadad;
+}
+
+.vertical-zagolovok::first-line {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.off-deadline {
+    margin-top: 7px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #7b61ff;
+    background: none;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #7b61ff;
+    transition: color 0.3s linear;
+}
+.off-deadline:hover {
+    cursor: pointer;
+    background-color: #5856d6;
+    color: #fff;
 }

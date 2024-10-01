@@ -56,9 +56,6 @@ const ModeusLoginForm = () => {
         <button className="login-btn-log" id="login" onClick={onClickLogin}>
           Войти
         </button>
-        <button className="login-btn-log" id="login" onClick={onClickSearch}>
-          Поиск
-        </button>
       </div>
     </div>
   );
