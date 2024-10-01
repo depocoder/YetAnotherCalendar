@@ -11,11 +11,9 @@ import reportWebVitals from "./reportWebVitals";
 import LoginRoute from "./routes/LoginRoute";
 import CalendarRoute from "./routes/CalendarRoute";
 
-import "./index.css";
-import ModeusLoginForm from "./components/Login/ModeusLoginForm";
-
 import Header from "./components/Header/Header";
 import "./index.css";
+import ModeusLoginForm from "./components/Login/ModeusLoginForm";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
@@ -24,6 +22,9 @@ const router = createBrowserRouter([
     element: (
       <div className="wrapper">
         <Header />
+        <div className="main-calendar">
+          <CalendarRoute />
+        </div>
       </div>
     ),
   },
