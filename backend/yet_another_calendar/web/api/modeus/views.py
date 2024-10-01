@@ -31,6 +31,17 @@ async def get_modeus_events_blank(
 
     return await integration.get_events(jwt_token, body)
 
+@router.post("/clear_events/")
+async def get_modeus_events_blank(
+        body: schema.ModeusEventsBody,
+        jwt_token: Annotated[str, Depends(schema.get_cookies_from_headers)],
+) -> bool:
+    """
+    Get events from Modeus when no account.
+    """
+
+    return await integration.clear_events(jwt_token, body)
+
 
 @router.get("/search_blank/")
 async def search_blank(

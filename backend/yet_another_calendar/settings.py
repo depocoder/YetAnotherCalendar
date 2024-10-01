@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     redis_cookie_key: str = "MODEUS_JWT"
     redis_jwt_time_live: int = 60 * 60 * 12  # 12 hours
     redis_events_time_live: int = 60 * 60 * 24 * 14  # 2 weeks
+    redis_prefix: str = 'FastAPI-redis'
 
     modeus_username: str = env.str("MODEUS_USERNAME")
     modeus_password: str = env.str("MODEUS_PASSWORD")

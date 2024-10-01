@@ -3,6 +3,7 @@ from typing import Any
 
 import httpx
 from fastapi import HTTPException
+from fastapi_cache.decorator import cache
 from httpx import AsyncClient
 from starlette import status
 
@@ -55,6 +56,7 @@ async def send_request(
     return response.json()
 
 
+@cache(expire=settings.redis_events_time_live)
 async def get_calendar(cookies: schema.NetologyCookies, calendar_id: int) -> dict[str, Any]:
     """Get your calendar events."""
     response = await send_request(cookies, request_settings={
@@ -63,7 +65,7 @@ async def get_calendar(cookies: schema.NetologyCookies, calendar_id: int) -> dic
     })
     return response
 
-
+@cache(expire=settings.redis_events_time_live)
 async def get_utmn_course(cookies: schema.NetologyCookies) -> schema.NetologyProgram:
     """Get utmn course from netology API."""
     request_settings = {'method': 'GET', 'url': '/backend/api/user/programs/calendar/filters'}

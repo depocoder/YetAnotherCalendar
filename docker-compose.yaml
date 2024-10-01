@@ -23,6 +23,8 @@ services:
     image: redis:latest
     hostname: "yet_another_calendar-redis"
     restart: always
+    volumes:
+      - redis_data:/data
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
     healthcheck:
@@ -39,3 +41,5 @@ services:
     ports:
       - "3000:80"
 
+volumes:
+  redis_data:

@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from sys import prefix
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
@@ -25,9 +26,8 @@ async def lifespan_setup(
         host=settings.redis_host,
         port=settings.redis_port,
         encoding='utf-8',
-        db=0,
     )
-    FastAPICache.init(RedisBackend(redis))
+    FastAPICache.init(RedisBackend(redis), prefix=settings.redis_prefix)
 
     try:
         yield
