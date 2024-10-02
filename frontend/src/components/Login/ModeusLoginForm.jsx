@@ -9,22 +9,24 @@ const ModeusLoginForm = () => {
 
   const onClickSearch = async (fullName) => {
     let response = await searchModeus(fullName);
-    if (response.status !== 200) {
-      alert("Бэк взорвался!");
-      return;
-    }
+    // if (response.status !== 200) {
+    //   alert("Бэк взорвался!");
+    //   return;
+    // }
     console.log(response.data)
+    alert('!!!!!!!');
   };
 
   const onClickLogin = async () => {
     let response = await loginModeus(email, password);
 
-    if (response.status !== 200) {
-      alert("Ты лох, введи правильные креды. Азамат тоже лох!");
-      return;
-    }
-
+    // if (response.status !== 200) {
+    //   alert("Ты лох, введи правильные креды. Азамат тоже лох!");
+    //   return;
+    // }
+    console.log(response)
     localStorage.setItem("token", response.data?.token);
+
   };
 
   return (
