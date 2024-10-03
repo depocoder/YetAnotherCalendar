@@ -10,7 +10,7 @@ RUN npm run build
 
 
 FROM node-build AS dev-run
-cmd ["npm", "run", "start"]
+CMD ["npm", "run", "start"]
 
 
 FROM nginx:1.23-alpine as prod-run
