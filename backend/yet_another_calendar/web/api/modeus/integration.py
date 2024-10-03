@@ -1,5 +1,5 @@
 """Modeus API implementation."""
-
+import logging
 import re
 from secrets import token_hex
 from typing import Any
@@ -17,6 +17,7 @@ from .schema import (
     FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson,
 )
 
+logger = logging.getLogger(__name__)
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
 _AUTH_URL = "https://auth.modeus.org/oauth2/authorize"
 
@@ -135,7 +136,6 @@ async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -
     return response.text
 
 
-@cache(expire=settings.redis_events_time_live)
 async def get_events(
         __jwt: str,
         body: ModeusEventsBody,

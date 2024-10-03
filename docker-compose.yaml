@@ -23,6 +23,8 @@ services:
     image: redis:latest
     hostname: "yet_another_calendar-redis"
     restart: always
+    volumes:
+      - redis_data:/data
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
     healthcheck:
@@ -34,8 +36,13 @@ services:
   frontend:
     build:
       context: ./frontend
+      target: dev-run
     container_name: calendar-frontend
     restart: always
+    volumes:
+      - ./frontend/src:/app/src
     ports:
-      - "3000:80"
+      - "3000:3000"
 
+volumes:
+  redis_data:

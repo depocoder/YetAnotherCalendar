@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     redis_cookie_key: str = "MODEUS_JWT"
     redis_jwt_time_live: int = 60 * 60 * 12  # 12 hours
     redis_events_time_live: int = 60 * 60 * 24 * 14  # 2 weeks
+    redis_prefix: str = 'FastAPI-redis'
 
     modeus_username: str = env.str("MODEUS_USERNAME")
     modeus_password: str = env.str("MODEUS_PASSWORD")
@@ -58,6 +59,7 @@ class Settings(BaseSettings):
     netology_course_name: str = env.str(
         "NETOLOGY_COURSE_NAME", "Разработка IT-продуктов и информационных систем",
     )
+    netology_url: str = env.str("NETOLOGY_URL", "https://netology.ru")
 
     @property
     def redis_url(self) -> URL:

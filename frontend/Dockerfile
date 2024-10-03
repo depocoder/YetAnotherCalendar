@@ -8,7 +8,12 @@ COPY . /app
 
 RUN npm run build
 
-FROM nginx:1.23-alpine
+
+FROM node-build AS dev-run
+CMD ["npm", "run", "start"]
+
+
+FROM nginx:1.23-alpine as prod-run
 
 COPY --from=node-build /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf

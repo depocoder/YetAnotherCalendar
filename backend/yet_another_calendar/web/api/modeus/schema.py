@@ -3,12 +3,13 @@ import uuid
 from typing import Optional, Self
 
 from pydantic import BaseModel, Field, computed_field, model_validator, field_validator
+from starlette.responses import Response
 
 from . import integration
 from yet_another_calendar.settings import settings
 
 
-async def get_cookies_from_headers() -> str:
+async def get_cookies_from_headers() -> str | Response:
     return await integration.login(settings.modeus_username, settings.modeus_password)
 
 
@@ -18,14 +19,14 @@ class ModeusCreds(BaseModel):
     username: str
     password: str
 
+class ModeusTimeBody(BaseModel):
+    time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+03:00"])
+    time_max: datetime.datetime = Field(alias="timeMax", examples=["2024-09-29T23:59:59+03:00"])
 
 # noinspection PyNestedDecorators
-class ModeusEventsBody(BaseModel):
+class ModeusEventsBody(ModeusTimeBody):
     """Modeus search events body."""
     size: int = Field(default=50)
-    time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+03:00"])
-    time_max: datetime.datetime = Field(alias="timeMax",
-                                        examples=["2024-09-29T23:59:59+03:00"])
     attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId",
                                                 default=["d69c87c8-aece-4f39-b6a2-7b467b968211"])
 

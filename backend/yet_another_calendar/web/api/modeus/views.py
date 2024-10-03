@@ -12,33 +12,25 @@ from . import schema
 router = APIRouter()
 
 
-@router.post('/auth')
-async def get_modeus_cookies(body: schema.ModeusCreds) -> str:
-    """
-    Auth in Modeus and return cookies.
-    """
-    return await integration.login(body.username, body.password)
-
-
 @router.post("/events/")
-async def get_modeus_events_blank(
+async def get_calendar(
         body: schema.ModeusEventsBody,
         jwt_token: Annotated[str, Depends(schema.get_cookies_from_headers)],
 ) -> list[schema.FullEvent]:
     """
-    Get events from Modeus when no account.
+    Get events from Modeus.
     """
 
     return await integration.get_events(jwt_token, body)
 
 
-@router.get("/search_blank/")
-async def search_blank(
+@router.get("/search/")
+async def search(
         jwt_token: Annotated[str, Depends(schema.get_cookies_from_headers)],
         full_name: str = "Комаев Азамат Олегович",
 ) -> list[schema.ExtendedPerson]:
     """
-    Search people from Modeus when no account.
+    Search people from Modeus.
     """
     return await integration.get_people(
         jwt_token, schema.FullModeusPersonSearch.model_validate({"fullName": full_name}),
