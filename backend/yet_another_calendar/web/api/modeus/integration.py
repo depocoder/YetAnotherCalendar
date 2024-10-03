@@ -137,7 +137,6 @@ async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -
     return response.text
 
 
-@cache(expire=settings.redis_events_time_live)
 async def get_events(
         __jwt: str,
         body: ModeusEventsBody,
@@ -149,16 +148,15 @@ async def get_events(
     return modeus_calendar.serialize_modeus_response()
 
 
-async def clear_events(
+async def clear_cache_events(
         __jwt: str,
         body: ModeusEventsBody,
-    ) -> bool:
-    """Get events for student in modeus"""
+) -> bool:
+    """Clear events cache."""
     cache_key = default_key_builder(get_events, args=(__jwt, body), kwargs={})
     try:
         backend = FastAPICache.get_backend()
         await backend.clear(key=f"{settings.redis_prefix}:{cache_key}")
-        print(f"FastAPI-redis:{cache_key}")
     except Exception as exception:
         logger.error(f"Got redis {exception}")
         return False

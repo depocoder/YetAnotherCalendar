@@ -5,16 +5,16 @@ Netology API implemented using a controller.
 from fastapi import APIRouter, Depends
 
 from yet_another_calendar.settings import settings
-from . import integration
-from .schema import NetologyCookies, NetologyCreds, NetologyProgram, get_cookies_from_headers
+from . import integration, schema
+from ..modeus.schema import ModeusTimeBody
 
 router = APIRouter()
 
 
 @router.post("/auth")
 async def get_netology_cookies(
-        item: NetologyCreds,
-) -> NetologyCookies:
+        item: schema.NetologyCreds,
+) -> schema.NetologyCookies:
     """
     Auth in Netology and return cookies.
     """
@@ -25,22 +25,23 @@ async def get_netology_cookies(
     return cookies
 
 
-@router.get('/utmn_course/')
+@router.get('/course/')
 async def get_course(
-        cookies: NetologyCookies = Depends(get_cookies_from_headers),
-) -> NetologyProgram:
+        cookies: schema.NetologyCookies = Depends(schema.get_cookies_from_headers),
+) -> schema.NetologyProgramId:
     """
-    Auth in Netology and return cookies.
+    Get netology course ID.
     """
     return await integration.get_utmn_course(cookies)
 
 
-@router.get('/calendar/')
+@router.post('/calendar/')
 async def get_calendar(
-        program_id: int = settings.netology_default_course_id,
-        cookies: NetologyCookies = Depends(get_cookies_from_headers),
-) -> dict:
+        body: ModeusTimeBody,
+        calendar_id: int = settings.netology_default_course_id,
+        cookies: schema.NetologyCookies = Depends(schema.get_cookies_from_headers),
+) -> schema.SerializedEvents:
     """
-    Auth in Netology and return cookies.
+    Get Netology Calendar by time.
     """
-    return await integration.get_calendar(cookies, program_id)
+    return await integration.get_calendar(cookies=cookies, calendar_id=calendar_id, body=body)

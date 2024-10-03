@@ -59,6 +59,7 @@ class Settings(BaseSettings):
     netology_course_name: str = env.str(
         "NETOLOGY_COURSE_NAME", "Разработка IT-продуктов и информационных систем",
     )
+    netology_url: str = env.str("NETOLOGY_URL", "https://netology.ru")
 
     @property
     def redis_url(self) -> URL:

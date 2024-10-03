@@ -1,5 +1,4 @@
 from contextlib import asynccontextmanager
-from sys import prefix
 from typing import AsyncGenerator
 
 from fastapi import FastAPI

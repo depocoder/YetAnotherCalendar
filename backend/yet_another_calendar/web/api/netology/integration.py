@@ -1,14 +1,15 @@
 """Netology API implementation."""
+from collections import defaultdict
 from typing import Any
 
 import httpx
 from fastapi import HTTPException
-from fastapi_cache.decorator import cache
 from httpx import AsyncClient
 from starlette import status
 
 from . import schema
 from yet_another_calendar.settings import settings
+from ..modeus.schema import ModeusTimeBody
 
 
 async def auth_netology(username: str, password: str, timeout: int = 15) -> schema.NetologyCookies:
@@ -56,23 +57,58 @@ async def send_request(
     return response.json()
 
 
-@cache(expire=settings.redis_events_time_live)
-async def get_calendar(cookies: schema.NetologyCookies, calendar_id: int) -> dict[str, Any]:
-    """Get your calendar events."""
-    response = await send_request(cookies, request_settings={
-        'method': 'GET', 'url': '/backend/api/user/programs/calendar',
-        'params': {'program_ids[]': calendar_id},
-    })
-    return response
-
-@cache(expire=settings.redis_events_time_live)
-async def get_utmn_course(cookies: schema.NetologyCookies) -> schema.NetologyProgram:
+async def get_utmn_course(cookies: schema.NetologyCookies) -> schema.NetologyProgramId:
     """Get utmn course from netology API."""
     request_settings = {'method': 'GET', 'url': '/backend/api/user/programs/calendar/filters'}
 
     response = await send_request(cookies, request_settings=request_settings)
-    netology_program = schema.NetologyPrograms(**response).get_utmn_program()
+    netology_program = schema.CoursesResponse(**response).get_utmn_program()
     if not netology_program:
         raise HTTPException(detail=f"Can't find netology program {settings.netology_course_name}",
                             status_code=status.HTTP_404_NOT_FOUND)
     return netology_program
+
+
+async def get_events_by_id(
+        cookies: schema.NetologyCookies,
+        program_id: int,
+) -> schema.CalendarResponse:
+    """Get events by program id ."""
+    response = await send_request(
+        cookies,
+        request_settings={
+            'method': 'GET',
+            'url': f'/backend/api/user/programs/{program_id}/schedule',
+        })
+
+    return schema.CalendarResponse.model_validate(response)
+
+
+async def get_program_ids(
+        cookies: schema.NetologyCookies,
+        calendar_id: int,
+) -> set[int]:
+    """Get program ids by calendar_id."""
+    response = await send_request(
+        cookies,
+        request_settings={
+            'method': 'GET',
+            'url': f'/backend/api/user/professions/{calendar_id}/schedule',
+        })
+
+    return schema.ProfessionResponse.model_validate(response).get_lesson_ids()
+
+async def get_calendar(
+        cookies: schema.NetologyCookies,
+        calendar_id: int,
+        body: ModeusTimeBody,
+) -> schema.SerializedEvents:
+    """Get extended calendar."""
+    program_ids = await get_program_ids(cookies, calendar_id)
+    serialized_events = defaultdict(list)
+    for program_id in program_ids:
+        events = (await get_events_by_id(cookies, program_id=program_id))
+        homework_events, webinars_events = events.get_serialized_lessons(body)
+        serialized_events['homework'].extend(homework_events)
+        serialized_events['webinars'].extend(webinars_events)
+    return schema.SerializedEvents.model_validate(serialized_events)
