@@ -1,4 +1,4 @@
-FROM python:3.11.4-slim-bullseye as prod
+FROM python:3.12.5-slim-bullseye as prod
 
 
 RUN pip install poetry==1.8.2
