@@ -136,6 +136,7 @@ async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -
     return response.text
 
 
+@cache(expire=settings.redis_events_time_live)
 async def get_events(
         __jwt: str,
         body: ModeusEventsBody,
