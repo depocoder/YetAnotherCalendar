@@ -79,7 +79,7 @@ class LessonTask(BaseLesson):
 
     @computed_field  # type: ignore
     @property
-    def validate_url(self) -> str:
+    def url(self) -> str:
         return urljoin(settings.netology_url, self.path)
 
     @computed_field  # type: ignore
@@ -177,4 +177,3 @@ class SerializedEvents(BaseModel):
     """Structure for displaying frontend."""
     homework: list[LessonTask]
     webinars: list[LessonWebinar]
-    cached_at: datetime.datetime = Field(default_factory=datetime.datetime.now)

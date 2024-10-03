@@ -21,8 +21,7 @@ class ModeusCreds(BaseModel):
 
 class ModeusTimeBody(BaseModel):
     time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+03:00"])
-    time_max: datetime.datetime = Field(alias="timeMax",
-                                        examples=["2024-09-29T23:59:59+03:00"])
+    time_max: datetime.datetime = Field(alias="timeMax", examples=["2024-09-29T23:59:59+03:00"])
 
 # noinspection PyNestedDecorators
 class ModeusEventsBody(ModeusTimeBody):
@@ -67,7 +66,7 @@ class FullModeusPersonSearch(BaseModel):
 
 class Location(BaseModel):
     id: uuid.UUID = Field(alias="eventId")
-    custom_location: str = Field(alias="customLocation", exclude=True)
+    custom_location: str = Field(alias="customLocation")
 
     @computed_field  # type: ignore
     @property

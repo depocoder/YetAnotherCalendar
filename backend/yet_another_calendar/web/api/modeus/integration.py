@@ -7,7 +7,6 @@ from typing import Any
 import httpx
 from bs4 import BeautifulSoup, Tag
 from fastapi import HTTPException
-from fastapi_cache import default_key_builder, FastAPICache
 from fastapi_cache.decorator import cache
 from httpx import URL, AsyncClient
 from starlette import status
@@ -146,21 +145,6 @@ async def get_events(
     response = await post_modeus(__jwt, body, "/schedule-calendar-v2/api/calendar/events/search")
     modeus_calendar = ModeusCalendar.model_validate_json(response)
     return modeus_calendar.serialize_modeus_response()
-
-
-async def clear_cache_events(
-        __jwt: str,
-        body: ModeusEventsBody,
-) -> bool:
-    """Clear events cache."""
-    cache_key = default_key_builder(get_events, args=(__jwt, body), kwargs={})
-    try:
-        backend = FastAPICache.get_backend()
-        await backend.clear(key=f"{settings.redis_prefix}:{cache_key}")
-    except Exception as exception:
-        logger.error(f"Got redis {exception}")
-        return False
-    return True
 
 
 async def get_people(

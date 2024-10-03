@@ -1,4 +1,5 @@
 """Netology API implementation."""
+import asyncio
 from collections import defaultdict
 from typing import Any
 
@@ -106,9 +107,12 @@ async def get_calendar(
     """Get extended calendar."""
     program_ids = await get_program_ids(cookies, calendar_id)
     serialized_events = defaultdict(list)
-    for program_id in program_ids:
-        events = (await get_events_by_id(cookies, program_id=program_id))
-        homework_events, webinars_events = events.get_serialized_lessons(body)
+    tasks = []
+    async with asyncio.TaskGroup() as tg:
+        for program_id in program_ids:
+            tasks.append(tg.create_task(get_events_by_id(cookies, program_id=program_id)))
+    for task in tasks:
+        homework_events, webinars_events = task.result().get_serialized_lessons(body)
         serialized_events['homework'].extend(homework_events)
         serialized_events['webinars'].extend(webinars_events)
     return schema.SerializedEvents.model_validate(serialized_events)
