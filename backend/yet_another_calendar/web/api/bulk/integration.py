@@ -24,10 +24,7 @@ async def refresh_events(
 ) -> schema.RefreshedCalendarResponse:
     """Clear events cache."""
     cached_json = await get_cached_calendar(body, jwt_token, calendar_id, cookies)
-    if isinstance(cached_json, dict):
-        cached_calendar = schema.CalendarResponse(**cached_json)
-    if isinstance(cached_json, schema.CalendarResponse):
-        cached_calendar = cached_json
+    cached_calendar = schema.CalendarResponse.model_validate(cached_json)
     calendar = await get_calendar(body, jwt_token, calendar_id, cookies)
     changed = cached_calendar.get_hash() != calendar.get_hash()
     try:
@@ -44,6 +41,7 @@ async def refresh_events(
     return schema.RefreshedCalendarResponse(
         **{**calendar.model_dump(by_alias=True), "changed": changed},
     )
+
 
 async def get_calendar(
         body: modeus_schema.ModeusEventsBody,
