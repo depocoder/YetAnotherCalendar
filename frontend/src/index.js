@@ -7,21 +7,32 @@ import LoginRoute from "./pages/LoginRoute";
 import CalendarRoute from "./pages/CalendarRoute";
 
 import "./index.css";
+import PrivateRoute from "./components/Calendar/PrivateRoute";
+
+const checkAuth = () => {
+  // Проверка наличия токена в localStorage
+  return localStorage.getItem("token");
+};
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
-    //Todo: если не авторизаван тогда перекидывать на авторизацию
     {
      path: "/",
-     element: <CalendarRoute />,
+     element: checkAuth() ? <CalendarRoute /> : <LoginRoute />,
+    // Если токен есть — перенаправляем на /calendar, если нет — на /login
   },
   {
     path: "/login",
-    element: <LoginRoute />,
+    element: checkAuth() ? <CalendarRoute /> : <LoginRoute />,
+      // Перенаправление на календарь, если уже залогинен
   },
   {
     path: "/calendar",
-    element: <CalendarRoute />,
+    element: (
+      <PrivateRoute>
+        <CalendarRoute />
+      </PrivateRoute>
+    ), // Защищаем страницу календаря
   },
 ]);
 
