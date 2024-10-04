@@ -37,7 +37,7 @@ async def auth_netology(username: str, password: str, timeout: int = 15) -> sche
     },
                                   )
     if response.status_code == status.HTTP_401_UNAUTHORIZED:
-        raise HTTPException(detail='Username/password is incorrect.', status_code=response.status_code)
+        raise HTTPException(detail='Netology error. Username/password is incorrect.', status_code=response.status_code)
     response.raise_for_status()
     return schema.NetologyCookies(**session.cookies)
 
@@ -53,7 +53,7 @@ async def send_request(
     session.cookies = httpx.Cookies(cookies.model_dump(by_alias=True))
     response = await session.request(**request_settings)
     if response.status_code == status.HTTP_401_UNAUTHORIZED:
-        raise HTTPException(detail='Cookies expired.', status_code=response.status_code)
+        raise HTTPException(detail='Netology error. Cookies expired.', status_code=response.status_code)
     response.raise_for_status()
     return response.json()
 
@@ -65,7 +65,7 @@ async def get_utmn_course(cookies: schema.NetologyCookies) -> schema.NetologyPro
     response = await send_request(cookies, request_settings=request_settings)
     netology_program = schema.CoursesResponse(**response).get_utmn_program()
     if not netology_program:
-        raise HTTPException(detail=f"Can't find netology program {settings.netology_course_name}",
+        raise HTTPException(detail=f"Netology error. Can't find netology program {settings.netology_course_name}",
                             status_code=status.HTTP_404_NOT_FOUND)
     return netology_program
 

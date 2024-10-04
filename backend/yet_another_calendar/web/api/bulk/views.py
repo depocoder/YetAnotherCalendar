@@ -13,6 +13,7 @@ from . import integration, schema
 
 router = APIRouter()
 
+
 @router.post("/events/")
 async def get_calendar(
         body: modeus_schema.ModeusEventsBody,
@@ -27,6 +28,7 @@ async def get_calendar(
     cached_calendar = await integration.get_cached_calendar(body, jwt_token, calendar_id, cookies)
     return schema.CalendarResponse.model_validate(cached_calendar)
 
+
 @router.post("/refresh_events/")
 async def refresh_calendar(
         body: modeus_schema.ModeusEventsBody,
@@ -37,6 +39,5 @@ async def refresh_calendar(
     """
     Refresh events in redis.
     """
-
 
     return await integration.refresh_events(body, jwt_token, calendar_id, cookies)

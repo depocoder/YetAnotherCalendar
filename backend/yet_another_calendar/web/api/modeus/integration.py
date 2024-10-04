@@ -39,10 +39,10 @@ async def get_post_url(session: AsyncClient, token_length: int = 16) -> URL:
         "state": token_hex(token_length),
     }
     response = await session.get(auth_url, params=auth_data, follow_redirects=True)
-    # response.raise_for_status()
     post_url = response.url
     if post_url is None:
-        raise HTTPException(detail=f"Can't get post_url. Response: {response.text}", status_code=response.status_code)
+        raise HTTPException(detail=f"Modeus error. Can't get post_url. Response: {response.text}",
+                            status_code=response.status_code)
     return post_url
 
 
@@ -63,11 +63,11 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
     html = BeautifulSoup(html_text, "lxml")
     error_tag = html.find(id="errorText")
     if error_tag is not None and error_tag.text != "":
-        raise HTTPException(detail=error_tag.text, status_code=response.status_code)
+        raise HTTPException(detail=f"Modeus error. {error_tag.text}", status_code=response.status_code)
 
     form = html.form
     if form is None:
-        raise HTTPException(detail="Can't get form.", status_code=response.status_code)
+        raise HTTPException(detail="Modeus error. Can't get form.", status_code=response.status_code)
     return form
 
 
@@ -104,11 +104,12 @@ async def login(username: str, __password: str, timeout: int = 15) -> str:
         #  so we use HEAD in the latter one to get only target URL and extract the token
         response = await session.head(response.headers["Location"], headers=headers)
         if response.url is None:
-            raise HTTPException(detail='Username/password is incorrect.', status_code=response.status_code)
+            raise HTTPException(detail='Modeus error. Username/password is incorrect.',
+                                status_code=response.status_code)
         token = _extract_token_from_url(response.url.fragment)
         if token is None:
             raise HTTPException(
-                detail=f"Can't get token. Response: {response.text}", status_code=response.status_code,
+                detail=f"Modeus error. Can't get token. Response: {response.text}", status_code=response.status_code,
             )
         return token
 
