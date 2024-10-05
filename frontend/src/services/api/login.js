@@ -18,7 +18,7 @@ export async function searchModeus(fullName) {
     try {
         const params = new URLSearchParams();
         params.append('full_name', fullName);
-        return await axios.get(`${BACKEND_URL}/api/modeus/search_blank/?full_name=${fullName}`);
+        return await axios.get(`${BACKEND_URL}/api/modeus/search/?full_name=${fullName}`);
 
     } catch (e) {
         return e.response;
