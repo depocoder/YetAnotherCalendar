@@ -133,7 +133,7 @@ header .login-btn:hover {
 .login-netologiya, .login-fio {
     max-width: 320px;
     width: 100%;
-    margin: 24px auto;
+    margin: auto;
     display: flex;
     align-items: flex-start;
     justify-content: center;
