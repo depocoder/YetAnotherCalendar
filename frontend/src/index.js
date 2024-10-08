@@ -7,7 +7,7 @@ import LoginRoute from "./pages/LoginRoute";
 import CalendarRoute from "./pages/CalendarRoute";
 import { AuthProvider } from './context/AuthContext';
 
-import "./index.css";
+import "./index.scss";
 import PrivateRoute from "./components/Calendar/PrivateRoute";
 
 const checkAuth = () => {
