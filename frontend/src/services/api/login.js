@@ -8,7 +8,7 @@ export function getTokenFromLocalStorage() {
 
 export async function loginModeus(username, password) {
     try {
-        return await axios.post(`${BACKEND_URL}/api/modeus/auth`, {username, password});
+        return await axios.post(`${BACKEND_URL}/api/netology/auth`, {username, password});
     } catch (e) {
         return e.response;
     }
