@@ -1,13 +1,17 @@
-import { useState } from "react";
+import {useContext, useState} from "react";
 import { useNavigate } from "react-router-dom";
+import {AuthContext} from "../context/AuthContext";
 import {loginModeus, searchModeus} from "../services/api/login";
 
 const LoginRoute = () => {
+    const { setAuthData } = useContext(AuthContext); // Достаем setAuthData из контекста
+
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
     const [fullName, setFullName] = useState(""); // Строка для поиска
     const [searchResults, setSearchResults] = useState([]); // Результаты поиска
     // const [selectedName, setSelectedName] = useState(""); // Выбранное имя
+    const [personId, setPersonId] = useState(null); // ID выбранного человека
     const [showSuggestions, setShowSuggestions] = useState(false); // Флаг показа списка
     const [errorMessage, setErrorMessage] = useState(""); // Сообщение об ошибке
 
@@ -35,10 +39,20 @@ const LoginRoute = () => {
   };
 
   // Обработчик выбора варианта из списка
-  const handleSelect = (name) => {
-    setFullName(name); // Устанавливаем выбранное имя
-    setShowSuggestions(false); // Скрываем список после выбора
-  };
+    const handleSelect = (person) => {
+        console.log('person', person)
+        setFullName(person.fullName); // Устанавливаем выбранное имя
+        setPersonId(person.personId);
+
+        setAuthData((prev) => ({
+            person: person,
+            personId: personId,  // Сохраняем personId в контекст
+            ...prev,
+        }));
+
+
+        setShowSuggestions(false); // Скрываем список после выбора
+    };
 
   const onClickLogin = async () => {
     let response = await loginModeus(email, password);
@@ -47,13 +61,22 @@ const LoginRoute = () => {
       setErrorMessage("Неверный логин или пароль. Попробуйте еще раз."); // Устанавливаем текст ошибки
       return;
     }
+
+    setAuthData((prev) => ({
+        email,
+      password,
+      ...prev,
+    }));
+
     console.log(response)
     localStorage.setItem("token", response.data?.token);
     setErrorMessage(""); // Очищаем ошибку при успешном логине
+      // email, password
+
 
     // Перенаправление на страницу календаря
     navigate("/calendar");
-    window.location.reload(); // Обновляем страницу после навигации
+    // window.location.reload(); // Обновляем страницу после навигации
   };
 
   return (
@@ -79,7 +102,7 @@ const LoginRoute = () => {
                 <ul className="suggestions-list">
                   {searchResults.length > 0 ? (
                       searchResults.map((person, index) => (
-                          <li key={index} onClick={() => handleSelect(person.fullName)}>
+                          <li key={index} onClick={() => handleSelect(person)}>
                             {person.fullName} {/* Отображаем имя */}
                           </li>
                       ))

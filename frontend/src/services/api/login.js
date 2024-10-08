@@ -24,7 +24,20 @@ export async function searchModeus(fullName) {
         return e.response;
     }
 }
-
+// calendar_id
+export async function getNetologyCourse(sessionToken) {
+    try {
+        const response = await axios.get(`${BACKEND_URL}/api/netology/course/`, {
+            headers: {
+                "_netology-on-rails_session": sessionToken, // Токен сессии передается в заголовке
+                "Content-Type": "application/json"
+            }
+        });
+        return response.data; // Возвращаем данные
+    } catch (e) {
+        return e.response;
+    }
+}
 // calendar
 export async function bulkEvents(username, password, sessionToken, calendarId, timeMin, timeMax, attendeePersonId) {
     try {
@@ -48,3 +61,28 @@ export async function bulkEvents(username, password, sessionToken, calendarId, t
         return e.response;
     }
 }
+// Refresh calendar
+export async function refreshBulkEvents(sessionToken, calendarId, timeMin, timeMax, attendeePersonId) {
+    try {
+        const response = await axios.post(
+            `${BACKEND_URL}/api/bulk/refresh_events/?calendar_id=${calendarId}`,
+            {
+                timeMin,
+                timeMax,
+                size: 50,
+                attendeePersonId: [attendeePersonId],
+            },
+            {
+                headers: {
+                    "_netology-on-rails_session": sessionToken, // Токен сессии
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return response;
+    } catch (e) {
+        return e.response;
+    }
+}
+
+

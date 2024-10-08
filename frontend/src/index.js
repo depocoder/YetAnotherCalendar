@@ -5,6 +5,7 @@ import ReactDOM from "react-dom/client";
 
 import LoginRoute from "./pages/LoginRoute";
 import CalendarRoute from "./pages/CalendarRoute";
+import { AuthProvider } from './context/AuthContext';
 
 import "./index.css";
 import PrivateRoute from "./components/Calendar/PrivateRoute";
@@ -38,7 +39,9 @@ const router = createBrowserRouter([
 
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+      <AuthProvider> {/* Оборачиваем в AuthProvider  для контекста */}
+        <RouterProvider router={router} />
+      </AuthProvider>
   </React.StrictMode>
 );
 
