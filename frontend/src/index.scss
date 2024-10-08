@@ -2,6 +2,41 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Unbounded:wght@200..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap");
 
+// app file start ========
+.App {
+    text-align: center;
+    &-logo {
+        height: 40vmin;
+        pointer-events: none;
+    }
+    &-header {
+        background-color: #282c34;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: calc(10px + 2vmin);
+        color: white;
+    }
+    &-link {
+        color: #61dafb;
+    }
+}
+//TODO: ругается здесь
+//media (prefers-reduced-motion: no-preference) {
+//    animation: App-logo-spin infinite 20s linear;
+//}
+//keyframes App-logo-spin {
+//    transform: rotate(0deg);
+//}
+//to {
+//    transform: rotate(360deg);
+//}
+// app file end ========
+
+
+
 html {
     height: 100%;
 }
@@ -105,7 +140,7 @@ header .exit-btn {
 }
 
 header #rectangle {
-    padding: 0px 12px;
+    padding: 0 12px;
     margin: 22px 120px;
     width: 534px;
     height: 106px;
@@ -385,7 +420,7 @@ header #rectangle {
         background: #F46386;
         border-radius: 6px;
         color: #fff;
-        font-family: "Roboto" sans-serif;
+        font-family: "Roboto", sans-serif;
         font-weight: 700;
         font-size: 13px;
         transition: color 0.3s linear;
@@ -406,7 +441,7 @@ header #rectangle {
         background-color: #fff;
         border: 2px solid #F46386;
         border-radius: 6px;
-        font-family: "Roboto" sans-serif;
+        font-family: "Roboto", sans-serif;
         font-weight: 700;
         font-size: 13px;
         transition: color 0.3s linear;

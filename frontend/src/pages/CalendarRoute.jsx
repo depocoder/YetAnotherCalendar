@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import { getNetologyCourse, bulkEvents } from "../services/api/login";
+import { getNetologyCourse, bulkEvents } from "../services/api";
 import {AuthContext} from "../context/AuthContext"; // Импортируем API функции
 
 const CalendarRoute = () => {
