@@ -6,7 +6,7 @@ import ReactDOM from "react-dom/client";
 import LoginRoute from "./pages/LoginRoute";
 import CalendarRoute from "./pages/CalendarRoute";
 
-import "./index.css";
+import "./index.scss";
 import PrivateRoute from "./components/Calendar/PrivateRoute";
 
 const checkAuth = () => {
@@ -16,22 +16,22 @@ const checkAuth = () => {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
-    {
-     path: "/",
-     element: checkAuth() ? <CalendarRoute /> : <LoginRoute />,
+  {
+    path: "/",
+    element: checkAuth() ? <CalendarRoute /> : <LoginRoute />,
     // Если токен есть — перенаправляем на /calendar, если нет — на /login
   },
   {
     path: "/login",
     element: checkAuth() ? <CalendarRoute /> : <LoginRoute />,
-      // Перенаправление на календарь, если уже залогинен
+    // Перенаправление на календарь, если уже залогинен
   },
   {
     path: "/calendar",
     element: (
-      <PrivateRoute>
-        <CalendarRoute />
-      </PrivateRoute>
+      // <PrivateRoute>
+      <CalendarRoute />
+      // </PrivateRoute>
     ), // Защищаем страницу календаря
   },
 ]);
@@ -39,7 +39,7 @@ const router = createBrowserRouter([
 root.render(
   <React.StrictMode>
     <RouterProvider router={router} />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 reportWebVitals();
