@@ -5,7 +5,7 @@ import { BACKEND_URL } from '../../variables';
 export function getTokenFromLocalStorage() {
     return localStorage.getItem('token')
 }
-
+// login
 export async function loginModeus(username, password) {
     try {
         return await axios.post(`${BACKEND_URL}/api/netology/auth`, {username, password});
@@ -23,4 +23,28 @@ export async function searchModeus(fullName) {
     } catch (e) {
         return e.response;
     }
-} 
+}
+
+// calendar
+export async function bulkEvents(username, password, sessionToken, calendarId, timeMin, timeMax, attendeePersonId) {
+    try {
+        const response = await axios.post(
+            `${BACKEND_URL}/api/bulk/events/?calendar_id=${calendarId}`,
+            {
+                timeMin,
+                timeMax,
+                size: 50,
+                attendeePersonId: [attendeePersonId],
+            },
+            {
+                headers: {
+                    "_netology-on-rails_session": sessionToken, // Токен сессии
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return response;
+    } catch (e) {
+        return e.response;
+    }
+}
