@@ -238,11 +238,6 @@ header #rectangle {
 }
 
 .days {
-    /* padding-left: 30px;
-    font-family: "Unbounded", sans-serif;
-    font-weight: 500;
-    font-size: 13px;
-    border: 1px;*/
     border-bottom: 1px dotted #adadad;
     &-1 {
         color: #adadad;
@@ -420,6 +415,9 @@ header #rectangle {
 }
 
 .past-lesson {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
     padding-left: 12px;
     text-align: left;
     width: 95%;
@@ -446,6 +444,46 @@ header #rectangle {
     font-weight: 400;
     font-size: 13px;
     color: #2C2D2E;
+}
+
+.netology-lesson {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding-left: 12px;
+    text-align: left;
+    width: 95%;
+    height: 95%;
+    background: #00A8A833;
+    border: none;
+    border-radius: 6px;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.TyumGU-lesson {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding-left: 12px;
+    text-align: left;
+    width: 95%;
+    height: 95%;
+    background: #7B61FF33;
+    border: none;
+    border-radius: 6px;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.vertical-line {
+    margin-top: 17px;
+    margin-left: 365px;
+    position: absolute;
+    border-left: 2px solid #7B61FF;
+    height: 590px;
 }
 
 .error-message {

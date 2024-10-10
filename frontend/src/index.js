@@ -3,6 +3,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import ReactDOM from "react-dom/client";
 
+import DataPicker from "./components/Calendar/DataPicker"
+import Header from "./components/Header/Header";
 import LoginRoute from "./pages/LoginRoute";
 import CalendarRoute from "./pages/CalendarRoute";
 import { AuthProvider } from './context/AuthContext';
@@ -30,9 +32,13 @@ const router = createBrowserRouter([
   {
     path: "/calendar",
     element: (
-      <PrivateRoute>
-        <CalendarRoute />
-      </PrivateRoute>
+      <>
+        <Header />
+        <DataPicker />
+      </>
+      // <PrivateRoute>
+        // <CalendarRoute />
+      // </PrivateRoute>
     ), // Защищаем страницу календаря
   },
 ]);
