@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BACKEND_URL } from '../../variables';
+import { BACKEND_URL } from '../variables';
 
 
 export function getTokenFromLocalStorage() {

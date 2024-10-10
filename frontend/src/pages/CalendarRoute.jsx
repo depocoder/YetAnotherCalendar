@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import { getNetologyCourse, bulkEvents } from "../services/api/login";
+import { getNetologyCourse, bulkEvents } from "../services/api";
 import {AuthContext} from "../context/AuthContext"; // Импортируем API функции
 
 const CalendarRoute = () => {
@@ -25,13 +25,13 @@ const CalendarRoute = () => {
                 if (fetchedCalendarId) {
                     // дату получаем события для календаря
                     const eventsResponse = await bulkEvents(
-                        "authData.email", // username
-                        "authData.password", // password
+                        authData.email, // username
+                        authData.password, // password
                         sessionToken, // Токен сессии
                         fetchedCalendarId, // Извлеченный ID календаря
                         "2024-10-07T00:00:00+03:00", // Начало диапазона дат
                         "2024-10-13T23:59:59+03:00", // Конец диапазона дат
-                        "authData.personId" // ID участника
+                        authData.personId // ID участника
                     );
 
                     setEvents(eventsResponse.data); // Записываем события в состояние

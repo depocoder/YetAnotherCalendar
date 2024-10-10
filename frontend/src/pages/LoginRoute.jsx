@@ -1,7 +1,7 @@
 import {useContext, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import {AuthContext} from "../context/AuthContext";
-import {loginModeus, searchModeus} from "../services/api/login";
+import {loginModeus, searchModeus} from "../services/api";
 
 const LoginRoute = () => {
     const { setAuthData } = useContext(AuthContext); // Достаем setAuthData из контекста
