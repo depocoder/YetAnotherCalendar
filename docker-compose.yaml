@@ -1,7 +1,7 @@
 services:
   api: &main_app
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     build:
       context: backend/
       dockerfile: Dockerfile
@@ -43,7 +43,7 @@ services:
     volumes:
       - ./frontend/src:/app/src
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
 
 volumes:
   redis_data:
