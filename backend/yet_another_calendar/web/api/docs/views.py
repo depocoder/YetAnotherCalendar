@@ -49,5 +49,5 @@ async def redoc_html(request: Request) -> HTMLResponse:
     return get_redoc_html(
         openapi_url=request.app.openapi_url,
         title=f"{title} - ReDoc",
-        redoc_js_url="/static/docs/redoc.standalone.js",
+        redoc_js_url="/static_backend/docs/redoc.standalone.js",
     )
