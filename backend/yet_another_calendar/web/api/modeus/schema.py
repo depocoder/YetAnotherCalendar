@@ -19,9 +19,11 @@ class ModeusCreds(BaseModel):
     username: str
     password: str = Field(repr=False)
 
+
 class ModeusTimeBody(BaseModel):
     time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+03:00"])
     time_max: datetime.datetime = Field(alias="timeMax", examples=["2024-09-29T23:59:59+03:00"])
+
 
 # noinspection PyNestedDecorators
 class ModeusEventsBody(ModeusTimeBody):
@@ -83,6 +85,18 @@ class Event(BaseModel):
     start_time: datetime.datetime = Field(alias="start")
     end_time: datetime.datetime = Field(alias="end")
     id: uuid.UUID
+
+    @field_validator("start_time")
+    @classmethod
+    def validate_starts_at(cls, start_time: datetime.datetime,
+                           timezone=datetime.timezone.utc) -> datetime.datetime:
+        return start_time.astimezone(timezone)
+
+    @field_validator("end_time")
+    @classmethod
+    def validate_end_time(cls, end_time: datetime.datetime,
+                           timezone=datetime.timezone.utc) -> datetime.datetime:
+        return end_time.astimezone(timezone)
 
 
 class Href(BaseModel):
@@ -156,6 +170,20 @@ class StudentsSpeciality(BaseModel):
     specialty_code: Optional[str] = Field(alias="specialtyCode")
     specialty_name: Optional[str] = Field(alias="specialtyName")
     specialty_profile: Optional[str] = Field(alias="specialtyProfile")
+
+    @field_validator("learning_start_date")
+    @classmethod
+    def validate_starts_at(cls, learning_start_date: Optional[datetime.datetime]) -> datetime.datetime:
+        if not learning_start_date:
+            return learning_start_date
+        return learning_start_date.astimezone(datetime.timezone.utc)
+
+    @field_validator("learning_end_date")
+    @classmethod
+    def validate_learning_end_date(cls, learning_end_date: Optional[datetime.datetime]) -> datetime.datetime:
+        if not learning_end_date:
+            return learning_end_date
+        return learning_end_date.astimezone(datetime.timezone.utc)
 
 
 class ExtendedPerson(StudentsSpeciality, ShortPerson):

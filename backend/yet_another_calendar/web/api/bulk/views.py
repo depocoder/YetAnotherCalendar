@@ -21,12 +21,13 @@ async def get_calendar(
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         jwt_token: Annotated[str, Depends(modeus_schema.get_cookies_from_headers)],
         calendar_id: int = settings.netology_default_course_id,
+        time_zone: str = "Europe/Moscow",
 ) -> schema.CalendarResponse:
     """
     Get events from Netology and Modeus, cached.
     """
 
-    cached_calendar = await integration.get_cached_calendar(body, jwt_token, calendar_id, cookies)
+    cached_calendar = await integration.get_cached_calendar(body, jwt_token, calendar_id, cookies, time_zone)
     return schema.CalendarResponse.model_validate(cached_calendar)
 
 
@@ -36,12 +37,13 @@ async def refresh_calendar(
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         jwt_token: Annotated[str, Depends(modeus_schema.get_cookies_from_headers)],
         calendar_id: int = settings.netology_default_course_id,
+        time_zone: str = "Europe/Moscow",
 ) -> schema.RefreshedCalendarResponse:
     """
     Refresh events in redis.
     """
 
-    return await integration.refresh_events(body, jwt_token, calendar_id, cookies)
+    return await integration.refresh_events(body, jwt_token, calendar_id, cookies, time_zone)
 
 
 @router.post("/export_ics/")
@@ -55,5 +57,5 @@ async def export_ics(
     """
     Export into .ics format
     """
-    calendar = await integration.get_calendar(body, jwt_token, calendar_id, cookies)
-    return StreamingResponse(integration.export_to_ics(calendar, time_zone))
+    calendar = await integration.get_calendar(body, jwt_token, calendar_id, cookies, time_zone)
+    return StreamingResponse(integration.export_to_ics(calendar))
