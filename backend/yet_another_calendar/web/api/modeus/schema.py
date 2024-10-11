@@ -89,13 +89,13 @@ class Event(BaseModel):
     @field_validator("start_time")
     @classmethod
     def validate_starts_at(cls, start_time: datetime.datetime,
-                           timezone=datetime.timezone.utc) -> datetime.datetime:
+                           timezone: datetime.tzinfo = datetime.timezone.utc) -> datetime.datetime:
         return start_time.astimezone(timezone)
 
     @field_validator("end_time")
     @classmethod
     def validate_end_time(cls, end_time: datetime.datetime,
-                           timezone=datetime.timezone.utc) -> datetime.datetime:
+                          timezone: datetime.tzinfo = datetime.timezone.utc) -> datetime.datetime:
         return end_time.astimezone(timezone)
 
 
@@ -173,14 +173,14 @@ class StudentsSpeciality(BaseModel):
 
     @field_validator("learning_start_date")
     @classmethod
-    def validate_starts_at(cls, learning_start_date: Optional[datetime.datetime]) -> datetime.datetime:
+    def validate_starts_at(cls, learning_start_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
         if not learning_start_date:
             return learning_start_date
         return learning_start_date.astimezone(datetime.timezone.utc)
 
     @field_validator("learning_end_date")
     @classmethod
-    def validate_learning_end_date(cls, learning_end_date: Optional[datetime.datetime]) -> datetime.datetime:
+    def validate_learning_end_date(cls, learning_end_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
         if not learning_end_date:
             return learning_end_date
         return learning_end_date.astimezone(datetime.timezone.utc)

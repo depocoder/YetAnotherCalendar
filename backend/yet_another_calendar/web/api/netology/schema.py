@@ -67,7 +67,7 @@ class LessonWebinar(BaseLesson):
     @field_validator("starts_at")
     @classmethod
     def validate_starts_at(cls, starts_at: Optional[datetime.datetime],
-                           timezone=datetime.timezone.utc) -> datetime.datetime:
+                           timezone: datetime.tzinfo = datetime.timezone.utc) -> Optional[datetime.datetime]:
         if not starts_at:
             return starts_at
         return starts_at.astimezone(timezone)
@@ -75,7 +75,7 @@ class LessonWebinar(BaseLesson):
     @field_validator("ends_at")
     @classmethod
     def validate_ends_at(cls, ends_at: Optional[datetime.datetime],
-                           timezone=datetime.timezone.utc) -> datetime.datetime:
+                         timezone: datetime.tzinfo = datetime.timezone.utc) -> Optional[datetime.datetime]:
         if not ends_at:
             return ends_at
         return ends_at.astimezone(timezone)
@@ -94,7 +94,7 @@ class LessonTask(BaseLesson):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     path: str
-    deadline: Optional[datetime] = Field(default=None)
+    deadline: Optional[datetime.datetime] = Field(default=None)
 
     @computed_field  # type: ignore
     @property
@@ -103,7 +103,7 @@ class LessonTask(BaseLesson):
 
     @model_validator(mode='before')
     @classmethod
-    def deadline_validation(self, data: Any) -> Any:
+    def deadline_validation(cls, data: Any) -> Any:
         if not isinstance(data, dict):
             return data
         match = re.search(_DATE_PATTERN, data.get('title', ''))

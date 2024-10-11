@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+from typing import Self
 
 from pydantic import BaseModel, Field
 
@@ -11,7 +12,7 @@ class BulkResponse(BaseModel):
     netology: netology_schema.SerializedEvents
     modeus: list[modeus_schema.FullEvent]
 
-    def change_timezone(self, timezone: datetime.tzinfo):
+    def change_timezone(self, timezone: datetime.tzinfo) -> Self:
         for homework in self.netology.homework:
             if homework.deadline:
                 homework.deadline = homework.deadline.astimezone(timezone)

@@ -62,7 +62,7 @@ async def refresh_events(
         jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
-        timezone: str
+        timezone: str,
 ) -> schema.RefreshedCalendarResponse:
     """Clear events cache."""
     cached_json = await get_cached_calendar(body, jwt_token, calendar_id, cookies, timezone)
@@ -90,7 +90,7 @@ async def get_calendar(
         jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
-        timezone: str
+        timezone: str,
 ) -> schema.CalendarResponse:
     try:
         tz = pytz.timezone(timezone)
