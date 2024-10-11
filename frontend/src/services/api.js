@@ -1,10 +1,13 @@
 import axios from 'axios';
-import { BACKEND_URL } from '../variables';
+
+// env variable
+const BACKEND_URL = process.env.BACKEND_URL;
 
 
 export function getTokenFromLocalStorage() {
     return localStorage.getItem('token')
 }
+
 // login
 export async function loginModeus(username, password) {
     try {
@@ -26,6 +29,7 @@ export async function searchModeus(fullName) {
 }
 // calendar_id
 export async function getNetologyCourse(sessionToken) {
+    console.log('sessionToken', sessionToken)
     try {
         const response = await axios.get(`${BACKEND_URL}/api/netology/course/`, {
             headers: {
