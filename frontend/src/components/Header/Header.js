@@ -1,103 +1,148 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
+import cross from "./cross.png";
+import arrow from "./arrow.png"
+import camera from "./camera.png"
+
 export default function Header() {
   const navigate = useNavigate();
   return (
-    <header>
+    <header className="wrapper">
       <div className="header-line">
-        <div className="raspisanie-export">
-          <span className="raspisanie">Мое расписание</span>
+        <div className="shedule-export">
+          <span className="shedule">Мое расписание</span>
           <button className="export-btn">Экспорт .ics</button>
+          <button className="cache-btn">Сбросить кэш расписания</button>
         </div>
-        <button className="login-btn" onClick={() => navigate("/login")}>
-          Войти
+        <button className="exit-btn" href="#">
+          Выйти
+          <img className="exit-btn-cross" src={cross} />
         </button>
       </div>
-      <table className="raspisanie-table">
+      <div id="rectangle" className="info">
+        <div className="source">
+          <span className="source-first-word">Дедлайн</span> Нетология <span className="date-event"><img src={arrow} /> 23.09.2024</span>
+        </div>
+        <div className="name-event">
+          <span className="name-event-text">Программирование на Python</span>
+        </div>
+        <div className="task-event">
+          <span className="task-event-text">Домашнее задание с самопроверкой(дедлайн 12.12.24)</span>
+        </div>
+      </div>
+      <div className="vertical-line"></div>
+      <table className="shedule-table">
         <tr>
           <td className="days"></td>
-          <td className="days">Пн</td>
-          <td className="days">Вт</td>
-          <td className="days">Ср</td>
-          <td className="days">Чт</td>
-          <td className="days">Пт</td>
-          <td className="days">Сб</td>
-          <td className="days">Вс</td>
+          <td className="days-1">Пн 23.09</td>
+          <td className="days-2">Вт 24.09</td>
+          <td className="days-3">Ср 25.09</td>
+          <td className="days-4">Чт 26.09</td>
+          <td className="days-5">Пт 27.09</td>
+          <td className="days-6">Сб 28.09</td>
+          <td className="days-7">Вс 29.09</td>
         </tr>
         <tr>
-          <th className="vertical-zagolovok">
-            дедлайны
-            <button className="off-deadline">Скрыть</button>
-          </th>
-          <td className="vertical">1</td>
-          <td className="vertical">2</td>
-          <td className="vertical">3</td>
-          <td className="vertical">4</td>
-          <td className="vertical">5</td>
-          <td className="vertical">6</td>
-          <td className="vertical">7</td>
+            <th className="vertical-heading">
+              дедлайны
+              <button className="off-deadline">Скрыть</button>
+            </th>
+            <td className="vertical-deadline">
+              <button className="deadline-info">ТюмГУ</button>
+              <button className="deadline-info-on">Нетология</button>
+            </td>
+            <td className="vertical-deadline"></td>
+            <td className="vertical-deadline"><button className="deadline-info">ТюмГУ</button></td>
+            <td className="vertical-deadline"></td>
+            <td className="vertical-deadline"><button className="deadline-info">Нетология</button></td>
+            <td className="vertical-deadline"></td>
+            <td className="vertical-deadline"></td>
         </tr>
         <tr></tr>
         <tr>
-          <th className="vertical-zagolovok">2 пара 10:15 11:45</th>
-          <td className="vertical">1</td>
-          <td className="vertical">2</td>
-          <td className="vertical">3</td>
-          <td className="vertical">4</td>
-          <td className="vertical">5</td>
-          <td className="vertical">6</td>
-          <td className="vertical">7</td>
+          <th className="vertical-heading">2 пара <br />10:15 11:45</th>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"><button className="TyumGU-lesson">
+            <span className="company-name"><img src={camera} /> ТюмГУ<br /></span>
+            <span className="lesson-name">Математический анализ</span></button></td>
+          <td className="vertical"></td>
         </tr>
         <tr>
-          <th className="vertical-zagolovok">3 пара 12:00 13:30</th>
-          <td className="vertical">1</td>
-          <td className="vertical">2</td>
-          <td className="vertical">3</td>
-          <td className="vertical">4</td>
-          <td className="vertical">5</td>
-          <td className="vertical">6</td>
-          <td className="vertical">7</td>
+          <th className="vertical-heading">3 пара <br />12:00 13:30</th>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"><button className="TyumGU-lesson">
+            <span className="company-name"><img src={camera} /> ТюмГУ<br /></span>
+            <span className="lesson-name">Математический анализ</span></button></td>
+          <td className="vertical"></td>
         </tr>
         <tr>
-          <th className="vertical-zagolovok">4 пара 14:00 15:30</th>
-          <td className="vertical">1</td>
-          <td className="vertical">2</td>
-          <td className="vertical">3</td>
-          <td className="vertical">4</td>
-          <td className="vertical">5</td>
-          <td className="vertical">6</td>
-          <td className="vertical">7</td>
+          <th className="vertical-heading">4 пара <br />14:00 15:30</th>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"><button className="TyumGU-lesson">
+            <span className="company-name"><img src={camera} /> ТюмГУ<br /></span>
+            <span className="lesson-name">Философия</span></button></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
         </tr>
         <tr>
-          <th className="vertical-zagolovok">5 пара 15:45 17:15</th>
-          <td className="vertical">1</td>
-          <td className="vertical">2</td>
-          <td className="vertical">3</td>
-          <td className="vertical">4</td>
-          <td className="vertical">5</td>
-          <td className="vertical">6</td>
-          <td className="vertical">7</td>
+          <th className="vertical-heading">5 пара <br />15:45 17:15</th>
+          <td className="vertical"><button className="past-lesson">
+            <span className="company-name"><img src={camera} /> ТюмГУ<br /></span>
+            <span className="lesson-name">Иностранный язык</span></button></td>
+          <td className="vertical"></td>
+          <td className="vertical"><button className="TyumGU-lesson">
+            <span className="company-name"><img src={camera} /> ТюмГУ<br /></span>
+            <span className="lesson-name">История Росссии</span></button></td>
+          <td className="vertical"></td>
+          <td className="vertical"><button className="TyumGU-lesson">
+            <span className="company-name"><img src={camera} /> ТюмГУ<br /></span>
+            <span className="lesson-name">Философия</span></button></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
         </tr>
         <tr>
-          <th className="vertical-zagolovok">6 пара 17:30 19:00</th>
-          <td className="vertical">1</td>
-          <td className="vertical">2</td>
-          <td className="vertical">3</td>
-          <td className="vertical">4</td>
-          <td className="vertical">5</td>
-          <td className="vertical">6</td>
-          <td className="vertical">7</td>
+          <th className="vertical-heading">6 пара <br />17:30 19:00</th>
+            <td className="vertical"><button className="past-lesson">
+              <span className="company-name"><img src={camera} /> ТюмГУ<br /></span>
+              <span className="lesson-name">Иностранный язык</span></button></td>
+          <td className="vertical"></td>
+          <td className="vertical"><button className="TyumGU-lesson">
+            <span className="company-name"><img src={camera} /> ТюмГУ<br /></span>
+            <span className="lesson-name">История Росссии</span></button></td>
+          <td className="vertical"><button className="TyumGU-lesson">
+            <span className="company-name"><img src={camera} /> ТюмГУ<br /></span>
+            <span className="lesson-name">Алгебра</span></button></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
         </tr>
         <tr>
-          <th className="vertical-zagolovok">7 пара 19:10 20:40</th>
-          <td className="vertical">1</td>
-          <td className="vertical">2</td>
-          <td className="vertical">3</td>
-          <td className="vertical">4</td>
-          <td className="vertical">5</td>
-          <td className="vertical">6</td>
-          <td className="vertical">7</td>
+          <th className="vertical-heading">7 пара <br />19:10 20:40</th>
+          <td className="vertical"></td>
+          <td className="vertical"><button className="netology-lesson">
+            <span className="company-name"><img src={camera} /> Нетология<br /></span>
+            <span className="lesson-name">Введение в специальность</span></button></td>
+          <td className="vertical"><button className="netology-lesson">
+            <span className="company-name"><img src={camera} /> Нетология<br /></span>
+            <span className="lesson-name">Программирование на Python</span></button></td>
+          <td className="vertical"><button className="TyumGU-lesson">
+            <span className="company-name"><img src={camera} /> ТюмГУ<br /></span>
+            <span className="lesson-name">Алгебра</span></button></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
+          <td className="vertical"></td>
         </tr>
       </table>
     </header>
