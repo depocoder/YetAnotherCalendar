@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     host: str = "127.0.0.1"
     port: int = 8000
     # quantity of workers for uvicorn
-    workers_count: int = 1
+    workers_count: int = env.int("YET_ANOTHER_WORKERS_COUNT", 1)
     # Enable uvicorn reloading
     reload: bool = env.bool("YET_ANOTHER_CALENDAR_RELOAD", False)
 
@@ -52,6 +52,9 @@ class Settings(BaseSettings):
     redis_jwt_time_live: int = 60 * 60 * 12  # 12 hours
     redis_events_time_live: int = 60 * 60 * 24 * 14  # 2 weeks
     redis_prefix: str = 'FastAPI-redis'
+
+    retry_tries: int = 5
+    retry_delay: int = 3
 
     modeus_username: str = env.str("MODEUS_USERNAME")
     modeus_password: str = env.str("MODEUS_PASSWORD")
