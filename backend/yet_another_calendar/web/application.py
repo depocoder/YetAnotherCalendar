@@ -3,7 +3,6 @@ from importlib import metadata
 from pathlib import Path
 from typing import Any
 
-import httpcore
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import UJSONResponse
 from fastapi.staticfiles import StaticFiles
