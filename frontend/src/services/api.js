@@ -1,8 +1,10 @@
 import axios from 'axios';
 
 // env variable
-const BACKEND_URL = process.env.BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+
+console.log("Backend URL:", BACKEND_URL);
 
 export function getTokenFromLocalStorage() {
     return localStorage.getItem('token')
