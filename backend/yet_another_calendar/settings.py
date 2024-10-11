@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     host: str = "127.0.0.1"
     port: int = 8000
     # quantity of workers for uvicorn
-    workers_count: int = env.int("YET_ANOTHER_WORKERS_COUNT", 1)
+    workers_count: int = 1
     # Enable uvicorn reloading
     reload: bool = env.bool("YET_ANOTHER_CALENDAR_RELOAD", False)
 
