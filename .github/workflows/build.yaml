@@ -26,14 +26,14 @@ jobs:
           password: ${{ env.REGISTRY_PASSWORD }}
       - name: Build & Publish backend to Github Container registry
         run: |
-          docker build ./backend --tag $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:latest \
-                                 --tag $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:$IMAGE_TAG
-          docker push $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:latest
-          docker push $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-backend:$IMAGE_TAG
+          docker build ./backend --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:latest \
+                                 --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:$IMAGE_TAG
+          docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:latest
+          docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:$IMAGE_TAG
 
       - name: Build & Publish frontend to Github Container registry
         run: |
-          docker build ./frontend --tag $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-frontend:latest \
-                                 --tag $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-frontend:$IMAGE_TAG
-          docker push $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-frontend:latest
-          docker push $REGISTRY_URL/$REGISTRY_USERNAME/calendarit-frontend:$IMAGE_TAG
+          docker build ./frontend --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:latest \
+                                 --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:$IMAGE_TAG
+          docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:latest
+          docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:$IMAGE_TAG

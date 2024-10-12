@@ -3,10 +3,12 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import ReactDOM from "react-dom/client";
 
+import Header from "./components/Header/Header";
 import LoginRoute from "./pages/LoginRoute";
 import CalendarRoute from "./pages/CalendarRoute";
+import { AuthProvider } from './context/AuthContext';
 
-import "./index.css";
+import "./index.scss";
 import PrivateRoute from "./components/Calendar/PrivateRoute";
 
 const checkAuth = () => {
@@ -29,16 +31,18 @@ const router = createBrowserRouter([
   {
     path: "/calendar",
     element: (
-      <PrivateRoute>
-        <CalendarRoute />
-      </PrivateRoute>
+       <PrivateRoute>
+         <CalendarRoute />
+       </PrivateRoute>
     ), // Защищаем страницу календаря
   },
 ]);
 
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+      <AuthProvider> {/* Оборачиваем в AuthProvider  для контекста */}
+        <RouterProvider router={router} />
+      </AuthProvider>
   </React.StrictMode>
 );
 

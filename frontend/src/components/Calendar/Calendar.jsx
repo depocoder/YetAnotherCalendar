@@ -8,7 +8,7 @@ const Calendar = () => {
     if (node !== null) {
       fp1.current = flatpickr(node, {
         enableTime: true,
-        dateFormat: "Y-m-d H:i",
+        dateFormat: "j, F",
       });
     }
   }, []);

@@ -21,14 +21,14 @@ logger = logging.getLogger(__name__)
 
 
 def create_ics_event(title: str, starts_at: datetime.datetime, ends_at: datetime.datetime,
-                     lesson_id: Any, timezone: datetime.tzinfo, description: Optional[str] = None,
+                     lesson_id: Any, description: Optional[str] = None,
                      webinar_url: Optional[str] = None) -> icalendar.Event:
     event = icalendar.Event()
-    dt_now = datetime.datetime.now(tz=timezone)
+    dt_now = datetime.datetime.now()
     event.add('summary', title)
     event.add('location', webinar_url)
-    event.add('dtstart', starts_at.astimezone(timezone))
-    event.add('dtend', ends_at.astimezone(timezone))
+    event.add('dtstart', starts_at)
+    event.add('dtend', ends_at)
     event.add('dtstamp', dt_now)
     event.add('uid', lesson_id)
     if description:
@@ -36,11 +36,7 @@ def create_ics_event(title: str, starts_at: datetime.datetime, ends_at: datetime
     return event
 
 
-def export_to_ics(calendar: schema.CalendarResponse, timezone: str) -> Iterable[bytes]:
-    try:
-        tz = pytz.timezone(timezone)
-    except pytz.exceptions.UnknownTimeZoneError:
-        raise HTTPException(detail="Wrong timezone", status_code=status.HTTP_400_BAD_REQUEST) from None
+def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
     ics_calendar = icalendar.Calendar()
     ics_calendar.add('version', '2.0')
     ics_calendar.add('prodid', 'yet_another_calendar')
@@ -50,12 +46,12 @@ def export_to_ics(calendar: schema.CalendarResponse, timezone: str) -> Iterable[
             continue
         event = create_ics_event(title=f"Netology: {netology_lesson.title}", starts_at=netology_lesson.starts_at,
                                  ends_at=netology_lesson.ends_at, lesson_id=netology_lesson.id,
-                                 timezone=tz, webinar_url=netology_lesson.webinar_url)
+                                 webinar_url=netology_lesson.webinar_url)
         ics_calendar.add_component(event)
     for modeus_lesson in calendar.modeus:
         event = create_ics_event(title=f"Modeus: {modeus_lesson.name}",
                                  starts_at=modeus_lesson.start_time, ends_at=modeus_lesson.end_time,
-                                 lesson_id=modeus_lesson.id, timezone=tz,
+                                 lesson_id=modeus_lesson.id,
                                  description=modeus_lesson.description)
         ics_calendar.add_component(event)
     yield ics_calendar.to_ical()
@@ -66,11 +62,12 @@ async def refresh_events(
         jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
+        timezone: str,
 ) -> schema.RefreshedCalendarResponse:
     """Clear events cache."""
-    cached_json = await get_cached_calendar(body, jwt_token, calendar_id, cookies)
+    cached_json = await get_cached_calendar(body, jwt_token, calendar_id, cookies, timezone)
     cached_calendar = schema.CalendarResponse.model_validate(cached_json)
-    calendar = await get_calendar(body, jwt_token, calendar_id, cookies)
+    calendar = await get_calendar(body, jwt_token, calendar_id, cookies, timezone)
     changed = cached_calendar.get_hash() != calendar.get_hash()
     try:
         cache_key = default_key_builder(get_cached_calendar, args=(body, jwt_token, calendar_id, cookies), kwargs={})
@@ -93,13 +90,19 @@ async def get_calendar(
         jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
+        timezone: str,
 ) -> schema.CalendarResponse:
+    try:
+        tz = pytz.timezone(timezone)
+    except pytz.exceptions.UnknownTimeZoneError:
+        raise HTTPException(detail="Wrong timezone", status_code=status.HTTP_400_BAD_REQUEST) from None
+
     async with asyncio.TaskGroup() as tg:
         netology_response = tg.create_task(netology_views.get_calendar(body, calendar_id, cookies))
         modeus_response = tg.create_task(modeus_views.get_calendar(body, jwt_token))
     return schema.CalendarResponse.model_validate(
         {"netology": netology_response.result(), "modeus": modeus_response.result()},
-    )
+    ).change_timezone(tz)
 
 
 @cache(expire=settings.redis_events_time_live)
@@ -108,5 +111,6 @@ async def get_cached_calendar(
         jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
+        timezone: str,
 ) -> schema.CalendarResponse:
-    return await get_calendar(body, jwt_token, calendar_id, cookies)
+    return await get_calendar(body, jwt_token, calendar_id, cookies, timezone)

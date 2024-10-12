@@ -4,7 +4,7 @@ from typing import Optional, Annotated, Any
 from urllib.parse import urljoin
 
 from fastapi import Header
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field, field_validator, model_validator, ConfigDict
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus.schema import ModeusTimeBody
@@ -64,6 +64,22 @@ class LessonWebinar(BaseLesson):
     video_url: Optional[str] = None
     webinar_url: Optional[str] = None
 
+    @field_validator("starts_at")
+    @classmethod
+    def validate_starts_at(cls, starts_at: Optional[datetime.datetime],
+                           timezone: datetime.tzinfo = datetime.timezone.utc) -> Optional[datetime.datetime]:
+        if not starts_at:
+            return starts_at
+        return starts_at.astimezone(timezone)
+
+    @field_validator("ends_at")
+    @classmethod
+    def validate_ends_at(cls, ends_at: Optional[datetime.datetime],
+                         timezone: datetime.tzinfo = datetime.timezone.utc) -> Optional[datetime.datetime]:
+        if not ends_at:
+            return ends_at
+        return ends_at.astimezone(timezone)
+
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:
         """Check if lesson have suitable time"""
         if not self.starts_at or time_min > self.starts_at:
@@ -75,21 +91,27 @@ class LessonWebinar(BaseLesson):
 
 # noinspection PyNestedDecorators
 class LessonTask(BaseLesson):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     path: str
+    deadline: Optional[datetime.datetime] = Field(default=None)
 
     @computed_field  # type: ignore
     @property
     def url(self) -> str:
         return urljoin(settings.netology_url, self.path)
 
-    @computed_field  # type: ignore
-    @property
-    def deadline(self) -> Optional[datetime.datetime]:
-        match = re.search(_DATE_PATTERN, self.title)
+    @model_validator(mode='before')
+    @classmethod
+    def deadline_validation(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        match = re.search(_DATE_PATTERN, data.get('title', ''))
         if not match:
-            return None
+            return data
         date = match.group(0)
-        return datetime.datetime.strptime(date, "%d.%m.%y").replace(tzinfo=datetime.timezone.utc)
+        data['deadline'] = datetime.datetime.strptime(date, "%d.%m.%y").astimezone(datetime.timezone.utc)
+        return data
 
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:
         """Check if lesson have suitable time"""
@@ -158,6 +180,16 @@ class DetailedProgram(BaseModel):
     start_date: datetime.datetime
     finish_date: datetime.datetime
 
+    @field_validator("start_date")
+    @classmethod
+    def validate_start_date(cls, start_date: datetime.datetime) -> datetime.datetime:
+        return start_date.astimezone(datetime.timezone.utc)
+
+    @field_validator("finish_date")
+    @classmethod
+    def validate_finish_date(cls, finish_date: datetime.datetime) -> datetime.datetime:
+        return finish_date.astimezone(datetime.timezone.utc)
+
 
 class Program(BaseModel):
     detailed_program: DetailedProgram = Field(alias='program')
@@ -172,6 +204,7 @@ class ProfessionResponse(BaseModel):
         for program in self.profession_modules:
             program_ids.add(program.detailed_program.id)
         return program_ids
+
 
 class SerializedEvents(BaseModel):
     """Structure for displaying frontend."""

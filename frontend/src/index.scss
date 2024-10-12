@@ -1,0 +1,531 @@
+@import url("https://fonts.googleapis.com/css2?family=Unbounded:wght@200..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Unbounded:wght@200..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap");
+
+// app file start ========
+.App {
+    text-align: center;
+    &-logo {
+        height: 40vmin;
+        pointer-events: none;
+    }
+    &-header {
+        background-color: #282c34;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: calc(10px + 2vmin);
+        color: white;
+    }
+    &-link {
+        color: #61dafb;
+    }
+}
+//TODO: ругается здесь
+//media (prefers-reduced-motion: no-preference) {
+//    animation: App-logo-spin infinite 20s linear;
+//}
+//keyframes App-logo-spin {
+//    transform: rotate(0deg);
+//}
+//to {
+//    transform: rotate(360deg);
+//}
+// app file end ========
+
+
+
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    background: #fff;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+        monospace;
+}
+
+.wrapper {
+    width: 100%;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin-top: 20px;
+}
+
+.header-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.shedule-export {
+    display: flex;
+    align-items: center;
+}
+
+header .shedule {
+    margin-left: 120px;
+    font-family: "Unbounded", sans-serif;
+    font-weight: 500;
+    font-size: 32px;
+}
+
+header .export-btn {
+    cursor: pointer;
+    height: 28px;
+    background-color: #5856d6;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    margin-left: 18px;
+    transition: color 0.2s linear;
+    &:hover {
+        background-color: #4745b5;
+    }
+}
+
+header .cache-btn {
+    margin-left: 18px;
+    height: 28px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #7b61ff;
+    background: none;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #7b61ff;
+    transition: color 0.3s linear;
+    &:hover {
+        cursor: pointer;
+        background-color: #5856d6;
+        color: #fff;
+    }
+}
+
+header .exit-btn {
+    background: none;
+    margin-right: 120px;
+    cursor: pointer;
+    border: none;
+    color: #333333;
+    text-decoration: none;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    &-cross {
+        margin-left: 7px;
+    }
+}
+
+header #rectangle {
+    padding: 0 12px;
+    margin: 22px 120px;
+    width: 534px;
+    height: 106px;
+    border-radius: 6px;
+    background: #f4638633;
+    border: 2px solid #f46386;
+}
+
+.source {
+    margin-top: 7px;
+    color: #f46386;
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    &-first-word {
+        font-family: "Roboto", sans-serif;
+        font-weight: 400;
+    }
+}
+
+.date-event {
+    float: right;
+}
+
+.name-event {
+    margin-top: 26px;
+    &-text {
+        color: #2c2d2e;
+        font-family: "Unbounded", sans-serif;
+        font-weight: 700;
+        font-size: 15px;
+    }
+}
+
+.task-event {
+    margin-top: 7px;
+    &-text {
+        color: #2c2d2e;
+        font-family: "Roboto", sans-serif;
+        font-weight: 400;
+        font-size: 15px;
+    }
+}
+
+.input-name {
+    margin-top: 8px;
+    width: 320px;
+    height: 32px;
+    border-radius: 4px;
+    border-color: #d9d9d9;
+}
+
+.input-email {
+    margin-top: 8px;
+    width: 320px;
+    height: 32px;
+    border-radius: 4px;
+    border-color: #d9d9d9;
+}
+
+.login-btn-log {
+    width: 100px;
+    position: relative;
+    cursor: pointer;
+    border: none;
+    margin: 6px auto;
+    background-color: #5856d6;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    transition: color 0.2s linear;
+    &:hover {
+        background-color: #4745b5;
+    }
+}
+
+.login-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.shedule-login {
+    font-family: "Unbounded", sans-serif;
+    font-weight: 500;
+    font-size: 32px;
+}
+
+.login-netologiya,
+.login-fio {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    max-width: 320px;
+    width: 100%;
+    margin: 24px auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    text-align: left;
+}
+
+.calendar {
+    position: absolute;
+    top: 165px;
+    right: 248px;
+    background-color: #ecedf0;
+    width: 406px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid rgba(217, 217, 217, 0.5);
+    font-family: "Unbounded", sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    padding-left: 14px;
+    transition: color 0.2s linear;
+    &:hover {
+        background-color: #e7e7ea;
+    }
+}
+
+.shedule-table {
+    width: 100%;
+    margin-top: 36px;
+    border-spacing: 1px;
+}
+
+.days {
+    border-bottom: 1px dotted #adadad;
+    &-1 {
+        color: #adadad;
+        padding-left: 30px;
+        padding-bottom: 10px;
+        padding-top: 10px;
+        font-family: "Unbounded", sans-serif;
+        font-weight: 500;
+        font-size: 13px;
+        border: 1px;
+        border-bottom: 1px dotted #adadad;
+    }
+    &-2 {
+        color: #7b61ff;
+        padding-left: 30px;
+        font-family: "Unbounded", sans-serif;
+        font-weight: 500;
+        font-size: 13px;
+        border: 1px;
+        border-bottom: 1px dotted #adadad;
+    }
+    &-3 {
+        color: #333333;
+        padding-left: 30px;
+        font-family: "Unbounded", sans-serif;
+        font-weight: 500;
+        font-size: 13px;
+        border: 1px;
+        border-bottom: 1px dotted #adadad;
+    }
+    &-4 {
+        color: #333333;
+        padding-left: 30px;
+        font-family: "Unbounded", sans-serif;
+        font-weight: 500;
+        font-size: 13px;
+        border: 1px;
+        border-bottom: 1px dotted #adadad;
+    }
+    &-5 {
+        color: #333333;
+        padding-left: 30px;
+        font-family: "Unbounded", sans-serif;
+        font-weight: 500;
+        font-size: 13px;
+        border: 1px;
+        border-bottom: 1px dotted #adadad;
+    }
+    &-6 {
+        color: #333333;
+        padding-left: 30px;
+        font-family: "Unbounded", sans-serif;
+        font-weight: 500;
+        font-size: 13px;
+        border: 1px;
+        border-bottom: 1px dotted #adadad;
+    }
+    &-7 {
+        color: #333333;
+        padding-left: 30px;
+        font-family: "Unbounded", sans-serif;
+        font-weight: 500;
+        font-size: 13px;
+        border: 1px;
+        border-bottom: 1px dotted #adadad;
+    }
+}
+
+.vertical-deadline {
+    vertical-align: top;
+    height: 72px;
+    width: 195px;
+    padding-left: 20px;
+    border-bottom: 1px dotted #adadad;
+    &-heading {
+        padding-left: 47px;
+        padding-top: 7px;
+        padding-bottom: 7px;
+        font-family: "Roboto Mono", monospace;
+        font-weight: 400;
+        font-size: 12px;
+        width: 0;
+        border-bottom: 1px dotted #adadad;
+        &::first-line {
+            font-family: "Roboto", sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+        }
+    }
+}
+
+.vertical   {
+    height: 72px;
+    width: 195px;
+    padding-left: 20px;
+    border-bottom: 1px dotted #adadad;
+    &-heading {
+        padding-left: 47px;
+        padding-top: 7px;
+        padding-bottom: 7px;
+        font-family: "Roboto Mono", monospace;
+        font-weight: 400;
+        font-size: 12px;
+        width: 0;
+        border-bottom: 1px dotted #adadad;
+        &::first-line {
+            font-family: "Roboto", sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+        }
+    }
+}
+
+.off-deadline {
+    margin-top: 7px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #7b61ff;
+    background: none;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #7b61ff;
+    transition: color 0.3s linear;
+    &:hover {
+        cursor: pointer;
+        background-color: #5856d6;
+        color: #fff;
+    }
+}
+
+.deadline {
+    &-info {
+        height: 28px;
+        margin-top: 6px;
+        width: 95%;
+        text-align: left;
+        padding: 5px 11px;
+        border: none;
+        background: #F46386;
+        border-radius: 6px;
+        color: #fff;
+        font-family: "Roboto", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        transition: color 0.3s linear;
+        &:hover {
+            cursor: pointer;
+            color: #F46386;
+            background-color: #fff;
+            border: 2px solid #F46386;
+        }
+    }
+    &-info-on {
+        height: 28px;
+        margin-top: 4px;
+        width: 95%;            
+        text-align: left;
+        padding: 5px 11px;
+        color: #F46386;
+        background-color: #fff;
+        border: 2px solid #F46386;
+        border-radius: 6px;
+        font-family: "Roboto", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        transition: color 0.3s linear;
+        &:hover {
+            cursor: pointer;
+            color: #fff;
+            background-color: #F46386;
+            border: none;
+        }
+    }
+}
+
+.past-lesson {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding-left: 12px;
+    text-align: left;
+    width: 95%;
+    height: 95%;
+    background: #ECEDF0;
+    border: none;
+    border-radius: 6px;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.company-name {
+    vertical-align: top;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-size: 10px;
+    color: #7B61FF;
+}
+
+.lesson-name {
+    vertical-align: top;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #2C2D2E;
+}
+
+.netology-lesson {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding-left: 12px;
+    text-align: left;
+    width: 95%;
+    height: 95%;
+    background: #00A8A833;
+    border: none;
+    border-radius: 6px;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.TyumGU-lesson {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding-left: 12px;
+    text-align: left;
+    width: 95%;
+    height: 95%;
+    background: #7B61FF33;
+    border: none;
+    border-radius: 6px;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.vertical-line {
+    margin-top: 17px;
+    margin-left: 365px;
+    position: absolute;
+    border-left: 2px solid #7B61FF;
+    height: 590px;
+}
+
+.error-message {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    text-align: center;
+    color: red;
+    margin-top: 10px;
+}
