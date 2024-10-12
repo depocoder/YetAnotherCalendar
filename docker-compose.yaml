@@ -5,7 +5,7 @@ services:
     build:
       context: backend/
       dockerfile: Dockerfile
-    image: ghcr.io/azamatkomaev/yet_another_calendar_backend:${YET_ANOTHER_CALENDAR_VERSION:-latest}
+    image: ghcr.io/azamatkomaev/yet_another_calendar_backend:${YET_ANOTHER_CALENDAR_VERSION:-dev}
     restart: always
     volumes:
       - ./backend:/app/src/
@@ -37,7 +37,7 @@ services:
     build:
       context: ./frontend
       target: dev-run
-    image: ghcr.io/azamatkomaev/yet_another_calendar_frontend:${YET_ANOTHER_CALENDAR_VERSION:-latest}
+    image: ghcr.io/azamatkomaev/yet_another_calendar_frontend:${YET_ANOTHER_CALENDAR_VERSION:-dev}
     container_name: calendar-frontend
     env_file:
       - frontend/.env
