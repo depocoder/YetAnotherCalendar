@@ -35,9 +35,7 @@ class Settings(BaseSettings):
     port: int = 8000
     # quantity of workers for uvicorn
     workers_count: int = 1
-    # Enable uvicorn reloading
-    reload: bool = env.bool("YET_ANOTHER_CALENDAR_RELOAD", False)
-
+    # Enable uvicorn reloading, debug and docs
     debug: bool = env.bool("YET_ANOTHER_CALENDAR_DEBUG", False)
 
     log_level: LogLevel = LogLevel.INFO
