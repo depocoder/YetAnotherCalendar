@@ -35,7 +35,7 @@ services:
     image: ghcr.io/azamatkomaev/yet_another_calendar_frontend:${YET_ANOTHER_CALENDAR_VERSION:-latest}
     build:
       context: ./frontend
-      target: dev-run
+      target: prod-run
     container_name: yet_another_calendar-frontend
     env_file:
       - frontend/.env
