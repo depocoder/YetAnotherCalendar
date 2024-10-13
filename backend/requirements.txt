@@ -1,5 +1,0 @@
-blacksheep[full]~=2.0.0
-uvicorn==0.22.0
-pydantic-settings
-MarkupSafe==2.1.3
-pydantic
