@@ -2,9 +2,8 @@ import axios from 'axios';
 
 // env variable
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+// const BACKEND_URL = 'http://localhost:8000';
 
-
-console.log("Backend URL:", BACKEND_URL);
 
 export function getTokenFromLocalStorage() {
     return localStorage.getItem('token')
@@ -29,6 +28,7 @@ export async function searchModeus(fullName) {
         return e.response;
     }
 }
+
 // calendar_id
 export async function getNetologyCourse(sessionToken) {
     console.log('sessionToken', sessionToken)
@@ -44,6 +44,7 @@ export async function getNetologyCourse(sessionToken) {
         return e.response;
     }
 }
+
 // calendar
 export async function bulkEvents(username, password, sessionToken, calendarId, timeMin, timeMax, attendeePersonId) {
     try {
@@ -67,6 +68,7 @@ export async function bulkEvents(username, password, sessionToken, calendarId, t
         return e.response;
     }
 }
+
 // Refresh calendar
 export async function refreshBulkEvents(sessionToken, calendarId, timeMin, timeMax, attendeePersonId) {
     try {
