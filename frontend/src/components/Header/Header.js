@@ -1,9 +1,12 @@
 import React from "react";
+import '../../style/header.scss'
+import '../../style/calendar.scss'
+
 // import { useNavigate } from "react-router-dom";
 
-import cross from "./cross.png";
-import arrow from "./arrow.png"
-import camera from "./camera.png"
+import cross from "../../img/cross.png";
+import arrow from "../../img/arrow.png"
+import camera from "../../img/camera.png"
 
 export default function Header() {
   // const navigate = useNavigate();
@@ -32,6 +35,7 @@ export default function Header() {
         </div>
       </div>
       <div className="vertical-line"></div>
+
       <table className="shedule-table">
         <tr>
           <td className="days"></td>

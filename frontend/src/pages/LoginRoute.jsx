@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
-const LoginRoute = ({ onLogin, onSearch }) => {
+const LoginRoute = ({onLogin, onSearch}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState(""); // Строка для поиска
@@ -11,7 +11,7 @@ const LoginRoute = ({ onLogin, onSearch }) => {
     const [errorMessage, setErrorMessage] = useState(""); // Сообщение об ошибке
     const [debounceTimeout, setDebounceTimeout] = useState(null); // Для хранения таймера
 
-   const navigate = useNavigate(); // Инициализируем хук для навигации
+    const navigate = useNavigate(); // Инициализируем хук для навигации
 
     // Функция для выполнения поиска
     const onClickSearch = async (fullName) => {
