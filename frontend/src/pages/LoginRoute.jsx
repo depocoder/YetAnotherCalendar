@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState, useCallback} from "react";
 import {useNavigate} from "react-router-dom";
 
 const LoginRoute = ({onLogin, onSearch}) => {
@@ -9,12 +9,12 @@ const LoginRoute = ({onLogin, onSearch}) => {
     const [personId, setPersonId] = useState(null); // Здесь сохраняем personId
     const [showSuggestions, setShowSuggestions] = useState(false); // Флаг показа списка
     const [errorMessage, setErrorMessage] = useState(""); // Сообщение об ошибке
-    const [debounceTimeout, setDebounceTimeout] = useState(null); // Для хранения таймера
+    // const [debounceTimeout, setDebounceTimeout] = useState(null); // Для хранения таймера
 
     const navigate = useNavigate(); // Инициализируем хук для навигации
 
     // Функция для выполнения поиска
-    const onClickSearch = async (fullName) => {
+    const onClickSearch = useCallback(async (fullName) => {
         const result = await onSearch(fullName);
         if (result.success) {
             setSearchResults(result.data);
@@ -23,14 +23,14 @@ const LoginRoute = ({onLogin, onSearch}) => {
         } else {
             setErrorMessage(result.message);
         }
-    };
+    }, [onSearch]);
 
     // Обрабатываем изменение поля поиска с задержкой
     useEffect(() => {
-        // Очищаем предыдущий таймер, чтобы избежать лишних вызовов
-        if (debounceTimeout) {
-            clearTimeout(debounceTimeout);
-        }
+        // // Очищаем предыдущий таймер, чтобы избежать лишних вызовов
+        // if (debounceTimeout) {
+        //     clearTimeout(debounceTimeout);
+        // }
 
         // Устанавливаем новый таймер на 500 мс
         const newTimeout = setTimeout(() => {
@@ -39,11 +39,11 @@ const LoginRoute = ({onLogin, onSearch}) => {
             }
         }, 500);
 
-        setDebounceTimeout(newTimeout);
+        // setDebounceTimeout(newTimeout);
 
         // Очищаем таймер при размонтировании или изменении fullName
         return () => clearTimeout(newTimeout);
-    }, [fullName]);
+    }, [fullName, onClickSearch]);
 
     // Обработчик выбора варианта из списка
     const handleSelect = (person) => {
