@@ -17,7 +17,7 @@ This product can replace Modeus calendar & Netology calendar.
 ### How to run?
 
 create `.env` from `.env.dist` in backend dir.
-
+copy `.env` from /backend to /frontend.
 run:
 ```
 docker compose up
