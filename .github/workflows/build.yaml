@@ -2,7 +2,8 @@ name: build
 on:
   push:
     branches: 
-      - "*"
+      - dev
+      - main
     paths-ignore:
       - "README.md"
   workflow_dispatch:

@@ -9,7 +9,6 @@ services:
     restart: always
     volumes:
       - ./backend:/app/src/
-    env_file:
       - backend/.env
     depends_on:
       redis:
@@ -39,7 +38,6 @@ services:
       target: dev-run
     image: ghcr.io/azamatkomaev/yet_another_calendar_frontend:${YET_ANOTHER_CALENDAR_VERSION:-latest}
     container_name: calendar-frontend
-    env_file:
       - frontend/.env
     restart: always
     volumes:

@@ -1,0 +1,35 @@
+name: deploy
+on:
+  push:
+    branches:
+      - main
+  workflow_run:
+    workflows: [build]
+    types:
+      - completed
+  workflow_dispatch:
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+  SSH_HOST: ${{ secrets.SSH_HOST }}
+  SSH_USER: ${{ secrets.SSH_USER }}
+  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+      - name: Set up SSH private key.
+        run: eval "$(ssh-agent -s)"
+      - run: mkdir -p ~/.ssh
+      - run: ssh-keyscan ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      - run: ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+      - run: ssh-add - <<< "${{ secrets.SSH_KEY }}"
+      
+      - name: Update docker compose
+        run: | 
+          ssh $SSH_USER@$SSH_HOST "cd YetAnotherCalendar/ && YET_ANOTHER_CALENDAR_VERSION=$IMAGE_TAG docker compose up -d --build"
+      
