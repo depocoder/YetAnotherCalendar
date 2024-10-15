@@ -32,5 +32,5 @@ jobs:
       
       - name: Update docker compose
         run: | 
-          ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd YetAnotherCalendar/ && YET_ANOTHER_CALENDAR_VERSION=$IMAGE_TAG docker compose up -d --build"
+          ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd YetAnotherCalendar/ && YET_ANOTHER_CALENDAR_VERSION=$IMAGE_TAG docker compose up -d"
       
