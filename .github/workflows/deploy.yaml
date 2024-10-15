@@ -30,10 +30,14 @@ jobs:
       - run: ssh-keyscan -p $SSH_PORT $SSH_HOST >> ~/.ssh/known_hosts
       - run: ssh-agent -a $SSH_AUTH_SOCK > /dev/null
       - run: ssh-add - <<< "${{ secrets.SSH_KEY }}"
-      
+      - name: Add image tag to .version file
+        run: |
+          echo $IMAGE_TAG > .version
+          scp -P 666 .version $SSH_USER@$SSH_HOST:~/YetAnotherCalendar/.version
+
       - name: Update docker compose
         run: | 
-          ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd YetAnotherCalendar/ &&
-          YET_ANOTHER_CALENDAR_VERSION=$IMAGE_TAG docker compose -f docker-compose.prod.yaml pull
-          YET_ANOTHER_CALENDAR_VERSION=$IMAGE_TAG docker compose -f docker-compose.prod.yaml up -d"
+          ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd YetAnotherCalendar/ && git pull origin main
+          YET_ANOTHER_CALENDAR_VERSION=$(cat .version) docker compose -f docker-compose.prod.yaml pull
+          YET_ANOTHER_CALENDAR_VERSION=$(cat .version) docker compose -f docker-compose.prod.yaml up -d"
       
