@@ -7,6 +7,8 @@ on:
     workflows: [build]
     types:
       - completed
+    branches:
+      - main
   workflow_dispatch:
 
 env:
