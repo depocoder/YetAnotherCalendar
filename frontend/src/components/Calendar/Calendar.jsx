@@ -5,49 +5,77 @@ import cross from "../../img/arrow.png";
 
 import '../../style/header.scss';
 import '../../style/calendar.scss';
-
 const Calendar = ({events}) => {
-    console.log('events', events)
+    console.log('events:', events);
+
     if (!events) {
         return <div>Нет данных для отображения.</div>;
     }
 
     const modeus = events?.modeus;
     const netology = events?.netology;
-    const homework = netology?.homework;
-    const webinars = netology?.webinars;
+    // const homework = netology?.homework;
+    // const webinars = netology?.webinars;
     console.log('modeus', modeus)
-    console.log('netology', netology)
-    console.log('webinars', webinars)
-    console.log('homework', homework)
+    // console.log('netology', netology)
+    // console.log('webinars', webinars)
+    // console.log('homework', homework)
 
-    // // Функция для получения дня недели (0 = Воскресенье, 6 = Суббота)
-    // const getDayOfWeek = (dateString) => {
-    //     return new Date(dateString).getDay();
-    // };
-    //
-    // // Массив для распределения занятий по дням недели
-    // const weekDays = Array(7).fill([]); // 0 - Воскресенье, 1 - Понедельник и т.д.
-    //
-    // // Распределение занятий по дням недели
-    // modeus?.forEach((lesson) => {
-    //     const dayOfWeek = getDayOfWeek(lesson.start);
-    //     weekDays[dayOfWeek] = [...weekDays[dayOfWeek], lesson]; // Добавляем занятия в соответствующий день недели
-    // });
+    // Функция для получения дней недели
+    const getWeekDays = () => {
+        const today = new Date();
+        const startOfWeek = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1); // Начало недели с понедельника
+        const weekDays = [];
 
-    // Function to get the day of the week (0 = Sunday, 6 = Saturday)
-    const getDayOfWeek = (dateString) => {
-        return new Date(dateString).getDay();
+        // Генерация всех дней недели (с понедельника по воскресенье)
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(today.setDate(startOfWeek + i));
+            weekDays.push({
+                day: day.toLocaleDateString('ru-RU', { weekday: 'short', day: '2-digit', month: '2-digit' }),
+                date: day.toISOString().split('T')[0] // Формат даты YYYY-MM-DD
+            });
+        }
+        return weekDays;
     };
 
-    // Create an array for each day of the week
-    const weekDays = Array(7).fill([]); // 0 - Sunday, 1 - Monday, and so on
+    const weekDays = getWeekDays();
 
-    // Distribute modeus events across the week by day of the week
-    modeus?.forEach((lesson) => {
-        const dayOfWeek = getDayOfWeek(lesson.start);
-        weekDays[dayOfWeek] = [...weekDays[dayOfWeek], lesson];
-    });
+    // Функция для фильтрации занятий на определенный день
+    const getEventsForDay = (day) => {
+        return modeus.filter(event => {
+            const eventDate = event.start.split('T')[0]; // Извлекаем только дату в формате YYYY-MM-DD
+            return eventDate === day;
+        });
+    };
+
+    // Функция для определения номера пары по времени
+    const getLessonNumber = (eventStart) => {
+        const startTime = new Date(eventStart).getHours();
+        const startMinutes = new Date(eventStart).getMinutes();
+
+        // 1 пара: 08:00 - 09:30
+        if (startTime === 8 || (startTime === 9 && startMinutes <= 30)) return 1;
+
+        // 2 пара: 10:00 - 11:30
+        if (startTime === 10 || (startTime === 11 && startMinutes <= 30)) return 2;
+
+        // 3 пара: 12:00 - 13:30
+        if (startTime === 12 || (startTime === 13 && startMinutes <= 30)) return 3;
+
+        // 4 пара: 14:00 - 15:30
+        if (startTime === 14 || (startTime === 15 && startMinutes <= 30)) return 4;
+
+        // 5 пара: 15:45 - 17:15
+        if ((startTime === 15 && startMinutes >= 45) || startTime === 16 || (startTime === 17 && startMinutes <= 15)) return 5;
+
+        // 6 пара: 17:30 - 19:00
+        if ((startTime === 17 && startMinutes >= 30) || startTime === 18 || (startTime === 19 && startMinutes === 0)) return 6;
+
+        // 7 пара: 19:10 - 20:40
+        if ((startTime === 19 && startMinutes >= 10) || (startTime === 20 && startMinutes <= 40)) return 7;
+
+        return null;
+    };
 
     return (
         <div className="wrapper">
@@ -93,81 +121,83 @@ const Calendar = ({events}) => {
             </header>
 
             <div className="calendar">
+                {/*TODO: написать логику движении линии, для отображения текущего дня*/}
                 <div className="vertical-line"></div>
 
-                {/* Таблица расписания */}
                 <table className="shedule-table">
                     <thead>
                     <tr>
-                        <th></th>
-                        <th>Пн</th>
-                        <th>Вт</th>
-                        <th>Ср</th>
-                        <th>Чт</th>
-                        <th>Пт</th>
-                        <th>Сб</th>
-                        <th>Вс</th>
+                        <th className="days"></th>
+                        {weekDays.map((day, index) => (
+                            <th key={index} className={`days-${index + 1}`}>{day.day}</th>
+                        ))}
                     </tr>
-                    </thead>
-                    <tbody>
-                    {/* Дедлайны */}
+                    {/*TODO: написать логику*/}
                     <tr>
-                        <th>Дедлайны</th>
-                        <td>{/* Дедлайны для Пн */}</td>
-                        <td>{/* Дедлайны для Вт */}</td>
-                        <td>{/* Дедлайны для Ср */}</td>
-                        <td>{/* Дедлайны для Чт */}</td>
-                        <td>{/* Дедлайны для Пт */}</td>
-                        <td>{/* Дедлайны для Сб */}</td>
-                        <td>{/* Дедлайны для Вс */}</td>
+                        <th className="vertical-heading">
+                            дедлайны
+                            <button className="off-deadline">Скрыть</button>
+                        </th>
+                        <td className="vertical-deadline">
+                            <button className="deadline-info">ТюмГУ</button>
+                            <button className="deadline-info-on">Нетология</button>
+                        </td>
+                        <td className="vertical-deadline"></td>
+                        <td className="vertical-deadline">
+                            <button className="deadline-info">ТюмГУ</button>
+                        </td>
+                        <td className="vertical-deadline"></td>
+                        <td className="vertical-deadline">
+                            <button className="deadline-info">Нетология</button>
+                        </td>
+                        <td className="vertical-deadline"></td>
+                        <td className="vertical-deadline"></td>
                     </tr>
 
-                    {/*/!* Проход по урокам из modeus *!/*/}
-                    {/*{modeus?.map((lesson, index) => (*/}
-                    {/*    <tr key={index}>*/}
-                    {/*        <th>{lesson.nameShort}</th>*/}
-                    {/*        <td>/!* Уроки на Пн *!/</td>*/}
-                    {/*        <td>/!* Уроки на Вт *!/</td>*/}
-                    {/*        <td>/!* Уроки на Ср *!/</td>*/}
-                    {/*        <td>/!* Уроки на Чт *!/</td>*/}
-                    {/*        <td>/!* Уроки на Пт *!/</td>*/}
-                    {/*        <td>/!* Уроки на Сб *!/</td>*/}
-                    {/*        <td>/!* Уроки на Вс *!/</td>*/}
-                    {/*    </tr>*/}
-                    {/*))}*/}
-
-                    {weekDays.map((lessons, dayIndex) => (
-                        <tr key={dayIndex}>
-                           <th>{["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"][dayIndex]}</th>
-                           {lessons.length > 0 ? (
-                              lessons.map((lesson, index) => (
-                                <td key={index}>
-                                    <div className="lesson">
-                                        <span className="lesson-name">{lesson.nameShort}</span>
-                                        <span className="lesson-time">
-                                                    {new Date(lesson.start).toLocaleTimeString([], {
-                                                        hour: '2-digit',
-                                                        minute: '2-digit'
-                                                    })} -
-                                            {new Date(lesson.end).toLocaleTimeString([], {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
-                                                </span>
-                                    </div>
-                                </td>
-                            ))
-                           ) : (
-                              <td key={`empty-${dayIndex}`}></td>
-                           )}
+                    </thead>
+                    {/*TODO: дописать логику, поправить стили*/}
+                    <tbody>
+                    {[1, 2, 3, 4, 5, 6, 7].map((lessonNumber) => (
+                        <tr key={lessonNumber}>
+                            <th className="vertical-heading">
+                                {lessonNumber} пара <br/> {lessonNumber * 2 + 8}:00 - {lessonNumber * 2 + 9}:30
+                            </th>
+                            {weekDays.map((day, index) => {
+                                const eventsForDay = getEventsForDay(day.date);
+                                const eventsForSlot = eventsForDay.filter(event => getLessonNumber(event.start) === lessonNumber);
+                                return (
+                                    <td key={index} className="vertical">
+                                        {eventsForSlot.length > 0 ? (
+                                            eventsForSlot.map(event => (
+                                                <div key={event.id} className="event-item">
+                                                    <div className="lesson-name">{event.nameShort}</div>
+                                                    <div className="lesson-name">{event.name}</div>
+                                                    <div className="lesson-time">
+                                                        {new Date(event.start).toLocaleTimeString([], {
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                        })} -
+                                                        {new Date(event.end).toLocaleTimeString([], {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        })}
+                                                    </div>
+                                                    <span className="teacher-name">{event.teacher_full_name}</span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="empty-slot"></div>
+                                        )}
+                                    </td>
+                                );
+                            })}
                         </tr>
-                     ))}
+                    ))}
                     </tbody>
                 </table>
             </div>
         </div>
-)
-    ;
+    );
 };
 
 export default Calendar;

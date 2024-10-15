@@ -1,24 +1,17 @@
-import LoginRoute from "../../pages/LoginRoute";
-// import React, {useEffect} from "react";
-// import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
+// Компонент для защиты маршрутов
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem("token"); // Проверяем наличие токена
-  // const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (!token) {
-  //   // Если токена нет, перенаправляем на страницу логина
-  //   // return <LoginRoute />;
-  //    navigate("/login", { replace: true });
-  //   }
-  //   }, [token, navigate]);
 
   if (!token) {
-    return <LoginRoute />; // Пока идет редирект, не отображаем ничего
+    // Если токена нет, перенаправляем на страницу логина
+    return <Navigate to="/login" />;
   }
 
-  return children; // Если токен есть, отображаем защищённый компонент
+  // Если токен есть, отображаем защищённый компонент
+  return children;
 };
 
 export default PrivateRoute;
+

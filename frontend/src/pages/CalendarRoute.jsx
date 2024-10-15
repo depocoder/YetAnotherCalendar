@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getNetologyCourse, bulkEvents } from '../services/api'; // Ваши API-запросы
 import Calendar from "../components/Calendar/Calendar";
-import Header from "../components/Header/Header";
+// import Header from "../components/Header/Header";
 
 const CalendarRoute = ({ email, password, personId, token }) => {
   const [events, setEvents] = useState(null);
@@ -50,8 +50,8 @@ const CalendarRoute = ({ email, password, personId, token }) => {
             password, // Пароль пользователя
             token, // Токен сессии
             fetchedCalendarId, // ID календаря
-            "2024-10-07T00:00:00+03:00", // Дата начала
-            "2024-10-13T23:59:59+03:00", // Дата окончания
+            "2024-10-14T00:00:00+03:00", // Дата начала
+            "2024-10-20T23:59:59+03:00", // Дата окончания
             personId // ID участника
           );
           console.log('События:', eventsResponse.data);
@@ -82,7 +82,7 @@ const CalendarRoute = ({ email, password, personId, token }) => {
   return (
       <div className="calendar-page">
         <Calendar events={events}/>
-        <Header />
+        {/*<Header />*/}
       </div>
   );
 };
