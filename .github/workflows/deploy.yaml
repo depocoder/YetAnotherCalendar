@@ -21,7 +21,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
       - name: Set up SSH private key.
         run: eval "$(ssh-agent -s)"
@@ -32,5 +32,7 @@ jobs:
       
       - name: Update docker compose
         run: | 
-          ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd YetAnotherCalendar/ && YET_ANOTHER_CALENDAR_VERSION=$IMAGE_TAG docker compose -f docker-compose.prod.yaml up -d"
+          ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd YetAnotherCalendar/ &&
+          YET_ANOTHER_CALENDAR_VERSION=$IMAGE_TAG docker compose -f docker-compose.prod.yaml pull
+          YET_ANOTHER_CALENDAR_VERSION=$IMAGE_TAG docker compose -f docker-compose.prod.yaml up -d"
       
