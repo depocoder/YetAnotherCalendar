@@ -43,7 +43,7 @@ services:
     volumes:
       - ./frontend/src:/app/src
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:3000:80"
 
 volumes:
   redis_data:
