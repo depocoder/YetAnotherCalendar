@@ -25,7 +25,7 @@ jobs:
       - name: Set up SSH private key.
         run: eval "$(ssh-agent -s)"
       - run: mkdir -p ~/.ssh
-      - run: ssh-keyscan ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      - run: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
       - run: ssh-agent -a $SSH_AUTH_SOCK > /dev/null
       - run: ssh-add - <<< "${{ secrets.SSH_KEY }}"
       
