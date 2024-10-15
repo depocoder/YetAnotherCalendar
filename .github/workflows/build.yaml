@@ -33,16 +33,12 @@ jobs:
             --bootstrap --use
       - name: Build & Publish backend to Github Container registry
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 ./backend 
+          docker buildx build --platform linux/amd64,linux/arm64 --push ./backend \
                        --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:latest \
                        --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:$IMAGE_TAG
-          docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:latest
-          docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:$IMAGE_TAG
 
       - name: Build & Publish frontend to Github Container registry
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 ./frontend 
+          docker buildx build --platform linux/amd64,linux/arm64 --push ./frontend \
                        --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:latest \
                        --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:$IMAGE_TAG
-          docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:latest
-          docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:$IMAGE_TAG
