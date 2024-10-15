@@ -17,7 +17,7 @@ env:
   
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -25,11 +25,11 @@ jobs:
       - name: Set up SSH private key.
         run: eval "$(ssh-agent -s)"
       - run: mkdir -p ~/.ssh
-      - run: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+      - run: ssh-keyscan -p $SSH_PORT $SSH_HOST >> ~/.ssh/known_hosts
       - run: ssh-agent -a $SSH_AUTH_SOCK > /dev/null
       - run: ssh-add - <<< "${{ secrets.SSH_KEY }}"
       
       - name: Update docker compose
         run: | 
-          ssh $SSH_USER@$SSH_HOST "cd YetAnotherCalendar/ && YET_ANOTHER_CALENDAR_VERSION=$IMAGE_TAG docker compose up -d --build"
+          ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd YetAnotherCalendar/ && YET_ANOTHER_CALENDAR_VERSION=$IMAGE_TAG docker compose up -d --build"
       
