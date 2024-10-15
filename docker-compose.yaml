@@ -1,15 +1,14 @@
 services:
-  api: &main_app
+  api:
     ports:
       - "8000:8000"
     build:
       context: backend/
       dockerfile: Dockerfile
-    image: ghcr.io/azamatkomaev/yet_another_calendar_backend:${YET_ANOTHER_CALENDAR_VERSION:-dev}
+    image: ghcr.io/azamatkomaev/yet_another_calendar_backend:${YET_ANOTHER_CALENDAR_VERSION:-latest}
     restart: always
     volumes:
       - ./backend:/app/src/
-    env_file:
       - backend/.env
     depends_on:
       redis:
@@ -37,9 +36,8 @@ services:
     build:
       context: ./frontend
       target: dev-run
-    image: ghcr.io/azamatkomaev/yet_another_calendar_frontend:${YET_ANOTHER_CALENDAR_VERSION:-dev}
+    image: ghcr.io/azamatkomaev/yet_another_calendar_frontend:${YET_ANOTHER_CALENDAR_VERSION:-latest}
     container_name: calendar-frontend
-    env_file:
       - frontend/.env
     restart: always
     volumes:
