@@ -14,7 +14,8 @@ env:
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   SSH_HOST: ${{ secrets.SSH_HOST }}
   SSH_USER: ${{ secrets.SSH_USER }}
-  
+  SSH_PORT: ${{ secrets.SSH_PORT }}
+
 
 jobs:
   deploy:
