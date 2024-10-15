@@ -25,16 +25,24 @@ jobs:
           registry: ${{ env.REGISTRY_URL }}
           username: ${{ env.REGISTRY_USERNAME }}
           password: ${{ env.REGISTRY_PASSWORD }}
+      - name: Add custom builder
+        run: |
+          docker buildx create \
+            --name container-builder \
+            --driver docker-container \
+            --bootstrap --use
       - name: Build & Publish backend to Github Container registry
         run: |
-          docker build ./backend --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:latest \
-                                 --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:$IMAGE_TAG
+          docker buildx build --platform linux/amd64,linux/arm64 ./backend 
+                       --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:latest \
+                       --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:$IMAGE_TAG
           docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:latest
           docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:$IMAGE_TAG
 
       - name: Build & Publish frontend to Github Container registry
         run: |
-          docker build ./frontend --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:latest \
-                                 --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:$IMAGE_TAG
+          docker buildx build --platform linux/amd64,linux/arm64 ./frontend 
+                       --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:latest \
+                       --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:$IMAGE_TAG
           docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:latest
           docker push $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:$IMAGE_TAG
