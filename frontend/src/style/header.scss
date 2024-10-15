@@ -1,0 +1,231 @@
+.wrapper {
+  width: 100%;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin-top: 20px;
+}
+
+.header {
+  max-width: 80%;
+  margin: auto;
+
+  &-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+
+  &-deadline {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row-reverse;
+    align-items: stretch;
+
+    &-info {
+      display: block;
+      padding: 0 12px;
+      //margin: 22px 120px;
+      margin-right: 5px;
+      width: 534px;
+      min-height: 106px;
+      border-radius: 6px;
+      background: #f4638633;
+      border: 2px solid #f46386;
+      text-decoration: none;
+    }
+  }
+}
+
+
+.shedule-export {
+  display: flex;
+  align-items: center;
+}
+
+.shedule {
+  font-family: "Unbounded", sans-serif;
+  font-weight: 500;
+  font-size: 32px;
+}
+
+.export-btn {
+  cursor: pointer;
+  height: 28px;
+  background-color: #5856d6;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  margin-left: 18px;
+  transition: color 0.2s linear;
+
+  &:hover {
+    background-color: #4745b5;
+  }
+}
+
+.cache-btn {
+  margin-left: 18px;
+  height: 28px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  color: #7b61ff;
+  background: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #7b61ff;
+  transition: color 0.3s linear;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #5856d6;
+    color: #fff;
+  }
+}
+
+.exit-btn {
+  background: none;
+  cursor: pointer;
+  border: none;
+  color: #333333;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+
+  &-cross {
+    margin-left: 7px;
+  }
+}
+
+.source {
+  margin-top: 7px;
+  color: #f46386;
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+
+  &-first-word {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+  }
+}
+
+.date-event {
+  float: right;
+}
+
+.name-event {
+  margin-top: 26px;
+
+  &-text {
+    color: #2c2d2e;
+    font-family: "Unbounded", sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+  }
+}
+
+.task-event {
+  margin-top: 7px;
+
+  &-text {
+    color: #2c2d2e;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+  }
+}
+
+.input-name {
+  margin-top: 8px;
+  width: 320px;
+  height: 32px;
+  border-radius: 4px;
+  border-color: #d9d9d9;
+}
+
+.input-email {
+  margin-top: 8px;
+  width: 320px;
+  height: 32px;
+  border-radius: 4px;
+  border-color: #d9d9d9;
+}
+
+.login-btn-log {
+  width: 100px;
+  position: relative;
+  cursor: pointer;
+  border: none;
+  margin: 6px auto;
+  background-color: #5856d6;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  transition: color 0.2s linear;
+
+  &:hover {
+    background-color: #4745b5;
+  }
+}
+
+.login-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.shedule-login {
+  font-family: "Unbounded", sans-serif;
+  font-weight: 500;
+  font-size: 32px;
+}
+
+.login-netologiya,
+.login-fio {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  max-width: 320px;
+  width: 100%;
+  margin: 24px auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  text-align: left;
+}
+
+.calendar-date {
+  position: absolute;
+  top: 165px;
+  right: 248px;
+  background-color: #ecedf0;
+  width: 406px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid rgba(217, 217, 217, 0.5);
+  font-family: "Unbounded", sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  padding-left: 14px;
+  transition: color 0.2s linear;
+
+  &:hover {
+    background-color: #e7e7ea;
+  }
+}

@@ -1,14 +1,13 @@
 services:
-  api:
+  api: &main_app
     ports:
-      - "8000:8000"
-    build:
-      context: backend/
-      dockerfile: Dockerfile
+      - "127.0.0.1:8000:8000"
+    container_name: yet_another_calendar-api
     image: ghcr.io/azamatkomaev/yet_another_calendar_backend:${YET_ANOTHER_CALENDAR_VERSION:-latest}
     restart: always
     volumes:
       - ./backend:/app/src/
+    env_file:
       - backend/.env
     depends_on:
       redis:
@@ -16,7 +15,7 @@ services:
     environment:
       YET_ANOTHER_CALENDAR_HOST: 0.0.0.0
       YET_ANOTHER_CALENDAR_REDIS_HOST: yet_another_calendar-redis
-      YET_ANOTHER_CALENDAR_DEBUG: True
+      LOGURU_DIAGNOSE: "False"
 
   redis:
     image: redis:latest
@@ -33,17 +32,18 @@ services:
       retries: 50
 
   frontend:
+    image: ghcr.io/azamatkomaev/yet_another_calendar_frontend:${YET_ANOTHER_CALENDAR_VERSION:-latest}
     build:
       context: ./frontend
-      target: dev-run
-    image: ghcr.io/azamatkomaev/yet_another_calendar_frontend:${YET_ANOTHER_CALENDAR_VERSION:-latest}
-    container_name: calendar-frontend
+      target: prod-run
+    container_name: yet_another_calendar-frontend
+    env_file:
       - frontend/.env
     restart: always
     volumes:
       - ./frontend/src:/app/src
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:80"
 
 volumes:
   redis_data:
