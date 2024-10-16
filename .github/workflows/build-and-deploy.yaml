@@ -1,10 +1,8 @@
-name: build
+name: build and deploy
 on:
   push:
-    branches: 
-      - dev
-    paths-ignore:
-      - "README.md"
+    branches:
+      - main
   workflow_dispatch:
 
 env:
@@ -12,6 +10,12 @@ env:
   REGISTRY_USERNAME: azamatkomaev
   REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
   IMAGE_TAG: ${{ github.sha }}
+
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+  SSH_HOST: ${{ secrets.SSH_HOST }}
+  SSH_USER: ${{ secrets.SSH_USER }}
+  SSH_PORT: ${{ secrets.SSH_PORT }}
+
 
 jobs:
   build:
@@ -41,3 +45,27 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 --push ./frontend \
                        --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:latest \
                        --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:$IMAGE_TAG
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - run: 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+      - name: Set up SSH private key.
+        run: eval "$(ssh-agent -s)"
+      - run: mkdir -p ~/.ssh
+      - run: ssh-keyscan -p $SSH_PORT $SSH_HOST >> ~/.ssh/known_hosts
+      - run: ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+      - run: ssh-add - <<< "${{ secrets.SSH_KEY }}"
+      - name: Add image tag to .version file
+        run: |
+          echo $IMAGE_TAG > .version
+          scp -P 666 .version $SSH_USER@$SSH_HOST:~/YetAnotherCalendar/.version
+
+      - name: Update docker compose
+        run: | 
+          ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd YetAnotherCalendar/ && git pull origin main &&
+          YET_ANOTHER_CALENDAR_VERSION=$(cat .version) docker compose -f docker-compose.prod.yaml pull &&
+          YET_ANOTHER_CALENDAR_VERSION=$(cat .version) docker compose -f docker-compose.prod.yaml up -d"
+    
