@@ -1,48 +1,47 @@
-//&-info {
-//      height: 28px;
-//      margin-top: 6px;
-//      width: 95%;
-//      text-align: left;
-//      padding: 5px 11px;
-//      border: none;
-//      background: #F46386;
-//      border-radius: 6px;
-//      color: #fff;
-//      font-family: "Roboto", sans-serif;
-//      font-weight: 700;
-//      font-size: 13px;
-//      transition: color 0.3s linear;
-//
-//      &:hover {
-//        cursor: pointer;
-//        color: #F46386;
-//        background-color: #fff;
-//        border: 2px solid #F46386;
-//      }
-//    }
-
-//&-info-on {
-//      height: 28px;
-//      margin-top: 4px;
-//      width: 95%;
-//      text-align: left;
-//      padding: 5px 11px;
-//      color: #F46386;
-//      background-color: #fff;
-//      border: 2px solid #F46386;
-//      border-radius: 6px;
-//      font-family: "Roboto", sans-serif;
-//      font-weight: 700;
-//      font-size: 13px;
-//      transition: color 0.3s linear;
-//
-//      &:hover {
-//        cursor: pointer;
-//        color: #fff;
-//        background-color: #F46386;
-//        border: none;
-//      }
-//    }
+.deadline {
+    &-info {
+        height: 28px;
+        margin-top: 6px;
+        width: 95%;
+        text-align: left;
+        padding: 5px 11px;
+        border: none;
+        background: #F46386;
+        border-radius: 6px;
+        color: #fff;
+        font-family: "Roboto", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        transition: color 0.3s linear;
+        &:hover {
+            cursor: pointer;
+            color: #F46386;
+            background-color: #fff;
+            border: 2px solid #F46386;
+        }
+    }
+    &-info-on {
+        height: 28px;
+        margin-top: 4px;
+        width: 95%;
+        text-align: left;
+        padding: 5px 11px;
+        color: #F46386;
+        background-color: #fff;
+        border: 2px solid #F46386;
+        border-radius: 6px;
+        font-family: "Roboto", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        transition: color 0.3s linear;
+        &:hover {
+            cursor: pointer;
+            color: #fff;
+            background-color: #F46386;
+            border: none;
+        }
+    }
+}
 
 .shedule-table {
     width: 100%;

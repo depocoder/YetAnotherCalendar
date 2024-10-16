@@ -49,6 +49,7 @@ const LoginRoute = ({onLogin, onSearch}) => {
     const handleSelect = (person) => {
         setFullName(person.fullName); // Устанавливаем выбранное имя
         setPersonId(person.personId); // Сохраняем personId
+        localStorage.setItem('personId', personId); // Сохраняем personId localstorage
         setShowSuggestions(false); // Скрываем список после выбора
     };
 

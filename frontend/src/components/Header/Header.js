@@ -23,15 +23,18 @@ export default function Header() {
           <img className="exit-btn-cross" src={cross} alt={cross} />
         </button>
       </div>
-      <div id="rectangle" className="info">
-        <div className="source">
-          <span className="source-first-word">Дедлайн</span> Нетология <span className="date-event"><img src={arrow} alt={arrow} /> 23.09.2024</span>
-        </div>
-        <div className="name-event">
-          <span className="name-event-text">Программирование на Python</span>
-        </div>
-        <div className="task-event">
-          <span className="task-event-text">Домашнее задание с самопроверкой(дедлайн 12.12.24)</span>
+      <div className="rectangle">
+        <div className="rectangle-info">
+          <div className="source">
+            <span className="source-first-word">Дедлайн</span> Нетология <span className="date-event"><img src={arrow}
+                                                                                                           alt={arrow}/> 23.09.2024</span>
+          </div>
+          <div className="name-event">
+            <span className="name-event-text">Программирование на Python</span>
+          </div>
+          <div className="task-event">
+            <span className="task-event-text">Домашнее задание с самопроверкой(дедлайн 12.12.24)</span>
+          </div>
         </div>
       </div>
       <div className="vertical-line"></div>
@@ -48,7 +51,7 @@ export default function Header() {
           <td className="days-7">Вс 29.09</td>
         </tr>
         <tr>
-            <th className="vertical-heading">
+          <th className="vertical-heading">
               дедлайны
               <button className="off-deadline">Скрыть</button>
             </th>
@@ -71,9 +74,12 @@ export default function Header() {
           <td className="vertical"></td>
           <td className="vertical"></td>
           <td className="vertical"></td>
-          <td className="vertical"><button className="TyumGU-lesson">
+          <td className="vertical">
+            <div className="TyumGU-lesson">
             <span className="company-name"><img src={camera} alt={camera} /> ТюмГУ<br /></span>
-            <span className="lesson-name">Математический анализ</span></button></td>
+            <span className="lesson-name">Математический анализ</span>
+            </div>
+          </td>
           <td className="vertical"></td>
         </tr>
         <tr>

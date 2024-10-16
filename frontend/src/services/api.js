@@ -93,4 +93,28 @@ export async function refreshBulkEvents(sessionToken, calendarId, timeMin, timeM
     }
 }
 
+// export file
+export async function exportICS(sessionToken, calendarId, timeMin, timeMax, attendeePersonId) {
+    try {
+        const response = await axios.post(
+            `${BACKEND_URL}/api/bulk/export_ics/?calendar_id=${calendarId}`, // URL с calendar_id в параметрах
+            {
+                timeMin,
+                timeMax,
+                size: 50,
+                attendeePersonId: [attendeePersonId],
+            },
+            {
+                headers: {
+                    "_netology-on-rails_session": sessionToken, // Токен сессии
+                    "Content-Type": "application/json",
+                    "time_zone": "Europe/Moscow", // Добавляем time_zone в заголовки
+                },
+            }
+        );
+        return response;
+    } catch (e) {
+        return e.response;
+    }
+}
 
