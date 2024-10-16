@@ -108,14 +108,22 @@ class Href(BaseModel):
         return uuid.UUID(self.href.replace('/', ''))
 
 
-class Link(BaseModel):
+class EventLinks(BaseModel):
+    course_unit_realization: Href = Field(alias="course-unit-realization")
+
+
+class EventWithLinks(Event):
+    links: EventLinks = Field(alias="_links")
+
+
+class AttenderLink(BaseModel):
     self: Href
     event: Href
     person: Href
 
 
 class Attender(BaseModel):
-    links: Link = Field(alias="_links")
+    links: AttenderLink = Field(alias="_links")
 
 
 class ShortPerson(BaseModel):
@@ -123,15 +131,22 @@ class ShortPerson(BaseModel):
     full_name: str = Field(alias="fullName")
 
 
+class Course(BaseModel):
+    id: uuid.UUID
+    name: str
+
+
 class CalendarEmbedded(BaseModel):
-    events: list[Event] = Field(alias="events")
+    events: list[EventWithLinks] = Field(alias="events")
     locations: list[Location] = Field(alias="event-locations")
     attendees: list[Attender] = Field(alias="event-attendees")
     people: list[ShortPerson] = Field(alias="persons")
+    courses: list[Course] = Field(alias="course-unit-realizations")
 
 
 class FullEvent(Event, Location):
     teacher_full_name: str
+    course_name: str
 
 
 class ModeusCalendar(BaseModel):
@@ -143,20 +158,24 @@ class ModeusCalendar(BaseModel):
         """Serialize calendar api response from modeus."""
         locations = {location.id: location for location in self.embedded.locations}
         teachers = {teacher.id: teacher for teacher in self.embedded.people}
+        courses = {course.id: course for course in self.embedded.courses}
         teachers_with_events = {teacher.links.event.id: teacher.links for teacher in self.embedded.attendees}
         full_events = []
         for event in self.embedded.events:
+            course_id = event.links.course_unit_realization.id
             try:
+                course_name = courses[course_id].name
                 teacher_event = teachers_with_events[event.id]
                 teacher = teachers[teacher_event.person.id]
                 teacher_full_name = teacher.full_name
             except KeyError:
+                course_name = 'unknown'
                 teacher_full_name = 'unknown'
             location = locations[event.id]
             if location.is_lxp:
                 continue
             full_events.append(FullEvent(**{
-                "teacher_full_name": teacher_full_name,
+                "teacher_full_name": teacher_full_name, "course_name": course_name,
                 **event.model_dump(by_alias=True), **location.model_dump(by_alias=True),
             }))
         return full_events
