@@ -1,6 +1,8 @@
 import {useEffect, useState, useCallback} from "react";
 import {useNavigate} from "react-router-dom";
 
+import '../style/login.scss'
+
 const LoginRoute = ({onLogin, onSearch}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

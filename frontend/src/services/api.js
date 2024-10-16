@@ -46,7 +46,7 @@ export async function getNetologyCourse(sessionToken) {
 }
 
 // calendar
-export async function bulkEvents(username, password, sessionToken, calendarId, timeMin, timeMax, attendeePersonId) {
+export async function bulkEvents(sessionToken, calendarId, timeMin, timeMax, attendeePersonId) {
     try {
         const response = await axios.post(
             `${BACKEND_URL}/api/bulk/events/?calendar_id=${calendarId}`,
