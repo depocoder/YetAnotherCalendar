@@ -20,6 +20,7 @@ const App = () => {
             if (response.status === 200) {
                 setAuthData({email, password, personId});
                 localStorage.setItem('token', response.data["_netology-on-rails_session"]);
+
                 return {success: true};
             } else {
                 return {success: false, message: "Неверный логин или пароль."};

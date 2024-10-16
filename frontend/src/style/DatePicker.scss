@@ -1,0 +1,40 @@
+.date-picker-wrapper {
+  width: fit-content;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+}
+
+.week-display {
+  display: flex;
+  align-items: center;
+}
+
+.week-range {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.week-navigation {
+  display: flex;
+  margin-left: 10px;
+}
+
+.prev-week-btn, .next-week-btn {
+  background-color: #e0e0e0;
+  border: none;
+  padding: 5px 10px;
+  margin: 0 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.prev-week-btn:hover, .next-week-btn:hover {
+  background-color: #d0d0d0;
+}
