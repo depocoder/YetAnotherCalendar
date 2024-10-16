@@ -19,8 +19,9 @@
     align-items: center;
     margin-bottom: 22px;
   }
+}
 
-  &-deadline {
+.rectangle {
     display: flex;
     justify-content: flex-end;
     flex-direction: row-reverse;
@@ -39,7 +40,6 @@
       text-decoration: none;
     }
   }
-}
 
 
 .shedule-export {
@@ -210,22 +210,22 @@
   text-align: left;
 }
 
-.calendar-date {
-  position: absolute;
-  top: 165px;
-  right: 248px;
-  background-color: #ecedf0;
-  width: 406px;
-  height: 32px;
-  border-radius: 6px;
-  border: 1px solid rgba(217, 217, 217, 0.5);
-  font-family: "Unbounded", sans-serif;
-  font-weight: 500;
-  font-size: 15px;
-  padding-left: 14px;
-  transition: color 0.2s linear;
-
-  &:hover {
-    background-color: #e7e7ea;
-  }
-}
+//.calendar-date {
+//  position: absolute;
+//  top: 165px;
+//  right: 248px;
+//  background-color: #ecedf0;
+//  width: 406px;
+//  height: 32px;
+//  border-radius: 6px;
+//  border: 1px solid rgba(217, 217, 217, 0.5);
+//  font-family: "Unbounded", sans-serif;
+//  font-weight: 500;
+//  font-size: 15px;
+//  padding-left: 14px;
+//  transition: color 0.2s linear;
+//
+//  &:hover {
+//    background-color: #e7e7ea;
+//  }
+//}

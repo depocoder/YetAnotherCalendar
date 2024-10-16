@@ -5,6 +5,9 @@ import cross from "../../img/arrow.png";
 
 import '../../style/header.scss';
 import '../../style/calendar.scss';
+import DatePicker from "./DataPicker";
+import camera from "../../img/camera.png";
+
 const Calendar = ({events}) => {
     console.log('events:', events);
 
@@ -91,10 +94,9 @@ const Calendar = ({events}) => {
                     </button>
                 </div>
 
-                {/* Информация о дедлайнах */}
-                <div className="header-deadline">
+                <div className="rectangle">
                     {netology?.homework?.length > 0 && netology.homework.map((homeworkItem, index) => (
-                        <a className="header-deadline-info"
+                        <a className="rectangle-info"
                            key={index}
                            href={homeworkItem?.url}
                            target="_blank"
@@ -118,6 +120,8 @@ const Calendar = ({events}) => {
                         </a>
                     ))}
                 </div>
+
+                <DatePicker />
             </header>
 
             <div className="calendar">
@@ -126,29 +130,28 @@ const Calendar = ({events}) => {
 
                 <table className="shedule-table">
                     <thead>
-                    <tr>
+                       <tr>
                         <th className="days"></th>
                         {weekDays.map((day, index) => (
                             <th key={index} className={`days-${index + 1}`}>{day.day}</th>
                         ))}
                     </tr>
-                    {/*TODO: написать логику*/}
-                    <tr>
-                        <th className="vertical-heading">
-                            дедлайны
-                            <button className="off-deadline">Скрыть</button>
+                       {/*TODO: написать логику*/}
+                       <tr>
+                        <th className="vertical-heading"> дедлайны
+                            <div className="off-deadline">Скрыть</div>
                         </th>
                         <td className="vertical-deadline">
-                            <button className="deadline-info">ТюмГУ</button>
-                            <button className="deadline-info-on">Нетология</button>
+                            <div className="deadline-info">ТюмГУ</div>
+                            <div className="deadline-info-on">Нетология</div>
                         </td>
                         <td className="vertical-deadline"></td>
                         <td className="vertical-deadline">
-                            <button className="deadline-info">ТюмГУ</button>
+                            <div className="deadline-info">ТюмГУ</div>
                         </td>
                         <td className="vertical-deadline"></td>
                         <td className="vertical-deadline">
-                            <button className="deadline-info">Нетология</button>
+                            <div className="deadline-info">Нетология</div>
                         </td>
                         <td className="vertical-deadline"></td>
                         <td className="vertical-deadline"></td>
@@ -160,7 +163,7 @@ const Calendar = ({events}) => {
                     {[1, 2, 3, 4, 5, 6, 7].map((lessonNumber) => (
                         <tr key={lessonNumber}>
                             <th className="vertical-heading">
-                                {lessonNumber} пара <br/> {lessonNumber * 2 + 8}:00 - {lessonNumber * 2 + 9}:30
+                                {lessonNumber} пара <br/> {lessonNumber * 2 + 8}:00 {lessonNumber * 2 + 9}:30
                             </th>
                             {weekDays.map((day, index) => {
                                 const eventsForDay = getEventsForDay(day.date);
@@ -169,13 +172,14 @@ const Calendar = ({events}) => {
                                     <td key={index} className="vertical">
                                         {eventsForSlot.length > 0 ? (
                                             eventsForSlot.map(event => (
-                                                <div key={event.id} className="event-item">
+                                                <div key={event.id} className="TyumGU-lesson event-item">
+                                                    <span className="company-name"><img src={camera} alt={camera}/> ТюмГУ<br/></span>
                                                     <div className="lesson-name">{event.nameShort}</div>
                                                     <div className="lesson-name">{event.name}</div>
                                                     <div className="lesson-time">
                                                         {new Date(event.start).toLocaleTimeString([], {
-                                                                hour: '2-digit',
-                                                                minute: '2-digit'
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
                                                         })} -
                                                         {new Date(event.end).toLocaleTimeString([], {
                                                             hour: '2-digit',
@@ -185,15 +189,16 @@ const Calendar = ({events}) => {
                                                     <span className="teacher-name">{event.teacher_full_name}</span>
                                                 </div>
                                             ))
-                                        ) : (
-                                            <div className="empty-slot"></div>
-                                        )}
-                                    </td>
-                                );
-                            })}
-                        </tr>
-                    ))}
-                    </tbody>
+                                            ) : (<div className="empty-slot"></div>
+                                                    )}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
+                                )
+                            )
+                            }
+                                </tbody>
                 </table>
             </div>
         </div>
