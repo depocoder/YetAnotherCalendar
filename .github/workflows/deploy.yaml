@@ -39,7 +39,7 @@ jobs:
 
       - name: Update docker compose
         run: | 
-          ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd YetAnotherCalendar/ && git pull origin main
-          YET_ANOTHER_CALENDAR_VERSION=$(cat .version) docker compose -f docker-compose.prod.yaml pull
+          ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd YetAnotherCalendar/ && git pull origin main &&
+          YET_ANOTHER_CALENDAR_VERSION=$(cat .version) docker compose -f docker-compose.prod.yaml pull &&
           YET_ANOTHER_CALENDAR_VERSION=$(cat .version) docker compose -f docker-compose.prod.yaml up -d"
     
