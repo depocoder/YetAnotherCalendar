@@ -9,6 +9,7 @@ from starlette.responses import StreamingResponse
 
 from yet_another_calendar.settings import settings
 from ..modeus import schema as modeus_schema
+from ..lms import schema as lms_schema
 from ..netology import schema as netology_schema
 from . import integration, schema
 
@@ -18,6 +19,7 @@ router = APIRouter()
 @router.post("/events/")
 async def get_calendar(
         body: modeus_schema.ModeusEventsBody,
+        lms_user: lms_schema.User,
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         jwt_token: Annotated[str, Depends(modeus_schema.get_cookies_from_headers)],
         calendar_id: int = settings.netology_default_course_id,
@@ -27,13 +29,14 @@ async def get_calendar(
     Get events from Netology and Modeus, cached.
     """
 
-    cached_calendar = await integration.get_cached_calendar(body, jwt_token, calendar_id, cookies, time_zone)
+    cached_calendar = await integration.get_cached_calendar(body, lms_user, jwt_token, calendar_id, cookies, time_zone)
     return schema.CalendarResponse.model_validate(cached_calendar)
 
 
 @router.post("/refresh_events/")
 async def refresh_calendar(
         body: modeus_schema.ModeusEventsBody,
+        lms_user: lms_schema.User,
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         jwt_token: Annotated[str, Depends(modeus_schema.get_cookies_from_headers)],
         calendar_id: int = settings.netology_default_course_id,
@@ -43,12 +46,13 @@ async def refresh_calendar(
     Refresh events in redis.
     """
 
-    return await integration.refresh_events(body, jwt_token, calendar_id, cookies, time_zone)
+    return await integration.refresh_events(body, lms_user, jwt_token, calendar_id, cookies, time_zone)
 
 
 @router.post("/export_ics/")
 async def export_ics(
         body: modeus_schema.ModeusEventsBody,
+        lms_user: lms_schema.User,
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         jwt_token: Annotated[str, Depends(modeus_schema.get_cookies_from_headers)],
         calendar_id: int = settings.netology_default_course_id,
@@ -57,5 +61,5 @@ async def export_ics(
     """
     Export into .ics format
     """
-    calendar = await integration.get_calendar(body, jwt_token, calendar_id, cookies, time_zone)
+    calendar = await integration.get_calendar(body, lms_user, jwt_token, calendar_id, cookies, time_zone)
     return StreamingResponse(integration.export_to_ics(calendar))

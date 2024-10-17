@@ -1,6 +1,6 @@
 import datetime
 import hashlib
-from typing import Self, Optional
+from typing import Self
 
 from pydantic import BaseModel, Field
 
@@ -13,7 +13,7 @@ def now_dt_utc() -> datetime.datetime:
 
 class UtmnResponse(BaseModel):
     modeus_events: list[modeus_schema.FullEvent]
-    lms_events: Optional[list[lms_schema.ModuleResponse]] = Field(default=None)
+    lms_events: list[lms_schema.ModuleResponse]
 
 
 class BulkResponse(BaseModel):
@@ -28,9 +28,13 @@ class BulkResponse(BaseModel):
             webinar.starts_at = webinar.validate_starts_at(webinar.starts_at, timezone)
             webinar.ends_at = webinar.validate_ends_at(webinar.ends_at, timezone)
 
-        for event in self.utmn.modeus_events:
-            event.start_time = event.validate_starts_at(event.start_time, timezone)
-            event.end_time = event.validate_end_time(event.end_time, timezone)
+        for modeus_event in self.utmn.modeus_events:
+            modeus_event.start_time = modeus_event.validate_starts_at(modeus_event.start_time, timezone)
+            modeus_event.end_time = modeus_event.validate_end_time(modeus_event.end_time, timezone)
+
+        for lms_event in self.utmn.lms_events:
+            lms_event.dt_start = lms_event.dt_start.astimezone(timezone)
+            lms_event.dt_end = lms_event.dt_end.astimezone(timezone)
         return self
 
 

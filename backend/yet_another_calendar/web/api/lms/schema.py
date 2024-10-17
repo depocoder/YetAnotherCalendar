@@ -16,6 +16,7 @@ class LxpCreds(Creds):
 class User(BaseModel):
     id: int
     token: str
+    is_enabled: bool = False
 
 
 class Course(BaseModel):
@@ -61,8 +62,8 @@ class Module(BaseModule):
 
 
 class ModuleResponse(BaseModule):
-    dt_start: Optional[datetime.datetime]
-    dt_end: Optional[datetime.datetime]
+    dt_start: datetime.datetime
+    dt_end: datetime.datetime
     is_completed: bool
     course_name: str
 

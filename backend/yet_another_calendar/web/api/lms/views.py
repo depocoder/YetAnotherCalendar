@@ -38,7 +38,7 @@ async def get_user_info(
 
 
 @router.post("/events")
-async def get_course_info(
+async def get_events(
         user: schema.User,
         body: ModeusTimeBody,
 ) -> list[schema.ModuleResponse]:
