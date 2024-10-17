@@ -13,6 +13,12 @@ env:
   REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
   IMAGE_TAG: ${{ github.sha }}
 
+  S3_ENDPOINT_URL: ${{ secrets.S3_ENDPOINT_URL }}
+  S3_REGION: ${{ secrets.S3_REGION }}
+  BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,11 +39,13 @@ jobs:
       - name: Build & Publish backend to Github Container registry
         run: |
           docker buildx build --platform linux/amd64,linux/arm64 --push ./backend \
-                       --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:latest \
-                       --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:$IMAGE_TAG
+                       --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_backend:$IMAGE_TAG \
+                       --cache-to   type=s3,endpoint_url=$S3_ENDPOINT_URL,region=$S3_REGION,bucket=$BUCKET_NAME,name=calendar_backend,access_key_id=$ACCESS_KEY,secret_access_key=$SECRET_KEY \
+                       --cache-from type=s3,endpoint_url=$S3_ENDPOINT_URL,region=$S3_REGION,bucket=$BUCKET_NAME,name=calendar_backend,access_key_id=$ACCESS_KEY,secret_access_key=$SECRET_KEY
 
       - name: Build & Publish frontend to Github Container registry
         run: |
           docker buildx build --platform linux/amd64,linux/arm64 --push ./frontend \
-                       --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:latest \
-                       --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:$IMAGE_TAG
+                       --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:$IMAGE_TAG \
+                       --cache-to   type=s3,endpoint_url=$S3_ENDPOINT_URL,region=$S3_REGION,bucket=$BUCKET_NAME,name=calendar_frontend,access_key_id=$ACCESS_KEY,secret_access_key=$SECRET_KEY \
+                       --cache-from type=s3,endpoint_url=$S3_ENDPOINT_URL,region=$S3_REGION,bucket=$BUCKET_NAME,name=calendar_frontend,access_key_id=$ACCESS_KEY,secret_access_key=$SECRET_KEY
