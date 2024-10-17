@@ -13,7 +13,7 @@ async def get_cookies_from_headers() -> str | Response:
     return await integration.login(settings.modeus_username, settings.modeus_password)
 
 
-class ModeusCreds(BaseModel):
+class Creds(BaseModel):
     """Modeus creds."""
 
     username: str
@@ -21,16 +21,8 @@ class ModeusCreds(BaseModel):
 
 
 class ModeusTimeBody(BaseModel):
-    time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+03:00"])
-    time_max: datetime.datetime = Field(alias="timeMax", examples=["2024-09-29T23:59:59+03:00"])
-
-
-# noinspection PyNestedDecorators
-class ModeusEventsBody(ModeusTimeBody):
-    """Modeus search events body."""
-    size: int = Field(default=50)
-    attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId",
-                                                default=["d69c87c8-aece-4f39-b6a2-7b467b968211"])
+    time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+00:00"])
+    time_max: datetime.datetime = Field(alias="timeMax", examples=["2024-09-29T23:59:59+00:00"])
 
     @field_validator("time_min")
     @classmethod
@@ -39,6 +31,8 @@ class ModeusEventsBody(ModeusTimeBody):
             raise ValueError("Weekday time_min must be Monday.")
         if time_min.second or time_min.hour or time_min.minute:
             raise ValueError("Time must me 00:00:00.")
+        if time_min.tzinfo != datetime.timezone.utc:
+            raise ValueError("Time must be UTC.")
         return time_min
 
     @field_validator("time_max")
@@ -48,7 +42,17 @@ class ModeusEventsBody(ModeusTimeBody):
             raise ValueError("Weekday time_min must be Sunday.")
         if time_max.hour != 23 or time_max.second != 59 or time_max.minute != 59:
             raise ValueError("Time must me 23:59:59.")
+        if time_max.tzinfo != datetime.timezone.utc:
+            raise ValueError("Time must be UTC.")
         return time_max
+
+
+# noinspection PyNestedDecorators
+class ModeusEventsBody(ModeusTimeBody):
+    """Modeus search events body."""
+    size: int = Field(default=50)
+    attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId",
+                                                default=["d69c87c8-aece-4f39-b6a2-7b467b968211"])
 
     @model_validator(mode='after')
     def check_passwords_match(self) -> Self:

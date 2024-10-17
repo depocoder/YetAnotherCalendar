@@ -44,12 +44,13 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
     for netology_lesson in calendar.netology.webinars:
         if not netology_lesson.starts_at or not netology_lesson.ends_at:
             continue
-        event = create_ics_event(title=f"Netology: {netology_lesson.title}", starts_at=netology_lesson.starts_at,
+        event = create_ics_event(title=f"Netology: {netology_lesson.block_title}|{netology_lesson.title}",
+                                 starts_at=netology_lesson.starts_at,
                                  ends_at=netology_lesson.ends_at, lesson_id=netology_lesson.id,
                                  webinar_url=netology_lesson.webinar_url)
         ics_calendar.add_component(event)
-    for modeus_lesson in calendar.modeus:
-        event = create_ics_event(title=f"Modeus: {modeus_lesson.name}",
+    for modeus_lesson in calendar.utmn.modeus_events:
+        event = create_ics_event(title=f"Modeus: {modeus_lesson.course_name}|{modeus_lesson.name}",
                                  starts_at=modeus_lesson.start_time, ends_at=modeus_lesson.end_time,
                                  lesson_id=modeus_lesson.id,
                                  description=modeus_lesson.description)
@@ -101,7 +102,9 @@ async def get_calendar(
         netology_response = tg.create_task(netology_views.get_calendar(body, calendar_id, cookies))
         modeus_response = tg.create_task(modeus_views.get_calendar(body, jwt_token))
     return schema.CalendarResponse.model_validate(
-        {"netology": netology_response.result(), "modeus": modeus_response.result()},
+        {"netology": netology_response.result(), "utmn": {
+            "modeus_events": modeus_response.result(),
+        }},
     ).change_timezone(tz)
 
 
