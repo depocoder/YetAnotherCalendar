@@ -54,6 +54,7 @@ class BaseLesson(BaseModel):
     lesson_id: int
     type: str
     title: str
+    block_title: str
 
 
 class LessonWebinar(BaseLesson):
@@ -126,21 +127,23 @@ class NetologyProgram(BaseModel):
 
 class CalendarResponse(BaseModel):
     lessons: list[NetologyProgram]
+    block_title: str = Field(alias="title")
 
     @staticmethod
     def filter_lessons(
+            block_title: str,
             program: NetologyProgram, time_min: datetime.datetime, time_max: datetime.datetime,
     ) -> tuple[list[LessonTask], list[LessonWebinar]]:
         """Filter lessons by time and status."""
         homework_events, webinars = [], []
         for lesson in program.lesson_items:
             if lesson['type'] in ["task", "test"]:
-                homework = LessonTask(**lesson)
+                homework = LessonTask(**lesson, block_title=block_title)
                 if homework.is_suitable_time(time_min, time_max):
                     homework_events.append(homework)
                     continue
             if lesson['type'] == "webinar":
-                webinar = LessonWebinar(**lesson)
+                webinar = LessonWebinar(**lesson, block_title=block_title)
                 if webinar.is_suitable_time(time_min, time_max):
                     webinars.append(webinar)
                     continue
@@ -152,7 +155,7 @@ class CalendarResponse(BaseModel):
         time_min = body.time_min
         time_max = body.time_max
         for lesson in self.lessons:
-            homework_events, webinars_events = self.filter_lessons(lesson, time_min, time_max)
+            homework_events, webinars_events = self.filter_lessons(self.block_title, lesson, time_min, time_max)
             filtered_homework.extend(homework_events)
             filtered_webinars.extend(webinars_events)
         return filtered_homework, filtered_webinars

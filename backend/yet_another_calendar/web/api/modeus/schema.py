@@ -13,7 +13,7 @@ async def get_cookies_from_headers() -> str | Response:
     return await integration.login(settings.modeus_username, settings.modeus_password)
 
 
-class ModeusCreds(BaseModel):
+class Creds(BaseModel):
     """Modeus creds."""
 
     username: str
@@ -21,16 +21,8 @@ class ModeusCreds(BaseModel):
 
 
 class ModeusTimeBody(BaseModel):
-    time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+03:00"])
-    time_max: datetime.datetime = Field(alias="timeMax", examples=["2024-09-29T23:59:59+03:00"])
-
-
-# noinspection PyNestedDecorators
-class ModeusEventsBody(ModeusTimeBody):
-    """Modeus search events body."""
-    size: int = Field(default=50)
-    attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId",
-                                                default=["d69c87c8-aece-4f39-b6a2-7b467b968211"])
+    time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+00:00"])
+    time_max: datetime.datetime = Field(alias="timeMax", examples=["2024-09-29T23:59:59+00:00"])
 
     @field_validator("time_min")
     @classmethod
@@ -39,6 +31,8 @@ class ModeusEventsBody(ModeusTimeBody):
             raise ValueError("Weekday time_min must be Monday.")
         if time_min.second or time_min.hour or time_min.minute:
             raise ValueError("Time must me 00:00:00.")
+        if time_min.tzinfo != datetime.timezone.utc:
+            raise ValueError("Time must be UTC.")
         return time_min
 
     @field_validator("time_max")
@@ -48,7 +42,17 @@ class ModeusEventsBody(ModeusTimeBody):
             raise ValueError("Weekday time_min must be Sunday.")
         if time_max.hour != 23 or time_max.second != 59 or time_max.minute != 59:
             raise ValueError("Time must me 23:59:59.")
+        if time_max.tzinfo != datetime.timezone.utc:
+            raise ValueError("Time must be UTC.")
         return time_max
+
+
+# noinspection PyNestedDecorators
+class ModeusEventsBody(ModeusTimeBody):
+    """Modeus search events body."""
+    size: int = Field(default=50)
+    attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId",
+                                                default=["d69c87c8-aece-4f39-b6a2-7b467b968211"])
 
     @model_validator(mode='after')
     def check_passwords_match(self) -> Self:
@@ -108,14 +112,22 @@ class Href(BaseModel):
         return uuid.UUID(self.href.replace('/', ''))
 
 
-class Link(BaseModel):
+class EventLinks(BaseModel):
+    course_unit_realization: Href = Field(alias="course-unit-realization")
+
+
+class EventWithLinks(Event):
+    links: EventLinks = Field(alias="_links")
+
+
+class AttenderLink(BaseModel):
     self: Href
     event: Href
     person: Href
 
 
 class Attender(BaseModel):
-    links: Link = Field(alias="_links")
+    links: AttenderLink = Field(alias="_links")
 
 
 class ShortPerson(BaseModel):
@@ -123,15 +135,22 @@ class ShortPerson(BaseModel):
     full_name: str = Field(alias="fullName")
 
 
+class Course(BaseModel):
+    id: uuid.UUID
+    name: str
+
+
 class CalendarEmbedded(BaseModel):
-    events: list[Event] = Field(alias="events")
+    events: list[EventWithLinks] = Field(alias="events")
     locations: list[Location] = Field(alias="event-locations")
     attendees: list[Attender] = Field(alias="event-attendees")
     people: list[ShortPerson] = Field(alias="persons")
+    courses: list[Course] = Field(alias="course-unit-realizations")
 
 
 class FullEvent(Event, Location):
     teacher_full_name: str
+    course_name: str
 
 
 class ModeusCalendar(BaseModel):
@@ -143,20 +162,24 @@ class ModeusCalendar(BaseModel):
         """Serialize calendar api response from modeus."""
         locations = {location.id: location for location in self.embedded.locations}
         teachers = {teacher.id: teacher for teacher in self.embedded.people}
+        courses = {course.id: course for course in self.embedded.courses}
         teachers_with_events = {teacher.links.event.id: teacher.links for teacher in self.embedded.attendees}
         full_events = []
         for event in self.embedded.events:
+            course_id = event.links.course_unit_realization.id
             try:
+                course_name = courses[course_id].name
                 teacher_event = teachers_with_events[event.id]
                 teacher = teachers[teacher_event.person.id]
                 teacher_full_name = teacher.full_name
             except KeyError:
+                course_name = 'unknown'
                 teacher_full_name = 'unknown'
             location = locations[event.id]
             if location.is_lxp:
                 continue
             full_events.append(FullEvent(**{
-                "teacher_full_name": teacher_full_name,
+                "teacher_full_name": teacher_full_name, "course_name": course_name,
                 **event.model_dump(by_alias=True), **location.model_dump(by_alias=True),
             }))
         return full_events
