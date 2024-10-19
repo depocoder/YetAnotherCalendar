@@ -8,6 +8,12 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export function getTokenFromLocalStorage() {
     return localStorage.getItem('token')
 }
+export function getCalendarIdLocalStorage() {
+    return localStorage.getItem('calendarId')
+}
+export function getPersonIdLocalStorage() {
+    return localStorage.getItem('personId')
+}
 
 // login
 export async function loginModeus(username, password) {
@@ -20,10 +26,18 @@ export async function loginModeus(username, password) {
 
 export async function searchModeus(fullName) {
     try {
-        const params = new URLSearchParams();
-        params.append('full_name', fullName);
-        return await axios.get(`${BACKEND_URL}/api/modeus/search/?full_name=${fullName}`);
-
+        // const params = new URLSearchParams();
+        // params.append('full_name', fullName);
+        // return await axios.get(`${BACKEND_URL}/api/modeus/search/?full_name=${fullName}`);
+        const response = await axios.get(`${BACKEND_URL}/api/modeus/search/`, {
+            params: {
+                full_name: fullName // Параметр передается через объект `params`
+            },
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        return response; // Возвращаем данные
     } catch (e) {
         return e.response;
     }
@@ -46,10 +60,10 @@ export async function getNetologyCourse(sessionToken) {
 }
 
 // calendar
-export async function bulkEvents(sessionToken, calendarId, timeMin, timeMax, attendeePersonId) {
+export async function bulkEvents(sessionToken, calendarId, timeMin, timeMax, attendeePersonId, timeZone) {
     try {
         const response = await axios.post(
-            `${BACKEND_URL}/api/bulk/events/?calendar_id=${calendarId}`,
+            `${BACKEND_URL}/api/bulk/events/?calendar_id=${calendarId}&time_zone=${timeZone}`,
             {
                 timeMin,
                 timeMax,
@@ -70,10 +84,10 @@ export async function bulkEvents(sessionToken, calendarId, timeMin, timeMax, att
 }
 
 // Refresh calendar
-export async function refreshBulkEvents(sessionToken, calendarId, timeMin, timeMax, attendeePersonId) {
+export async function refreshBulkEvents(sessionToken, calendarId, timeMin, timeMax, attendeePersonId, timeZone) {
     try {
         const response = await axios.post(
-            `${BACKEND_URL}/api/bulk/refresh_events/?calendar_id=${calendarId}`,
+            `${BACKEND_URL}/api/bulk/refresh_events/?calendar_id=${calendarId}&time_zone=${timeZone}`,
             {
                 timeMin,
                 timeMax,
@@ -94,10 +108,10 @@ export async function refreshBulkEvents(sessionToken, calendarId, timeMin, timeM
 }
 
 // export file
-export async function exportICS(sessionToken, calendarId, timeMin, timeMax, attendeePersonId) {
+export async function exportICS(sessionToken, calendarId, timeMin, timeMax, attendeePersonId, timeZone) {
     try {
         const response = await axios.post(
-            `${BACKEND_URL}/api/bulk/export_ics/?calendar_id=${calendarId}`, // URL с calendar_id в параметрах
+            `${BACKEND_URL}/api/bulk/export_ics/?calendar_id=${calendarId}&time_zone=${timeZone}`,
             {
                 timeMin,
                 timeMax,

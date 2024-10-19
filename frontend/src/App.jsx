@@ -9,16 +9,15 @@ const App = () => {
     const [authData, setAuthData] = useState({
         email: '',
         password: '',
-        personId: ''
     });
 
     // Функция для обработки логина
-    const handleLogin = async (email, password, personId) => {
+    const handleLogin = async (email, password) => {
         try {
             let response = await loginModeus(email, password);
 
             if (response.status === 200) {
-                setAuthData({email, password, personId});
+                setAuthData({email, password});
                 localStorage.setItem('token', response.data["_netology-on-rails_session"]);
 
                 return {success: true};
@@ -34,6 +33,7 @@ const App = () => {
     const handleSearch = async (fullName) => {
         try {
             let response = await searchModeus(fullName);
+            console.log('fullname response', response.data)
 
             if (response.status === 200) {
                 return {success: true, data: response.data};
@@ -56,8 +56,6 @@ const App = () => {
                             <CalendarRoute
                                 email={authData.email}
                                 password={authData.password}
-                                personId={authData.personId}
-                                token={localStorage.getItem('token')}
                             />
                         </PrivateRoute>
                     }

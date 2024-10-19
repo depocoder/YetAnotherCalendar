@@ -45,7 +45,13 @@ const Calendar = ({events}) => {
 
     // Функция для фильтрации занятий на определенный день
     const getEventsForDay = (day) => {
-        return modeus.filter(event => {
+        // console.log('day', day)
+
+        if (!modeus) {
+            return []; // Возвращаем пустой массив, если данных нет
+        }
+
+        return modeus?.filter(event => {
             const eventDate = event.start.split('T')[0]; // Извлекаем только дату в формате YYYY-MM-DD
             return eventDate === day;
         });
@@ -79,6 +85,16 @@ const Calendar = ({events}) => {
 
         return null;
     };
+
+    // const lessonTimes = [
+    //     {number: 1, start: "08:30", end: "10:00"},
+    //     {number: 2, start: "10:15", end: "11:45"},
+    //     {number: 3, start: "12:00", end: "13:30"},
+    //     {number: 4, start: "14:00", end: "15:30"},
+    //     {number: 5, start: "15:45", end: "17:15"},
+    //     {number: 6, start: "17:30", end: "19:00"},
+    //     {number: 7, start: "19:10", end: "20:40"},
+    // ];
 
     return (
         <div className="wrapper">
@@ -190,14 +206,14 @@ const Calendar = ({events}) => {
                                                 </div>
                                             ))
                                             ) : (<div className="empty-slot"></div>
-                                                    )}
-                                                </td>
-                                            );
-                                        })}
-                                    </tr>
-                                )
-                            )
-                            }
+                                            )}
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        )
+                    )
+                    }
                                 </tbody>
                 </table>
             </div>
