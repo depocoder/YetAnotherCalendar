@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // env variable
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `https://yetanothercalendar.ru`;
 // const BACKEND_URL = 'http://localhost:8000';
 
 

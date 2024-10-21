@@ -13,6 +13,14 @@
 This project was created to replace Modeus/Netology calendars
 
 
+## Features
+
+* Export to .ics calendar format
+* Your timezone support (default Moscow)
+* Modeus + Netology integration
+* LMS support (not required to use)
+* Redis cache
+
 ## Getting started
 
 1. Install [poetry](https://python-poetry.org/docs/#installing-with-the-official-installer)

@@ -12,8 +12,10 @@ from starlette import status
 
 from yet_another_calendar.settings import settings
 from ..netology import views as netology_views
+from ..lms import views as lms_views
 from ..modeus import views as modeus_views
 from ..modeus import schema as modeus_schema
+from ..lms import schema as lms_schema
 from ..netology import schema as netology_schema
 from . import schema
 
@@ -22,17 +24,16 @@ logger = logging.getLogger(__name__)
 
 def create_ics_event(title: str, starts_at: datetime.datetime, ends_at: datetime.datetime,
                      lesson_id: Any, description: Optional[str] = None,
-                     webinar_url: Optional[str] = None) -> icalendar.Event:
+                     url: Optional[str] = None) -> icalendar.Event:
     event = icalendar.Event()
     dt_now = datetime.datetime.now()
     event.add('summary', title)
-    event.add('location', webinar_url)
+    event.add('location', url if url else 'unknown location')
     event.add('dtstart', starts_at)
     event.add('dtend', ends_at)
     event.add('dtstamp', dt_now)
     event.add('uid', lesson_id)
-    if description:
-        event.add('description', description)
+    event.add('DESCRIPTION', description)
     return event
 
 
@@ -44,30 +45,36 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
     for netology_lesson in calendar.netology.webinars:
         if not netology_lesson.starts_at or not netology_lesson.ends_at:
             continue
-        event = create_ics_event(title=f"Netology: {netology_lesson.title}", starts_at=netology_lesson.starts_at,
+        event = create_ics_event(title=f"Netology: {netology_lesson.block_title}", starts_at=netology_lesson.starts_at,
                                  ends_at=netology_lesson.ends_at, lesson_id=netology_lesson.id,
-                                 webinar_url=netology_lesson.webinar_url)
+                                 description=netology_lesson.title,
+                                 url=netology_lesson.webinar_url)
         ics_calendar.add_component(event)
-    for modeus_lesson in calendar.modeus:
-        event = create_ics_event(title=f"Modeus: {modeus_lesson.name}",
-                                 starts_at=modeus_lesson.start_time, ends_at=modeus_lesson.end_time,
-                                 lesson_id=modeus_lesson.id,
-                                 description=modeus_lesson.description)
+    for modeus_lesson in calendar.utmn.modeus_events:
+        event = create_ics_event(title=f"Modeus: {modeus_lesson.course_name}", starts_at=modeus_lesson.start_time,
+                                 ends_at=modeus_lesson.end_time, lesson_id=modeus_lesson.id,
+                                 description=modeus_lesson.name)
+        ics_calendar.add_component(event)
+    for lms_event in calendar.utmn.lms_events:
+        dt_start = lms_event.dt_end - datetime.timedelta(hours=2)
+        event = create_ics_event(title=f"LMS: {lms_event.course_name}", starts_at=dt_start, ends_at=lms_event.dt_end,
+                                 lesson_id=lms_event.id, description=lms_event.name, url=lms_event.url)
         ics_calendar.add_component(event)
     yield ics_calendar.to_ical()
 
 
 async def refresh_events(
         body: modeus_schema.ModeusEventsBody,
+        lms_user: lms_schema.User,
         jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
         timezone: str,
 ) -> schema.RefreshedCalendarResponse:
     """Clear events cache."""
-    cached_json = await get_cached_calendar(body, jwt_token, calendar_id, cookies, timezone)
+    cached_json = await get_cached_calendar(body, lms_user, jwt_token, calendar_id, cookies, timezone)
     cached_calendar = schema.CalendarResponse.model_validate(cached_json)
-    calendar = await get_calendar(body, jwt_token, calendar_id, cookies, timezone)
+    calendar = await get_calendar(body, lms_user, jwt_token, calendar_id, cookies, timezone)
     changed = cached_calendar.get_hash() != calendar.get_hash()
     try:
         cache_key = default_key_builder(get_cached_calendar, args=(body, jwt_token, calendar_id, cookies), kwargs={})
@@ -87,6 +94,7 @@ async def refresh_events(
 
 async def get_calendar(
         body: modeus_schema.ModeusEventsBody,
+        lms_user: lms_schema.User,
         jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
@@ -96,21 +104,28 @@ async def get_calendar(
         tz = pytz.timezone(timezone)
     except pytz.exceptions.UnknownTimeZoneError:
         raise HTTPException(detail="Wrong timezone", status_code=status.HTTP_400_BAD_REQUEST) from None
-
+    lms_response = None
     async with asyncio.TaskGroup() as tg:
         netology_response = tg.create_task(netology_views.get_calendar(body, calendar_id, cookies))
         modeus_response = tg.create_task(modeus_views.get_calendar(body, jwt_token))
+        if lms_user.is_enabled:
+            lms_response = tg.create_task(lms_views.get_events(lms_user, body))
+    lms_events = lms_response.result() if lms_response else []
     return schema.CalendarResponse.model_validate(
-        {"netology": netology_response.result(), "modeus": modeus_response.result()},
+        {"netology": netology_response.result(), "utmn": {
+            "modeus_events": modeus_response.result(),
+            "lms_events": lms_events,
+        }},
     ).change_timezone(tz)
 
 
 @cache(expire=settings.redis_events_time_live)
 async def get_cached_calendar(
         body: modeus_schema.ModeusEventsBody,
+        lms_user: lms_schema.User,
         jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
         timezone: str,
 ) -> schema.CalendarResponse:
-    return await get_calendar(body, jwt_token, calendar_id, cookies, timezone)
+    return await get_calendar(body, lms_user, jwt_token, calendar_id, cookies, timezone)
