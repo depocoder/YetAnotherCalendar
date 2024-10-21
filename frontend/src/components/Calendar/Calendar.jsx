@@ -5,7 +5,6 @@ import '../../style/header.scss';
 import '../../style/calendar.scss';
 import arrow from "../../img/arrow.png";
 import {useNavigate} from "react-router-dom";
-import Loader from "../../elements/Loader";
 // import DatePicker from "./DataPicker";
 
 const Calendar = ({ events, date }) => {
@@ -100,8 +99,6 @@ const Calendar = ({ events, date }) => {
 
                 {/*<DatePicker />*/}
             </header>
-
-            <Loader />
 
             <div className="calendar">
                 <table className="shedule-table">

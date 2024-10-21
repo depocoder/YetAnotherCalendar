@@ -67,3 +67,10 @@ code {
     color: red;
     margin-top: 10px;
 }
+// loader
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}

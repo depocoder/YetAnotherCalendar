@@ -1,26 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {getNetologyCourse, bulkEvents, getTokenFromLocalStorage, getPersonIdLocalStorage} from '../services/api'; // Ваши API-запросы
 import Calendar from "../components/Calendar/Calendar";
+import Loader from "../elements/Loader";
 // import Header from "../components/Header/Header";
 
 const CalendarRoute = () => {
   const [events, setEvents] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-   // Функция для загрузки событий из localStorage
-  // const loadEventsFromLocalStorage = () => {
-  //   const savedEvents = localStorage.getItem('events');
-  //   if (savedEvents) {
-  //     return JSON.parse(savedEvents);
-  //   }
-  //   return null;
-  // };
-
-  // Сохраняем события в localStorage
-  // const saveEventsToLocalStorage = (eventsData) => {
-  //   localStorage.setItem('events', JSON.stringify(eventsData));
-  // };
 
   // Создаем состояние для дат
     const [date, setDate] = useState({
@@ -30,13 +17,6 @@ const CalendarRoute = () => {
 
   useEffect(() => {
     const fetchCourseAndEvents = async () => {
-      // Попытка загрузки событий из localStorage
-      // const cachedEvents = loadEventsFromLocalStorage();
-      // if (cachedEvents) {
-      //   console.log("События загружены из localStorage:", cachedEvents);
-      //   setEvents(cachedEvents);
-      //   setLoading(false);
-      //   return;
 
       try {
         const courseData = await getNetologyCourse(getTokenFromLocalStorage());
@@ -49,11 +29,6 @@ const CalendarRoute = () => {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         console.log("Current time zone:", timeZone);
 
-
-        // console.log("Session Token:", getTokenFromLocalStorage());
-        // console.log("Calendar ID:", calendarId);
-        // console.log("Person ID:", getPersonIdLocalStorage());
-
         if (calendarId) {
           const eventsResponse = await bulkEvents(
             getTokenFromLocalStorage(), // Токен сессии
@@ -64,14 +39,8 @@ const CalendarRoute = () => {
               Intl.DateTimeFormat().resolvedOptions().timeZone
           );
 
-          // if (eventsResponse.)
           console.log('События:', eventsResponse.data);
           setEvents(eventsResponse.data);
-          // cached_at
-          // localStorage.setItem('cached_at', eventsResponse.data.cached_at); // Сохраняем cached_at localstorage
-          // console.log('eventsResponse.data.cached_at', eventsResponse.data.cached_at)
-          // Сохраняем события в localStorage
-          // saveEventsToLocalStorage(eventsResponse.data);
         }
       } catch (error) {
         console.error('Ошибка при получении данных с сервера:', error);
@@ -81,21 +50,16 @@ const CalendarRoute = () => {
       }
 
       }
-
-
-
-
-      // if (getTokenFromLocalStorage() || getPersonIdLocalStorage()) {
-
-        // console.error('Ошибка авторизации. Проверьте введенные данные.');
-        // return;
-      // }
     fetchCourseAndEvents();
 
-  }, []);
+  }, [date.start, date.end]);
 
   if (loading) {
-    return <div>Загрузка данных...</div>;
+    return (
+        <div className="loader-container">
+          <Loader />
+        </div>
+    );
   }
 
   if (error) {
