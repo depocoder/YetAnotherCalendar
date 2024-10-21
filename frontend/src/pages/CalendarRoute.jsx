@@ -22,6 +22,12 @@ const CalendarRoute = () => {
   //   localStorage.setItem('events', JSON.stringify(eventsData));
   // };
 
+  // Создаем состояние для дат
+    const [date, setDate] = useState({
+        start: "2024-10-21T00:00:00+03:00",   // Дата начала
+        end:   "2024-10-27T23:59:59+03:00"    // Дата окончания
+    });
+
   useEffect(() => {
     const fetchCourseAndEvents = async () => {
       // Попытка загрузки событий из localStorage
@@ -52,8 +58,8 @@ const CalendarRoute = () => {
           const eventsResponse = await bulkEvents(
             getTokenFromLocalStorage(), // Токен сессии
             calendarId, // ID календаря
-            "2024-10-21T00:00:00+03:00", // Дата начала
-            "2024-10-27T23:59:59+03:00", // Дата окончания
+            date.start, // Дата начала
+            date.end, // Дата окончания
             getPersonIdLocalStorage(), // ID участника
               Intl.DateTimeFormat().resolvedOptions().timeZone
           );
@@ -98,7 +104,7 @@ const CalendarRoute = () => {
 
   return (
       <div className="calendar-page">
-        <Calendar events={events}/>
+        <Calendar events={events} date={date} />
         {/*<Header />*/}
       </div>
   );

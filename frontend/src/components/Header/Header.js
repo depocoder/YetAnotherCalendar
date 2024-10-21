@@ -54,7 +54,7 @@ export default function Header() {
           <th className="vertical-heading">
               дедлайны
               <button className="off-deadline">Скрыть</button>
-            </th>
+          </th>
             <td className="vertical-deadline">
               <button className="deadline-info">ТюмГУ</button>
               <button className="deadline-info-on">Нетология</button>
