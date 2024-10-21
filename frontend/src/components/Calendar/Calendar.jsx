@@ -1,13 +1,16 @@
 import React, { useState } from 'react'; // Убедитесь, что useState импортирован
-// import cross from "../../img/arrow.png";
+import cross from "../../img/arrow.png";
 import camera from "../../img/camera.png";
 import '../../style/header.scss';
 import '../../style/calendar.scss';
 import arrow from "../../img/arrow.png";
+import {useNavigate} from "react-router-dom";
+import Loader from "../../elements/Loader";
 // import DatePicker from "./DataPicker";
 
 const Calendar = ({ events, date }) => {
-    const [selectedEvent, setSelectedEvent] = useState(null); // Состояние для выбранного события
+    const navigate = useNavigate();
+    const [selectedEvent, setSelectedEvent] = useState(null);
 
     if (!events) {
         return <div>Нет данных для отображения.</div>;
@@ -57,6 +60,12 @@ const Calendar = ({ events, date }) => {
         monthDays.push(currentDate.toISOString().split('T')[0]);
     }
 
+
+    const exitApp = () => {
+        localStorage.clear();
+        navigate("/login");
+    };
+
     return (
         <div className="wrapper">
             <header className="header">
@@ -66,9 +75,9 @@ const Calendar = ({ events, date }) => {
                         {/*<button className="export-btn">Экспорт .ics</button>*/}
                         {/*<button className="cache-btn">Сбросить кэш расписания</button>*/}
                     </div>
-                    {/*<button className="exit-btn" href="#"> Выйти*/}
-                    {/*    <img className="exit-btn-cross" src={cross} alt="exit"/>*/}
-                    {/*</button>*/}
+                    <div className="exit-btn" onClick={exitApp}> Выйти
+                        <img className="exit-btn-cross" src={cross} alt="exit"/>
+                    </div>
                 </div>
 
                 <div className="rectangle">
@@ -91,6 +100,8 @@ const Calendar = ({ events, date }) => {
 
                 {/*<DatePicker />*/}
             </header>
+
+            <Loader />
 
             <div className="calendar">
                 <table className="shedule-table">
