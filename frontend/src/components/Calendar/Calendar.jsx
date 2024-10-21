@@ -8,6 +8,8 @@ import {useNavigate} from "react-router-dom";
 // import DatePicker from "./DataPicker";
 
 const Calendar = ({ events, date }) => {
+
+    console.log('Calendar events', events)
     const navigate = useNavigate();
     const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -16,11 +18,11 @@ const Calendar = ({ events, date }) => {
     }
 
     // Уроки modeus
-    const { modeus, netology } = events;
+    const { utmn, netology } = events;
     const weekDays = Array.from({ length: 7 }, () => []);
 
     // Заполнение массива дней недели занятиями
-    modeus?.forEach((lesson) => {
+    utmn.modeus_events?.forEach((lesson) => {
         const startTime = new Date(lesson.start);
         const endTime = new Date(lesson.end);
         const dayOfWeek = (startTime.getDay() + 6) % 7;

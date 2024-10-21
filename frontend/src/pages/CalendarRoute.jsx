@@ -10,35 +10,41 @@ const CalendarRoute = () => {
   const [error, setError] = useState(null);
 
   // Создаем состояние для дат
-    const [date, setDate] = useState({
-        start: "2024-10-21T00:00:00+03:00",   // Дата начала
-        end:   "2024-10-27T23:59:59+03:00"    // Дата окончания
-    });
+  const [date] = useState({
+    start: "2024-10-21T00:00:00+03:00",   // Дата начала
+    end: "2024-10-27T23:59:59+03:00"    // Дата окончания
+  });
 
   useEffect(() => {
     const fetchCourseAndEvents = async () => {
 
       try {
         const courseData = await getNetologyCourse(getTokenFromLocalStorage());
-        // console.log('Данные курса:', courseData);
         const calendarId = courseData?.id;
-        // console.log('calendarId add storage', calendarId)
         localStorage.setItem('calendarId', calendarId);
 
+        console.log("Current time zone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
 
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        console.log("Current time zone:", timeZone);
+        // Преобразование дат в формат UTC (без временной зоны +03:00)
+        const convertToUTC = (dateString) => {
+          const date = new Date(dateString);
+          return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+              .toISOString()
+              .replace('Z', '+00:00');
+        };
+
+        const startUTC = convertToUTC(date.start); // Преобразуем дату начала в UTC
+        const endUTC = convertToUTC(date.end);     // Преобразуем дату окончания в UTC
 
         if (calendarId) {
-          const eventsResponse = await bulkEvents(
-            getTokenFromLocalStorage(), // Токен сессии
-            calendarId, // ID календаря
-            date.start, // Дата начала
-            date.end, // Дата окончания
-            getPersonIdLocalStorage(), // ID участника
-              Intl.DateTimeFormat().resolvedOptions().timeZone
-          );
-
+          const eventsResponse = await bulkEvents({
+            calendarId: calendarId, // ID календаря
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Часовой пояс
+            attendeePersonId: getPersonIdLocalStorage(), // ID участника
+            timeMin: startUTC, // Дата начала в формате UTC
+            timeMax: endUTC, // Дата окончания в формате UTC
+            sessionToken: getTokenFromLocalStorage(),
+          });
           console.log('События:', eventsResponse.data);
           setEvents(eventsResponse.data);
         }
