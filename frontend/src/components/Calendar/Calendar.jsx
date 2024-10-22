@@ -107,15 +107,28 @@ const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
             <div className="calendar">
                 <table className="shedule-table">
                     <thead>
-                    <tr>
+                    <tr className="days-row">
                         <th className="days"></th>
                         {["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"].map((day, index) => {
                             const dayDate = new Date(date.start);
                             dayDate.setDate(dayDate.getDate() + index);
-                            const formattedDate = formatDate(dayDate);
 
+
+                            const today = new Date(); // Получаем сегодняшнюю дату
+                            today.setHours(0, 0, 0, 0); // Устанавливаем время на начало дня для корректного сравнения
+
+                            // Сравниваем даты и определяем нужный класс
+                            let dayClass = "";
+                            if (dayDate < today) {
+                                dayClass = "prev";
+                            } else if (dayDate.toDateString() === today.toDateString()) {
+                                dayClass = "now";
+                            } else {
+                                dayClass = "next";
+                            }
+                            const formattedDate = formatDate(dayDate);
                             return (
-                                <th key={index} className={`days-${index+1}`}>
+                                <th key={index} className={`days ${dayClass}`}>
                                     {`${day} ${formattedDate}`}
                                 </th>
                             );

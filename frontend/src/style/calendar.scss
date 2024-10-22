@@ -50,71 +50,26 @@
 }
 
 .days {
-    border-bottom: 1px dotted #adadad;
-    &-1 {
+    padding-left: 30px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    font-family: "Unbounded", sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    border: 1px;
+
+    &-row {
+      border-bottom: 1px dotted #adadad;
+    }
+
+    &.prev {
         color: #adadad;
-        padding-left: 30px;
-        padding-bottom: 10px;
-        padding-top: 10px;
-        font-family: "Unbounded", sans-serif;
-        font-weight: 500;
-        font-size: 13px;
-        border: 1px;
-        border-bottom: 1px dotted #adadad;
     }
-    &-2 {
-        color: #7b61ff;
-        padding-left: 30px;
-        font-family: "Unbounded", sans-serif;
-        font-weight: 500;
-        font-size: 13px;
-        border: 1px;
-        border-bottom: 1px dotted #adadad;
+    &.now {
+      color: #7b61ff;
     }
-    &-3 {
+    &.next {
         color: #333333;
-        padding-left: 30px;
-        font-family: "Unbounded", sans-serif;
-        font-weight: 500;
-        font-size: 13px;
-        border: 1px;
-        border-bottom: 1px dotted #adadad;
-    }
-    &-4 {
-        color: #333333;
-        padding-left: 30px;
-        font-family: "Unbounded", sans-serif;
-        font-weight: 500;
-        font-size: 13px;
-        border: 1px;
-        border-bottom: 1px dotted #adadad;
-    }
-    &-5 {
-        color: #333333;
-        padding-left: 30px;
-        font-family: "Unbounded", sans-serif;
-        font-weight: 500;
-        font-size: 13px;
-        border: 1px;
-        border-bottom: 1px dotted #adadad;
-    }
-    &-6 {
-        color: #333333;
-        padding-left: 30px;
-        font-family: "Unbounded", sans-serif;
-        font-weight: 500;
-        font-size: 13px;
-        border: 1px;
-        border-bottom: 1px dotted #adadad;
-    }
-    &-7 {
-        color: #333333;
-        padding-left: 30px;
-        font-family: "Unbounded", sans-serif;
-        font-weight: 500;
-        font-size: 13px;
-        border: 1px;
-        border-bottom: 1px dotted #adadad;
     }
 }
 
