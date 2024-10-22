@@ -56,8 +56,8 @@ export async function getNetologyCourse(sessionToken) {
 }
 
 // calendar
-export async function bulkEvents({calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken })  {
-    console.log('calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken', calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken)
+export async function bulkEvents({calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken, lms_user })  {
+    // console.log('calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken', calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken)
     // const calendarId = 45526; // Ваш ID календаря
     // const timeZone = 'Europe/Moscow'; // Часовой пояс
     // const attendeePersonId = '5a3d9024-d210-4bfb-a622-0a55ab5bac1a'; // Ваш ID участника
@@ -69,11 +69,7 @@ export async function bulkEvents({calendarId, timeZone, attendeePersonId, timeMi
             size: 50,
             attendeePersonId: [attendeePersonId], // Обратите внимание на правильность имени свойства
         },
-        lms_user: {
-            id: 0,
-            token: sessionToken,
-            is_enabled: false,
-        },
+        lms_user: lms_user || { id: 0, token: sessionToken, is_enabled: false }, // Использовать переданный lms_user или значение по умолчанию
 
     };
 
@@ -97,19 +93,18 @@ export async function bulkEvents({calendarId, timeZone, attendeePersonId, timeMi
 };
 
 // Refresh calendar
-export async function refreshBulkEvents(sessionToken, calendarId, timeMin, timeMax, attendeePersonId, timeZone, lms_user) {
+export async function refreshBulkEvents({calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken, lms_user }) {
     try {
         const requestBody = {
-            timeMin,
-            timeMax,
-            size: 50,
-            attendeePersonId: [attendeePersonId],
-        };
+            body: {
+                timeMin: timeMin,
+                timeMax: timeMax,
+                size: 50,
+                attendeePersonId: [attendeePersonId], // Обратите внимание на правильность имени свойства
+            },
+            lms_user: lms_user || { id: 0, token: sessionToken, is_enabled: false }, // Использовать переданный lms_user или значение по умолчанию
 
-        // Если lms_user передан, добавляем его в тело запроса
-        if (lms_user) {
-            requestBody.lms_user = lms_user;
-        }
+        };
 
         const response = await axios.post(
             `${BACKEND_URL}/api/bulk/refresh_events/?calendar_id=${calendarId}&time_zone=${timeZone}`,
@@ -128,16 +123,17 @@ export async function refreshBulkEvents(sessionToken, calendarId, timeMin, timeM
 }
 
 // export file
-export async function exportICS(sessionToken, calendarId, timeMin, timeMax, attendeePersonId, timeZone, lms_user) {
+export async function exportICS({calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken, lms_user }) {
     try {
         const requestBody = {
-             body: { // Обернуть в объект body
-                timeMin,
-                timeMax,
+            body: {
+                timeMin: timeMin,
+                timeMax: timeMax,
                 size: 50,
-                attendeePersonId: [attendeePersonId],
+                attendeePersonId: [attendeePersonId], // Обратите внимание на правильность имени свойства
             },
-            lms_user: lms_user || { id: 0, token: "string", is_enabled: false }
+            lms_user: lms_user || { id: 0, token: sessionToken, is_enabled: false }, // Использовать переданный lms_user или значение по умолчанию
+
         };
 
         const response = await axios.post(

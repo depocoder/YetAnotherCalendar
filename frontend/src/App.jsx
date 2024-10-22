@@ -36,6 +36,7 @@ const App = () => {
             console.log('fullname response', response.data)
 
             if (response.status === 200) {
+
                 return {success: true, data: response.data};
             } else {
                 return {success: false, message: "Неверное ФИО. Попробуйте снова."};

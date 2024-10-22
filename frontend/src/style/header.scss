@@ -86,6 +86,11 @@
   border: 1px solid #7b61ff;
   transition: color 0.3s linear;
 
+  &.updated {
+    background-color: #4caf50;
+    color: white;
+  }
+
   &:hover {
     cursor: pointer;
     background-color: #5856d6;

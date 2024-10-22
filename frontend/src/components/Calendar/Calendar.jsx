@@ -7,7 +7,7 @@ import arrow from "../../img/arrow.png";
 import {useNavigate} from "react-router-dom";
 // import DatePicker from "./DataPicker";
 
-const Calendar = ({ events, date }) => {
+const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
 
     console.log('Calendar events', events)
     const navigate = useNavigate();
@@ -74,7 +74,9 @@ const Calendar = ({ events, date }) => {
                     <div className="shedule-export">
                         <span className="shedule">Мое расписание</span>
                         {/*<button className="export-btn">Экспорт .ics</button>*/}
-                        {/*<button className="cache-btn">Сбросить кэш расписания</button>*/}
+                        <button onClick={onRefresh} className={`cache-btn ${cacheUpdated ? 'updated' : ''}`}>
+                            {cacheUpdated ? 'Кэш обновлен' : 'Сбросить кэш расписания'}
+                        </button>
                     </div>
                     <div className="exit-btn" onClick={exitApp}> Выйти
                         <img className="exit-btn-cross" src={cross} alt="exit"/>
