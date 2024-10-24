@@ -20,17 +20,17 @@ const CalendarRoute = () => {
 
   // Создаем состояние для дат
   const [date] = useState({
-    start: "2024-10-21T00:00:00+03:00",   // Дата начала
-    end: "2024-10-27T23:59:59+03:00"    // Дата окончания
+    start: "2024-10-21T00:00:00+00:00",   // Дата начала 2024-09-23T00:00:00+00:00
+    end: "2024-10-27T23:59:59+00:00"    // Дата окончания 2024-09-29T23:59:59+00:00
   });
 
   // Преобразование дат в формат UTC (без временной зоны +03:00)
-  const convertToUTC = (dateString) => {
-    const date = new Date(dateString);
-    return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-        .toISOString()
-        .replace('Z', '+00:00');
-  };
+  // const convertToUTC = (dateString) => {
+  //   const date = new Date(dateString);
+  //   return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+  //       .toISOString()
+  //       .replace('Z', '+00:00');
+  // };
 
   const fetchCourseAndEvents = useCallback(async () => {
       try {
@@ -39,16 +39,16 @@ const CalendarRoute = () => {
         localStorage.setItem('calendarId', calendarId);
 
         // console.log("Current time zone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
-        const startUTC = convertToUTC(date.start); // Преобразуем дату начала в UTC
-        const endUTC = convertToUTC(date.end);     // Преобразуем дату окончания в UTC
+        // const startUTC = convertToUTC(date.start); // Преобразуем дату начала в UTC
+        // const endUTC = convertToUTC(date.end);     // Преобразуем дату окончания в UTC
 
         if (calendarId) {
           const eventsResponse = await bulkEvents({
             calendarId: calendarId, // ID календаря
             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Часовой пояс
             attendeePersonId: getPersonIdLocalStorage(), // ID участника
-            timeMin: startUTC, // Дата начала в формате UTC
-            timeMax: endUTC, // Дата окончания в формате UTC
+            timeMin: date.start, // Дата начала в формате UTC
+            timeMax: date.end, // Дата окончания в формате UTC
             sessionToken: getTokenFromLocalStorage(),
           });
           console.log('События:', eventsResponse.data);
@@ -65,16 +65,16 @@ const CalendarRoute = () => {
   const handleRefreshEvents = useCallback(async () => {
       // const startUTC = new Date().toISOString();
       // const endUTC = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(); // Дата через 7 дней
-      const startUTC = convertToUTC(date.start); // Преобразуем дату начала в UTC
-      const endUTC = convertToUTC(date.end);     // Преобразуем дату окончания в UTC
+      // const startUTC = convertToUTC(date.start); // Преобразуем дату начала в UTC
+      // const endUTC = convertToUTC(date.end);     // Преобразуем дату окончания в UTC
 
       try {
         const refreshEventsResponse = await refreshBulkEvents({
           calendarId: getCalendarIdLocalStorage(), // ID календаря
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Часовой пояс
           attendeePersonId: getPersonIdLocalStorage(), // ID участника
-          timeMin: startUTC, // Дата начала в формате UTC
-          timeMax: endUTC, // Дата окончания в формате UTC
+          timeMin: date.start, // Дата начала в формате UTC
+          timeMax: date.end, // Дата окончания в формате UTC
           sessionToken: getTokenFromLocalStorage(),
         });
 

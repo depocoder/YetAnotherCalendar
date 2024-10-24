@@ -22,17 +22,46 @@ const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
     const weekDays = Array.from({ length: 7 }, () => []);
 
     // Заполнение массива дней недели занятиями
-    utmn.modeus_events?.forEach((lesson) => {
-        const startTime = new Date(lesson.start);
-        const endTime = new Date(lesson.end);
-        const dayOfWeek = (startTime.getDay() + 6) % 7;
+    if (utmn && utmn.modeus_events) {
+        utmn?.modeus_events?.forEach((lesson) => {
+            console.log('lesson', lesson)
+            const startTime = new Date(lesson.start);
+            const endTime = new Date(lesson.end);
+            const dayOfWeek = (startTime.getDay() + 6) % 7;
 
-        weekDays[dayOfWeek].push({
-            ...lesson,
-            startTime,
-            endTime
-        });
-    });
+            weekDays[dayOfWeek].push({
+                ...lesson,
+                startTime,
+                endTime,
+                type: 'modeus' // Добавляем тип события
+            });
+        })
+    }
+
+     // Заполнение массива дней недели вебинарами netology
+    if (netology && netology.webinars) {
+        // console.log('netology.webinars', netology.webinars)
+       netology?.webinars?.forEach((webinar) => {
+           console.log('webinar', webinar)
+           const startTime = new Date(webinar.starts_at);
+           const endTime = new Date(webinar.ends_at);
+
+           // Корректируем время на +3 часа
+           // Корректируем время на +3 часа
+            startTime.setHours(startTime.getHours() + 3);
+            endTime.setHours(endTime.getHours() + 3);
+
+            const dayOfWeek = (startTime.getDay() + 6) % 7; // Приведение дней недели к порядку с Пн=0
+
+            weekDays[dayOfWeek].push({
+                ...webinar,
+                startTime,
+                endTime,
+                type: 'netology' // Добавляем тип события
+            });
+      })
+    }
+    console.log('weekDays', weekDays)
 
     // Массив временных интервалов пар, начиная с 10:00
     const lessonTimesArray = [
@@ -171,29 +200,67 @@ const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
                         return (
                             <tr key={index}>
                                 <th className="vertical-heading">{index + 1} пара <br/> {timeSlot}</th>
-                                {weekDays.map((lessons, dayIndex) => {
-                                    const lesson = lessons.find(lesson => {
-                                        const lessonStartTime = new Date(lesson.start);
-                                        const lessonEndTime = new Date(lesson.end);
-                                        const lessonStartFormatted = lessonStartTime.toLocaleTimeString([], {
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        });
-                                        const lessonEndFormatted = lessonEndTime.toLocaleTimeString([], {
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        });
+                                {/*{weekDays.map((lessons, dayIndex) => {*/}
+                                {/*    const lesson = lessons.find(lesson => {*/}
+                                {/*        const lessonStartTime = new Date(lesson.start);*/}
+                                {/*        const lessonEndTime = new Date(lesson.end);*/}
+                                {/*        const lessonStartFormatted = lessonStartTime.toLocaleTimeString([], {*/}
+                                {/*            hour: '2-digit',*/}
+                                {/*            minute: '2-digit'*/}
+                                {/*        });*/}
+                                {/*        const lessonEndFormatted = lessonEndTime.toLocaleTimeString([], {*/}
+                                {/*            hour: '2-digit',*/}
+                                {/*            minute: '2-digit'*/}
+                                {/*        });*/}
 
-                                        return (
-                                            lessonStartFormatted === timeSlot.split(' - ')[0] ||
-                                            lessonEndFormatted === timeSlot.split(' - ')[1] ||
-                                            (lessonStartFormatted >= timeSlot.split(' - ')[0] && lessonEndFormatted <= timeSlot.split(' - ')[1])
-                                        );
-                                    });
+                                {/*        return (*/}
+                                {/*            lessonStartFormatted === timeSlot.split(' - ')[0] ||*/}
+                                {/*            lessonEndFormatted === timeSlot.split(' - ')[1] ||*/}
+                                {/*            (lessonStartFormatted >= timeSlot.split(' - ')[0] && lessonEndFormatted <= timeSlot.split(' - ')[1])*/}
+                                {/*        );*/}
+                                {/*    });*/}
+
+                                {weekDays.map((lessons, dayIndex) => {
+                                        const lesson = lessons.find(lesson => {
+                                            const lessonStartTime = new Date(lesson.start);
+                                            const lessonEndTime = new Date(lesson.end);
+                                            const lessonStartFormatted = lessonStartTime.toLocaleTimeString([], {
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            });
+                                            const lessonEndFormatted = lessonEndTime.toLocaleTimeString([], {
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            });
+
+                                            return (
+                                                lessonStartFormatted === timeSlot.split(' - ')[0] ||
+                                                lessonEndFormatted === timeSlot.split(' - ')[1] ||
+                                                (lessonStartFormatted >= timeSlot.split(' - ')[0] && lessonEndFormatted <= timeSlot.split(' - ')[1])
+                                            );
+                                        });
 
                                     return (
+                                        // <td key={dayIndex} className="vertical" onClick={() => {
+                                        //     // Check if the clicked lesson is the same as the currently selected event
+                                        //     if (selectedEvent && selectedEvent.id === lesson?.id) {
+                                        //         setSelectedEvent(null); // Close the modal if the same lesson is clicked
+                                        //     } else {
+                                        //         setSelectedEvent(lesson); // Set the selected lesson
+                                        //     }
+                                        // }}>
+                                        //     {lesson ? (
+                                        //         <div className="TyumGU-lesson event-item" onClick={() => setSelectedEvent(lesson)}>
+                                        //             <span className="company-name"><img src={camera} alt={camera} /> ТюмГУ<br /></span>
+                                        //             <div className="lesson-name">{lesson.nameShort}</div>
+                                        //             <div className="lesson-name">{lesson.name}</div>
+                                        //             <span className="teacher-name">{lesson.teacher_full_name}</span>
+                                        //         </div>
+                                        //     ) : (
+                                        //         <div className="no-lessons"></div>
+                                        //     )}
+                                        // </td>
                                         <td key={dayIndex} className="vertical" onClick={() => {
-                                            // Check if the clicked lesson is the same as the currently selected event
                                             if (selectedEvent && selectedEvent.id === lesson?.id) {
                                                 setSelectedEvent(null); // Close the modal if the same lesson is clicked
                                             } else {
@@ -201,10 +268,17 @@ const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
                                             }
                                         }}>
                                             {lesson ? (
-                                                <div className="TyumGU-lesson event-item" onClick={() => setSelectedEvent(lesson)}>
-                                                    <span className="company-name"><img src={camera} alt={camera} /> ТюмГУ<br /></span>
-                                                    <div className="lesson-name">{lesson.nameShort}</div>
-                                                    <div className="lesson-name">{lesson.name}</div>
+                                                <div
+                                                    className={`event-item ${lesson.type === 'modeus' ? 'TyumGU-lesson' : 'Netology-webinar'}`}>
+                                                    {lesson.type === 'modeus' ? (
+                                                        <span className="company-name">
+                                                                <img src={camera} alt={camera}/> ТюмГУ<br/>
+                                                            </span>
+                                                    ) : (
+                                                        <span className="company-name">Netology<br/></span>
+                                                    )}
+                                                    <div
+                                                        className="lesson-name">{lesson.nameShort || lesson.title}</div>
                                                     <span className="teacher-name">{lesson.teacher_full_name}</span>
                                                 </div>
                                             ) : (
