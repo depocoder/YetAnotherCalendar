@@ -33,7 +33,6 @@ const App = () => {
     const handleSearch = async (fullName) => {
         try {
             let response = await searchModeus(fullName);
-            console.log('fullname response', response.data)
 
             if (response.status === 200) {
 
@@ -51,7 +50,7 @@ const App = () => {
             <Routes>
                 <Route path="/login" element={<LoginRoute onLogin={handleLogin} onSearch={handleSearch}/>}/>
                 <Route
-                    path="/calendar"
+                    path="/"
                     element={
                         <PrivateRoute>
                             <CalendarRoute

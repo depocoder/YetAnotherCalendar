@@ -84,7 +84,7 @@
 //            localStorage.setItem('personId', personId); // Сохраняем personId localstorage
 //
 //             setErrorMessage(""); // Очищаем ошибку при успешном логине
-//             navigate("/calendar");
+//             navigate("/");
 //         } else {
 //             setErrorMessage(result.message);
 //         }
@@ -220,7 +220,7 @@
 //         if (result.success) {
 //             localStorage.setItem('personId', personId); // Сохраняем personId localstorage
 //             setErrorMessage(""); // Очищаем ошибку при успешном логине
-//             navigate("/calendar");
+//             navigate("/");
 //         } else {
 //             setErrorMessage(result.message);
 //         }
@@ -308,7 +308,7 @@
 //         if (result.success) {
 //             localStorage.setItem("personId", personId); // Сохраняем personId в localstorage
 //             setErrorMessage(""); // Очищаем ошибку при успешном логине
-//             navigate("/calendar");
+//             navigate("/");
 //         } else {
 //             setErrorMessage(result.message);
 //         }
@@ -413,7 +413,7 @@ const LoginRoute = ({ onLogin, onSearch }) => {
         if (result.success) {
             localStorage.setItem('personId', personId); // Сохраняем personId localstorage
             setErrorMessage(""); // Очищаем ошибку при успешном логине
-            navigate("/calendar");
+            navigate("/");
         } else {
             setErrorMessage(result.message);
         }

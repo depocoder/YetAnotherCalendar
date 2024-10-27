@@ -41,7 +41,6 @@ export async function searchModeus(fullName) {
 
 // calendar_id
 export async function getNetologyCourse(sessionToken) {
-    console.log('sessionToken', sessionToken)
     try {
         const response = await axios.get(`${BACKEND_URL}/api/netology/course/`, {
             headers: {
@@ -75,7 +74,7 @@ export async function bulkEvents({calendarId, timeZone, attendeePersonId, timeMi
 
     try {
         const response = await axios.post(
-            `http://127.0.0.1:8000/api/bulk/events/?calendar_id=${calendarId}&time_zone=${timeZone}`,
+            `${BACKEND_URL}/api/bulk/events/?calendar_id=${calendarId}&time_zone=${timeZone}`,
             requestBody,
             {
                 headers: {
@@ -84,8 +83,6 @@ export async function bulkEvents({calendarId, timeZone, attendeePersonId, timeMi
                 },
             }
         );
-
-        console.log('fetchEvents События:', response.data);
         return response;
     } catch (error) {
         console.error('Ошибка при получении данных:', error.response ? error.response.data : error.message);

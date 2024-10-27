@@ -5,11 +5,10 @@ import '../../style/header.scss';
 import '../../style/calendar.scss';
 import arrow from "../../img/arrow.png";
 import {useNavigate} from "react-router-dom";
-// import DatePicker from "./DataPicker";
+import DatePicker from "./DataPicker";
 
-const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
+const Calendar = ({ events, date, onRefresh, cacheUpdated, onWeekChange, disableButtons }) => {
 
-    console.log('Calendar events', events)
     const navigate = useNavigate();
     const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -24,7 +23,6 @@ const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
     // Заполнение массива дней недели занятиями
     if (utmn && utmn.modeus_events) {
         utmn?.modeus_events?.forEach((lesson) => {
-            console.log('lesson', lesson)
             const startTime = new Date(lesson.start);
             const endTime = new Date(lesson.end);
             const dayOfWeek = (startTime.getDay() + 6) % 7;
@@ -40,28 +38,25 @@ const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
 
      // Заполнение массива дней недели вебинарами netology
     if (netology && netology.webinars) {
-        // console.log('netology.webinars', netology.webinars)
        netology?.webinars?.forEach((webinar) => {
-           console.log('webinar', webinar)
            const startTime = new Date(webinar.starts_at);
            const endTime = new Date(webinar.ends_at);
 
            // Корректируем время на +3 часа
-           // Корректируем время на +3 часа
-            startTime.setHours(startTime.getHours() + 3);
-            endTime.setHours(endTime.getHours() + 3);
+           // Корректируем время на -3 часа
+           // startTime.setHours(startTime.getHours() + 3); // Корректируем время начала
+           // endTime.setHours(endTime.getHours() + 3);     // Корректируем время окончания
 
             const dayOfWeek = (startTime.getDay() + 6) % 7; // Приведение дней недели к порядку с Пн=0
 
             weekDays[dayOfWeek].push({
                 ...webinar,
-                startTime,
+                 startTime,
                 endTime,
                 type: 'netology' // Добавляем тип события
             });
       })
     }
-    console.log('weekDays', weekDays)
 
     // Массив временных интервалов пар, начиная с 10:00
     const lessonTimesArray = [
@@ -102,7 +97,7 @@ const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
                 <div className="header-line">
                     <div className="shedule-export">
                         <span className="shedule">Мое расписание</span>
-                        {/*<button className="export-btn">Экспорт .ics</button>*/}
+                        <button className="export-btn">Экспорт .ics</button>
                         <button onClick={onRefresh} className={`cache-btn ${cacheUpdated ? 'updated' : ''}`}>
                             {cacheUpdated ? 'Кэш обновлен' : 'Сбросить кэш расписания'}
                         </button>
@@ -130,7 +125,7 @@ const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
                 </div>
                 {/*<div className="vertical-line"></div>*/}
 
-                {/*<DatePicker />*/}
+                <DatePicker onWeekChange={onWeekChange} disableButtons={disableButtons} />
             </header>
 
             <div className="calendar">
@@ -200,45 +195,45 @@ const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
                         return (
                             <tr key={index}>
                                 <th className="vertical-heading">{index + 1} пара <br/> {timeSlot}</th>
-                                {/*{weekDays.map((lessons, dayIndex) => {*/}
-                                {/*    const lesson = lessons.find(lesson => {*/}
-                                {/*        const lessonStartTime = new Date(lesson.start);*/}
-                                {/*        const lessonEndTime = new Date(lesson.end);*/}
-                                {/*        const lessonStartFormatted = lessonStartTime.toLocaleTimeString([], {*/}
-                                {/*            hour: '2-digit',*/}
-                                {/*            minute: '2-digit'*/}
-                                {/*        });*/}
-                                {/*        const lessonEndFormatted = lessonEndTime.toLocaleTimeString([], {*/}
-                                {/*            hour: '2-digit',*/}
-                                {/*            minute: '2-digit'*/}
-                                {/*        });*/}
-
-                                {/*        return (*/}
-                                {/*            lessonStartFormatted === timeSlot.split(' - ')[0] ||*/}
-                                {/*            lessonEndFormatted === timeSlot.split(' - ')[1] ||*/}
-                                {/*            (lessonStartFormatted >= timeSlot.split(' - ')[0] && lessonEndFormatted <= timeSlot.split(' - ')[1])*/}
-                                {/*        );*/}
-                                {/*    });*/}
-
                                 {weekDays.map((lessons, dayIndex) => {
-                                        const lesson = lessons.find(lesson => {
-                                            const lessonStartTime = new Date(lesson.start);
-                                            const lessonEndTime = new Date(lesson.end);
-                                            const lessonStartFormatted = lessonStartTime.toLocaleTimeString([], {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            });
-                                            const lessonEndFormatted = lessonEndTime.toLocaleTimeString([], {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            });
-
-                                            return (
-                                                lessonStartFormatted === timeSlot.split(' - ')[0] ||
-                                                lessonEndFormatted === timeSlot.split(' - ')[1] ||
-                                                (lessonStartFormatted >= timeSlot.split(' - ')[0] && lessonEndFormatted <= timeSlot.split(' - ')[1])
-                                            );
+                                    const lesson = lessons.find(lesson => {
+                                        const lessonStartTime = new Date(lesson.start);
+                                        const lessonEndTime = new Date(lesson.end);
+                                        const lessonStartFormatted = lessonStartTime.toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
                                         });
+                                        const lessonEndFormatted = lessonEndTime.toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        });
+
+                                        return (
+                                            lessonStartFormatted === timeSlot.split(' - ')[0] ||
+                                            lessonEndFormatted === timeSlot.split(' - ')[1] ||
+                                            (lessonStartFormatted >= timeSlot.split(' - ')[0] && lessonEndFormatted <= timeSlot.split(' - ')[1])
+                                        );
+                                    });
+
+                                // {weekDays.map((lessons, dayIndex) => {
+                                //         const lesson = lessons.find(lesson => {
+                                //             const lessonStartTime = new Date(lesson.start);
+                                //             const lessonEndTime = new Date(lesson.end);
+                                //             const lessonStartFormatted = lessonStartTime.toLocaleTimeString([], {
+                                //                 hour: '2-digit',
+                                //                 minute: '2-digit'
+                                //             });
+                                //             const lessonEndFormatted = lessonEndTime.toLocaleTimeString([], {
+                                //                 hour: '2-digit',
+                                //                 minute: '2-digit'
+                                //             });
+                                //
+                                //             return (
+                                //                 lessonStartFormatted === timeSlot.split(' - ')[0] ||
+                                //                 lessonEndFormatted === timeSlot.split(' - ')[1] ||
+                                //                 (lessonStartFormatted >= timeSlot.split(' - ')[0] && lessonEndFormatted <= timeSlot.split(' - ')[1])
+                                //             );
+                                //         });
 
                                     return (
                                         // <td key={dayIndex} className="vertical" onClick={() => {
@@ -275,7 +270,7 @@ const Calendar = ({ events, date, onRefresh, cacheUpdated }) => {
                                                                 <img src={camera} alt={camera}/> ТюмГУ<br/>
                                                             </span>
                                                     ) : (
-                                                        <span className="company-name">Netology<br/></span>
+                                                        <span className="company-name">Netology</span>
                                                     )}
                                                     <div
                                                         className="lesson-name">{lesson.nameShort || lesson.title}</div>
