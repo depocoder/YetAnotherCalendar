@@ -6,6 +6,7 @@ import '../../style/calendar.scss';
 import arrow from "../../img/arrow.png";
 import {useNavigate} from "react-router-dom";
 import DatePicker from "./DataPicker";
+import ICSExporter from "./ICSExporter";
 
 const Calendar = ({ events, date, onRefresh, cacheUpdated, onWeekChange, disableButtons }) => {
 
@@ -91,13 +92,19 @@ const Calendar = ({ events, date, onRefresh, cacheUpdated, onWeekChange, disable
         navigate("/login");
     };
 
+    const allEvents = [
+        ...(events?.utmn?.modeus_events || []),
+        ...(events?.netology?.webinars || [])
+    ];
+
     return (
         <div className="wrapper">
             <header className="header">
                 <div className="header-line">
                     <div className="shedule-export">
                         <span className="shedule">Мое расписание</span>
-                        <button className="export-btn">Экспорт .ics</button>
+                        {/*<button className="export-btn">Экспорт .ics</button>*/}
+                        <ICSExporter events={allEvents} />
                         <button onClick={onRefresh} className={`cache-btn ${cacheUpdated ? 'updated' : ''}`}>
                             {cacheUpdated ? 'Кэш обновлен' : 'Сбросить кэш расписания'}
                         </button>
