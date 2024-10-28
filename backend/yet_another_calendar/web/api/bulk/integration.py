@@ -50,6 +50,16 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
                                  description=netology_lesson.title,
                                  url=netology_lesson.webinar_url)
         ics_calendar.add_component(event)
+    for netology_homework in calendar.netology.homework:
+        if not netology_homework.deadline:
+            continue
+        dt_end = netology_homework.deadline + datetime.timedelta(hours=18)
+        dt_start = dt_end - datetime.timedelta(hours=2)
+        event = create_ics_event(title=f"Netology ДЗ: {netology_homework.block_title}", starts_at=dt_start,
+                                 ends_at=dt_end, lesson_id=netology_homework.id,
+                                 description=netology_homework.title,
+                                 url=netology_homework.url)
+        ics_calendar.add_component(event)
     for modeus_lesson in calendar.utmn.modeus_events:
         event = create_ics_event(title=f"Modeus: {modeus_lesson.course_name}", starts_at=modeus_lesson.start_time,
                                  ends_at=modeus_lesson.end_time, lesson_id=modeus_lesson.id,
