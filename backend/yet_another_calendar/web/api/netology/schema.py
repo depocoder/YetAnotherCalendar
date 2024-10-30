@@ -114,7 +114,7 @@ class LessonTask(BaseLesson):
             date = match.group(0).replace('00.', '01.')
             data['deadline'] = datetime.datetime.strptime(date, "%d.%m.%y").astimezone(datetime.timezone.utc)
             return data
-        except:
+        except Exception:
             return data
 
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:
