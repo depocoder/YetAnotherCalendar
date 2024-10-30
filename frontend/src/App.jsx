@@ -3,7 +3,7 @@ import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom
 import LoginRoute from './pages/LoginRoute';
 import CalendarRoute from './pages/CalendarRoute';
 import {loginModeus, searchModeus} from './services/api';
-import PrivateRoute from "./components/Calendar/PrivateRoute"; // Ваши API-запросы
+import PrivateRoute from "./elements/PrivateRoute"; // Ваши API-запросы
 
 const App = () => {
     const [authData, setAuthData] = useState({
