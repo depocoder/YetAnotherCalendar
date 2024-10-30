@@ -26,8 +26,8 @@ export const getCurrentWeekDates = () => {
   const formattedStart = formatToRequiredISO(startOfWeek);
   const formattedEnd = formatToRequiredISO(endOfWeek);
 
-  console.log("Formatted Start:", formattedStart);
-  console.log("Formatted End:", formattedEnd);
+  // console.log("Formatted Start:", formattedStart);
+  // console.log("Formatted End:", formattedEnd);
 
   return {
     start: formattedStart,

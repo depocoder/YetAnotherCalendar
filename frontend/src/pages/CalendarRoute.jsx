@@ -33,35 +33,7 @@ const CalendarRoute = () => {
     // const navigate = useNavigate();
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [weekDays, setWeekDays] = useState(Array.from({length: 7}, () => []));
-
-    // const getCurrentWeekDates = () => {
-    //     const today = new Date();
-    //     const dayOfWeek = today.getDay();
-    //     const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    //     const sundayOffset = 7 - dayOfWeek;
-    //
-    //     const startOfWeek = new Date(today);
-    //     startOfWeek.setDate(today.getDate() + mondayOffset);
-    //     startOfWeek.setUTCHours(0, 0, 0, 0);
-    //
-    //     const endOfWeek = new Date(today);
-    //     endOfWeek.setDate(today.getDate() + sundayOffset);
-    //     endOfWeek.setUTCHours(23, 59, 59, 0);
-    //
-    //     // Форматирование даты без миллисекунд и с нужным смещением
-    //     const formatISOWithoutMilliseconds = (date) =>
-    //         date.toISOString().replace('.000Z', '+00:00');
-    //
-    //     return {
-    //         start: formatISOWithoutMilliseconds(startOfWeek),
-    //         end: formatISOWithoutMilliseconds(endOfWeek),
-    //     };
-    // };
-
-    // const [date, setDate] = useState(getCurrentWeekDates);
-
-    // console.log('date', date)
-
+     console.log('weekDays', weekDays)
     // const [date, setDate] = useState({
     //     start: "2024-10-28T00:00:00+00:00",
     //     end:   "2024-11-03T23:59:59+00:00"
@@ -322,8 +294,8 @@ const CalendarRoute = () => {
                                     <th className="vertical-heading">{index + 1} пара <br/> {timeSlot}</th>
                                     {weekDays.map((lessons, dayIndex) => {
                                         const lesson = lessons.find(lesson => {
-                                            const lessonStartTime = new Date(lesson.start);
-                                            const lessonEndTime = new Date(lesson.end);
+                                            const lessonStartTime = new Date(lesson.start || lesson.starts_at);
+                                            const lessonEndTime = new Date(lesson.end || lesson.ends_at);
                                             const lessonStartFormatted = lessonStartTime.toLocaleTimeString([], {
                                                 hour: '2-digit',
                                                 minute: '2-digit'
@@ -339,27 +311,6 @@ const CalendarRoute = () => {
                                                 (lessonStartFormatted >= timeSlot.split(' - ')[0] && lessonEndFormatted <= timeSlot.split(' - ')[1])
                                             );
                                         });
-
-                                        // {weekDays.map((lessons, dayIndex) => {
-                                        //         const lesson = lessons.find(lesson => {
-                                        //             const lessonStartTime = new Date(lesson.start);
-                                        //             const lessonEndTime = new Date(lesson.end);
-                                        //             const lessonStartFormatted = lessonStartTime.toLocaleTimeString([], {
-                                        //                 hour: '2-digit',
-                                        //                 minute: '2-digit'
-                                        //             });
-                                        //             const lessonEndFormatted = lessonEndTime.toLocaleTimeString([], {
-                                        //                 hour: '2-digit',
-                                        //                 minute: '2-digit'
-                                        //             });
-                                        //
-                                        //             return (
-                                        //                 lessonStartFormatted === timeSlot.split(' - ')[0] ||
-                                        //                 lessonEndFormatted === timeSlot.split(' - ')[1] ||
-                                        //                 (lessonStartFormatted >= timeSlot.split(' - ')[0] && lessonEndFormatted <= timeSlot.split(' - ')[1])
-                                        //             );
-                                        //         });
-
                                         return (
                                             // <td key={dayIndex} className="vertical" onClick={() => {
                                             //     // Check if the clicked lesson is the same as the currently selected event
@@ -389,17 +340,30 @@ const CalendarRoute = () => {
                                             }}>
                                                 {lesson ? (
                                                     <div
-                                                        className={`event-item ${lesson.type === 'modeus' ? 'TyumGU-lesson' : 'Netology-webinar'}`}>
-                                                        {lesson.type === 'modeus' ? (
-                                                            <span className="company-name">
-                                                                <img src={camera} alt={camera}/> ТюмГУ<br/>
-                                                            </span>
+                                                        className={`event-item ${lesson.type === 'modeus' ? 'TyumGU-lesson' : 'netology-lesson'}`}>
+                                                        {lesson.type === "modeus" ? (
+                                                            <div className="company-name">
+                                                                <span><img src={camera} alt={camera}/> ТюмГУ</span>
+                                                                <span>{lesson?.cycle_realization?.code}</span>
+                                                            </div>
                                                         ) : (
-                                                            <span className="company-name">Netology</span>
+                                                            <span className="company-name">
+                                                                   <img src={camera} alt={camera}/> Нетология<br/>
+                                                            </span>
                                                         )}
-                                                        <div
-                                                            className="lesson-name">{lesson.nameShort || lesson.title}</div>
-                                                        <span className="teacher-name">{lesson.teacher_full_name}</span>
+                                                        {/*{lesson.type === "netology" ? (*/}
+                                                        {/*    <>*/}
+                                                        {/*        <span className="company-name">*/}
+                                                        {/*           <img src={camera} alt={camera}/> Нетология<br/>*/}
+                                                        {/*        </span>*/}
+                                                        {/*        /!*<span className="company-name"></span>*!/*/}
+                                                        {/*    </>*/}
+                                                        {/*) : (*/}
+                                                        {/*    <span className="company-name"></span>*/}
+                                                        {/*)}*/}
+                                                        {/*<div className="lesson-name">{lesson.course_name || lesson.block_title}</div>*/}
+                                                        <div className="lesson-name">{lesson?.course_name || lesson?.block_title}</div>
+                                                        {/*<span className="teacher-name">{lesson.teacher_full_name}</span>*/}
                                                     </div>
                                                 ) : (
                                                     <div className="no-lessons"></div>
