@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
     getNetologyCourse,
     bulkEvents,
@@ -17,48 +17,14 @@ import ExitBtn from "../components/Calendar/ExitBtn";
 import ICSExporter from "../components/Calendar/ICSExporter";
 import CacheUpdateBtn from "../components/Calendar/CacheUpdateBtn";
 
+import {getCurrentWeekDates} from "../utils/dateUtils";
 
-// const getCurrentWeekDates = () => {
-//   const today = new Date();
-//   const dayOfWeek = today.getDay();
-//   const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-//   const sundayOffset = 7 - dayOfWeek;
-//
-//   const startOfWeek = new Date(today);
-//   startOfWeek.setDate(today.getDate() + mondayOffset);
-//   startOfWeek.setUTCHours(0, 0, 0, 0);
-//
-//   const endOfWeek = new Date(today);
-//   endOfWeek.setDate(today.getDate() + sundayOffset);
-//   endOfWeek.setUTCHours(23, 59, 59, 0);
-//
-//   const formatToRequiredISO = (date) => {
-//     const year = date.getUTCFullYear();
-//     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-//     const day = String(date.getUTCDate()).padStart(2, '0');
-//     const hours = String(date.getUTCHours()).padStart(2, '0');
-//     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-//     const seconds = String(date.getUTCSeconds()).padStart(2, '0');
-//
-//     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+00:00`;
-//   };
-//
-//   const formattedStart = formatToRequiredISO(startOfWeek);
-//   const formattedEnd = formatToRequiredISO(endOfWeek);
-//
-//   console.log("Formatted Start:", formattedStart);
-//   console.log("Formatted End:", formattedEnd);
-//
-//   return {
-//     start: formattedStart,
-//     end: formattedEnd,
-//   };
-// };
+
 
 const CalendarRoute = () => {
     // Используем useMemo для вызова getCurrentWeekDates один раз при инициализации
-    // const initialDate = useMemo(() => getCurrentWeekDates(), []);
-    // const [date, setDate] = useState(initialDate);
+    const initialDate = useMemo(() => getCurrentWeekDates(), []);
+    const [date, setDate] = useState(initialDate);
     
     const [events, setEvents] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -96,10 +62,10 @@ const CalendarRoute = () => {
 
     // console.log('date', date)
 
-    const [date, setDate] = useState({
-        start: "2024-10-28T00:00:00+00:00",
-        end:   "2024-11-03T23:59:59+00:00"
-    });
+    // const [date, setDate] = useState({
+    //     start: "2024-10-28T00:00:00+00:00",
+    //     end:   "2024-11-03T23:59:59+00:00"
+    // });
 
     const populateWeekDays = (eventsData) => {
         if (!eventsData) return;
