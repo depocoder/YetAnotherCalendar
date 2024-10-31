@@ -113,8 +113,8 @@ class Href(BaseModel):
 
 
 class EventLinks(BaseModel):
-    course_unit_realization: Href = Field(alias="course-unit-realization")
-    cycle_realization: Href = Field(alias="cycle-realization")
+    course_unit_realization: Optional[Href] = Field(alias="course-unit-realization", default=None)
+    cycle_realization: Optional[Href] = Field(alias="cycle-realization", default=None)
 
 
 class EventWithLinks(Event):
@@ -177,16 +177,16 @@ class ModeusCalendar(BaseModel):
         teachers_with_events = {teacher.links.event.id: teacher.links for teacher in self.embedded.attendees}
         full_events = []
         for event in self.embedded.events:
-            course_id = event.links.course_unit_realization.id
-            cycle_id = event.links.cycle_realization.id
-            cycle_realization = None
+            course_id = event.links.course_unit_realization.id if event.links.course_unit_realization else None
+            cycle_id = event.links.cycle_realization.id if event.links.cycle_realization else None
             try:
-                cycle_realization = cycle_realizations[cycle_id]
-                course_name = courses[course_id].name
+                cycle_realization = cycle_realizations[cycle_id] if cycle_id else 'unknown'
+                course_name = courses[course_id].name if course_id else 'unknown'
                 teacher_event = teachers_with_events[event.id]
                 teacher = teachers[teacher_event.person.id]
                 teacher_full_name = teacher.full_name
             except KeyError:
+                cycle_realization = 'unknown'
                 course_name = 'unknown'
                 teacher_full_name = 'unknown'
             location = locations[event.id]
