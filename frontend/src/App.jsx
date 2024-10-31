@@ -3,22 +3,21 @@ import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom
 import LoginRoute from './pages/LoginRoute';
 import CalendarRoute from './pages/CalendarRoute';
 import {loginModeus, searchModeus} from './services/api';
-import PrivateRoute from "./components/Calendar/PrivateRoute"; // Ваши API-запросы
+import PrivateRoute from "./elements/PrivateRoute"; // Ваши API-запросы
 
 const App = () => {
     const [authData, setAuthData] = useState({
         email: '',
         password: '',
-        personId: ''
     });
 
     // Функция для обработки логина
-    const handleLogin = async (email, password, personId) => {
+    const handleLogin = async (email, password) => {
         try {
             let response = await loginModeus(email, password);
 
             if (response.status === 200) {
-                setAuthData({email, password, personId});
+                setAuthData({email, password});
                 localStorage.setItem('token', response.data["_netology-on-rails_session"]);
 
                 return {success: true};
@@ -36,6 +35,7 @@ const App = () => {
             let response = await searchModeus(fullName);
 
             if (response.status === 200) {
+
                 return {success: true, data: response.data};
             } else {
                 return {success: false, message: "Неверное ФИО. Попробуйте снова."};
@@ -50,14 +50,12 @@ const App = () => {
             <Routes>
                 <Route path="/login" element={<LoginRoute onLogin={handleLogin} onSearch={handleSearch}/>}/>
                 <Route
-                    path="/calendar"
+                    path="/"
                     element={
                         <PrivateRoute>
                             <CalendarRoute
                                 email={authData.email}
                                 password={authData.password}
-                                personId={authData.personId}
-                                token={localStorage.getItem('token')}
                             />
                         </PrivateRoute>
                     }

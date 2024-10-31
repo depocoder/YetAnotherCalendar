@@ -110,9 +110,12 @@ class LessonTask(BaseLesson):
         match = re.search(_DATE_PATTERN, data.get('title', ''))
         if not match:
             return data
-        date = match.group(0)
-        data['deadline'] = datetime.datetime.strptime(date, "%d.%m.%y").astimezone(datetime.timezone.utc)
-        return data
+        try:
+            date = match.group(0).replace('00.', '01.')
+            data['deadline'] = datetime.datetime.strptime(date, "%d.%m.%y").astimezone(datetime.timezone.utc)
+            return data
+        except Exception:
+            return data
 
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:
         """Check if lesson have suitable time"""

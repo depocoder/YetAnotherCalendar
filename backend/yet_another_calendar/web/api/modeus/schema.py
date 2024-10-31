@@ -113,7 +113,8 @@ class Href(BaseModel):
 
 
 class EventLinks(BaseModel):
-    course_unit_realization: Href = Field(alias="course-unit-realization")
+    course_unit_realization: Optional[Href] = Field(alias="course-unit-realization", default=None)
+    cycle_realization: Optional[Href] = Field(alias="cycle-realization", default=None)
 
 
 class EventWithLinks(Event):
@@ -140,17 +141,25 @@ class Course(BaseModel):
     name: str
 
 
+class CycleRealization(BaseModel):
+    id: uuid.UUID
+    name: str
+    code: str
+
+
 class CalendarEmbedded(BaseModel):
     events: list[EventWithLinks] = Field(alias="events")
     locations: list[Location] = Field(alias="event-locations")
     attendees: list[Attender] = Field(alias="event-attendees")
     people: list[ShortPerson] = Field(alias="persons")
     courses: list[Course] = Field(alias="course-unit-realizations")
+    cycle_realizations: list[CycleRealization] = Field(alias="cycle-realizations")
 
 
 class FullEvent(Event, Location):
     teacher_full_name: str
     course_name: str
+    cycle_realization: CycleRealization
 
 
 class ModeusCalendar(BaseModel):
@@ -163,16 +172,21 @@ class ModeusCalendar(BaseModel):
         locations = {location.id: location for location in self.embedded.locations}
         teachers = {teacher.id: teacher for teacher in self.embedded.people}
         courses = {course.id: course for course in self.embedded.courses}
+        cycle_realizations = {cycle_realization.id: cycle_realization for cycle_realization in
+                              self.embedded.cycle_realizations}
         teachers_with_events = {teacher.links.event.id: teacher.links for teacher in self.embedded.attendees}
         full_events = []
         for event in self.embedded.events:
-            course_id = event.links.course_unit_realization.id
+            course_id = event.links.course_unit_realization.id if event.links.course_unit_realization else None
+            cycle_id = event.links.cycle_realization.id if event.links.cycle_realization else None
             try:
-                course_name = courses[course_id].name
+                cycle_realization = cycle_realizations[cycle_id] if cycle_id else 'unknown'
+                course_name = courses[course_id].name if course_id else 'unknown'
                 teacher_event = teachers_with_events[event.id]
                 teacher = teachers[teacher_event.person.id]
                 teacher_full_name = teacher.full_name
             except KeyError:
+                cycle_realization = 'unknown'
                 course_name = 'unknown'
                 teacher_full_name = 'unknown'
             location = locations[event.id]
@@ -180,6 +194,7 @@ class ModeusCalendar(BaseModel):
                 continue
             full_events.append(FullEvent(**{
                 "teacher_full_name": teacher_full_name, "course_name": course_name,
+                "cycle_realization": cycle_realization,
                 **event.model_dump(by_alias=True), **location.model_dump(by_alias=True),
             }))
         return full_events

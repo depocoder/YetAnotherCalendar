@@ -1,67 +1,112 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
-// import flatpickr from "flatpickr";
-// import { Russian } from "flatpickr/dist/l10n/ru.js";
-import "../../style/DatePicker.scss"; // Для стилей компонента
+import { Russian } from "flatpickr/dist/l10n/ru.js";
+import "../../style/DatePicker.scss";
 
-const DatePicker = () => {
-  // const datePickerRef = useRef(null);
-  const [currentDate, setCurrentDate] = useState(new Date()); // Текущая дата
-  const [weekRange, setWeekRange] = useState("");
+import leftWeek from "../../img/left-week.png";
+import rightWeek from "../../img/right-week.png";
+import weekSelect from "flatpickr/dist/plugins/weekSelect/weekSelect";
 
-  // Рассчитать начало и конец недели
-  const calculateWeekRange = (date) => {
-    const startOfWeek = new Date(date);
-    const endOfWeek = new Date(date);
+const DatePicker = ({ onWeekChange, disableButtons }) => {
+    const datePickerRef = useRef(null);
+    const [weekRange, setWeekRange] = useState("");
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
-    // Получаем понедельник текущей недели
-    startOfWeek.setDate(date.getDate() - date.getDay() + 1); // Понедельник
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Воскресенье
+    const calculateWeekRange = (date) => {
+        const startOfWeek = new Date(date);
+        const endOfWeek = new Date(date);
+        startOfWeek.setDate(date.getDate() - date.getDay() + 1); // Пн
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Вс
 
-    const formatOptions = { day: "numeric", month: "long" };
-    const startFormatted = startOfWeek.toLocaleDateString("ru-RU", formatOptions);
-    const endFormatted = endOfWeek.toLocaleDateString("ru-RU", formatOptions);
+        const formatOptions = { day: "numeric", month: "long" };
+        const startFormatted = startOfWeek.toLocaleDateString("ru-RU", formatOptions);
+        const endFormatted = endOfWeek.toLocaleDateString("ru-RU", formatOptions);
 
-    return `${startFormatted} – ${endFormatted}`;
-  };
+        return `${startFormatted} – ${endFormatted}`;
+    };
 
-  // Обновить диапазон недели при изменении даты
-  useEffect(() => {
-    setWeekRange(calculateWeekRange(currentDate));
-  }, [currentDate]);
+    useEffect(() => {
+        const fpInstance = flatpickr(datePickerRef.current, {
+            locale: Russian,
+            plugins: [weekSelect({})],
+            // onChange: function (selectedDates) {
+            //     if (selectedDates.length > 0) {
+            //         console.log("Selected date:", selectedDates[0]); // Это будет объект Date
+            //         const selected = selectedDates[0];
+            //         setSelectedDate(selected); // Устанавливаем как Date объект
+            //         setWeekRange(calculateWeekRange(selected));
+            //         if (onWeekChange) {
+            //             onWeekChange(selected.toISOString()); // Передаем в формате ISO
+            //         }
+            //     }
+            // },
+            onChange: function (selectedDates) {
+                if (selectedDates.length > 0) {
+                    const selectedDate = selectedDates[0];
+                    setSelectedDate(selectedDate); // Установка состояния внутри компонента DatePicker
+                    if (onWeekChange) {
+                        onWeekChange(selectedDate); // Вызов функции обратного вызова
+                    }
+                }
+            }
+        });
 
-  // Обработчик для переключения недель
-  const handlePrevWeek = () => {
-    setCurrentDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      newDate.setDate(prevDate.getDate() - 7); // Переключение на предыдущую неделю
-      return newDate;
-    });
-  };
+        return () => {
+            fpInstance.destroy();
+        };
+    }, [onWeekChange]);
 
-  const handleNextWeek = () => {
-    setCurrentDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      newDate.setDate(prevDate.getDate() + 7); // Переключение на следующую неделю
-      return newDate;
-    });
-  };
+    useEffect(() => {
+        setWeekRange(calculateWeekRange(selectedDate));
+    }, [selectedDate]);
 
-  return (
-    <div className="date-picker-wrapper">
-      <div className="week-display">
-        <span className="week-range">{weekRange}</span>
-        <div className="week-navigation">
-          <button className="prev-week-btn" onClick={handlePrevWeek}>
-            &lt;
-          </button>
-          <button className="next-week-btn" onClick={handleNextWeek}>
-            &gt;
-          </button>
+    const handlePrevWeek = () => {
+        setSelectedDate((prev) => {
+            const newDate = new Date(prev);
+            newDate.setDate(prev.getDate() - 7);
+            setWeekRange(calculateWeekRange(newDate));
+            if (onWeekChange) {
+                onWeekChange(newDate.toISOString()); // Передаем в формате ISO
+            }
+            return newDate;
+        });
+    };
+
+    const handleNextWeek = () => {
+        setSelectedDate((prev) => {
+            const newDate = new Date(prev);
+            newDate.setDate(prev.getDate() + 7);
+            setWeekRange(calculateWeekRange(newDate));
+            if (onWeekChange) {
+                onWeekChange(newDate.toISOString()); // Передаем в формате ISO
+            }
+            return newDate;
+        });
+    };
+
+    return (
+        <div className="date-picker-wrapper">
+            <input
+                ref={datePickerRef}
+                className="date-picker-input"
+                placeholder="Выберите неделю"
+                readOnly
+                value={weekRange}
+            />
+            <div className="week-display">
+                {/*<span className="week-range">{weekRange}</span>*/}
+                <div className="week-navigation">
+                    <button className="prev-week-btn" onClick={handlePrevWeek} disabled={disableButtons}>
+                        <img src={leftWeek} alt={leftWeek}/>
+                    </button>
+                    <button className="next-week-btn" onClick={handleNextWeek} disabled={disableButtons}>
+                        <img src={rightWeek} alt={rightWeek}/>
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default DatePicker;
