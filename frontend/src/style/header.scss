@@ -35,11 +35,46 @@
       width: 534px;
       min-height: 106px;
       border-radius: 6px;
-      background: #f4638633;
-      border: 2px solid #f46386;
       text-decoration: none;
+
+      &.task, &.test {
+        background: #f4638633;
+        border: 1px solid #f46386;
+
+        .source {
+          color: #f46386;
+        }
+      }
+      &.modeus {
+        background: #7B61FF33;
+        border: 1px solid #7B61FF;
+
+        .source {
+          color: #7B61FF;
+        }
+      }
+      &.netology {
+        background: #00A8A833;
+        border: 1px solid #00A8A8;
+
+        .source {
+          color: #00A8A8;
+        }
+      }
+    }
+  .source {
+    margin-top: 7px;
+    //color: #f46386;
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+
+    &-first-word {
+      font-family: "Roboto", sans-serif;
+      font-weight: 400;
     }
   }
+}
 
 
 .shedule-export {
@@ -110,19 +145,6 @@
 
   &-cross {
     margin-left: 7px;
-  }
-}
-
-.source {
-  margin-top: 7px;
-  color: #f46386;
-  font-family: "Roboto", sans-serif;
-  font-weight: 700;
-  font-size: 13px;
-
-  &-first-word {
-    font-family: "Roboto", sans-serif;
-    font-weight: 400;
   }
 }
 
