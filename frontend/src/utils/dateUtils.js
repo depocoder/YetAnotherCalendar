@@ -1,39 +1,115 @@
+// export const getCurrentWeekDates = () => {
+//   const today = new Date();
+//   const dayOfWeek = today.getDay();
+//   const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+//   const sundayOffset = 7 - dayOfWeek;
+//
+//   const startOfWeek = new Date(today);
+//   startOfWeek.setDate(today.getDate() + mondayOffset);
+//   startOfWeek.setUTCHours(0, 0, 0, 0);
+//
+//   const endOfWeek = new Date(today);
+//   endOfWeek.setDate(today.getDate() + sundayOffset);
+//   endOfWeek.setUTCHours(23, 59, 59, 0);
+//
+//   const formatToRequiredISO = (date) => {
+//     const year = date.getUTCFullYear();
+//     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+//     const day = String(date.getUTCDate()).padStart(2, '0');
+//     const hours = String(date.getUTCHours()).padStart(2, '0');
+//     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+//     const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+//
+//     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+00:00`;
+//   };
+//
+//   const formattedStart = formatToRequiredISO(startOfWeek);
+//   const formattedEnd = formatToRequiredISO(endOfWeek);
+//
+//   // console.log("Formatted Start:", formattedStart);
+//   // console.log("Formatted End:", formattedEnd);
+//
+//   return {
+//     start: formattedStart,
+//     end: formattedEnd,
+//   };
+// };
+
+
+// export const getCurrentWeekDates = () => {
+//     const today = new Date();
+//     const dayOfWeek = today.getDay(); // 0 (вс) - 6 (сб)
+//
+//     // Смещение для понедельника
+//     const mondayOffset = (dayOfWeek === 0 ? -5 : 2 - dayOfWeek); // Смещаем на 1 день вперед для начала с понедельника
+//     const sundayOffset = 8 - dayOfWeek; // Смещаем конец недели на 1 день вперед
+//
+//     const startOfWeek = new Date(today);
+//     startOfWeek.setDate(today.getDate() + mondayOffset);
+//     startOfWeek.setUTCHours(0, 0, 0, 0); // Начало дня (00:00:00)
+//
+//     const endOfWeek = new Date(today);
+//     endOfWeek.setDate(today.getDate() + sundayOffset);
+//     endOfWeek.setUTCHours(23, 59, 59, 999); // Конец дня (23:59:59.999)
+//
+//     const formatToRequiredISO = (date) => {
+//         const year = date.getUTCFullYear();
+//         const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+//         const day = String(date.getUTCDate()).padStart(2, '0');
+//         const hours = String(date.getUTCHours()).padStart(2, '0');
+//         const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+//         const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+//
+//         return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+00:00`;
+//     };
+//
+//     const formattedStart = formatToRequiredISO(startOfWeek);
+//     const formattedEnd = formatToRequiredISO(endOfWeek);
+//
+//     // Возвращаем начальную и конечную даты недели
+//     return {
+//         start: formattedStart,
+//         end: formattedEnd,
+//     };
+// };
+
 export const getCurrentWeekDates = () => {
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-  const sundayOffset = 7 - dayOfWeek;
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 (вс) - 6 (сб)
 
-  const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() + mondayOffset);
-  startOfWeek.setUTCHours(0, 0, 0, 0);
+    // Смещение для понедельника
+    const mondayOffset = (dayOfWeek === 0 ? -6 : 1 - dayOfWeek); // Смещаем на 0 или -6 для начала с понедельника
+    const sundayOffset = 7 - dayOfWeek; // Конец недели (вс) - смещаем на 0 или 6
 
-  const endOfWeek = new Date(today);
-  endOfWeek.setDate(today.getDate() + sundayOffset);
-  endOfWeek.setUTCHours(23, 59, 59, 0);
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() + mondayOffset);
+    startOfWeek.setUTCHours(0, 0, 0, 0); // Начало дня (00:00:00)
 
-  const formatToRequiredISO = (date) => {
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+    const endOfWeek = new Date(today);
+    endOfWeek.setDate(today.getDate() + sundayOffset);
+    endOfWeek.setUTCHours(23, 59, 59, 999); // Конец дня (23:59:59.999)
 
-    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+00:00`;
-  };
+    const formatToRequiredISO = (date) => {
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(date.getUTCSeconds()).padStart(2, '0');
 
-  const formattedStart = formatToRequiredISO(startOfWeek);
-  const formattedEnd = formatToRequiredISO(endOfWeek);
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+00:00`;
+    };
 
-  // console.log("Formatted Start:", formattedStart);
-  // console.log("Formatted End:", formattedEnd);
+    const formattedStart = formatToRequiredISO(startOfWeek);
+    const formattedEnd = formatToRequiredISO(endOfWeek);
 
-  return {
-    start: formattedStart,
-    end: formattedEnd,
-  };
+    // Возвращаем начальную и конечную даты недели
+    return {
+        start: formattedStart,
+        end: formattedEnd,
+    };
 };
+
 
 export const formatDate = (dateString) => {
     const dateObj = new Date(dateString);

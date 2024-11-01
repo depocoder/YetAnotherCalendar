@@ -4,6 +4,7 @@ import {formatDate} from "../../utils/dateUtils";
 
 
 const EventsDetail = ({ event }) => {
+    // console.log('event', event)
     return (
         <div className="rectangle">
             {event && (
@@ -31,38 +32,41 @@ const EventsDetail = ({ event }) => {
                     {event.type === 'modeus' && (
                         <>
                             <div className="source">
-                                <span className="source-first-word">Событие:</span> {event.nameShort || event.title}
+                                <span className="source-first-word">Событие:</span> {event?.nameShort} {event?.cycle_realization?.code}
                                 <span className="date-event">
-                            <img src={arrowImage} alt={arrowImage}/> {/* Используйте новое имя переменной здесь */}
-                                    {formatDate(event.start || event.deadline)}
-                        </span>
+                                   <img src={arrowImage} alt={arrowImage}/> {formatDate(event.start)}
+                                </span>
                             </div>
                             <div className="name-event">
-                                <span className="name-event-text">{event.name || 'Информация недоступна'}</span>
+                                <>
+                                    <span className="name-event-text">{event?.name}</span> <br/>
+                                    <span className="name-event-text">{event?.cycle_realization?.name}</span>
+                                </>
                             </div>
                             <div className="task-event">
-                        <span className="task-event-text">
-                            Преподаватель: {event.teacher_full_name || 'Не указано'}
-                        </span>
+                               <span className="task-event-text">
+                                   Преподаватель: {event.teacher_full_name || 'Не указано'}
+                               </span>
                             </div>
                         </>
                     )}
                     {event.type === 'netology' && (
                         <>
                             <div className="source">
-                                <span className="source-first-word">Событие:</span> {event.nameShort || event.title}
+                                <span className="source-first-word">Событие:</span> {event.block_title}
                                 <span className="date-event">
-                            <img src={arrowImage} alt={arrowImage}/> {/* Используйте новое имя переменной здесь */}
-                                    {formatDate(event.start || event.deadline)}
-                        </span>
+                                    <img src={arrowImage} alt={arrowImage}/> {formatDate(event.starts_at)}
+                                </span>
                             </div>
                             <div className="name-event">
-                                <span className="name-event-text">{event.name || 'Информация недоступна'}</span>
+                                <span className="name-event-text">{event.title}</span>
                             </div>
                             <div className="task-event">
-                        <span className="task-event-text">
-                            Преподаватель: {event.teacher_full_name || 'Не указано'}
-                        </span>
+                                <img className="avatar_path" src={event?.experts[0]?.avatar_path}
+                                     alt={event?.experts[0]?.full_name}/>
+                                <span className="task-event-text">
+                                    Преподаватель: {event?.experts[0]?.full_name || 'Не указано'}
+                                </span>
                             </div>
                         </>
                     )}
