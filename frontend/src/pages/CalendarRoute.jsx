@@ -17,6 +17,7 @@ import EventsDetail from "../components/Calendar/EventsDetail";
 import DeadLine from "../components/Calendar/DeadLine";
 import DaysNumber from "../components/Calendar/DaysNumber";
 import LessonTimes from "../components/Calendar/LessonTimes";
+import ErrorMessage from "../elements/ErrorMessage";
 
 const CalendarRoute = () => {
     const initialDate = useMemo(() => getCurrentWeekDates(), []);
@@ -25,8 +26,6 @@ const CalendarRoute = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
-
-    console.log('date', date)
 
     const fetchCourseAndEvents = useCallback(async () => {
         setLoading(true);
@@ -66,7 +65,7 @@ const CalendarRoute = () => {
     }, [fetchCourseAndEvents]);
 
     if (loading) return <Loader />;
-    if (error) return <div>{error}</div>;
+    if (error) return <ErrorMessage message={error} />;
 
     const handleDataUpdate = (updatedEvents) => {
         setEvents(updatedEvents);
