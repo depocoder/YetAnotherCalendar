@@ -27,6 +27,8 @@ const CalendarRoute = () => {
     const [error, setError] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
 
+    // console.log('date', date)
+
     const fetchCourseAndEvents = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -64,9 +66,6 @@ const CalendarRoute = () => {
         fetchCourseAndEvents();
     }, [fetchCourseAndEvents]);
 
-    if (loading) return <Loader />;
-    if (error) return <ErrorMessage message={error} />;
-
     const handleDataUpdate = (updatedEvents) => {
         setEvents(updatedEvents);
     };
@@ -83,26 +82,32 @@ const CalendarRoute = () => {
                     <div className="header-line">
                         <div className="shedule-export">
                             <span className="shedule">Мое расписание</span>
-                            <ICSExporter events={allEvents} />
-                            <CacheUpdateBtn date={date} onDataUpdate={handleDataUpdate} />
+                            <ICSExporter events={allEvents}/>
+                            <CacheUpdateBtn date={date} onDataUpdate={handleDataUpdate}/>
                         </div>
-                        <ExitBtn />
+                        <ExitBtn/>
                     </div>
 
-                    <EventsDetail event={selectedEvent} />
-                    <DatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
+                    <EventsDetail event={selectedEvent}/>
+                    <DatePicker setDate={setDate} initialDate={date} disableButtons={loading}/>
                 </header>
 
                 <div className="calendar">
-                    <table className="shedule-table">
-                        <thead>
-                            <DaysNumber date={date} />
-                            <DeadLine date={date} events={events} setSelectedEvent={setSelectedEvent} />
-                        </thead>
-                        <tbody>
-                            <LessonTimes events={events} selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent} />
-                        </tbody>
-                    </table>
+                    {loading ? (
+                        <Loader/>
+                    ) : error ? (
+                        <ErrorMessage message={error}/>
+                    ) : (
+                        <table className="shedule-table">
+                            <thead>
+                              <DaysNumber date={date}/>
+                              <DeadLine date={date} events={events} setSelectedEvent={setSelectedEvent}/>
+                            </thead>
+                            <tbody>
+                               <LessonTimes events={events} selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent}/>
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             </div>
         </div>
