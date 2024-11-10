@@ -148,12 +148,12 @@ class CycleRealization(BaseModel):
 
 
 class CalendarEmbedded(BaseModel):
-    events: list[EventWithLinks] = Field(alias="events")
-    locations: list[Location] = Field(alias="event-locations")
-    attendees: list[Attender] = Field(alias="event-attendees")
-    people: list[ShortPerson] = Field(alias="persons")
-    courses: list[Course] = Field(alias="course-unit-realizations")
-    cycle_realizations: list[CycleRealization] = Field(alias="cycle-realizations")
+    events: list[EventWithLinks] = Field(alias="events", default=[])
+    locations: list[Location] = Field(alias="event-locations", default=[])
+    attendees: list[Attender] = Field(alias="event-attendees", default=[])
+    people: list[ShortPerson] = Field(alias="persons", default=[])
+    courses: list[Course] = Field(alias="course-unit-realizations", default=[])
+    cycle_realizations: list[CycleRealization] = Field(alias="cycle-realizations", default=[])
 
 
 class FullEvent(Event, Location):
