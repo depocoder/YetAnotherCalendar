@@ -4,6 +4,7 @@ import {
     bulkEvents,
     getTokenFromLocalStorage,
     getPersonIdLocalStorage,
+    getCalendarIdLocalStorage,
 } from '../services/api';
 import Loader from "../elements/Loader";
 import '../style/header.scss';
@@ -34,26 +35,32 @@ const CalendarRoute = () => {
         setError(null);
 
         try {
-            const courseData = await getNetologyCourse(getTokenFromLocalStorage());
-            const calendarId = courseData?.id;
-            localStorage.setItem('calendarId', calendarId);
-
-            if (calendarId) {
-                const eventsResponse = await bulkEvents({
-                    calendarId,
-                    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    attendeePersonId: getPersonIdLocalStorage(),
-                    timeMin: date.start,
-                    timeMax: date.end,
-                    sessionToken: getTokenFromLocalStorage(),
-                });
-
-                if (eventsResponse?.data) {
-                    setEvents(eventsResponse.data);
-                } else {
-                    throw new Error('Не удалось получить события');
-                }
+            var calendarId
+            calendarId = getCalendarIdLocalStorage();
+            if (!calendarId){
+                const courseData = await getNetologyCourse(getTokenFromLocalStorage());
+                calendarId = courseData?.id;
+                localStorage.setItem('calendarId', calendarId);
             }
+
+            if (!calendarId) {
+                console.error('Ошибка при получении calendar id:', calendarId);
+            }
+            const eventsResponse = await bulkEvents({
+                calendarId,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                attendeePersonId: getPersonIdLocalStorage(),
+                timeMin: date.start,
+                timeMax: date.end,
+                sessionToken: getTokenFromLocalStorage(),
+            });
+
+            if (eventsResponse?.data) {
+                setEvents(eventsResponse.data);
+            } else {
+                throw new Error('Не удалось получить события');
+            }
+
         } catch (error) {
             console.error('Ошибка при получении данных с сервера:', error);
             setError("Ошибка при получении данных с сервера. Перезагрузите страницу!");
