@@ -1,6 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import camera from "../../img/camera.png";
 
+export function formatDateToAMPM(date) {
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  return `${hours}:${minutes}`;
+}
+
 const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
     const [weekDays, setWeekDays] = useState(Array.from({length: 7}, () => []));
 
@@ -68,14 +75,8 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
                                         const lesson = lessons.find(lesson => {
                                             const lessonStartTime = new Date(lesson.start || lesson.starts_at);
                                             const lessonEndTime = new Date(lesson.end || lesson.ends_at);
-                                            const lessonStartFormatted = lessonStartTime.toLocaleTimeString([], {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            });
-                                            const lessonEndFormatted = lessonEndTime.toLocaleTimeString([], {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            });
+                                            const lessonStartFormatted = formatDateToAMPM(lessonStartTime);
+                                            const lessonEndFormatted = formatDateToAMPM(lessonEndTime);
 
                                             return (
                                                 lessonStartFormatted === timeSlot.split(' - ')[0] ||
