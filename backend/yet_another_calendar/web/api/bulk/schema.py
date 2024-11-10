@@ -2,7 +2,10 @@ import datetime
 import hashlib
 from typing import Self
 
+import pytz
 from pydantic import BaseModel, Field
+from starlette import status
+from starlette.exceptions import HTTPException
 
 from ..modeus import schema as modeus_schema
 from ..lms import schema as lms_schema
@@ -20,7 +23,11 @@ class BulkResponse(BaseModel):
     netology: netology_schema.SerializedEvents
     utmn: UtmnResponse
 
-    def change_timezone(self, timezone: datetime.tzinfo) -> Self:
+    def change_timezone(self, timezone_name: str) -> Self:
+        try:
+            timezone = pytz.timezone(timezone_name)
+        except pytz.exceptions.UnknownTimeZoneError:
+            raise HTTPException(detail="Wrong timezone", status_code=status.HTTP_400_BAD_REQUEST) from None
         for homework in self.netology.homework:
             if homework.deadline:
                 homework.deadline = homework.deadline.astimezone(timezone)

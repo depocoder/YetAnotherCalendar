@@ -29,8 +29,11 @@ async def get_calendar(
     Get events from Netology and Modeus, cached.
     """
 
-    cached_calendar = await integration.get_cached_calendar(body, lms_user, jwt_token, calendar_id, cookies, time_zone)
-    return schema.CalendarResponse.model_validate(cached_calendar)
+    cached_calendar = await integration.get_cached_calendar(body, lms_user, jwt_token, calendar_id, cookies)
+    if isinstance(cached_calendar, schema.CalendarResponse):
+        return cached_calendar.change_timezone(time_zone)
+    # else cached
+    return schema.CalendarResponse.model_validate(cached_calendar).change_timezone(time_zone)
 
 
 @router.post("/refresh_events/")
@@ -61,5 +64,6 @@ async def export_ics(
     """
     Export into .ics format
     """
-    calendar = await integration.get_calendar(body, lms_user, jwt_token, calendar_id, cookies, time_zone)
-    return StreamingResponse(integration.export_to_ics(calendar))
+    calendar = await integration.get_calendar(body, lms_user, jwt_token, calendar_id, cookies)
+    calendar_with_timezone = calendar.change_timezone(time_zone)
+    return StreamingResponse(integration.export_to_ics(calendar_with_timezone))
