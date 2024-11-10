@@ -4,7 +4,6 @@ import logging
 from typing import Any, Iterable, Optional
 
 import icalendar
-import pytz
 from fastapi import HTTPException
 from fastapi_cache import default_key_builder, FastAPICache
 from fastapi_cache.decorator import cache
@@ -82,9 +81,9 @@ async def refresh_events(
         timezone: str,
 ) -> schema.RefreshedCalendarResponse:
     """Clear events cache."""
-    cached_json = await get_cached_calendar(body, lms_user, jwt_token, calendar_id, cookies, timezone)
+    cached_json = await get_cached_calendar(body, lms_user, jwt_token, calendar_id, cookies)
     cached_calendar = schema.CalendarResponse.model_validate(cached_json)
-    calendar = await get_calendar(body, lms_user, jwt_token, calendar_id, cookies, timezone)
+    calendar = await get_calendar(body, lms_user, jwt_token, calendar_id, cookies)
     changed = cached_calendar.get_hash() != calendar.get_hash()
     try:
         cache_key = default_key_builder(get_cached_calendar, args=(body, jwt_token, calendar_id, cookies), kwargs={})
@@ -99,7 +98,7 @@ async def refresh_events(
         raise HTTPException(detail="Can't refresh redis", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR) from None
     return schema.RefreshedCalendarResponse(
         **{**calendar.model_dump(by_alias=True), "changed": changed},
-    )
+    ).change_timezone(timezone)
 
 
 async def get_calendar(
@@ -108,12 +107,7 @@ async def get_calendar(
         jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
-        timezone: str,
 ) -> schema.CalendarResponse:
-    try:
-        tz = pytz.timezone(timezone)
-    except pytz.exceptions.UnknownTimeZoneError:
-        raise HTTPException(detail="Wrong timezone", status_code=status.HTTP_400_BAD_REQUEST) from None
     lms_response = None
     async with asyncio.TaskGroup() as tg:
         netology_response = tg.create_task(netology_views.get_calendar(body, calendar_id, cookies))
@@ -126,7 +120,7 @@ async def get_calendar(
             "modeus_events": modeus_response.result(),
             "lms_events": lms_events,
         }},
-    ).change_timezone(tz)
+    )
 
 
 @cache(expire=settings.redis_events_time_live)
@@ -136,6 +130,5 @@ async def get_cached_calendar(
         jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
-        timezone: str,
 ) -> schema.CalendarResponse:
-    return await get_calendar(body, lms_user, jwt_token, calendar_id, cookies, timezone)
+    return await get_calendar(body, lms_user, jwt_token, calendar_id, cookies)
