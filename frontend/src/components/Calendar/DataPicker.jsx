@@ -12,24 +12,24 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
     const [weekRange, setWeekRange] = useState("");
     const [selectedDate, setSelectedDate] = useState(new Date(initialDate.start));
 
-    // Функция для вычисления начала и конца недели
     const calculateWeekDates = useCallback((date) => {
         const startOfWeek = new Date(date);
-        const endOfWeek = new Date(date);
-        startOfWeek.setDate(date.getDate() - (date.getDay() === 0 ? 6 : date.getDay() - 1)); // Пн
+        startOfWeek.setDate(date.getDate() - ((date.getDay() || 7) - 1)); // Пн
+
+        const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(startOfWeek.getDate() + 6); // Вс
 
-        // Форматируем даты в нужный формат
         return {
-            start: `${startOfWeek.toISOString().split("T")[0]}T00:00:00+00:00`,
-            end: `${endOfWeek.toISOString().split("T")[0]}T23:59:59+00:00`,
+            start: `${startOfWeek.getFullYear()}-${(startOfWeek.getMonth() + 1).toString().padStart(2, '0')}-${startOfWeek.getDate().toString().padStart(2, '0')}T00:00:00+00:00`,
+            end: `${endOfWeek.getFullYear()}-${(endOfWeek.getMonth() + 1).toString().padStart(2, '0')}-${endOfWeek.getDate().toString().padStart(2, '0')}T23:59:59+00:00`,
         };
     }, []);
 
     const calculateWeekRange = useCallback((date) => {
         const startOfWeek = new Date(date);
-        const endOfWeek = new Date(date);
-        startOfWeek.setDate(date.getDate() - (date.getDay() === 0 ? 6 : date.getDay() - 1)); // Пн
+        startOfWeek.setDate(date.getDate() - ((date.getDay() || 7) - 1)); // Пн
+
+        const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(startOfWeek.getDate() + 6); // Вс
 
         const formatOptions = { day: "numeric", month: "long" };
@@ -38,6 +38,14 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
 
         return `${startFormatted} – ${endFormatted}`;
     }, []);
+
+    // Установка начальной недели при загрузке
+    useEffect(() => {
+        const initialRange = calculateWeekRange(selectedDate);
+        const initialDates = calculateWeekDates(selectedDate);
+        setWeekRange(initialRange);
+        setDate(initialDates);
+    }, [selectedDate, calculateWeekRange, calculateWeekDates, setDate]);
 
     useEffect(() => {
         const fpInstance = flatpickr(datePickerRef.current, {
@@ -48,8 +56,8 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
                     const selectedDate = selectedDates[0];
                     setSelectedDate(selectedDate);
                     setWeekRange(calculateWeekRange(selectedDate));
-                    const newDates = calculateWeekDates(selectedDate); // Обновляем даты
-                    setDate(newDates); // Устанавливаем новые даты в родительском компоненте
+                    const newDates = calculateWeekDates(selectedDate);
+                    setDate(newDates);
                 }
             }
         });
@@ -57,18 +65,15 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
         return () => {
             fpInstance.destroy();
         };
-    }, [setDate, initialDate.start, calculateWeekRange, calculateWeekDates]);
-
-    useEffect(() => {
-        setWeekRange(calculateWeekRange(selectedDate));
-    }, [selectedDate, calculateWeekRange]);
+    }, [setDate, calculateWeekRange, calculateWeekDates]);
 
     const handlePrevWeek = () => {
         setSelectedDate((prev) => {
             const newDate = new Date(prev);
             newDate.setDate(prev.getDate() - 7);
-            setWeekRange(calculateWeekRange(newDate));
+            const newRange = calculateWeekRange(newDate);
             const newDates = calculateWeekDates(newDate);
+            setWeekRange(newRange);
             setDate(newDates);
             return newDate;
         });
@@ -78,8 +83,9 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
         setSelectedDate((prev) => {
             const newDate = new Date(prev);
             newDate.setDate(prev.getDate() + 7);
-            setWeekRange(calculateWeekRange(newDate));
+            const newRange = calculateWeekRange(newDate);
             const newDates = calculateWeekDates(newDate);
+            setWeekRange(newRange);
             setDate(newDates);
             return newDate;
         });

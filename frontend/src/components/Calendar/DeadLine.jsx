@@ -16,7 +16,7 @@ const DeadLine = ({date, events, setSelectedEvent}) => {
                 <button className="off-deadline">Скрыть</button>
             </th>
             {monthDays.map((day, index) => {
-                const adjustedDay = new Date(new Date(date.start).setDate(new Date(date.start).getDate() + index + 1)).toISOString().split('T')[0];
+                const adjustedDay = new Date(new Date(date.start).setDate(new Date(date.start).getDate() + index)).toISOString().split('T')[0];
 
                 const deadlines = events?.netology?.homework.filter(homework => {
                     const homeworkDeadline = new Date(homework.deadline).toISOString().split('T')[0];
