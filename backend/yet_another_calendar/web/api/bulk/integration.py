@@ -81,12 +81,12 @@ async def refresh_events(
         timezone: str,
 ) -> schema.RefreshedCalendarResponse:
     """Clear events cache."""
-    cached_json = await get_cached_calendar(body, lms_user, jwt_token, calendar_id, cookies)
+    cached_json = await get_cached_calendar(body, lms_user, calendar_id, cookies)
     cached_calendar = schema.CalendarResponse.model_validate(cached_json)
     calendar = await get_calendar(body, lms_user, jwt_token, calendar_id, cookies)
     changed = cached_calendar.get_hash() != calendar.get_hash()
     try:
-        cache_key = default_key_builder(get_cached_calendar, args=(body, jwt_token, calendar_id, cookies), kwargs={})
+        cache_key = default_key_builder(get_cached_calendar, args=(body, calendar_id, cookies), kwargs={})
         coder = FastAPICache.get_coder()
         backend = FastAPICache.get_backend()
         await backend.set(
@@ -127,8 +127,8 @@ async def get_calendar(
 async def get_cached_calendar(
         body: modeus_schema.ModeusEventsBody,
         lms_user: lms_schema.User,
-        jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
 ) -> schema.CalendarResponse:
+    jwt_token = await modeus_schema.get_cookies_from_headers()
     return await get_calendar(body, lms_user, jwt_token, calendar_id, cookies)

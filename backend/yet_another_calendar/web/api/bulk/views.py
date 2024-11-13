@@ -21,7 +21,6 @@ async def get_calendar(
         body: modeus_schema.ModeusEventsBody,
         lms_user: lms_schema.User,
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
-        jwt_token: Annotated[str, Depends(modeus_schema.get_cookies_from_headers)],
         calendar_id: int = settings.netology_default_course_id,
         time_zone: str = "Europe/Moscow",
 ) -> schema.CalendarResponse:
@@ -29,7 +28,7 @@ async def get_calendar(
     Get events from Netology and Modeus, cached.
     """
 
-    cached_calendar = await integration.get_cached_calendar(body, lms_user, jwt_token, calendar_id, cookies)
+    cached_calendar = await integration.get_cached_calendar(body, lms_user, calendar_id, cookies)
     if isinstance(cached_calendar, schema.CalendarResponse):
         return cached_calendar.change_timezone(time_zone)
     # else cached
