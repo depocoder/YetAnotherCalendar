@@ -13,12 +13,12 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
 
     // Массив временных интервалов пар, начиная с 10:00
     const lessonTimesArray = [
-        "10:00 - 11:30", // 1 пара
-        "12:00 - 13:30", // 2 пара
-        "13:45 - 15:15", // 3 пара
-        "15:30 - 17:00", // 4 пара
-        "17:10 - 18:40", // 5 пара
-        "18:50 - 20:20"  // 6 пара
+        "10:00 11:30", // 1 пара
+        "12:00 13:30", // 2 пара
+        "13:45 15:15", // 3 пара
+        "15:30 17:00", // 4 пара
+        "17:10 18:40", // 5 пара
+        "18:50 20:20"  // 6 пара
     ];
 
     const populateWeekDays = (events) => {
@@ -79,9 +79,9 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
                                             const lessonEndFormatted = formatDateToAMPM(lessonEndTime);
 
                                             return (
-                                                lessonStartFormatted === timeSlot.split(' - ')[0] ||
-                                                lessonEndFormatted === timeSlot.split(' - ')[1] ||
-                                                (lessonStartFormatted >= timeSlot.split(' - ')[0] && lessonEndFormatted <= timeSlot.split(' - ')[1])
+                                                lessonStartFormatted === timeSlot.split(' ')[0] ||
+                                                lessonEndFormatted === timeSlot.split(' ')[1] ||
+                                                (lessonStartFormatted >= timeSlot.split(' ')[0] && lessonEndFormatted <= timeSlot.split(' ')[1])
                                             );
                                         });
                                         return (
