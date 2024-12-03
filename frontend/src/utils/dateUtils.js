@@ -86,3 +86,10 @@ export const formatDateFull = (dateString) => {
     const year = (dateObj.getFullYear().toString().padStart(4, '0'))
     return `${day}.${month}.${year}`; // Возвращаем строку в формате "дд.мм.гггг"
 };
+
+export const formatHours = (date) => {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${hours}:${minutes}`;
+};
