@@ -43,7 +43,6 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
 
     // Получаем преобразованные времена уроков
     const lessonTimesArray = convertToUserTimezone(lessonTimesArrayUTC);
-    console.log(lessonTimesArray);
     const populateWeekDays = (events) => {
         if (!events) return;
         const newWeekDays = Array.from({length: 7}, () => []);
