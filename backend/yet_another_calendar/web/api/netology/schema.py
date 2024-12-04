@@ -183,17 +183,21 @@ class ExtendedLessonResponse(BaseModel):
 class DetailedProgram(BaseModel):
     id: int
     name: str
-    start_date: datetime.datetime
-    finish_date: datetime.datetime
+    start_date: Optional[datetime.datetime] = Field(default=None)
+    finish_date: Optional[datetime.datetime] = Field(default=None)
 
     @field_validator("start_date")
     @classmethod
-    def validate_start_date(cls, start_date: datetime.datetime) -> datetime.datetime:
+    def validate_start_date(cls, start_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
+        if start_date is None:
+            return start_date
         return start_date.astimezone(datetime.timezone.utc)
 
     @field_validator("finish_date")
     @classmethod
-    def validate_finish_date(cls, finish_date: datetime.datetime) -> datetime.datetime:
+    def validate_finish_date(cls, finish_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
+        if finish_date is None:
+            return finish_date
         return finish_date.astimezone(datetime.timezone.utc)
 
 
