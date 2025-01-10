@@ -421,12 +421,12 @@ const LoginRoute = ({ onLogin, onSearch }) => {
 
     return (
         <div className="login-container">
-            <h2>Мое расписание</h2>
+            <h2 className="shedule-login">Мое расписание</h2>
 
             <div className="login-fio">
                 <label>Введите ФИО из базы Модеуса</label>
 
-                <div style={{ display: "flex", flexDirection: "column" }}>
+                <div className="login-select">
                     <Select
                         styles={{
                             control: (provided) => ({
@@ -446,7 +446,6 @@ const LoginRoute = ({ onLogin, onSearch }) => {
                     />
                 </div>
             </div>
-
             <div className="login-netologiya">
                 <label>Введите логин и пароль от Нетологии, чтобы увидеть свое расписание</label>
                 <div style={{ display: "flex", flexDirection: "column" }}>
@@ -462,13 +461,15 @@ const LoginRoute = ({ onLogin, onSearch }) => {
                         placeholder="Пароль от Нетологии"
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                </div>
                 {/* Сообщение об ошибке */}
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
 
                 <button className="login-btn-log" id="login" onClick={onClickLogin}>
                     Войти
                 </button>
+
+                </div>
+
             </div>
         </div>
     );

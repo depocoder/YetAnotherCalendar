@@ -1,16 +1,17 @@
 .deadline {
     &-info {
         //height: 28px;
-        margin-top: 2px;
+        margin-top: 6px;
+        margin-bottom: 6px;
         //width: 95%;
         text-align: left;
-        padding: 5px 11px;
-        border: none;
+        padding: 6px 8px 8px;
+        border: 2px solid #F46386;
         background: #F46386;
         border-radius: 6px;
         color: #fff;
         font-family: "Roboto", sans-serif;
-        font-weight: 700;
+        font-weight: 500;
         font-size: 13px;
         transition: color 0.3s linear;
         height: 95%;
@@ -68,6 +69,9 @@
     &.now {
       color: #7b61ff;
     }
+    &.now-clmn {
+        border-left: 2px solid #7b61ff;
+      }
     &.next {
         color: #333333;
     }
@@ -164,6 +168,7 @@
     font-weight: 500;
     font-size: 10px;
     color: #7B61FF;
+    margin-bottom: 4px;
 }
 
 .lesson-name {
@@ -175,9 +180,17 @@
 }
 
 .netology-lesson {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    text-align: left;
+    padding: 6px 8px 8px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+
+    //display: flex;
+    //flex-direction: column;
+    justify-content: space-evenly;
     padding-left: 12px;
     text-align: left;
     width: 95%;
@@ -191,13 +204,20 @@
 }
 
 .TyumGU-lesson {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding-left: 12px;
+    margin-top: 6px;
+    margin-bottom: 6px;
     text-align: left;
-    //width: 95%;
-    height: 95%;
+    padding: 6px 8px 8px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+
+    //display: flex;
+    //flex-direction: column;
+    justify-content: space-evenly;
+    padding: 10px;
+    text-align: left;
+    height: 84%;
     background: #7B61FF33;
     border: none;
     border-radius: 6px;
