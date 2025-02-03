@@ -90,18 +90,6 @@ class Event(BaseModel):
     end_time: datetime.datetime = Field(alias="end")
     id: uuid.UUID
 
-    @field_validator("start_time")
-    @classmethod
-    def validate_starts_at(cls, start_time: datetime.datetime,
-                           timezone: datetime.tzinfo = datetime.timezone.utc) -> datetime.datetime:
-        return start_time.astimezone(timezone)
-
-    @field_validator("end_time")
-    @classmethod
-    def validate_end_time(cls, end_time: datetime.datetime,
-                          timezone: datetime.tzinfo = datetime.timezone.utc) -> datetime.datetime:
-        return end_time.astimezone(timezone)
-
 
 class Href(BaseModel):
     href: str

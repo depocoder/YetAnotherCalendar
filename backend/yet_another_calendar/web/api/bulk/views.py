@@ -27,11 +27,8 @@ async def get_calendar(
     """
     Get events from Netology and Modeus, cached.
     """
-    time_zone: str = "Europe/Moscow"  # todo fix after frontend
+
     cached_calendar = await integration.get_cached_calendar(body, lms_user, calendar_id, cookies)
-    if isinstance(cached_calendar, schema.CalendarResponse):
-        return cached_calendar.change_timezone(time_zone)
-    # else cached
     return schema.CalendarResponse.model_validate(cached_calendar).change_timezone(time_zone)
 
 
@@ -47,7 +44,7 @@ async def refresh_calendar(
     """
     Refresh events in redis.
     """
-    time_zone: str = "Europe/Moscow"  # todo fix after frontend
+
     return await integration.refresh_events(body, lms_user, jwt_token, calendar_id, cookies, time_zone)
 
 
@@ -63,7 +60,6 @@ async def export_ics(
     """
     Export into .ics format
     """
-    time_zone: str = "Europe/Moscow"  # todo fix after frontend
     calendar = await integration.get_calendar(body, lms_user, jwt_token, calendar_id, cookies)
     calendar_with_timezone = calendar.change_timezone(time_zone)
     return StreamingResponse(integration.export_to_ics(calendar_with_timezone))
