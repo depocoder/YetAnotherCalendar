@@ -8,6 +8,7 @@ const LoginRoute = ({ onLogin, onSearch }) => {
     const [searchResults, setSearchResults] = useState([]); // Результаты поиска
     const [personId, setPersonId] = useState(null); // Здесь сохраняем personId
     const [inputValue, setInputValue] = useState(''); // Контролируемое значение ввода для Select
+    const [selectedOption, setSelectedOption] = useState(null);
     const [errorMessage, setErrorMessage] = useState(""); // Сообщение об ошибке
 
     const navigate = useNavigate(); // Инициализируем хук для навигации
@@ -33,10 +34,21 @@ const LoginRoute = ({ onLogin, onSearch }) => {
     };
 
     // Обработчик выбора варианта из списка
+    // const handleSelect = (selectedOption) => {
+    //     setInputValue(selectedOption.label); // Устанавливаем выбранное имя
+    //     setPersonId(selectedOption.value); // Устанавливаем personId
+    // };
     const handleSelect = (selectedOption) => {
+    if (selectedOption) {
         setInputValue(selectedOption.label); // Устанавливаем выбранное имя
         setPersonId(selectedOption.value); // Устанавливаем personId
-    };
+        setSelectedOption(selectedOption); // Обновляем состояние selectedOption
+    } else {
+        setInputValue(''); // Очищаем значение ввода, если ничего не выбрано
+        setPersonId(null); // Сбрасываем personId
+        setSelectedOption(null); // Сбрасываем selectedOption
+    }
+};
 
     const onClickLogin = async () => {
         const result = await onLogin(email, password);
@@ -74,6 +86,8 @@ const LoginRoute = ({ onLogin, onSearch }) => {
                         onInputChange={handleInputChange} // Обработчик изменения ввода
                         placeholder="Введите ФИО"
                         noOptionsMessage={() => (inputValue ? 'Нет такого имени' : 'Введите ФИО')}
+                        value={selectedOption}
+                        isClearable={false}
                     />
                 </div>
             </div>
