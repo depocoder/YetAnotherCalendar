@@ -32,12 +32,14 @@ class BulkResponse(BaseModel):
             if homework.deadline:
                 homework.deadline = homework.deadline.astimezone(timezone)
         for webinar in self.netology.webinars:
-            webinar.starts_at = webinar.validate_starts_at(webinar.starts_at, timezone)
-            webinar.ends_at = webinar.validate_ends_at(webinar.ends_at, timezone)
+            if webinar.starts_at:
+                webinar.starts_at = webinar.starts_at.astimezone(timezone)
+            if webinar.ends_at:
+                webinar.ends_at = webinar.ends_at.astimezone(timezone)
 
         for modeus_event in self.utmn.modeus_events:
-            modeus_event.start_time = modeus_event.validate_starts_at(modeus_event.start_time, timezone)
-            modeus_event.end_time = modeus_event.validate_end_time(modeus_event.end_time, timezone)
+            modeus_event.start_time = modeus_event.start_time.astimezone(timezone)
+            modeus_event.end_time = modeus_event.end_time.astimezone(timezone)
 
         for lms_event in self.utmn.lms_events:
             lms_event.dt_start = lms_event.dt_start.astimezone(timezone)

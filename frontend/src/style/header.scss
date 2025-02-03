@@ -10,8 +10,9 @@
 }
 
 .header {
-  max-width: 80%;
-  margin: auto;
+  max-width: 100%;
+  margin-left: 10%;
+  margin-right: 3%;
 
   &-line {
     display: flex;
@@ -72,6 +73,7 @@
     &-first-word {
       font-family: "Roboto", sans-serif;
       font-weight: 400;
+      font-size: 13px;
     }
   }
 }
@@ -90,6 +92,7 @@
 
 .export-btn {
   cursor: pointer;
+  margin-left: 18px;
   height: 28px;
   background-color: #5856d6;
   color: #fff;
@@ -99,8 +102,8 @@
   padding: 4px 8px;
   font-family: "Roboto", sans-serif;
   font-weight: 400;
+  font-size: 13px;
   font-style: normal;
-  margin-left: 18px;
   transition: color 0.2s linear;
 
   &:hover {
@@ -142,8 +145,7 @@
   font-family: "Roboto", sans-serif;
   font-weight: 400;
   font-size: 13px;
-
-  &-cross {
+  &-cross{
     margin-left: 7px;
   }
 }
@@ -153,8 +155,6 @@
 }
 
 .name-event {
-  margin-top: 26px;
-
   &-text {
     color: #2c2d2e;
     font-family: "Unbounded", sans-serif;
@@ -163,9 +163,14 @@
   }
 }
 
-.task-event {
-  margin-top: 7px;
+a { 
+  text-decoration: none; 
+}
 
+
+.task-event {
+  padding-left: 2px;
+  margin-bottom: 5px;
   &-text {
     color: #2c2d2e;
     font-family: "Roboto", sans-serif;

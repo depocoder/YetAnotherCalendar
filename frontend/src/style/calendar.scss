@@ -1,7 +1,7 @@
 .deadline {
     &-info {
         //height: 28px;
-        margin-top: 6px;
+        margin-top: 2px;
         //width: 95%;
         text-align: left;
         padding: 5px 11px;
@@ -13,6 +13,8 @@
         font-weight: 700;
         font-size: 13px;
         transition: color 0.3s linear;
+        height: 95%;
+        width: 95%;
         &:hover {
             cursor: pointer;
             color: #F46386;
@@ -50,9 +52,7 @@
 }
 
 .days {
-    padding-left: 30px;
-    padding-bottom: 10px;
-    padding-top: 10px;
+    padding: 5px;
     font-family: "Unbounded", sans-serif;
     font-weight: 500;
     font-size: 13px;
@@ -75,9 +75,10 @@
 
 .vertical-deadline {
     vertical-align: top;
+    text-align: center;
     height: 72px;
     width: 195px;
-    padding-left: 20px;
+    padding: 1px 4px;
     border-bottom: 1px dotted #adadad;
     &-heading {
         padding-left: 47px;
@@ -97,11 +98,15 @@
 }
 
 .vertical   {
-    height: 72px;
+    height: 80px;
     width: 195px;
-    padding-left: 20px;
+    padding: 1px 4px;
     border-bottom: 1px dotted #adadad;
+    text-align: center;
+    vertical-align: middle;
     &-heading {
+        text-align: right;
+        vertical-align: top;
         padding-left: 47px;
         padding-top: 7px;
         padding-bottom: 7px;
@@ -153,6 +158,7 @@
 }
 
 .company-name {
+    margin-top: 7px;
     vertical-align: top;
     font-family: "Roboto", sans-serif;
     font-weight: 500;
@@ -171,7 +177,7 @@
 .netology-lesson {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: flex-start;
     padding-left: 12px;
     text-align: left;
     width: 95%;
@@ -187,8 +193,8 @@
 .TyumGU-lesson {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
-    padding: 12px;
+    justify-content: flex-start;
+    padding-left: 12px;
     text-align: left;
     //width: 95%;
     height: 95%;

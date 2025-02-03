@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import camera from "../../img/camera.png";
+import {formatHours} from "../../utils/dateUtils";
 
 export function formatDateToAMPM(date) {
   const hours = date.getHours().toString().padStart(2, '0');
@@ -12,15 +13,36 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
     const [weekDays, setWeekDays] = useState(Array.from({length: 7}, () => []));
 
     // Массив временных интервалов пар, начиная с 10:00
-    const lessonTimesArray = [
-        "10:00 - 11:30", // 1 пара
-        "12:00 - 13:30", // 2 пара
-        "13:45 - 15:15", // 3 пара
-        "15:30 - 17:00", // 4 пара
-        "17:10 - 18:40", // 5 пара
-        "18:50 - 20:20"  // 6 пара
+    const lessonTimesArrayUTC = [
+        "7:00 8:30", // 1 пара
+        "9:00 10:30", // 2 пара
+        "10:45 12:15", // 3 пара
+        "12:30 14:00", // 4 пара
+        "14:10 15:40", // 5 пара
+        "15:50 17:20"  // 6 пара
     ];
 
+    // Функция для преобразования времени в часовой пояс пользователя
+    const convertToUserTimezone = (timeArray) => {
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        return timeArray.map((timeRange) => {
+            const [start, end] = timeRange.split(" ");
+            const [start_hours, start_minutes] = start.split(":");
+            const [end_hours, end_minutes] = end.split(":");
+            // Создаем даты для начала и конца урока
+
+            const startDateUTC = new Date(Date.UTC(2024, 0, 1, start_hours, start_minutes));
+            const endDateUTC = new Date(Date.UTC(2024, 0, 1, end_hours, end_minutes));
+            // Преобразуем в формат пояса пользователя
+            const startUserTime = new Date(startDateUTC.toLocaleString('ru-RU', { timeZone: userTimezone }));
+            const endUserTime = new Date(endDateUTC.toLocaleString('ru-RU', { timeZone: userTimezone }));
+            return `${formatHours(startUserTime)} ${formatHours(endUserTime)}`;
+        });
+    };
+
+    // Получаем преобразованные времена уроков
+    const lessonTimesArray = convertToUserTimezone(lessonTimesArrayUTC);
     const populateWeekDays = (events) => {
         if (!events) return;
         const newWeekDays = Array.from({length: 7}, () => []);
@@ -78,45 +100,45 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
                                 const lessonStartFormatted = formatDateToAMPM(lessonStartTime);
                                 const lessonEndFormatted = formatDateToAMPM(lessonEndTime);
 
-                                return (
-                                    lessonStartFormatted === timeSlot.split(' - ')[0] ||
-                                    lessonEndFormatted === timeSlot.split(' - ')[1] ||
-                                    (lessonStartFormatted >= timeSlot.split(' - ')[0] && lessonEndFormatted <= timeSlot.split(' - ')[1])
-                                );
-                            });
-                            return (
-                                <td key={dayIndex} className="vertical" onClick={() => {
-                                    if (selectedEvent && selectedEvent.id === lesson?.id) {
-                                        setSelectedEvent(null); // Close the modal if the same lesson is clicked
-                                    } else {
-                                        setSelectedEvent(lesson); // Set the selected lesson
-                                    }
-                                }}>
-                                    {lesson ? (
-                                        <div className={`event-item ${lesson.type === 'modeus' ? 'TyumGU-lesson' : 'netology-lesson'} ${lesson.endTime < new Date() ? 'past' : ''}`}>
-                                            {/*${Date.now(day) ===   'past' : ''}*/}
-                                            {lesson.type === "modeus" ? (
-                                                <div className="company-name">
-                                                    <span><img src={camera} alt={camera}/> ТюмГУ</span>
-                                                    <span>{lesson?.cycle_realization?.code}</span>
-                                                </div>
-                                            ) : (
-                                                <span className="company-name">
-                                                    <img src={camera} alt={camera}/> Нетология<br/>
-                                                </span>
-                                            )}
-                                            <div className="lesson-name">{lesson?.course_name || lesson?.block_title}</div>
-                                        </div>
-                                    ) : (
-                                        <div className="no-lessons"></div>
-                                    )}
-                                </td>
+                                            return (
+                                                lessonStartFormatted === timeSlot.split(' ')[0] ||
+                                                lessonEndFormatted === timeSlot.split(' ')[1] ||
+                                                (lessonStartFormatted >= timeSlot.split(' ')[0] && lessonEndFormatted <= timeSlot.split(' ')[1])
+                                            );
+                                        });
+                                        return (
+                                            <td key={dayIndex} className="vertical" onClick={() => {
+                                                if (selectedEvent && selectedEvent.id === lesson?.id) {
+                                                    setSelectedEvent(null); // Close the modal if the same lesson is clicked
+                                                } else {
+                                                    setSelectedEvent(lesson); // Set the selected lesson
+                                                }
+                                            }}>
+                                                {lesson ? (
+                                                    <div
+                                                        className={`event-item ${lesson.type === 'modeus' ? 'TyumGU-lesson' : 'netology-lesson'} ${lesson.endTime < new Date() ? 'past' : ''}`}>
+                                                        {lesson.type === "modeus" ? (
+                                                            <div className="company-name">
+                                                                <span><img src={camera} alt={camera}/> ТюмГУ</span>
+                                                                <span>{lesson?.cycle_realization?.code}</span>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="company-name">
+                                                                   <img src={camera} alt={camera}/> Нетология<br/>
+                                                            </span>
+                                                        )}
+                                                        <div className="lesson-name">{lesson?.course_name || lesson?.block_title}</div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="no-lessons"></div>
+                                                )}
+                                            </td>
+                                        );
+                                    })}
+
+                                </tr>
                             );
                         })}
-
-                    </tr>
-                );
-            })}
         </>
     );
 };

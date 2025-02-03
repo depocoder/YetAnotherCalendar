@@ -65,22 +65,6 @@ class LessonWebinar(BaseLesson):
     video_url: Optional[str] = None
     webinar_url: Optional[str] = None
 
-    @field_validator("starts_at")
-    @classmethod
-    def validate_starts_at(cls, starts_at: Optional[datetime.datetime],
-                           timezone: datetime.tzinfo = datetime.timezone.utc) -> Optional[datetime.datetime]:
-        if not starts_at:
-            return starts_at
-        return starts_at.astimezone(timezone)
-
-    @field_validator("ends_at")
-    @classmethod
-    def validate_ends_at(cls, ends_at: Optional[datetime.datetime],
-                         timezone: datetime.tzinfo = datetime.timezone.utc) -> Optional[datetime.datetime]:
-        if not ends_at:
-            return ends_at
-        return ends_at.astimezone(timezone)
-
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:
         """Check if lesson have suitable time"""
         if not self.starts_at or time_min > self.starts_at:
@@ -140,7 +124,7 @@ class CalendarResponse(BaseModel):
         """Filter lessons by time and status."""
         homework_events, webinars = [], []
         for lesson in program.lesson_items:
-            if lesson['type'] in ["task", "test"]:
+            if lesson['type'] in ["task", "test", "quiz"]:
                 homework = LessonTask(**lesson, block_title=block_title)
                 if homework.is_suitable_time(time_min, time_max):
                     homework_events.append(homework)
@@ -183,17 +167,21 @@ class ExtendedLessonResponse(BaseModel):
 class DetailedProgram(BaseModel):
     id: int
     name: str
-    start_date: datetime.datetime
-    finish_date: datetime.datetime
+    start_date: Optional[datetime.datetime] = Field(default=None)
+    finish_date: Optional[datetime.datetime] = Field(default=None)
 
     @field_validator("start_date")
     @classmethod
-    def validate_start_date(cls, start_date: datetime.datetime) -> datetime.datetime:
+    def validate_start_date(cls, start_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
+        if start_date is None:
+            return start_date
         return start_date.astimezone(datetime.timezone.utc)
 
     @field_validator("finish_date")
     @classmethod
-    def validate_finish_date(cls, finish_date: datetime.datetime) -> datetime.datetime:
+    def validate_finish_date(cls, finish_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
+        if finish_date is None:
+            return finish_date
         return finish_date.astimezone(datetime.timezone.utc)
 
 

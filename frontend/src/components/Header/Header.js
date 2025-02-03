@@ -18,10 +18,9 @@ export default function Header() {
           <button className="export-btn">Экспорт .ics</button>
           <button className="cache-btn">Сбросить кэш расписания</button>
         </div>
-        <button className="exit-btn" href="#">
-          Выйти
-          <img className="exit-btn-cross" src={cross} alt={cross} />
-        </button>
+        <div className="exit-btn-zone">
+          <button className="exit-btn" href="#"> Выйти <img className="exit-btn-cross" src={cross} alt={cross}/></button>
+        </div>
       </div>
       <div className="rectangle">
         <div className="rectangle-info">
