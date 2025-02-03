@@ -29,9 +29,6 @@ async def get_calendar(
     """
 
     cached_calendar = await integration.get_cached_calendar(body, lms_user, calendar_id, cookies)
-    if isinstance(cached_calendar, schema.CalendarResponse):
-        return cached_calendar.change_timezone(time_zone)
-    # else cached
     return schema.CalendarResponse.model_validate(cached_calendar).change_timezone(time_zone)
 
 

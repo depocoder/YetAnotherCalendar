@@ -1,6 +1,6 @@
 import React from 'react';
 import {useNavigate} from "react-router-dom";
-import cross from "../../img/arrow.png";
+import cross from "../../img/cross.png";
 
 const ExitBtn = () => {
     const navigate = useNavigate();

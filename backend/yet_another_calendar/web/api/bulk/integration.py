@@ -86,7 +86,7 @@ async def refresh_events(
     calendar = await get_calendar(body, lms_user, jwt_token, calendar_id, cookies)
     changed = cached_calendar.get_hash() != calendar.get_hash()
     try:
-        cache_key = default_key_builder(get_cached_calendar, args=(body, calendar_id, cookies), kwargs={})
+        cache_key = default_key_builder(get_cached_calendar, args=(body, lms_user, calendar_id, cookies), kwargs={})
         coder = FastAPICache.get_coder()
         backend = FastAPICache.get_backend()
         await backend.set(
