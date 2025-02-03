@@ -84,7 +84,6 @@ const apiRequest = async (endpoint, {calendarId, timeZone, attendeePersonId, tim
     }
 };
 
-// Теперь используем apiRequest для реализации ваших функций
 export const bulkEvents = (params) => {
     return apiRequest('/api/bulk/events/', params);
 };

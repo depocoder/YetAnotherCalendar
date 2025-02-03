@@ -28,7 +28,7 @@ const CalendarRoute = () => {
     const [error, setError] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
 
-    // console.log('date', date)
+    // console.log('date', typeof date)
 
     const fetchCourseAndEvents = useCallback(async () => {
         setLoading(true);
@@ -63,6 +63,7 @@ const CalendarRoute = () => {
 
         } catch (error) {
             console.error('Ошибка при получении данных с сервера:', error);
+            localStorage.clear();
             setError("Ошибка при получении данных с сервера. Перезагрузите страницу!");
         } finally {
             setLoading(false);
