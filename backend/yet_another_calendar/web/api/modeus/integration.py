@@ -148,8 +148,6 @@ async def get_events(
 ) -> list[FullEvent]:
     """Get events for student in modeus"""
     try:
-        # _, user_part, _ = __jwt.split(".")
-        # print(user_part)
         decoded_token = jwt.decode(__jwt, options={"verify_signature": False})
         person_id = decoded_token['person_id']
     except (jwt.exceptions.DecodeError, ):
