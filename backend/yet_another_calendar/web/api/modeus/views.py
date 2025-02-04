@@ -14,14 +14,14 @@ router = APIRouter()
 
 @router.post("/events/")
 async def get_calendar(
-        body: schema.ModeusEventsBody,
+        body: schema.ModeusTimeBody,
         modeus_jwt_token: Annotated[str, Header()],
 ) -> list[schema.FullEvent]:
     """
     Get events from Modeus.
     """
 
-    return await integration.get_events(modeus_jwt_token, body)
+    return await integration.get_events(body, modeus_jwt_token)
 
 
 @router.post("/auth/")

@@ -47,8 +47,7 @@ class ModeusTimeBody(BaseModel):
 class ModeusEventsBody(ModeusTimeBody):
     """Modeus search events body."""
     size: int = Field(default=50)
-    attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId",
-                                                default=["d69c87c8-aece-4f39-b6a2-7b467b968211"])
+    attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId")
 
     @model_validator(mode='after')
     def check_passwords_match(self) -> Self:
