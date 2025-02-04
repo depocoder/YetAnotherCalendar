@@ -9,10 +9,6 @@ from . import integration
 from yet_another_calendar.settings import settings
 
 
-async def get_cookies_from_headers() -> str | Response:
-    return await integration.login(settings.modeus_username, settings.modeus_password)
-
-
 class Creds(BaseModel):
     """Modeus creds."""
 

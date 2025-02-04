@@ -3,7 +3,7 @@ Modeus API implemented using a controller.
 """
 from typing import Annotated
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Header
 from fastapi.params import Depends
 
 from . import integration
@@ -15,23 +15,20 @@ router = APIRouter()
 @router.post("/events/")
 async def get_calendar(
         body: schema.ModeusEventsBody,
-        jwt_token: Annotated[str, Depends(schema.get_cookies_from_headers)],
+        modeus_jwt_token: Annotated[str, Header()],
 ) -> list[schema.FullEvent]:
     """
     Get events from Modeus.
     """
 
-    return await integration.get_events(jwt_token, body)
+    return await integration.get_events(modeus_jwt_token, body)
 
 
-@router.get("/search/")
-async def search(
-        jwt_token: Annotated[str, Depends(schema.get_cookies_from_headers)],
-        full_name: str = "Комаев Азамат Олегович",
-) -> list[schema.ExtendedPerson]:
+@router.post("/auth/")
+async def auth(
+        creds: schema.Creds,
+) -> str:
     """
-    Search people from Modeus.
+    Authenticate with credentials in modeus.
     """
-    return await integration.get_people(
-        jwt_token, schema.FullModeusPersonSearch.model_validate({"fullName": full_name}),
-    )
+    return await integration.login(creds.username, creds.password,)

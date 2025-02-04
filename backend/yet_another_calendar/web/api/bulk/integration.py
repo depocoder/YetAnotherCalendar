@@ -5,7 +5,7 @@ from typing import Any, Iterable, Optional
 
 import icalendar
 from fastapi import HTTPException
-from fastapi_cache import default_key_builder, FastAPICache
+from fastapi_cache import FastAPICache
 from fastapi_cache.decorator import cache
 from starlette import status
 
@@ -17,6 +17,7 @@ from ..modeus import schema as modeus_schema
 from ..lms import schema as lms_schema
 from ..netology import schema as netology_schema
 from . import schema
+from ...cache_builder import key_builder
 
 logger = logging.getLogger(__name__)
 
@@ -75,18 +76,20 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
 async def refresh_events(
         body: modeus_schema.ModeusEventsBody,
         lms_user: lms_schema.User,
-        jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
         timezone: str,
+        modeus_jwt_token: str,
 ) -> schema.RefreshedCalendarResponse:
     """Clear events cache."""
     cached_json = await get_cached_calendar(body, lms_user, calendar_id, cookies)
     cached_calendar = schema.CalendarResponse.model_validate(cached_json)
-    calendar = await get_calendar(body, lms_user, jwt_token, calendar_id, cookies)
+    calendar = await get_calendar(body, lms_user,  calendar_id, cookies, modeus_jwt_token=modeus_jwt_token)
     changed = cached_calendar.get_hash() != calendar.get_hash()
     try:
-        cache_key = default_key_builder(get_cached_calendar, args=(body, calendar_id, cookies), kwargs={})
+        cache_key = key_builder(
+            get_cached_calendar, args=(body, calendar_id, cookies), kwargs={}
+        )
         coder = FastAPICache.get_coder()
         backend = FastAPICache.get_backend()
         await backend.set(
@@ -104,14 +107,14 @@ async def refresh_events(
 async def get_calendar(
         body: modeus_schema.ModeusEventsBody,
         lms_user: lms_schema.User,
-        jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
+        modeus_jwt_token: str,
 ) -> schema.CalendarResponse:
     lms_response = None
     async with asyncio.TaskGroup() as tg:
         netology_response = tg.create_task(netology_views.get_calendar(body, calendar_id, cookies))
-        modeus_response = tg.create_task(modeus_views.get_calendar(body, jwt_token))
+        modeus_response = tg.create_task(modeus_views.get_calendar(body, modeus_jwt_token))
         if lms_user.is_enabled:
             lms_response = tg.create_task(lms_views.get_events(lms_user, body))
     lms_events = lms_response.result() if lms_response else []
@@ -123,12 +126,13 @@ async def get_calendar(
     )
 
 
-@cache(expire=settings.redis_events_time_live)
+# noinspection PyTypeChecker
+@cache(expire=settings.redis_events_time_live, key_builder=key_builder) # type i
 async def get_cached_calendar(
         body: modeus_schema.ModeusEventsBody,
         lms_user: lms_schema.User,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
+        modeus_jwt_token: str,
 ) -> schema.CalendarResponse:
-    jwt_token = await modeus_schema.get_cookies_from_headers()
-    return await get_calendar(body, lms_user, jwt_token, calendar_id, cookies)
+    return await get_calendar(body, lms_user, calendar_id, cookies, modeus_jwt_token=modeus_jwt_token)

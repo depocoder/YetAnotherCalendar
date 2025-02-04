@@ -54,8 +54,6 @@ class Settings(BaseSettings):
     retry_tries: int = 5
     retry_delay: int = 3
 
-    modeus_username: str = env.str("MODEUS_USERNAME")
-    modeus_password: str = env.str("MODEUS_PASSWORD")
     netology_default_course_id: int = env.int("NETOLOGY_DEFAULT_COURSE_ID", 45526)
     netology_course_name: str = env.str(
         "NETOLOGY_COURSE_NAME", "Разработка IT-продуктов и информационных систем",
