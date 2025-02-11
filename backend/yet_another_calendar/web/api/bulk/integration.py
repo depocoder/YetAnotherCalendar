@@ -74,7 +74,7 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
 
 
 async def refresh_events(
-        body: modeus_schema.ModeusEventsBody,
+        body: modeus_schema.ModeusTimeBody,
         lms_user: lms_schema.User,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
@@ -108,7 +108,7 @@ async def refresh_events(
 
 
 async def get_calendar(
-        body: modeus_schema.ModeusEventsBody,
+        body: modeus_schema.ModeusTimeBody,
         calendar_id: int,
         person_id: str,
         lms_user: lms_schema.User,
@@ -121,7 +121,7 @@ async def get_calendar(
     lms_response = None
     async with asyncio.TaskGroup() as tg:
         netology_response = tg.create_task(netology_views.get_calendar(body, calendar_id, cookies))
-        modeus_response = tg.create_task(modeus_views.get_calendar(full_body, modeus_jwt_token))
+        modeus_response = tg.create_task(modeus_views.get_calendar(full_body, modeus_jwt_token, person_id))
         if lms_user.is_enabled:
             lms_response = tg.create_task(lms_views.get_events(lms_user, full_body))
     lms_events = lms_response.result() if lms_response else []
@@ -136,7 +136,7 @@ async def get_calendar(
 # noinspection PyTypeChecker
 @cache(expire=settings.redis_events_time_live, key_builder=key_builder)  # type i
 async def get_cached_calendar(
-        body: modeus_schema.ModeusEventsBody,
+        body: modeus_schema.ModeusTimeBody,
         calendar_id: int,
         person_id: str,
         *,
