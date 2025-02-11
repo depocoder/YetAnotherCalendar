@@ -22,7 +22,7 @@ async def get_calendar(
     Get events from Modeus.
     """
     full_body = schema.ModeusEventsBody.model_validate(
-        {**body.model_dump(by_alias=True), 'attendeePersonId': [person_id]}
+        {**body.model_dump(by_alias=True), 'attendeePersonId': [person_id]},
     )
     return await integration.get_events(full_body, modeus_jwt_token)
 
@@ -34,4 +34,4 @@ async def auth(
     """
     Authenticate with credentials in modeus.
     """
-    return await integration.login(creds.username, creds.password,)
+    return await integration.login(creds.username, creds.password)

@@ -31,7 +31,7 @@ async def get_calendar(
     """
     cached_calendar = await integration.get_cached_calendar(
         body, calendar_id, person_id,
-        cookies=cookies, lms_user=lms_user, modeus_jwt_token=modeus_jwt_token
+        cookies=cookies, lms_user=lms_user, modeus_jwt_token=modeus_jwt_token,
     )
     if isinstance(cached_calendar, schema.CalendarResponse):
         return cached_calendar.change_timezone(time_zone)
@@ -53,7 +53,7 @@ async def refresh_calendar(
     Refresh events in redis.
     """
     return await integration.refresh_events(
-        body, lms_user, calendar_id, cookies, time_zone, modeus_jwt_token, person_id
+        body, lms_user, calendar_id, cookies, time_zone, modeus_jwt_token, person_id,
     )
 
 
@@ -73,7 +73,7 @@ async def export_ics(
     """
     calendar = await integration.get_calendar(
         body, calendar_id, person_id,
-        modeus_jwt_token=modeus_jwt_token, lms_user=lms_user, cookies=cookies
+        modeus_jwt_token=modeus_jwt_token, lms_user=lms_user, cookies=cookies,
     )
     calendar_with_timezone = calendar.change_timezone(time_zone)
     return StreamingResponse(integration.export_to_ics(calendar_with_timezone))

@@ -250,10 +250,10 @@ def get_person_id(__jwt: str) -> str:
     try:
         decoded_token = jwt.decode(__jwt, options={"verify_signature": False})
         return decoded_token['person_id']
-    except (jwt.exceptions.DecodeError,):
+    except jwt.exceptions.DecodeError:
         raise HTTPException(
-            detail=f"Modeus error. Can't decode token", status_code=status.HTTP_400_BAD_REQUEST,
-        )
+            detail="Modeus error. Can't decode token", status_code=status.HTTP_400_BAD_REQUEST,
+        ) from None
 
 def get_cookies_from_headers(modeus_jwt_token: Annotated[str, Header()]) -> str:
     return get_person_id(modeus_jwt_token)

@@ -15,7 +15,7 @@ from starlette import status
 from yet_another_calendar.settings import settings
 from .schema import (
     ModeusCalendar,
-    FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusTimeBody, ModeusEventsBody,
+    FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusEventsBody,
 )
 
 logger = logging.getLogger(__name__)
