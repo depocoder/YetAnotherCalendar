@@ -5,7 +5,6 @@ from secrets import token_hex
 from typing import Any
 
 import httpx
-import jwt
 import reretry
 from bs4 import BeautifulSoup, Tag
 from fastapi import HTTPException
@@ -15,8 +14,8 @@ from starlette import status
 
 from yet_another_calendar.settings import settings
 from .schema import (
-    ModeusEventsBody, ModeusCalendar,
-    FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusTimeBody,
+    ModeusCalendar,
+    FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusTimeBody, ModeusEventsBody,
 )
 
 logger = logging.getLogger(__name__)
@@ -142,20 +141,12 @@ async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -
 
 
 async def get_events(
-        body: ModeusTimeBody,
+        body: ModeusEventsBody,
         __jwt: str,
 
 ) -> list[FullEvent]:
     """Get events for student in modeus"""
-    try:
-        decoded_token = jwt.decode(__jwt, options={"verify_signature": False})
-        person_id = decoded_token['person_id']
-    except (jwt.exceptions.DecodeError, ):
-        raise HTTPException(
-            detail=f"Modeus error. Can't decode token", status_code=status.HTTP_400_BAD_REQUEST,
-        )
-    full_body = ModeusEventsBody.model_validate({**body.model_dump(by_alias=True), 'attendeePersonId': [person_id]})
-    response = await post_modeus(__jwt, full_body, "/schedule-calendar-v2/api/calendar/events/search")
+    response = await post_modeus(__jwt, body, "/schedule-calendar-v2/api/calendar/events/search")
     modeus_calendar = ModeusCalendar.model_validate_json(response)
     return modeus_calendar.serialize_modeus_response()
 

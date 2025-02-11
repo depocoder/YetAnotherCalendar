@@ -16,12 +16,15 @@ router = APIRouter()
 async def get_calendar(
         body: schema.ModeusTimeBody,
         modeus_jwt_token: Annotated[str, Header()],
+        person_id: Annotated[str, Depends(schema.get_cookies_from_headers)],
 ) -> list[schema.FullEvent]:
     """
     Get events from Modeus.
     """
-
-    return await integration.get_events(body, modeus_jwt_token)
+    full_body = schema.ModeusEventsBody.model_validate(
+        {**body.model_dump(by_alias=True), 'attendeePersonId': [person_id]}
+    )
+    return await integration.get_events(full_body, modeus_jwt_token)
 
 
 @router.post("/auth/")

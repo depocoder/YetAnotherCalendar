@@ -1,12 +1,12 @@
 import datetime
 import uuid
-from typing import Optional, Self
+from typing import Optional, Self, Annotated
 
+import jwt
+from fastapi import Header
+from fastapi import HTTPException
 from pydantic import BaseModel, Field, computed_field, model_validator, field_validator
-from starlette.responses import Response
-
-from . import integration
-from yet_another_calendar.settings import settings
+from starlette import status
 
 
 class Creds(BaseModel):
@@ -244,3 +244,16 @@ class SearchPeople(BaseModel):
                 **teacher_event.model_dump(by_alias=True), **person.model_dump(by_alias=True),
             }))
         return extended_people
+
+
+def get_person_id(__jwt: str) -> str:
+    try:
+        decoded_token = jwt.decode(__jwt, options={"verify_signature": False})
+        return decoded_token['person_id']
+    except (jwt.exceptions.DecodeError,):
+        raise HTTPException(
+            detail=f"Modeus error. Can't decode token", status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+def get_cookies_from_headers(modeus_jwt_token: Annotated[str, Header()]) -> str:
+    return get_person_id(modeus_jwt_token)
