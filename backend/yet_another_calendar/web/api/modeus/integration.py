@@ -14,8 +14,8 @@ from starlette import status
 
 from yet_another_calendar.settings import settings
 from .schema import (
-    ModeusEventsBody, ModeusCalendar,
-    FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson,
+    ModeusCalendar,
+    FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusEventsBody,
 )
 
 logger = logging.getLogger(__name__)
@@ -93,10 +93,10 @@ async def login(username: str, __password: str, timeout: int = 15) -> str:
         auth_data = {}
         continue_auth_url = "https://auth.modeus.org/commonauth"
         for input_html in form.find_all("input", type="hidden"):
-            auth_data[input_html["name"]] = input_html["value"]
+            auth_data[input_html["name"]] = input_html["value"]  # type: ignore
         response = await session.post(
             continue_auth_url,
-            data=auth_data,
+            data=auth_data,  # type: ignore
             follow_redirects=False,
         )
         if response.status_code >= status.HTTP_400_BAD_REQUEST:
@@ -141,8 +141,8 @@ async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -
 
 
 async def get_events(
-        __jwt: str,
         body: ModeusEventsBody,
+        __jwt: str,
 
 ) -> list[FullEvent]:
     """Get events for student in modeus"""
