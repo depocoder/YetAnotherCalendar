@@ -37,12 +37,10 @@ const CalendarPage = () => {
         try {
             let calendarId
             calendarId = getCalendarIdLocalStorage();
-            console.log('calendarId', calendarId)
             if (!calendarId){
                 const courseData = await getNetologyCourse(getTokenFromLocalStorage());
                 calendarId = courseData?.id;
                 localStorage.setItem('calendarId', calendarId);
-                console.log('courseData', courseData)
             }
 
             if (!calendarId) {

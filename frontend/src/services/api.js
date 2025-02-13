@@ -35,22 +35,6 @@ export async function loginModeus(username, password) {
 }
 
 
-// export async function searchModeus(fullName) {
-//     try {
-//         const response = await axios.get(`${BACKEND_URL}/api/modeus/search/`, {
-//             params: {
-//                 full_name: fullName // Параметр передается через объект `params`
-//             },
-//             headers: {
-//                 "Content-Type": "application/json"
-//             }
-//         });
-//         return response; // Возвращаем данные
-//     } catch (e) {
-//         return e.response;
-//     }
-// }
-
 // calendar_id
 export async function getNetologyCourse(sessionToken) {
     try {
