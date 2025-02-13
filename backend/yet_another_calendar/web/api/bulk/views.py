@@ -19,7 +19,7 @@ router = APIRouter()
 @router.post("/events/")
 async def get_calendar(
         body: modeus_schema.ModeusTimeBody,
-        lms_user: lms_schema.User,
+        lms_user: Annotated[lms_schema.User, Depends(lms_schema.get_user)],
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         modeus_jwt_token: Annotated[str, Header()],
         person_id: Annotated[str, Depends(modeus_schema.get_cookies_from_headers)],
@@ -42,7 +42,7 @@ async def get_calendar(
 @router.post("/refresh_events/")
 async def refresh_calendar(
         body: modeus_schema.ModeusTimeBody,
-        lms_user: lms_schema.User,
+        lms_user: Annotated[lms_schema.User, Depends(lms_schema.get_user)],
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         modeus_jwt_token: Annotated[str, Header()],
         person_id: Annotated[str, Depends(modeus_schema.get_cookies_from_headers)],
@@ -61,7 +61,7 @@ async def refresh_calendar(
 @router.post("/export_ics/")
 async def export_ics(
         body: modeus_schema.ModeusTimeBody,
-        lms_user: lms_schema.User,
+        lms_user: Annotated[lms_schema.User, Depends(lms_schema.get_user)],
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         person_id: Annotated[str, Depends(modeus_schema.get_cookies_from_headers)],
         modeus_jwt_token: Annotated[str, Header()],
