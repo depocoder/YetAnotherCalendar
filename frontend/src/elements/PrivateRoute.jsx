@@ -8,7 +8,6 @@ const PrivateRoute = ({ children }) => {
     // Если токена нет, перенаправляем на страницу логина
     return <Navigate to="/login" />;
   }
-
   // Если токен есть, отображаем защищённый компонент
   return children;
 };

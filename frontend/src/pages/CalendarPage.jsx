@@ -4,7 +4,7 @@ import {
     bulkEvents,
     getTokenFromLocalStorage,
     getPersonIdLocalStorage,
-    getCalendarIdLocalStorage,
+    getCalendarIdLocalStorage, getJWTTokenFromLocalStorage,
 } from '../services/api';
 import Loader from "../elements/Loader";
 import '../style/header.scss';
@@ -20,7 +20,7 @@ import DaysNumber from "../components/Calendar/DaysNumber";
 import LessonTimes from "../components/Calendar/LessonTimes";
 import ErrorMessage from "../elements/ErrorMessage";
 
-const CalendarRoute = () => {
+const CalendarPage = () => {
     const initialDate = useMemo(() => getCurrentWeekDates(), []);
     const [date, setDate] = useState(initialDate);
     const [events, setEvents] = useState(null);
@@ -35,12 +35,14 @@ const CalendarRoute = () => {
         setError(null);
 
         try {
-            var calendarId
+            let calendarId
             calendarId = getCalendarIdLocalStorage();
+            console.log('calendarId', calendarId)
             if (!calendarId){
                 const courseData = await getNetologyCourse(getTokenFromLocalStorage());
                 calendarId = courseData?.id;
                 localStorage.setItem('calendarId', calendarId);
+                console.log('courseData', courseData)
             }
 
             if (!calendarId) {
@@ -53,6 +55,7 @@ const CalendarRoute = () => {
                 timeMin: date.start,
                 timeMax: date.end,
                 sessionToken: getTokenFromLocalStorage(),
+                jwtToken: getJWTTokenFromLocalStorage()
             });
 
             if (eventsResponse?.data) {
@@ -121,4 +124,4 @@ const CalendarRoute = () => {
     );
 };
 
-export default CalendarRoute;
+export default CalendarPage;
