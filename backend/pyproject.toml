@@ -35,6 +35,7 @@ pytz = "^2024.2"
 types-pytz = "^2024.2.0.20241003"
 reretry = "^0.11.8"
 loguru = "^0.7.2"
+pytest-httpx = "0.34.0"
 
 
 [tool.poetry.group.dev.dependencies]
