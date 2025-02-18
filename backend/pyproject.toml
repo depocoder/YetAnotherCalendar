@@ -14,7 +14,6 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "^0.111.0"
 uvicorn = { version = "^0.30.1", extras = ["standard"] }
 pydantic = "^2"
 pydantic-settings = "^2"
@@ -37,6 +36,7 @@ reretry = "^0.11.8"
 loguru = "^0.7.2"
 pytest-httpx = "0.34.0"
 pyjwt = "^2.10.1"
+fastapi = "^0.115.8"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -83,6 +83,8 @@ filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore:.*unclosed.*:ResourceWarning",
 ]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 env = [
     "YET_ANOTHER_CALENDAR_ENVIRONMENT=pytest",
     "YET_ANOTHER_CALENDAR_DB_BASE=yet_another_calendar_test",
