@@ -49,7 +49,7 @@ const LoginPage = () => {
 
     return (
         <div className="login-container">
-            <h2 className="login-container__title">Мое расписание</h2>
+            <h2 className="login-container__title shedule-login">Мое расписание</h2>
 
             {!isNetologyLoggedIn && ( // Показывать форму Нетологии, если вход не выполнен
                 <Login
