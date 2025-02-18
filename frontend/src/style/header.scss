@@ -35,7 +35,7 @@ input:focus-within {
 
     &-info {
       display: block;
-      padding: 6px 12px 12px 12px;
+      padding: 6px 12px 6px 12px;
       //margin: 22px 120px;
       margin-right: 5px;
       width: 648px;
@@ -73,25 +73,27 @@ input:focus-within {
     //color: #f46386;
     font-family: "Roboto", sans-serif;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12px;
 
     &-first-word {
       font-family: "Roboto", sans-serif;
       font-weight: 400;
-      font-size: 13px;
+      font-size: 12px;
     }
   }
 }
 
+
+a {
+  text-decoration: none;
+}
 
 .shedule-export {
   display: flex;
   align-items: center;
 }
 
-a {
-  text-decoration: none;
-}
+
 
 .shedule {
   font-family: "Unbounded", sans-serif;
@@ -169,7 +171,8 @@ a {
     color: #2c2d2e;
     font-family: "Unbounded", sans-serif;
     font-weight: 700;
-    font-size: 15px;
+    font-size: 13px;
+    margin-top: 10px;
   }
 }
 
@@ -180,12 +183,12 @@ a {
 
 .task-event {
   padding-left: 2px;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
   &-text {
     color: #2c2d2e;
     font-family: "Roboto", sans-serif;
     font-weight: 400;
-    font-size: 13px;
+    font-size: 12px;
   }
 }
 
@@ -292,11 +295,28 @@ margin-bottom: -20px;
 //  }
 //}
 
+.persona_container {
+  display: flex; 
+  align-items: center; 
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
 
 .avatar_path {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  width: 40px; 
+  height: 40px; 
+  overflow: hidden; 
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%; 
+  margin-right: 10px; 
+}
+
+.avatar_path img {
+  height: auto; 
+  width: 100%; 
+  object-fit: cover; 
 }
 
 // src/components/ErrorMessage.scss
