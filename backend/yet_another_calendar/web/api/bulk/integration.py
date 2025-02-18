@@ -5,7 +5,7 @@ from typing import Any, Iterable, Optional
 
 import icalendar
 from fastapi import HTTPException
-from fastapi_cache import default_key_builder, FastAPICache
+from fastapi_cache import FastAPICache
 from fastapi_cache.decorator import cache
 from starlette import status
 
@@ -17,6 +17,7 @@ from ..modeus import schema as modeus_schema
 from ..lms import schema as lms_schema
 from ..netology import schema as netology_schema
 from . import schema
+from ...cache_builder import key_builder
 
 logger = logging.getLogger(__name__)
 
@@ -73,20 +74,25 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
 
 
 async def refresh_events(
-        body: modeus_schema.ModeusEventsBody,
+        body: modeus_schema.ModeusTimeBody,
         lms_user: lms_schema.User,
-        jwt_token: str,
         calendar_id: int,
         cookies: netology_schema.NetologyCookies,
         timezone: str,
+        modeus_jwt_token: str,
+        person_id: str,
 ) -> schema.RefreshedCalendarResponse:
     """Clear events cache."""
-    cached_json = await get_cached_calendar(body, lms_user, calendar_id, cookies)
+    cached_json = await get_cached_calendar(body, calendar_id, person_id,
+                                            lms_user=lms_user, cookies=cookies, modeus_jwt_token=modeus_jwt_token)
     cached_calendar = schema.CalendarResponse.model_validate(cached_json)
-    calendar = await get_calendar(body, lms_user, jwt_token, calendar_id, cookies)
+    calendar = await get_calendar(body, calendar_id, person_id,
+                                  lms_user=lms_user, cookies=cookies, modeus_jwt_token=modeus_jwt_token)
     changed = cached_calendar.get_hash() != calendar.get_hash()
     try:
-        cache_key = default_key_builder(get_cached_calendar, args=(body, lms_user, calendar_id, cookies), kwargs={})
+        cache_key = key_builder(
+            get_cached_calendar, args=(body, calendar_id, person_id), kwargs={},
+        )
         coder = FastAPICache.get_coder()
         backend = FastAPICache.get_backend()
         await backend.set(
@@ -102,18 +108,21 @@ async def refresh_events(
 
 
 async def get_calendar(
-        body: modeus_schema.ModeusEventsBody,
-        lms_user: lms_schema.User,
-        jwt_token: str,
+        body: modeus_schema.ModeusTimeBody,
         calendar_id: int,
+        person_id: str,
+        lms_user: lms_schema.User,
         cookies: netology_schema.NetologyCookies,
+        modeus_jwt_token: str,
 ) -> schema.CalendarResponse:
+    full_body = modeus_schema.ModeusEventsBody.model_validate(
+        {**body.model_dump(by_alias=True), 'attendeePersonId': [person_id]},
+    )
     lms_response = None
     async with asyncio.TaskGroup() as tg:
         netology_response = tg.create_task(netology_views.get_calendar(body, calendar_id, cookies))
-        modeus_response = tg.create_task(modeus_views.get_calendar(body, jwt_token))
-        if lms_user.is_enabled:
-            lms_response = tg.create_task(lms_views.get_events(lms_user, body))
+        modeus_response = tg.create_task(modeus_views.get_calendar(full_body, modeus_jwt_token, person_id))
+        lms_response = tg.create_task(lms_views.get_events(lms_user, full_body))
     lms_events = lms_response.result() if lms_response else []
     return schema.CalendarResponse.model_validate(
         {"netology": netology_response.result(), "utmn": {
@@ -123,12 +132,17 @@ async def get_calendar(
     )
 
 
-@cache(expire=settings.redis_events_time_live)
+# noinspection PyTypeChecker
+@cache(expire=settings.redis_events_time_live, key_builder=key_builder)  # type i
 async def get_cached_calendar(
-        body: modeus_schema.ModeusEventsBody,
-        lms_user: lms_schema.User,
+        body: modeus_schema.ModeusTimeBody,
         calendar_id: int,
+        person_id: str,
+        *,
+        lms_user: lms_schema.User,
         cookies: netology_schema.NetologyCookies,
+        modeus_jwt_token: str,
 ) -> schema.CalendarResponse:
-    jwt_token = await modeus_schema.get_cookies_from_headers()
-    return await get_calendar(body, lms_user, jwt_token, calendar_id, cookies)
+    """Only args are using for key_builder, so kwargs aren't"""
+    return await get_calendar(body, calendar_id, person_id,
+                              lms_user=lms_user, cookies=cookies, modeus_jwt_token=modeus_jwt_token)

@@ -1,16 +1,12 @@
 import datetime
 import uuid
-from typing import Optional, Self
+from typing import Optional, Self, Annotated
 
+import jwt
+from fastapi import Header
+from fastapi import HTTPException
 from pydantic import BaseModel, Field, computed_field, model_validator, field_validator
-from starlette.responses import Response
-
-from . import integration
-from yet_another_calendar.settings import settings
-
-
-async def get_cookies_from_headers() -> str | Response:
-    return await integration.login(settings.modeus_username, settings.modeus_password)
+from starlette import status
 
 
 class Creds(BaseModel):
@@ -51,8 +47,7 @@ class ModeusTimeBody(BaseModel):
 class ModeusEventsBody(ModeusTimeBody):
     """Modeus search events body."""
     size: int = Field(default=50)
-    attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId",
-                                                default=["d69c87c8-aece-4f39-b6a2-7b467b968211"])
+    attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId")
 
     @model_validator(mode='after')
     def check_passwords_match(self) -> Self:
@@ -237,3 +232,16 @@ class SearchPeople(BaseModel):
                 **teacher_event.model_dump(by_alias=True), **person.model_dump(by_alias=True),
             }))
         return extended_people
+
+
+def get_person_id(__jwt: str) -> str:
+    try:
+        decoded_token = jwt.decode(__jwt, options={"verify_signature": False})
+        return decoded_token['person_id']
+    except jwt.exceptions.DecodeError:
+        raise HTTPException(
+            detail="Modeus error. Can't decode token", status_code=status.HTTP_400_BAD_REQUEST,
+        ) from None
+
+def get_cookies_from_headers(modeus_jwt_token: Annotated[str, Header()]) -> str:
+    return get_person_id(modeus_jwt_token)
