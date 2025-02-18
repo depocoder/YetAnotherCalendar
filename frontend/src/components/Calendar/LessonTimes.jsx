@@ -119,12 +119,12 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
                                                         className={`event-item ${lesson.type === 'modeus' ? 'TyumGU-lesson' : 'netology-lesson'}`}>
                                                         {lesson.type === "modeus" ? (
                                                             <div className="company-name">
-                                                                <span><img src={camera} alt={camera}/> ТюмГУ</span>
+                                                                <span><img src={camera} alt={camera}/> ТюмГУ </span>
                                                                 <span>{lesson?.cycle_realization?.code}</span>
                                                             </div>
                                                         ) : (
                                                             <span className="company-name">
-                                                                   <img src={camera} alt={camera}/> Нетология<br/>
+                                                                   <img src={camera} alt={camera}/> Нетология <br/>
                                                             </span>
                                                         )}
                                                         {/*{lesson.type === "netology" ? (*/}
