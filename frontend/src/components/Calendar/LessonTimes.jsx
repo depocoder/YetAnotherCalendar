@@ -115,8 +115,7 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
                                                 }
                                             }}>
                                                 {lesson ? (
-                                                    <div
-                                                        className={`event-item ${lesson.type === 'modeus' ? 'TyumGU-lesson' : 'netology-lesson'}`}>
+                                                    <div className={`event-item ${lesson.type === 'modeus' ? 'TyumGU-lesson' : 'netology-lesson'} ${lesson.endTime < new Date() ? 'past' : ''}`}>
                                                         {lesson.type === "modeus" ? (
                                                             <div className="company-name">
                                                                 <span><img src={camera} alt={camera}/> ТюмГУ</span>
@@ -127,19 +126,7 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
                                                                    <img src={camera} alt={camera}/> Нетология<br/>
                                                             </span>
                                                         )}
-                                                        {/*{lesson.type === "netology" ? (*/}
-                                                        {/*    <>*/}
-                                                        {/*        <span className="company-name">*/}
-                                                        {/*           <img src={camera} alt={camera}/> Нетология<br/>*/}
-                                                        {/*        </span>*/}
-                                                        {/*        /!*<span className="company-name"></span>*!/*/}
-                                                        {/*    </>*/}
-                                                        {/*) : (*/}
-                                                        {/*    <span className="company-name"></span>*/}
-                                                        {/*)}*/}
-                                                        {/*<div className="lesson-name">{lesson.course_name || lesson.block_title}</div>*/}
                                                         <div className="lesson-name">{lesson?.course_name || lesson?.block_title}</div>
-                                                        {/*<span className="teacher-name">{lesson.teacher_full_name}</span>*/}
                                                     </div>
                                                 ) : (
                                                     <div className="no-lessons"></div>
