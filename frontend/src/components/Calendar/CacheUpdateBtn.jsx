@@ -3,7 +3,8 @@ import {
     getCalendarIdLocalStorage,
     getPersonIdLocalStorage,
     getTokenFromLocalStorage,
-    refreshBulkEvents
+    refreshBulkEvents,
+    getJWTTokenFromLocalStorage
 } from "../../services/api";
 
 const CacheUpdateBtn = ({date, onDataUpdate}) => {
@@ -18,6 +19,8 @@ const CacheUpdateBtn = ({date, onDataUpdate}) => {
                 timeMin: date.start, // Дата начала
                 timeMax: date.end, // Дата окончания
                 sessionToken: getTokenFromLocalStorage(),
+                jwtToken: getJWTTokenFromLocalStorage()
+
             });
 
             // Проверяем, что обновленные события получены

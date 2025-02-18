@@ -7,6 +7,9 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `https://yetanothercale
 export function getTokenFromLocalStorage() {
     return localStorage.getItem('token')
 }
+export function getJWTTokenFromLocalStorage() {
+    return localStorage.getItem('jwt-token')
+}
 export function getCalendarIdLocalStorage() {
     return localStorage.getItem('calendarId')
 }
@@ -14,30 +17,23 @@ export function getPersonIdLocalStorage() {
     return localStorage.getItem('personId')
 }
 
-// login
-export async function loginModeus(username, password) {
+// login Netology
+export async function loginNetology(username, password) {
     try {
         return await axios.post(`${BACKEND_URL}/api/netology/auth`, {username, password});
     } catch (e) {
         return e.response;
     }
-} 
-
-export async function searchModeus(fullName) {
+}
+// login Modeus
+export async function loginModeus(username, password) {
     try {
-        const response = await axios.get(`${BACKEND_URL}/api/modeus/search/`, {
-            params: {
-                full_name: fullName // Параметр передается через объект `params`
-            },
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-        return response; // Возвращаем данные
+        return await axios.post(`${BACKEND_URL}/api/modeus/auth/`, {username, password});
     } catch (e) {
         return e.response;
     }
 }
+
 
 // calendar_id
 export async function getNetologyCourse(sessionToken) {
@@ -55,7 +51,7 @@ export async function getNetologyCourse(sessionToken) {
 }
 
 
-const apiRequest = async (endpoint, {calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken, lms_user}) => {
+const apiRequest = async (endpoint, {calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken, jwtToken, lms_user}) => {
     const requestBody = {
         body: {
             timeMin: timeMin,
@@ -74,6 +70,7 @@ const apiRequest = async (endpoint, {calendarId, timeZone, attendeePersonId, tim
                 headers: {
                     'Content-Type': 'application/json',
                     '_netology-on-rails_session': sessionToken,
+                    'modeus-jwt-token': jwtToken
                 },
             }
         );
