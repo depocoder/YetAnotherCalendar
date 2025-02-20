@@ -7,8 +7,17 @@ from httpx import AsyncClient
 from starlette import status
 from fastapi import HTTPException
 
-from yet_another_calendar.web.api.netology.integration import send_request, auth_netology
-from yet_another_calendar.web.api.netology.schema import NetologyCookies
+from yet_another_calendar.web.api.netology.integration import (
+    send_request,
+    auth_netology,
+    get_events_by_id,
+    get_program_ids,
+    get_calendar
+)
+from yet_another_calendar.web.api.netology.schema import (
+    NetologyCookies,
+    CalendarResponse
+)
 
 
 mock_cookies = NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
@@ -26,6 +35,36 @@ async def handler(request):
             return httpx.Response(404, json={"detail": "Not Found"})
         case '/backend/api/unknown':
             return httpx.Response(404, json={"detail": "Not Found"})
+        case '/backend/api/user/programs/1/schedule':
+            response_json = {
+                "title": "NETOLOGY",
+                "lessons": [
+                    {"lesson_items": [{"rus": "234"}]}
+                ]
+            }
+            return httpx.Response(200, json=response_json)
+        case '/backend/api/user/programs/2/schedule':
+            return httpx.Response(404, json={})
+        case '/backend/api/user/professions/1/schedule':
+            response_json = {
+                "profession_modules": [
+                    {
+                        "program": {
+                            "id": 1,
+                            "name": "DevOps",
+                        }
+                    },
+                    {
+                        "program": {
+                            "id": 2,
+                            "name": "C++"
+                        }
+                    }
+                ]
+            }
+            return httpx.Response(200, json=response_json)
+        case '/backend/api/user/professions/2/schedule':
+            return httpx.Response(404, json={})
         case _:
             return httpx.Response(200, json={"Azamat": 'Lox'})
 
@@ -52,7 +91,7 @@ async def test_send_request_unauthorized():
 
 @pytest.mark.asyncio
 async def test_send_request_unknown():
-    mock_request_settings = {'method': 'GET', 'url': '/api/unknown'}
+    mock_request_settings = {'method': 'GET', 'url': '/backend/api/unknown'}
 
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
@@ -113,3 +152,62 @@ async def test_auth_netology_ok():
         assert netology_cookies == NetologyCookies.model_validate(client.cookies)
 
 
+@pytest.mark.asyncio
+async def test_get_events_by_id_not_found():
+    client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
+    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
+        with pytest.raises(httpx.HTTPStatusError) as exc_info:
+            await get_events_by_id(mock_cookies, 2)
+
+        assert exc_info.value.response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_get_events_by_id_ok():
+    client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
+    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
+        calendar_response = await get_events_by_id(mock_cookies, 1)
+        assert calendar_response == CalendarResponse.model_validate({
+            "title": "NETOLOGY",
+            "lessons": [
+                {"lesson_items": [{"rus": "234"}]}
+            ]
+        })
+
+
+@pytest.mark.asyncio
+async def test_get_program_ids_not_found():
+    client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
+    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
+        with pytest.raises(httpx.HTTPStatusError) as exc_info:
+            await get_program_ids(mock_cookies, 2)
+
+        assert exc_info.value.response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_get_program_ids_ok():
+    client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
+    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
+        lessons_ids = await get_program_ids(mock_cookies, 1)
+
+        assert lessons_ids == {1, 2}
+
+
+@pytest.mark.asyncio
+async def test_get_calendar_not_found():
+    client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
+    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
+        with pytest.raises(httpx.HTTPStatusError) as exc_info:
+            await get_program_ids(mock_cookies, 2)
+
+        assert exc_info.value.response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_get_calendar_ok():
+    client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
+    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
+        serialized_events = await get_program_ids(mock_cookies, 1)
+
+        assert serialized_events == {1, 2}
