@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 from unittest.mock import AsyncMock, patch
 
 import httpx
@@ -6,6 +9,7 @@ import pytest
 from httpx import AsyncClient
 from starlette import status
 from fastapi import HTTPException
+from pydantic import ValidationError
 
 from yet_another_calendar.web.api.netology.integration import (
     send_request,
@@ -16,11 +20,12 @@ from yet_another_calendar.web.api.netology.integration import (
 )
 from yet_another_calendar.web.api.netology.schema import (
     NetologyCookies,
-    CalendarResponse
+    ModeusTimeBody
 )
 
 
 mock_cookies = NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
+parent_path = Path(__file__).parent
 
 
 async def handler(request):
@@ -35,36 +40,34 @@ async def handler(request):
             return httpx.Response(404, json={"detail": "Not Found"})
         case '/backend/api/unknown':
             return httpx.Response(404, json={"detail": "Not Found"})
-        case '/backend/api/user/programs/1/schedule':
-            response_json = {
-                "title": "NETOLOGY",
-                "lessons": [
-                    {"lesson_items": [{"rus": "234"}]}
-                ]
-            }
-            return httpx.Response(200, json=response_json)
+        case '/backend/api/user/programs/45526/schedule':
+            with open(parent_path / 'fixtures/program_45526.json', 'r') as f:
+                response_json = json.load(f)
+                return httpx.Response(200, json=response_json)
+        case '/backend/api/user/programs/57604/schedule':
+            with open(parent_path / 'fixtures/program_57604.json', 'r') as f:
+                response_json = json.load(f)
+                return httpx.Response(200, json=response_json)
         case '/backend/api/user/programs/2/schedule':
             return httpx.Response(404, json={})
-        case '/backend/api/user/professions/1/schedule':
+        case '/backend/api/user/professions/45526/schedule':
+            with open(parent_path / 'fixtures/profession.json', 'r') as f:
+                response_json = json.load(f)
+                return httpx.Response(200, json=response_json)
+        case '/backend/api/user/professions/2/schedule':
+            return httpx.Response(404, json={})
+        case '/backend/api/user/professions/10/schedule':
             response_json = {
                 "profession_modules": [
                     {
                         "program": {
-                            "id": 1,
-                            "name": "DevOps",
-                        }
-                    },
-                    {
-                        "program": {
-                            "id": 2,
-                            "name": "C++"
+                            "id": 10,
+                            "name": "Linux",
                         }
                     }
                 ]
             }
             return httpx.Response(200, json=response_json)
-        case '/backend/api/user/professions/2/schedule':
-            return httpx.Response(404, json={})
         case _:
             return httpx.Response(200, json={"Azamat": 'Lox'})
 
@@ -166,13 +169,8 @@ async def test_get_events_by_id_not_found():
 async def test_get_events_by_id_ok():
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        calendar_response = await get_events_by_id(mock_cookies, 1)
-        assert calendar_response == CalendarResponse.model_validate({
-            "title": "NETOLOGY",
-            "lessons": [
-                {"lesson_items": [{"rus": "234"}]}
-            ]
-        })
+        calendar_response = await get_events_by_id(mock_cookies, 45526)
+        assert calendar_response.dict().get("block_title") == "Бакалавриат Разработка IT-продуктов и информационных систем"
 
 
 @pytest.mark.asyncio
@@ -189,25 +187,69 @@ async def test_get_program_ids_not_found():
 async def test_get_program_ids_ok():
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        lessons_ids = await get_program_ids(mock_cookies, 1)
+        lessons_ids = await get_program_ids(mock_cookies, 45526)
 
-        assert lessons_ids == {1, 2}
+        assert lessons_ids == {57604}
 
 
 @pytest.mark.asyncio
 async def test_get_calendar_not_found():
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
+    modeus_time_body = ModeusTimeBody.model_validate({
+        "timeMin": "2024-09-23T00:00:00+00:00",
+        "timeMax": "2024-09-29T23:59:59+00:00"
+    })
+
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
         with pytest.raises(httpx.HTTPStatusError) as exc_info:
-            await get_program_ids(mock_cookies, 2)
+            await get_calendar(mock_cookies, 2, modeus_time_body)
 
         assert exc_info.value.response.status_code == 404
 
 
 @pytest.mark.asyncio
+async def test_modeus_time_body():
+    with pytest.raises(ValidationError) as exc_info:
+        ModeusTimeBody.model_validate({
+            "timeMin": "2024-09-23T00:00:00+03:00",
+            "timeMax": "2028-09-10T23:59:59+03:00"
+        })
+
+    assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
+    assert "Time must be UTC" in str(exc_info.value)
+
+    with pytest.raises(ValidationError) as exc_info:
+        ModeusTimeBody.model_validate({
+            "timeMin": "2024-09-23T15:34:53+00:00",
+            "timeMax": "2028-09-10T23:56:54+00:00"
+        })
+
+    assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
+    assert "Time must me 00:00:00" in str(exc_info.value)
+    assert "Time must me 23:59:59" in str(exc_info.value)
+
+    with pytest.raises(ValidationError) as exc_info:
+        ModeusTimeBody.model_validate({
+            "timeMin": "2024-09-24T15:34:53+00:00",
+            "timeMax": "2028-09-11T23:59:59+00:00"
+        })
+
+    assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
+    assert "Weekday time_min must be Monday" in str(exc_info.value)
+    assert "Weekday time_min must be Sunday" in str(exc_info.value)
+
+
+@pytest.mark.asyncio
 async def test_get_calendar_ok():
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        serialized_events = await get_program_ids(mock_cookies, 1)
+    modeus_time_body = ModeusTimeBody.model_validate({
+        "timeMin": "2024-09-23T00:00:00+00:00",
+        "timeMax": "2028-09-10T23:59:59+00:00"
+    })
 
-        assert serialized_events == {1, 2}
+    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
+        serialized_events = await get_calendar(mock_cookies, 45526, modeus_time_body)
+
+        assert len(serialized_events.homework) == 2
+        assert len(serialized_events.webinars) == 2
+
