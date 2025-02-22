@@ -1,0 +1,50 @@
+{
+  "wso": {
+    "issuer": "https://auth.modeus.org:443/oauth2/token",
+    "jwks": {
+      "keys": [
+        {
+          "kty": "RSA",
+          "e": "AQAB",
+          "use": "sig",
+          "kid": "d0ec514a32b6f88c0abd12a2840699bdd3deba9d",
+          "alg": "RS256",
+          "n": "APGH52-wmxyAn-BcxTqm7QOuYEO_oeDIaGe4DHjQEuVaPccJt-N71IKm2jD9TW_NU7zDK_KUAebjH4bNzdSQ8ZWNRzUMnM_gIJR8Z5ti0bLFzSETdQIY6YkXO80IIFmQ_sQ8aAMMoZQ70GAyJLhpTEuPhd4ZL5Q-rCir-uALaUtkGe0WaRctzjr1cv3ETkRVryVhhhEKkkG5ysTVl-UKRP8ZhQJYMEjs_BLhElD9Tq8LVZfyJyKxIJ0j50H96zhHYl33AA2W7m-UdeQTBOaPfSGGWRK-8bq2owQBLe3PvbFSjW_aZ1noQfgfhxXoQJ1WYbaZMUq-Zaz86YsLnLH7U18"
+        }
+      ]
+    },
+    "fidp": "",
+    "redirectUrl": "https://utmn.modeus.org /schedule-calendar/my",
+    "silentRedirectUrl": "https://utmn.modeus.org /schedule-calendar/my/redirect.html"
+  },
+  "app": {
+    "host": "https://utmn.modeus.org",
+    "clientErrorMail": "help@modeus.org",
+    "gojs": "73fe4ee4b21c28c702d95d76423d6cbc5cf07f21de8218a00b5016a7ea5f6f17269dec7102d78bc980ea5efb182e93d9db966d7e974e0d3be33880d847b2d5fde03074b3120e128ca1532ec39eae2ba3f46a61f497e571a288288de0fbabc29c5af7f4cb48",
+    "supportContacts": {
+      "email": "help@modeus.org",
+      "name": "Служба поддержки MODEUS"
+    },
+    "legendInfo": {
+      "title": "Онлайн-мероприятия",
+      "items": [
+        "<a target='_blank' href='https://telemost.yandex.ru'>Яндекс. Телемост</a>",
+        "ЭИОС - электронная информационно-образовательная среда",
+        "<a target='_blank' href='https://lxp.utmn.ru'>LXP</a> - Единая цифровая платформа образовательного опыта"
+      ]
+    },
+    "daysResourcesRelevantBeforeStart": 14
+  },
+  "appNames": [
+    "SCHEDULE_CALENDAR_APP"
+  ],
+  "backend": {
+    "host": "https://utmn.modeus.org"
+  },
+  "stickHeader": "",
+  "sentry": {
+    "dsn": "https://e8b6e014567e4b36bd2b1e09c5341a00@sentry.kube.modeus.org/12",
+    "env": "utmn-prod",
+    "release": "180a42f2e40c3d456d15afc7f68d760e732ba943"
+  }
+}

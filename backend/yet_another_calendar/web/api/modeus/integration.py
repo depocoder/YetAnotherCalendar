@@ -28,7 +28,7 @@ async def get_post_url(session: AsyncClient, token_length: int = 16) -> URL:
     Get auth post url for log in.
 
     """
-    response = await session.get("/schedule-calendar/assets/app.config.json")
+    response = await session.get("/schedule-calendar/assets/app_config.json")
     client_id = response.json()["wso"]["clientId"]
     auth_url = response.json()["wso"]["loginUrl"]
     auth_data = {
