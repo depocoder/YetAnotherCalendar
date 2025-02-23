@@ -1,4 +1,7 @@
 import React from 'react';
+import arrowGreen from "../../img/ArrowGreen.svg";
+import arrowPink from "../../img/ArrowPink.svg";
+import arrowViolet from "../../img/ArrowViolet.svg";
 import arrowImage from "../../img/arrow.png";
 import {formatDate} from "../../utils/dateUtils";
 
@@ -12,9 +15,9 @@ const EventsDetail = ({ event }) => {
                     {((event.type === 'task') || (event.type === 'test')) && (
                         <>
                             <div className="source">
-                                <span className="source-first-word">Событие:</span> {event.block_title}
+                                {event.block_title}
                                 <span className="date-event">
-                                <img src={arrowImage} alt={arrowImage}/> {formatDate(event.start || event.deadline)}
+                                <img src={arrowPink} alt={arrowPink}/> {formatDate(event.start || event.deadline)}
                             </span>
                             </div>
                             <div className="name-event">
@@ -32,9 +35,9 @@ const EventsDetail = ({ event }) => {
                     {event.type === 'modeus' && (
                         <>
                             <div className="source">
-                                <span className="source-first-word">Событие:</span> {event?.nameShort} {event?.cycle_realization?.code}
+                                {event?.nameShort} {event?.cycle_realization?.code}
                                 <span className="date-event">
-                                   <img src={arrowImage} alt={arrowImage}/> {formatDate(event.start)}
+                                   <img src={arrowViolet} alt={arrowViolet}/> {formatDate(event.start)}
                                 </span>
                             </div>
                             <div className="name-event">
@@ -52,21 +55,28 @@ const EventsDetail = ({ event }) => {
                     )}
                     {event.type === 'netology' && (
                         <>
-                            <div className="source">
-                                <span className="source-first-word">Событие:</span> {event.block_title}
-                                <span className="date-event">
-                                    <img src={arrowImage} alt={arrowImage}/> {formatDate(event.starts_at)}
+                            <a href={event?.video_url || event?.webinar_url}>
+                                <div className="source">
+                                    {event.block_title}
+                                    <span className="date-event">
+                                    <img src={arrowGreen} alt={arrowGreen}/> {formatDate(event.starts_at)}
                                 </span>
-                            </div>
-                            <div className="name-event">
-                                <span className="name-event-text">{event.title}</span>
-                            </div>
+                                </div>
+                                <div className="name-event">
+                                    <span className="name-event-text">{event.title}</span>
+                                </div>
+                            </a>
                             <div className="task-event">
-                                <img className="avatar_path" src={event?.experts[0]?.avatar_path}
-                                     alt={event?.experts[0]?.full_name}/>
-                                <span className="task-event-text">
-                                    Преподаватель: {event?.experts[0]?.full_name || 'Не указано'}
+                                <div className='persona_container'>
+                                    <div className="avatar_path">
+                                        <img src={event?.experts[0]?.avatar_path}
+                                             alt={event?.experts[0]?.full_name}/>
+                                    </div>
+                                    <span className="task-event-text">
+                                <span
+                                    className="source-first-word">Преподаватель:</span> {event?.experts[0]?.full_name || 'Не указано'}
                                 </span>
+                                </div>
                             </div>
                         </>
                     )}
