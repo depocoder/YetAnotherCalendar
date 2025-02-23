@@ -21,8 +21,12 @@ const LoginPage = () => {
                 localStorage.setItem('token', response.data["_netology-on-rails_session"]);
                 setIsNetologyLoggedIn(true); // Успешный вход в Нетологию
                 return {success: true};
-            } else {
+            } if (response.status === 401) {
                 return {success: false, message: "Неверный логин или пароль."};
+            } if (response.status === 400 || response.status === 422) {
+                return {success: false, message: "Были переданы неверный данные"};
+            } else {
+                return {success: false, message: "Произошла ошибка. Попробуйте снова."};
             }
         } catch (error) {
             return {success: false, message: "Произошла ошибка. Попробуйте снова."};
@@ -39,8 +43,13 @@ const LoginPage = () => {
                 setIsModeusLoggedIn(true); // Успешный вход в Модеус
                 navigate("/");
                 return {success: true};
-            } else {
+            } if (response.status === 401) {
                 return {success: false, message: "Неверный логин или пароль."};
+            } if (response.status === 400 || response.status === 422) {
+                return {
+                    success: false, message: "Были переданы неверный данные, проверьте правильность введенной почты."};
+            } else {
+                return {success: false, message: "Произошла ошибка. Попробуйте снова."};
             }
         } catch (error) {
             return {success: false, message: "Произошла ошибка. Попробуйте снова."};
