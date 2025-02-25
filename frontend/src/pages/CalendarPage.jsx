@@ -90,7 +90,7 @@ const CalendarPage = () => {
                     <div className="header-line">
                         <div className="shedule-export">
                             <span className="shedule">Мое расписание</span>
-                            <ICSExporter events={allEvents}/>
+                            <ICSExporter date={date}/>
                             <CacheUpdateBtn date={date} onDataUpdate={handleDataUpdate}/>
                         </div>
                         <ExitBtn/>

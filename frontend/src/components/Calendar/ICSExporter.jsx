@@ -1,57 +1,42 @@
 import React from 'react';
+import {
+    exportICS, getCalendarIdLocalStorage,
+    getJWTTokenFromLocalStorage,
+    getPersonIdLocalStorage,
+    getTokenFromLocalStorage
+} from "../../services/api";
 
-const ICSExporter = ({ events }) => {
-    const generateICSFile = (events) => {
-        // Убедитесь, что events — это массив
-        if (!Array.isArray(events)) {
-            console.error('Events is not an array:', events);
-            return ''; // Возвращаем пустую строку, если это не массив
+const ICSExporter = ({date}) => {
+    const downloadICSFile = async () => {
+        let calendarId
+        calendarId = getCalendarIdLocalStorage();
+        try {
+            const icsContent = await exportICS({
+                calendarId,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                attendeePersonId: getPersonIdLocalStorage(),
+                timeMin: date.start,
+                timeMax: date.end,
+                sessionToken: getTokenFromLocalStorage(),
+                jwtToken: getJWTTokenFromLocalStorage()
+            });
+            if (icsContent.data === '') return; // Если не удалось создать файл, выходим
+
+            const blob = new Blob([icsContent.data], {type: "text/calendar"});
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "schedule.ics"; // Имя файла для скачивания
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // Освобождаем память
+        } catch (error) {
+            // TODO make better exception handling
+            throw new Error('Не удалось получить события');
         }
 
-        const icsHeader = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Your Company//Your Product//EN\nCALSCALE:GREGORIAN\n";
-        const icsFooter = "END:VCALENDAR\n";
-        let icsBody = "";
-
-        events.forEach(event => {
-            const startDate = new Date(event.start);
-            const endDate = new Date(event.end);
-
-            // Проверка на допустимость дат
-            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-                console.error('Invalid date for event:', event);
-                return; // Пропустить это событие, если дата недопустима
-            }
-
-            const formattedStartDate = startDate.toISOString().replace(/-|:|\.\d+/g, ""); // Форматирование даты
-            const formattedEndDate = endDate.toISOString().replace(/-|:|\.\d+/g, "");
-
-            const eventString = `BEGIN:VEVENT\n` +
-                `UID:${event.id}\n` + // Уникальный идентификатор события
-                `SUMMARY:${event.title}\n` + // Заголовок события
-                `DESCRIPTION:${event.description || ''}\n` + // Описание события
-                `DTSTART:${formattedStartDate}\n` + // Дата начала
-                `DTEND:${formattedEndDate}\n` + // Дата окончания
-                `END:VEVENT\n`;
-            icsBody += eventString;
-        });
-
-        return icsHeader + icsBody + icsFooter;
-    };
-
-    const downloadICSFile = () => {
-        const icsContent = generateICSFile(events);
-        if (icsContent === '') return; // Если не удалось создать файл, выходим
-
-        const blob = new Blob([icsContent], { type: "text/calendar" });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "schedule.ics"; // Имя файла для скачивания
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url); // Освобождаем память
     };
 
     return (
