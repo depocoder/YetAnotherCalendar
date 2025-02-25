@@ -34,7 +34,7 @@ transport = httpx.MockTransport(handler)
 @pytest.mark.asyncio
 async def test_get_post_url_invalid_app_config() -> None:
     client = AsyncClient(http2=True,
-                         base_url="https://netology.ru",
+                         base_url="https://utmn.modeus.org",
                          transport=transport,
                          headers={"invalid_app_config": "1"})
 
@@ -51,7 +51,7 @@ async def test_get_post_url_invalid_auth_url() -> None:
 
 @pytest.mark.asyncio
 async def test_get_post_url_ok() -> None:
-    client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
+    client = AsyncClient(http2=True, base_url="https://utmn.modeus.org", transport=transport)
     post_url = await get_post_url(client)
 
     assert str(post_url) == "https://fs.utmn.ru/adfs/ls?aboba=true"
