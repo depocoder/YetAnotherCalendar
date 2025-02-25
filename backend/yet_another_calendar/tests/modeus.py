@@ -11,7 +11,7 @@ from yet_another_calendar.settings import settings
 
 def handler(request: httpx.Request) -> httpx.Response:
     match request.url.path:
-        case '/schedule-calendar/assets/app_config.json':
+        case '/schedule-calendar/assets/app.config.json':
             file_path, status_code = ("fixtures/app_config.json", 200)
 
             if request.headers.get("invalid_app_config"):
