@@ -60,6 +60,8 @@ class Settings(BaseSettings):
     )
     netology_url: str = env.str("NETOLOGY_URL", "https://netology.ru")
 
+    test_parent_path: Path = Path(__file__).parent / "tests"
+
     @property
     def redis_url(self) -> URL:
         """

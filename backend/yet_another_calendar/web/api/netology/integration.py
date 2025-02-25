@@ -6,7 +6,7 @@ from typing import Any
 import httpx
 import reretry
 from fastapi import HTTPException
-from httpx import AsyncClient, Response
+from httpx import AsyncClient
 from starlette import status
 
 from . import schema

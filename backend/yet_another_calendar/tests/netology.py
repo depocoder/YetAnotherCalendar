@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 from unittest.mock import AsyncMock, patch
 
@@ -16,19 +15,19 @@ from yet_another_calendar.web.api.netology.integration import (
     auth_netology,
     get_events_by_id,
     get_program_ids,
-    get_calendar
+    get_calendar,
 )
 from yet_another_calendar.web.api.netology.schema import (
     NetologyCookies,
-    ModeusTimeBody
+    ModeusTimeBody,
 )
+from yet_another_calendar.settings import settings
 
 
 mock_cookies = NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
-parent_path = Path(__file__).parent
 
 
-async def handler(request):
+def handler(request: httpx.Request) -> httpx.Response:  # noqa: PLR0911
     match request.url.path:
         case '/backend/api/user/programs/calendar/filters':
             return httpx.Response(200, json={"ok": True})
@@ -41,41 +40,30 @@ async def handler(request):
         case '/backend/api/unknown':
             return httpx.Response(404, json={"detail": "Not Found"})
         case '/backend/api/user/programs/45526/schedule':
-            with open(parent_path / 'fixtures/program_45526.json', 'r') as f:
+            with open(settings.test_parent_path / 'fixtures/program_45526.json') as f:
                 response_json = json.load(f)
                 return httpx.Response(200, json=response_json)
         case '/backend/api/user/programs/57604/schedule':
-            with open(parent_path / 'fixtures/program_57604.json', 'r') as f:
+            with open(settings.test_parent_path / 'fixtures/program_57604.json') as f:
                 response_json = json.load(f)
                 return httpx.Response(200, json=response_json)
         case '/backend/api/user/programs/2/schedule':
             return httpx.Response(404, json={})
         case '/backend/api/user/professions/45526/schedule':
-            with open(parent_path / 'fixtures/profession.json', 'r') as f:
+            with open(settings.test_parent_path / 'fixtures/profession.json') as f:
                 response_json = json.load(f)
                 return httpx.Response(200, json=response_json)
         case '/backend/api/user/professions/2/schedule':
             return httpx.Response(404, json={})
-        case '/backend/api/user/professions/10/schedule':
-            response_json = {
-                "profession_modules": [
-                    {
-                        "program": {
-                            "id": 10,
-                            "name": "Linux",
-                        }
-                    }
-                ]
-            }
-            return httpx.Response(200, json=response_json)
         case _:
             return httpx.Response(200, json={"Azamat": 'Lox'})
+
 
 transport = httpx.MockTransport(handler)
 
 
 @pytest.mark.asyncio
-async def test_send_request_unauthorized():
+async def test_send_request_unauthorized() -> None:
     mock_request_settings = {'method': 'GET', 'url': '/backend/api/user/programs/calendar/filters'}
     mock_response = AsyncMock()
     mock_response.status_code = status.HTTP_401_UNAUTHORIZED
@@ -93,7 +81,7 @@ async def test_send_request_unauthorized():
 
 
 @pytest.mark.asyncio
-async def test_send_request_unknown():
+async def test_send_request_unknown() -> None:
     mock_request_settings = {'method': 'GET', 'url': '/backend/api/unknown'}
 
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
@@ -107,7 +95,7 @@ async def test_send_request_unknown():
 
 
 @pytest.mark.asyncio
-async def test_send_request_server_error():
+async def test_send_request_server_error() -> None:
     mock_request_settings = {'method': 'GET', 'url': '/backend/api/server_problem'}
     
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
@@ -120,7 +108,7 @@ async def test_send_request_server_error():
 
 
 @pytest.mark.asyncio
-async def test_send_request_ok():
+async def test_send_request_ok() -> None:
     mock_request_settings = {'method': 'GET', 'url': '/backend/api/user/programs/calendar/filters'}
 
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
@@ -131,7 +119,7 @@ async def test_send_request_ok():
 
 
 @pytest.mark.asyncio
-async def test_auth_netology_unauthorized():
+async def test_auth_netology_unauthorized() -> None:
     mock_response = AsyncMock()
     mock_response.status_code = status.HTTP_401_UNAUTHORIZED
 
@@ -147,16 +135,16 @@ async def test_auth_netology_unauthorized():
 
 
 @pytest.mark.asyncio
-async def test_auth_netology_ok():
+async def test_auth_netology_ok() -> None:
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
-    client.cookies = {"_netology-on-rails_session": "aboba"}
+    client.cookies = httpx.Cookies({"_netology-on-rails_session": "aboba"})
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
         netology_cookies = await auth_netology("alex", "password12345")
         assert netology_cookies == NetologyCookies.model_validate(client.cookies)
 
 
 @pytest.mark.asyncio
-async def test_get_events_by_id_not_found():
+async def test_get_events_by_id_not_found() -> None:
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
         with pytest.raises(httpx.HTTPStatusError) as exc_info:
@@ -166,15 +154,16 @@ async def test_get_events_by_id_not_found():
 
 
 @pytest.mark.asyncio
-async def test_get_events_by_id_ok():
+async def test_get_events_by_id_ok() -> None:
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
         calendar_response = await get_events_by_id(mock_cookies, 45526)
-        assert calendar_response.dict().get("block_title") == "Бакалавриат Разработка IT-продуктов и информационных систем"
+        assert calendar_response.dict().get("block_title") == \
+               "Бакалавриат Разработка IT-продуктов и информационных систем"
 
 
 @pytest.mark.asyncio
-async def test_get_program_ids_not_found():
+async def test_get_program_ids_not_found() -> None:
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
         with pytest.raises(httpx.HTTPStatusError) as exc_info:
@@ -184,7 +173,7 @@ async def test_get_program_ids_not_found():
 
 
 @pytest.mark.asyncio
-async def test_get_program_ids_ok():
+async def test_get_program_ids_ok() -> None:
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
         lessons_ids = await get_program_ids(mock_cookies, 45526)
@@ -193,11 +182,11 @@ async def test_get_program_ids_ok():
 
 
 @pytest.mark.asyncio
-async def test_get_calendar_not_found():
+async def test_get_calendar_not_found() -> None:
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
     modeus_time_body = ModeusTimeBody.model_validate({
         "timeMin": "2024-09-23T00:00:00+00:00",
-        "timeMax": "2024-09-29T23:59:59+00:00"
+        "timeMax": "2024-09-29T23:59:59+00:00",
     })
 
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
@@ -208,11 +197,11 @@ async def test_get_calendar_not_found():
 
 
 @pytest.mark.asyncio
-async def test_modeus_time_body():
+async def test_modeus_time_body() -> None:
     with pytest.raises(ValidationError) as exc_info:
         ModeusTimeBody.model_validate({
             "timeMin": "2024-09-23T00:00:00+03:00",
-            "timeMax": "2028-09-10T23:59:59+03:00"
+            "timeMax": "2028-09-10T23:59:59+03:00",
         })
 
     assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
@@ -221,7 +210,7 @@ async def test_modeus_time_body():
     with pytest.raises(ValidationError) as exc_info:
         ModeusTimeBody.model_validate({
             "timeMin": "2024-09-23T15:34:53+00:00",
-            "timeMax": "2028-09-10T23:56:54+00:00"
+            "timeMax": "2028-09-10T23:56:54+00:00",
         })
 
     assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
@@ -231,7 +220,7 @@ async def test_modeus_time_body():
     with pytest.raises(ValidationError) as exc_info:
         ModeusTimeBody.model_validate({
             "timeMin": "2024-09-24T15:34:53+00:00",
-            "timeMax": "2028-09-11T23:59:59+00:00"
+            "timeMax": "2028-09-11T23:59:59+00:00",
         })
 
     assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
@@ -240,11 +229,11 @@ async def test_modeus_time_body():
 
 
 @pytest.mark.asyncio
-async def test_get_calendar_ok():
+async def test_get_calendar_ok() -> None:
     client = AsyncClient(http2=True, base_url="https://netology.ru", transport=transport)
     modeus_time_body = ModeusTimeBody.model_validate({
         "timeMin": "2024-09-23T00:00:00+00:00",
-        "timeMax": "2028-09-10T23:59:59+00:00"
+        "timeMax": "2028-09-10T23:59:59+00:00",
     })
 
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
