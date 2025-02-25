@@ -15,6 +15,19 @@ class Creds(BaseModel):
     username: str
     password: str = Field(repr=False)
 
+    @field_validator("username")
+    @classmethod
+    def validate_time_min(cls, username: str) -> str:
+        if "@" not in username and username.count('@') == 1:
+            raise ValueError("Email must contain one @.")
+
+        name, mail = username.split("@")
+        if mail == "utmn.ru":
+            mail = "study.utmn.ru"
+        if mail != "study.utmn.ru":
+            raise ValueError("Email must contain @study.utmn.ru.")
+        return f"{name}@{mail}"
+
 
 class ModeusTimeBody(BaseModel):
     time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+00:00"])
