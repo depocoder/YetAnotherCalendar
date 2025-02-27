@@ -64,11 +64,11 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
     html = BeautifulSoup(html_text, "lxml")
     error_tag = html.find(id="errorText")
     if error_tag is not None and error_tag.text != "":
-        raise HTTPException(detail=f"Modeus error. {error_tag.text}", status_code=response.status_code)
+        raise HTTPException(detail=f"Modeus error. {error_tag.text}", status_code=status.HTTP_401_UNAUTHORIZED)
 
     form = html.form
     if form is None:
-        raise HTTPException(detail="Modeus error. Can't get form.", status_code=response.status_code)
+        raise HTTPException(detail="Modeus error. Can't get form.", status_code=status.HTTP_401_UNAUTHORIZED)
     return form
 
 
