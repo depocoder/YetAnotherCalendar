@@ -1,0 +1,87 @@
+{
+    "name": "Бакалавриат Разработка IT-продуктов и информационных систем",
+    "starts_on": "2024-09-01",
+    "finishes_on": "2028-08-31",
+    "coordinator": {
+        "name": "Иван Иваныч",
+        "image": "https://example.com"
+    },
+    "current_program_coordinator": {
+        "name": "Азамат Азаматыч",
+        "image": "https://abcd.com"
+    },
+    "manager": {
+        "name": "Ксения Ксениевна",
+        "image": "https://1234.com"
+    },
+    "landing_url": "/programs/razrabotka-it-produktov-i-informacionnyh-sistem-2",
+    "lessons_available": {
+        "total": 52,
+        "demo": 0,
+        "common": 60
+    },
+    "profession_modules": [
+        {
+            "id": 130212,
+            "position": 1,
+            "program": {
+                "id": 57604,
+                "color": "#50b9e1",
+                "description": "",
+                "duration": "46 месяцев",
+                "experts_amount": "4 эксперта",
+                "label": "Изучаю",
+                "is_async": false,
+                "name": "Вводный модуль",
+                "program_image": "",
+                "projects_amount": 7,
+                "slider_description": "",
+                "starts_at": "2 сентября",
+                "type": "online",
+                "url": "https://example.com/profile/program/aboba",
+                "url_to_replace": "",
+                "is_profession": false,
+                "is_profession_module": true,
+                "parent_profession": {
+                    "id": 45526,
+                    "urlcode": "bhebdps-2",
+                    "title": "Бакалавриат Разработка IT-продуктов и информационных систем",
+                    "landing_url": "/programs/razrabotka-it-produktov-i-informacionnyh-sistem",
+                    "start_date": "2025-09-01",
+                    "finish_date": "2029-07-30",
+                    "price": 1,
+                    "is_paid": true,
+                    "price_without_discount": 1,
+                    "terms": null,
+                    "education_format_type": "online",
+                    "user_start_date": "2024-09-01",
+                    "user_finish_date": "2028-08-31",
+                    "program_family_price_type": "paid",
+                    "main_direction": {
+                        "slug": "degree",
+                        "name": "Высшее образование"
+                    }
+                },
+                "start_date": "2024-09-02",
+                "finish_date": "2028-06-30",
+                "price": 0,
+                "price_without_discount": 0,
+                "terms": null,
+                "user_accesses": [
+                    {
+                        "level_type": "common",
+                        "access_expired_at": "2074-08-27T13:34:03.000Z"
+                    }
+                ],
+                "program_with_demo_access": false,
+                "lessons_available": {
+                    "total": 7,
+                    "demo": 0,
+                    "common": 7
+                },
+                "landing_url": "/programs/",
+                "consultation": false
+            }
+        }
+    ]
+}

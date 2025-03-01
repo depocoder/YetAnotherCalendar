@@ -1,0 +1,46 @@
+{
+    "coordinator": {
+        "name": "Иван Иваныч",
+        "image": "https://example.com"
+    },
+    "current_program_coordinator": {
+        "name": "Азамат Азаматыч",
+        "image": "https://abcd.com"
+    },
+    "manager": {
+        "name": "Ксения Ксениевна",
+        "image": "https://1234.com"
+    },
+    "lessons": [],
+    "blocks": [],
+    "resource_packages": [],
+    "has_only_demo_access": false,
+    "has_demo_access": false,
+    "user_accesses": [
+        {
+            "level_type": "common",
+            "access_expired_at": null
+        }
+    ],
+    "access_levels": [
+        {
+            "id": 47864,
+            "level_type": "common",
+            "name": "Обычный",
+            "description": null,
+            "status": "active",
+            "title": null,
+            "has_access": true,
+            "can_buy": false,
+            "current_program_id": 45526,
+            "price": 1,
+            "price_without_discount": 1
+        }
+    ],
+    "title": "Бакалавриат Разработка IT-продуктов и информационных систем",
+    "type": "distance_course",
+    "format_type": "new_format",
+    "program_family_url": "razrabotka-it-produktov-i-informacionnyh-sistem",
+    "program_type": "bachelor",
+    "terms": null
+}
