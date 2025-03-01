@@ -136,6 +136,8 @@ async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -
         url_part,
         content=body.model_dump_json(by_alias=True),
     )
+    if response.status_code == status.HTTP_401_UNAUTHORIZED:
+        raise HTTPException(detail='Modeus token expired!', status_code=response.status_code)
     response.raise_for_status()
     return response.text
 
