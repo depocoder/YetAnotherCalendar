@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
 
 from . import integration, schema
 from ..modeus.schema import ModeusTimeBody
@@ -18,7 +20,7 @@ async def get_netology_cookies(
 
 @router.post("/courses")
 async def get_courses(
-        user: schema.User,
+        user: Annotated[schema.User, Depends(schema.get_user)],
 ) -> list[schema.Course]:
     """
     Get LMS courses for current user.
@@ -28,7 +30,7 @@ async def get_courses(
 
 @router.post("/course_info")
 async def get_user_info(
-        user: schema.User,
+        user: Annotated[schema.User, Depends(schema.get_user)],
         course_id: int = 2745,
 ) -> list[schema.ExtendedCourse]:
     """
@@ -39,7 +41,7 @@ async def get_user_info(
 
 @router.post("/events")
 async def get_events(
-        user: schema.User,
+        user: Annotated[schema.User, Depends(schema.get_user)],
         body: ModeusTimeBody,
 ) -> list[schema.ModuleResponse]:
     """

@@ -1,6 +1,7 @@
 import datetime
-from typing import Any, Optional
+from typing import Any, Optional, Annotated
 
+from fastapi import Header
 from pydantic import BaseModel, Field, model_validator
 
 from yet_another_calendar.web.api.modeus.schema import Creds, ModeusTimeBody
@@ -16,7 +17,15 @@ class LxpCreds(Creds):
 class User(BaseModel):
     id: int
     token: str
-    is_enabled: bool = False
+
+async def get_user(
+        lxp_token: Annotated[str, Header()],
+        lxp_id: Annotated[str, Header()],
+) -> User:
+    return User.model_validate({
+        "token": lxp_token,
+        "id": lxp_id,
+    })
 
 
 class Course(BaseModel):
