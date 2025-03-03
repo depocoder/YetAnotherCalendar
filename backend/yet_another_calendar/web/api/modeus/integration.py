@@ -20,20 +20,18 @@ from .schema import (
 
 logger = logging.getLogger(__name__)
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
-_AUTH_URL = "https://auth.modeus.org/oauth2/authorize"
 
 
 async def get_post_url(session: AsyncClient, token_length: int = 16) -> URL:
     """
     Get auth post url for log in.
-
     """
-    response = await session.get("/schedule-calendar/assets/app.config.json")
+    response = await session.get(settings.modeus_login_part)
     client_id = response.json()["wso"]["clientId"]
     auth_url = response.json()["wso"]["loginUrl"]
     auth_data = {
         "client_id": client_id,
-        "redirect_uri": "https://utmn.modeus.org/",
+        "redirect_uri": settings.modeus_base_url,
         "response_type": "id_token",
         "scope": "openid",
         "nonce": token_hex(token_length),
@@ -82,7 +80,7 @@ async def login(username: str, __password: str, timeout: int = 15) -> str:
         CannotAuthenticateError: if something changed in API
     """
     async with httpx.AsyncClient(
-            base_url="https://utmn.modeus.org/",
+            base_url=settings.modeus_base_url,
             timeout=timeout,
             headers={
                 "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0",
@@ -91,11 +89,10 @@ async def login(username: str, __password: str, timeout: int = 15) -> str:
     ) as session:
         form = await get_auth_form(session, username, __password)
         auth_data = {}
-        continue_auth_url = "https://auth.modeus.org/commonauth"
         for input_html in form.find_all("input", type="hidden"):
             auth_data[input_html["name"]] = input_html["value"]  # type: ignore
         response = await session.post(
-            continue_auth_url,
+            settings.continue_auth_url,
             data=auth_data,  # type: ignore
             follow_redirects=False,
         )
@@ -127,7 +124,7 @@ def _extract_token_from_url(url: str, match_index: int = 1) -> str | None:
 async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -> str:
     session = AsyncClient(
         http2=True,
-        base_url="https://utmn.modeus.org/",
+        base_url=settings.modeus_base_url,
         timeout=timeout,
     )
     session.headers["Authorization"] = f"Bearer {__jwt}"
@@ -148,7 +145,8 @@ async def get_events(
 
 ) -> list[FullEvent]:
     """Get events for student in modeus"""
-    response = await post_modeus(__jwt, body, "/schedule-calendar-v2/api/calendar/events/search")
+
+    response = await post_modeus(__jwt, body, settings.modeus_search_events)
     modeus_calendar = ModeusCalendar.model_validate_json(response)
     return modeus_calendar.serialize_modeus_response()
 
@@ -159,6 +157,6 @@ async def get_people(
 ) -> list[ExtendedPerson]:
     """Get people from modeus"""
 
-    response = await post_modeus(__jwt, body, "/schedule-calendar-v2/api/people/persons/search")
+    response = await post_modeus(__jwt, body, settings.modeus_search_people_part)
     search_people = SearchPeople.model_validate_json(response)
     return search_people.serialize_modeus_response()
