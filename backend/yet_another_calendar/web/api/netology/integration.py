@@ -27,22 +27,22 @@ async def auth_netology(username: str, password: str, timeout: int = 15) -> sche
     Returns:
         dict: Cookies for API.
     """
-    session = AsyncClient(
+    async with AsyncClient(
         http2=True,
         base_url=settings.netology_base_url,
         timeout=timeout,
-    )
-
-    response = await session.post(settings.netology_sign_in_part, data={
-        "login": username,
-        "password": password,
-        "remember": "1",
-    },
-                                  )
-    if response.status_code == status.HTTP_401_UNAUTHORIZED:
-        raise HTTPException(detail='Netology error. Username/password is incorrect.', status_code=response.status_code)
-    response.raise_for_status()
-    return schema.NetologyCookies(**session.cookies)
+    ) as session:
+        response = await session.post(settings.netology_sign_in_part, data={
+            "login": username,
+            "password": password,
+            "remember": "1",
+        },
+                                      )
+        if response.status_code == status.HTTP_401_UNAUTHORIZED:
+            raise HTTPException(detail='Netology error. Username/password is incorrect.',
+                                status_code=response.status_code)
+        response.raise_for_status()
+        return schema.NetologyCookies(**session.cookies)
 
 
 @reretry.retry(exceptions=httpx.TransportError, tries=settings.retry_tries, delay=settings.retry_delay)

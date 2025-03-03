@@ -19,40 +19,40 @@ async def get_token(creds: schema.LxpCreds, timeout: int = 15) -> str:
     """
     Auth in lms, required username and password.
     """
-    session = AsyncClient(
+    async with AsyncClient(
         http2=True,
         base_url=settings.lms_base_url,
         timeout=timeout,
-    )
-    response = await session.post(settings.lms_login_part, data=creds.model_dump())
-    response.raise_for_status()
-    serialized_response = response.json()
-    error = serialized_response.get('error') or serialized_response.get('exception')
-    if error:
-        raise HTTPException(detail=f'{error}. Server response: {serialized_response}',
-                            status_code=response.status_code)
-    return serialized_response['token']
+    ) as session:
+        response = await session.post(settings.lms_login_part, data=creds.model_dump())
+        response.raise_for_status()
+        serialized_response = response.json()
+        error = serialized_response.get('error') or serialized_response.get('exception')
+        if error:
+            raise HTTPException(detail=f'{error}. Server response: {serialized_response}',
+                                status_code=response.status_code)
+        return serialized_response['token']
 
 
 @reretry.retry(exceptions=httpx.TransportError, tries=settings.retry_tries, delay=settings.retry_delay)
 async def send_request(
         request_settings: dict[str, Any], timeout: int = 15) -> dict[str, Any] | list[dict[str, Any]]:
     """Send request from httpx."""
-    session = AsyncClient(
+    async with AsyncClient(
         http2=True,
         base_url=settings.lms_base_url,
         timeout=timeout,
-    )
-    response = await session.request(**request_settings)
-    response.raise_for_status()
-    serialized_response = response.json()
-    if isinstance(serialized_response, list):
+    ) as session:
+        response = await session.request(**request_settings)
+        response.raise_for_status()
+        serialized_response = response.json()
+        if isinstance(serialized_response, list):
+            return serialized_response
+        error = serialized_response.get('error') or serialized_response.get('exception')
+        if error:
+            raise HTTPException(detail=f'{error}. Server response: {serialized_response}',
+                                status_code=status.HTTP_400_BAD_REQUEST)
         return serialized_response
-    error = serialized_response.get('error') or serialized_response.get('exception')
-    if error:
-        raise HTTPException(detail=f'{error}. Server response: {serialized_response}',
-                            status_code=status.HTTP_400_BAD_REQUEST)
-    return serialized_response
 
 
 async def get_user_info(token: str, username: str) -> list[dict[str, Any]]:
