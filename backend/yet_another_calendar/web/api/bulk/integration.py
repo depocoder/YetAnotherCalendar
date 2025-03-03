@@ -122,8 +122,7 @@ async def get_calendar(
     async with asyncio.TaskGroup() as tg:
         netology_response = tg.create_task(netology_views.get_calendar(body, calendar_id, cookies))
         modeus_response = tg.create_task(modeus_views.get_calendar(full_body, modeus_jwt_token, person_id))
-        if lms_user.is_enabled:
-            lms_response = tg.create_task(lms_views.get_events(lms_user, full_body))
+        lms_response = tg.create_task(lms_views.get_events(lms_user, full_body))
     lms_events = lms_response.result() if lms_response else []
     return schema.CalendarResponse.model_validate(
         {"netology": netology_response.result(), "utmn": {

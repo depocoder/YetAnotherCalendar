@@ -60,6 +60,24 @@ class Settings(BaseSettings):
     )
     netology_url: str = env.str("NETOLOGY_URL", "https://netology.ru")
 
+    netology_base_url: str = "https://netology.ru"
+    netology_get_programs_part: str = '/backend/api/user/professions/{calendar_id}/schedule'
+    netology_get_events_part: str = '/backend/api/user/programs/{program_id}/schedule'
+    netology_sign_in_part: str = '/backend/api/user/sign_in'
+    netology_get_course_part: str = '/backend/api/user/programs/calendar/filters'
+
+    modeus_base_url: str = "https://utmn.modeus.org/"
+    modeus_login_part: str = "/schedule-calendar/assets/app.config.json"
+    modeus_continue_auth_url: str = "https://auth.modeus.org/commonauth"
+    modeus_search_events_part: str = "/schedule-calendar-v2/api/calendar/events/search"
+    modeus_search_people_part: str = "/schedule-calendar-v2/api/people/persons/search"
+
+    lms_base_url: str = "https://lms.utmn.ru"
+    lms_get_user_part: str = "/webservice/rest/server.php"
+    lms_get_course_part: str = '/webservice/rest/server.php'
+    lms_get_extended_course_part: str = '/webservice/rest/server.php'
+    lms_login_part: str = '/login/token.php'
+
     @property
     def redis_url(self) -> URL:
         """
