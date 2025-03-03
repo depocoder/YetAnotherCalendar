@@ -9,8 +9,8 @@ from httpx import AsyncClient
 from pydantic import TypeAdapter
 from starlette import status
 
-from . import schema
 from yet_another_calendar.settings import settings
+from . import schema
 from ..modeus.schema import ModeusTimeBody
 
 
@@ -21,10 +21,10 @@ async def get_token(creds: schema.LxpCreds, timeout: int = 15) -> str:
     """
     session = AsyncClient(
         http2=True,
-        base_url="https://lms.utmn.ru",
+        base_url=settings.lms_base_url,
         timeout=timeout,
     )
-    response = await session.post('/login/token.php', data=creds.model_dump())
+    response = await session.post(settings.lms_login_part, data=creds.model_dump())
     response.raise_for_status()
     serialized_response = response.json()
     error = serialized_response.get('error') or serialized_response.get('exception')
@@ -40,7 +40,7 @@ async def send_request(
     """Send request from httpx."""
     session = AsyncClient(
         http2=True,
-        base_url="https://lms.utmn.ru",
+        base_url=settings.lms_base_url,
         timeout=timeout,
     )
     response = await session.request(**request_settings)
@@ -59,7 +59,7 @@ async def get_user_info(token: str, username: str) -> list[dict[str, Any]]:
     response = await send_request(
         request_settings={
             'method': 'POST',
-            'url': '/webservice/rest/server.php',
+            'url': settings.lms_get_user_part,
             'params': {"wsfunction": "core_user_get_users_by_field",
                        "field": "username",
                        "values[0]": username,
@@ -81,7 +81,7 @@ async def get_courses(user: schema.User) -> list[schema.Course]:
     response = await send_request(
         request_settings={
             'method': 'GET',
-            'url': '/webservice/rest/server.php',
+            'url': settings.lms_get_course_part,
             'params': {
                 'wstoken': user.token,
                 'moodlewsrestformat': 'json',
@@ -98,7 +98,7 @@ async def get_extended_course(user: schema.User, course_id: int) -> list[schema.
     response = await send_request(
         request_settings={
             'method': 'POST',
-            'url': '/webservice/rest/server.php',
+            'url': settings.lms_get_extended_course_part,
             'params': {
                 'wstoken': user.token,
                 'wsfunction': 'core_course_get_contents',
