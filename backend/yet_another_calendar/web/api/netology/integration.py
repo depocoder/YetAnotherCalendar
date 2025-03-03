@@ -50,7 +50,7 @@ async def send_request(
         cookies: schema.NetologyCookies, request_settings: dict[str, Any], timeout: int = 15) -> dict[str, Any]:
     """Send request from httpx."""
     async with AsyncClient(
-            http2=True, base_url=settings.netology_base_url, timeout=timeout
+            http2=True, base_url=settings.netology_base_url, timeout=timeout,
     ) as session:
         session.cookies = httpx.Cookies(cookies.model_dump(by_alias=True))
         response = await session.request(**request_settings)

@@ -92,7 +92,7 @@ async def login(username: str, __password: str, timeout: int = 15) -> str:
         for input_html in form.find_all("input", type="hidden"):
             auth_data[input_html["name"]] = input_html["value"]  # type: ignore
         response = await session.post(
-            settings.continue_auth_url,
+            settings.modeus_continue_auth_url,
             data=auth_data,  # type: ignore
             follow_redirects=False,
         )
@@ -146,7 +146,7 @@ async def get_events(
 ) -> list[FullEvent]:
     """Get events for student in modeus"""
 
-    response = await post_modeus(__jwt, body, settings.modeus_search_events)
+    response = await post_modeus(__jwt, body, settings.modeus_search_events_part)
     modeus_calendar = ModeusCalendar.model_validate_json(response)
     return modeus_calendar.serialize_modeus_response()
 
