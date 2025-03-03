@@ -122,21 +122,24 @@ def _extract_token_from_url(url: str, match_index: int = 1) -> str | None:
 
 @reretry.retry(exceptions=httpx.TransportError, tries=settings.retry_tries, delay=settings.retry_delay)
 async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -> str:
-    session = AsyncClient(
+    """
+    Post into modeus.
+    """
+    async with AsyncClient(
         http2=True,
         base_url=settings.modeus_base_url,
         timeout=timeout,
-    )
-    session.headers["Authorization"] = f"Bearer {__jwt}"
-    session.headers["content-type"] = "application/json"
-    response = await session.post(
-        url_part,
-        content=body.model_dump_json(by_alias=True),
-    )
-    if response.status_code == status.HTTP_401_UNAUTHORIZED:
-        raise HTTPException(detail='Modeus token expired!', status_code=response.status_code)
-    response.raise_for_status()
-    return response.text
+    ) as session:
+        session.headers["Authorization"] = f"Bearer {__jwt}"
+        session.headers["content-type"] = "application/json"
+        response = await session.post(
+            url_part,
+            content=body.model_dump_json(by_alias=True),
+        )
+        if response.status_code == status.HTTP_401_UNAUTHORIZED:
+            raise HTTPException(detail='Modeus token expired!', status_code=response.status_code)
+        response.raise_for_status()
+        return response.text
 
 
 async def get_events(
