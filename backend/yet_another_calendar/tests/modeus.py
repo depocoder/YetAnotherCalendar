@@ -133,18 +133,3 @@ async def test_get_auth_form_ok() -> None:
         assert form.find_all("input")[0].get("name") == "username"
         assert form.find_all("input")[1].get("name") == "password"
         assert form.find("button").text == "Login"
-
-
-@pytest.mark.asyncio
-# todo: error
-@patch("yet_another_calendar.web.api.modeus.integration.cache", lambda *args, **kwargs: lambda func: func)
-async def test_login_() -> None:
-    client = AsyncClient(
-        http2=True,
-        base_url="https://utmn.modeus.org",
-        transport=transport
-    )
-
-    with patch("yet_another_calendar.web.api.modeus.integration.AsyncClient", return_value=client):
-        await integration.login("ivan", "12345")
-
