@@ -1,4 +1,4 @@
-# ![favicon-32x32](https://github.com/user-attachments/assets/a100f8b9-966d-4bbe-bd6b-20f37b381c36) YetAnotherCalendar 
+# ![32x32](https://github.com/user-attachments/assets/ef2f6a09-9b1c-4c34-afad-bf6eac93f472) YetAnotherCalendar 
 
 
 
