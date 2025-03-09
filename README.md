@@ -1,4 +1,4 @@
-# ![32x32](https://github.com/user-attachments/assets/ef2f6a09-9b1c-4c34-afad-bf6eac93f472) YetAnotherCalendar 
+# ![32x32_UPD](https://github.com/user-attachments/assets/1fbb28a8-01bf-46bc-acc7-8527a1fd60aa) YetAnotherCalendar 
 
 
 
