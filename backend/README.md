@@ -1,55 +1,96 @@
-# YetAnotherCalendar
-![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&style=flat)
-[![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v2.json)](https://docs.pydantic.dev/latest/contributing/#badges)
+markdown
+
+# 🗓️ YetAnotherCalendar
+
+[![Python](https://img.shields.io/badge/python-3.12.8+-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![Linting: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 
-![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white&style=flat)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white&style=flat)
-![GitHub Repo stars](https://img.shields.io/github/stars/depocoder/YetAnotherCalendar)
+[![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white&style=flat)](https://redis.io/)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white&style=flat)](https://www.docker.com/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&style=flat)](https://fastapi.tiangolo.com/)
+[![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v2.json)](https://docs.pydantic.dev/latest/contributing/#badges)
 
+## 📝 Overview
 
-This project was created to replace Modeus/Netology calendars
+YetAnotherCalendar was created to provide a superior alternative to Modeus/Netology calendars with enhanced features and
+better user experience. It combines multiple educational platforms into a single, convenient calendar interface.
 
+## ✨ Features
 
-## Features
+* 📱 Responsive interface for all devices
+* 🔄 Export to .ics calendar format for integration with Google Calendar, Apple Calendar, etc.
+* 🌍 Your timezone support (default Moscow)
+* 🔌 Modeus + Netology integration
+* 📚 LMS support
+* 📦 Redis caching for improved performance
+* 🏷️ Custom event tagging and categorization
+* 🔍 Advanced search and filtering options
+* 🔒 Secure authentication
 
-* Export to .ics calendar format
-* Your timezone support (default Moscow)
-* Modeus + Netology integration
-* LMS support (not required to use)
-* Redis cache
+## 🚀 Getting Started
 
-## Getting started
+### Prerequisites
 
-1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
-2. install dependencies
-3. create .env file from .env.dist
-4. run the application
+- Python 3.12.8+
+- Docker and Docker Compose (optional)
 
-### For Linux and Mac
+### Installation
+
+#### 1. Using uv (Recommended)
+
+[uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver.
 
 ```bash
-# On macOS and Linux.
+# On macOS and Linux
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
+# Clone the repository
+git clone https://github.com/depocoder/YetAnotherCalendar.git
+cd YetAnotherCalendar
+
+# Install dependencies
 uv sync
 
+# Create environment file
+cp .env.dist .env
+# Edit .env with your configuration
+
+# Run the application
 uv run python -m yet_another_calendar
 ```
 
-### Running with Docker Compose
+#### 2. Using Docker Compose
 
 ```bash
-docker compose up -d
-```
+# Clone the repository
+git clone https://github.com/depocoder/YetAnotherCalendar.git
+cd YetAnotherCalendar
 
-If code was changed, rebuild images:
+# Create environment file
+cp .env.dist .env
+# Edit .env with your configuration
 
-```bash
+# Start the services
 docker compose up --build -d
 ```
 
-### Open [OpenAPI](http://localhost:8000/api/docs)
-![image](https://github.com/user-attachments/assets/03b0fd01-50ac-4d17-9001-e22d0df7cda5)
+## 📖 Documentation
+
+### API Documentation
+
+Once the application is running, you can access the Swagger UI documentation:
+
+- OpenAPI documentation: [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
+- ReDoc: [http://localhost:8000/api/redoc](http://localhost:8000/api/redoc)
+
+![OpenAPI Documentation](https://github.com/user-attachments/assets/03b0fd01-50ac-4d17-9001-e22d0df7cda5)
+
+## 🙏 Acknowledgements
+
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [Pydantic](https://pydantic-docs.helpmanual.io/)
+- [React](https://reactjs.org/)
+- [Redis](https://redis.io/)
+

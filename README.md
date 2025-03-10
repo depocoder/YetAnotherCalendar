@@ -1,10 +1,10 @@
 # ![32x32_UPD](https://github.com/user-attachments/assets/1fbb28a8-01bf-46bc-acc7-8527a1fd60aa) YetAnotherCalendar
 
+[![GitHub Repo stars](https://img.shields.io/github/stars/depocoder/YetAnotherCalendar)](https://github.com/depocoder/YetAnotherCalendar/stargazers)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/depocoder/YetAnotherCalendar)
 ![GitHub last commit](https://img.shields.io/github/last-commit/depocoder/YetAnotherCalendar)
 ![Github Action status](https://github.com/depocoder/YetAnotherCalendar/actions/workflows/lint-and-test.yaml/badge.svg)
 
-![GitHub contributors](https://img.shields.io/github/contributors/depocoder/YetAnotherCalendar)
 ![GitHub Created At](https://img.shields.io/github/created-at/depocoder/YetAnotherCalendar)
 ![GitHub License](https://img.shields.io/github/license/depocoder/YetAnotherCalendar)
 ![GitHub Repo Size](https://img.shields.io/github/repo-size/depocoder/YetAnotherCalendar)
