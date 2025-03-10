@@ -23,7 +23,7 @@ This project was created to replace Modeus/Netology calendars
 
 ## Getting started
 
-1. Install [poetry](https://python-poetry.org/docs/#installing-with-the-official-installer)
+1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
 2. install dependencies
 3. create .env file from .env.dist
 4. run the application
