@@ -1,14 +1,14 @@
 import json
+import typing
+from unittest.mock import patch
 
 import httpx
 import pytest
-
 from fastapi import HTTPException
 from httpx import AsyncClient
-from unittest.mock import patch
 
-from yet_another_calendar.web.api.modeus import integration
 from yet_another_calendar.settings import settings
+from yet_another_calendar.web.api.modeus import integration
 
 
 def handler(request: httpx.Request) -> httpx.Response:
@@ -117,6 +117,7 @@ async def test_get_auth_form_none() -> None:
 
 
 @pytest.mark.asyncio
+@typing.no_type_check
 async def test_get_auth_form_ok() -> None:
     client = AsyncClient(
         http2=True,
