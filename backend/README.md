@@ -1,5 +1,3 @@
-markdown
-
 # 🗓️ YetAnotherCalendar
 
 [![Python](https://img.shields.io/badge/python-3.12.8+-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/downloads/)
