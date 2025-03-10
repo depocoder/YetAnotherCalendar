@@ -60,6 +60,8 @@ class Settings(BaseSettings):
     )
     netology_url: str = env.str("NETOLOGY_URL", "https://netology.ru")
 
+    test_parent_path: Path = Path(__file__).parent / "tests"
+
     netology_base_url: str = "https://netology.ru"
     netology_get_programs_part: str = '/backend/api/user/professions/{calendar_id}/schedule'
     netology_get_events_part: str = '/backend/api/user/programs/{program_id}/schedule'
