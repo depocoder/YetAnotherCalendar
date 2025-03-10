@@ -3,15 +3,17 @@ name: build and deploy
 on:
   push:
     branches:
-      - dev
       - main
+      - 'feature/**'
+      - 'fix/**'
   pull_request:
     types:
       - opened
       - synchronize
     branches:
       - main
-      - dev
+      - 'feature/**'
+      - 'fix/**'
     paths-ignore:
       - "README.md"
   workflow_dispatch:
