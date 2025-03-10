@@ -4,7 +4,8 @@ version = "1.0.0"
 description = ""
 authors = [
     { name = "Ivan Popov", email = "ma1n.py@yandex.ru" },
-    { name = "Azamat Komaev", email = "azamatkomaev15@gmail.com" }]
+    { name = "Azamat Komaev", email = "azamatkomaev15@gmail.com" }
+]
 readme = "README.md"
 requires-python = ">=3.12.8,<3.13"
 dependencies = [
