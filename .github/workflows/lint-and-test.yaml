@@ -44,4 +44,5 @@ jobs:
 
       - name: Run tests
         run: |
+          cd backend
           uv run pytest yet_another_calendar/tests/*
