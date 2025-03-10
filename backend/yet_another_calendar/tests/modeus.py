@@ -6,7 +6,6 @@ import httpx
 import pytest
 from fastapi import HTTPException
 from httpx import AsyncClient
-
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus import integration
 
@@ -96,7 +95,7 @@ async def test_get_auth_form_with_error_tag() -> None:
             await integration.get_auth_form(client, "ivan", "12345")
 
         assert exc_info.value.detail == "Modeus error. ERROR"
-        assert exc_info.value.status_code == 200
+        assert exc_info.value.status_code == 401
 
 
 @pytest.mark.asyncio
@@ -113,7 +112,7 @@ async def test_get_auth_form_none() -> None:
             await integration.get_auth_form(client, "ivan", "12345")
 
         assert exc_info.value.detail == "Modeus error. Can't get form."
-        assert exc_info.value.status_code == 200
+        assert exc_info.value.status_code == 401
 
 
 @pytest.mark.asyncio
