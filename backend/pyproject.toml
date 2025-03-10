@@ -6,7 +6,7 @@ authors = [
     { name = "Ivan Popov", email = "ma1n.py@yandex.ru" },
     { name = "Azamat Komaev", email = "azamatkomaev15@gmail.com" }]
 readme = "README.md"
-requires-python = ">=3.11,<3.13"
+requires-python = ">=3.12.8,<3.13"
 dependencies = [
     "beautifulsoup4>=4.13.3",
     "environs>=14.1.1",
@@ -147,3 +147,9 @@ gunicorn = "None"
 add_users = "None"
 cookie_auth = "None"
 jwt_auth = "None"
+
+
+# https://docs.astral.sh/uv/concepts/projects/#build-systems
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
