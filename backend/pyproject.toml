@@ -58,14 +58,6 @@ allow_untyped_decorators = true
 warn_return_any = false
 warn_no_return = false
 
-# Remove this and add `types-redis`
-# when the issue https://github.com/python/typeshed/issues/8242 is resolved.
-[[tool.mypy.overrides]]
-module = [
-    'redis.asyncio'
-]
-ignore_missing_imports = true
-
 [pytest.ini_options]
 filterwarnings = [
     "error",
