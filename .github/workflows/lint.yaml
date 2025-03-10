@@ -16,20 +16,19 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.12
+          python-version: 3.12.5
 
       - name: Configure Poetry
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
+          uv sync
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-          poetry config virtualenvs.create false
 
       - name: Install dependencies
-        run: poetry install -C ./backend
+        run: uv sync --project backend
 
       - name: Run linters
         run: |
           cd backend
-          ruff check yet_another_calendar
-          mypy yet_another_calendar
+          uv run ruff check yet_another_calendar
+          uv run mypy yet_another_calendar
           

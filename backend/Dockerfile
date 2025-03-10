@@ -1,21 +1,26 @@
 FROM python:3.12.5-slim-bullseye as prod
 
+# instal uv
+COPY --from=ghcr.io/astral-sh/uv:0.6.5 /uv /uvx /bin/
 
-RUN pip install poetry==1.8.2
+# Enable bytecode compilation
+# Copy from the cache instead of linking since it's a mounted volume
+# Use the system Python environment
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PROJECT_ENVIRONMENT="/usr/local/"
 
-# Configuring poetry
-RUN poetry config virtualenvs.create false
-RUN poetry config cache-dir /tmp/poetry_cache
+# Add the project's dependencies to the image
+COPY pyproject.toml uv.lock /app/src/
+
+# Install the project's dependencies using the lockfile and settings
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen
 
 # Copying requirements of a project
-COPY pyproject.toml poetry.lock /app/src/
 WORKDIR /app/src
-
-# Installing requirements
-RUN --mount=type=cache,target=/tmp/poetry_cache poetry install --only main
 
 # Copying actuall application
 COPY . /app/src/
-RUN --mount=type=cache,target=/tmp/poetry_cache poetry install
 
 CMD ["/usr/local/bin/python", "-m", "yet_another_calendar"]
