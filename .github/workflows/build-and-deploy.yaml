@@ -52,7 +52,6 @@ jobs:
       - name: Configure UV
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv sync
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
@@ -76,7 +75,6 @@ jobs:
       - name: Configure UV
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv sync
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
