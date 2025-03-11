@@ -8,9 +8,9 @@ from fastapi import HTTPException
 from httpx import AsyncClient
 from pydantic import ValidationError
 from starlette import status
+
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.netology import integration, schema
-
 
 mock_cookies = schema.NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
 
@@ -81,7 +81,7 @@ async def test_send_request_unknown() -> None:
 @pytest.mark.asyncio
 async def test_send_request_server_error() -> None:
     mock_request_settings = {'method': 'GET', 'url': '/backend/api/server_problem'}
-    
+
     client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=transport)
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
         with pytest.raises(httpx.HTTPStatusError) as exc_info:
@@ -279,8 +279,15 @@ async def test_lesson_webinar_schema():
     assert not lesson_webinar.is_suitable_time(**time_both_outside_range)
 
 
+@pytest.mark.parametrize('title,date', [
+    ("Complete task by 12.03.24", (2024, 3, 12)),
+    ("Final exam - No date", None),
+    ("Project submission by 45.03.24", None),
+    ("Submit by 00.04.24", (2024, 4, 1)),
+    ("Submit by 00..04..24", (2024, 4, 1)),
+])
 @pytest.mark.asyncio
-async def test_lesson_task_schema_validation():
+async def test_lesson_task_schema_validation(title, date):
     base_data = {
         "id": 1,
         "lesson_id": 101,
@@ -289,32 +296,14 @@ async def test_lesson_task_schema_validation():
         "block_title": "DevOps Basics",
         "path": "/tasks/docker-setup"
     }
-
-    # Test valid data
     data_valid_date_in_title = base_data.copy()
-    data_valid_date_in_title["title"] = "Complete task by 12.03.24"
+    data_valid_date_in_title["title"] = title
     validated_data = schema.LessonTask.model_validate(data_valid_date_in_title)
-    excepted_deadline = datetime.datetime(2024, 3, 12).astimezone(datetime.timezone.utc)
+    if date:
+        excepted_deadline = datetime.datetime(*date).astimezone(datetime.timezone.utc)
+    else:
+        excepted_deadline = None
     assert validated_data.url == settings.netology_base_url + validated_data.path
-    assert validated_data.deadline == excepted_deadline
-
-    # Test no date in title
-    data_no_date_in_title = base_data.copy()
-    data_no_date_in_title["title"] = "Final exam - No date"
-    validated_data = schema.LessonTask.model_validate(data_no_date_in_title)
-    assert validated_data.deadline is None
-
-    # Test invalid date
-    data_invalid_date_format = base_data.copy()
-    data_invalid_date_format["title"] = "Project submission by 45.03.24"
-    validated_data = schema.LessonTask.model_validate(data_invalid_date_format)
-    assert validated_data.deadline is None
-
-    # Test handle 00 in date
-    data_handle_00_in_date = base_data.copy()
-    data_handle_00_in_date["title"] = "Submit by 00.04.24"
-    validated_data = schema.LessonTask.model_validate(data_handle_00_in_date)
-    excepted_deadline = datetime.datetime(2024, 4, 1).astimezone(datetime.timezone.utc)
     assert validated_data.deadline == excepted_deadline
 
 
