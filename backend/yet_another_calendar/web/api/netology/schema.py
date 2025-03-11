@@ -92,15 +92,16 @@ class LessonTask(BaseLesson):
     @classmethod
     def deadline_validation(cls, data: Any) -> Any:
         """
-        Validates and extracts a deadline date from the 'title' field in the given data.
-        If a date in the format 'DD.MM.YY' is found, it normalizes it by replacing '00' with '01'
-        where necessary and converts it to a timezone-aware datetime object in UTC.
+        Extracts and normalizes a deadline date from the 'title' field if present.
+
+        The method looks for dates in the format 'DD.MM.YY', ensures that '00' values are replaced with '01',
+        and converts the resulting date into a timezone-aware UTC datetime object.
 
         Args:
-            data (Any): The input data, expected to be a dictionary.
+            data (Any): Input data, expected to be a dictionary with a 'title' field.
 
         Returns:
-            Any: The modified data dictionary with an added 'deadline' field if validation succeeds.
+            Any: The modified data dictionary including a 'deadline' field if extraction is successful.
         """
         if not isinstance(data, dict):
             return data
@@ -110,9 +111,11 @@ class LessonTask(BaseLesson):
         try:
             day, month, year = match.groups()
             normalized_date = f"{day}.{month}.{year}".replace('00.', '01.')
-            data['deadline'] = datetime.datetime.strptime(normalized_date, "%d.%m.%y").astimezone(datetime.timezone.utc)
-        except Exception:
-            logger.exception(f"Error in deadline validation {data}.")
+            data['deadline'] = datetime.datetime.strptime(
+                normalized_date, "%d.%m.%y"
+            ).astimezone(datetime.timezone.utc)
+        except Exception as e:
+            logger.exception(f"Error in deadline validation: {data}. Exception: {e}")
         return data
 
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:
