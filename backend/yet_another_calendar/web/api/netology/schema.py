@@ -115,7 +115,7 @@ class LessonTask(BaseLesson):
             month = "01" if month == "00" else month
             normalized_date = f"{day}.{month}.{year}"
             data['deadline'] = datetime.datetime.strptime(normalized_date, "%d.%m.%y").astimezone(datetime.timezone.utc)
-        except Exception as e:
+        except (OverflowError, ValueError) as e:
             logger.exception(f"Error in deadline validation: {data}. Exception: {e}")
         return data
 
