@@ -1,22 +1,18 @@
 import json
-
 from unittest.mock import AsyncMock, patch
 
 import httpx
 import pytest
-
-from httpx import AsyncClient
-from starlette import status
 from fastapi import HTTPException
+from httpx import AsyncClient
 from pydantic import ValidationError
-
+from starlette import status
+from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.netology import integration
 from yet_another_calendar.web.api.netology.schema import (
     NetologyCookies,
     ModeusTimeBody,
 )
-from yet_another_calendar.settings import settings
-
 
 mock_cookies = NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
 
@@ -81,7 +77,7 @@ async def test_send_request_unknown() -> None:
 
         assert exc_info.type is httpx.HTTPStatusError
         assert exc_info.value.response.status_code == 404
-        assert exc_info.value.response.text == '{"detail": "Not Found"}'
+        assert exc_info.value.response.json() == {"detail": "Not Found"}
 
 
 @pytest.mark.asyncio
@@ -148,7 +144,7 @@ async def test_get_events_by_id_ok() -> None:
     client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=transport)
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
         calendar_response = await integration.get_events_by_id(mock_cookies, 45526)
-        assert calendar_response.dict().get("block_title") == \
+        assert calendar_response.model_dump().get("block_title") == \
                "Бакалавриат Разработка IT-продуктов и информационных систем"
 
 

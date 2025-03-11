@@ -3,8 +3,8 @@ import uuid
 from typing import Optional, Self, Annotated
 
 import jwt
-from fastapi import Header
 from fastapi import HTTPException
+from fastapi import Header
 from pydantic import BaseModel, Field, computed_field, model_validator, field_validator
 from starlette import status
 
@@ -14,6 +14,19 @@ class Creds(BaseModel):
 
     username: str
     password: str = Field(repr=False)
+
+    @field_validator("username")
+    @classmethod
+    def validate_time_min(cls, username: str) -> str:
+        if "@" not in username and username.count('@') == 1:
+            raise ValueError("Email must contain one @.")
+
+        name, mail = username.split("@")
+        if mail == "utmn.ru":
+            mail = "study.utmn.ru"
+        if mail != "study.utmn.ru":
+            raise ValueError("Email must contain @study.utmn.ru.")
+        return f"{name}@{mail}"
 
 
 class ModeusTimeBody(BaseModel):
@@ -50,7 +63,10 @@ class ModeusEventsBody(ModeusTimeBody):
     attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId")
 
     @model_validator(mode='after')
-    def check_passwords_match(self) -> Self:
+    def check_delta_days(self) -> Self:
+        """
+        Check delta between dates. It must be 7 days.
+        """
         delta = self.time_max - self.time_min
         if delta.days != 6:
             raise ValueError("Defence between dates must be 7 days.")
