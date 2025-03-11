@@ -288,23 +288,21 @@ async def test_lesson_webinar_schema():
 ])
 @pytest.mark.asyncio
 async def test_lesson_task_schema_validation(title, date):
-    base_data = {
+    lessson = {
         "id": 1,
         "lesson_id": 101,
         "type": "homework",
-        "title": "",
+        "title": title,
         "block_title": "DevOps Basics",
         "path": "/tasks/docker-setup"
     }
-    data_valid_date_in_title = base_data.copy()
-    data_valid_date_in_title["title"] = title
-    validated_data = schema.LessonTask.model_validate(data_valid_date_in_title)
+    validated_lessson = schema.LessonTask.model_validate(lessson)
     if date:
         excepted_deadline = datetime.datetime(*date).astimezone(datetime.timezone.utc)
     else:
         excepted_deadline = None
-    assert validated_data.url == settings.netology_base_url + validated_data.path
-    assert validated_data.deadline == excepted_deadline
+    assert validated_lessson.url == settings.netology_base_url + validated_lessson.path
+    assert validated_lessson.deadline == excepted_deadline
 
 
 @pytest.mark.asyncio
