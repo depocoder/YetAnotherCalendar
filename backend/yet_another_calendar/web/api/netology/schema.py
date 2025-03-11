@@ -105,15 +105,16 @@ class LessonTask(BaseLesson):
         """
         if not isinstance(data, dict):
             return data
-        match = re.search(_DATE_PATTERN, data.get('title', ''))
+        title = str(data.get('title', ''))
+        match = re.search(_DATE_PATTERN, title)
         if not match:
             return data
         try:
             day, month, year = match.groups()
-            normalized_date = f"{day}.{month}.{year}".replace('00.', '01.')
-            data['deadline'] = datetime.datetime.strptime(
-                normalized_date, "%d.%m.%y"
-            ).astimezone(datetime.timezone.utc)
+            day = "01" if day == "00" else day
+            month = "01" if month == "00" else month
+            normalized_date = f"{day}.{month}.{year}"
+            data['deadline'] = datetime.datetime.strptime(normalized_date, "%d.%m.%y").astimezone(datetime.timezone.utc)
         except Exception as e:
             logger.exception(f"Error in deadline validation: {data}. Exception: {e}")
         return data
