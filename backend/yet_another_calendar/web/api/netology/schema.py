@@ -119,7 +119,7 @@ class LessonTask(BaseLesson):
         return data
 
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:
-        """Check if lesson have suitable time"""
+        """Check if lesson has suitable time"""
         if self.deadline and time_max > self.deadline > time_min:
             return True
         return False
