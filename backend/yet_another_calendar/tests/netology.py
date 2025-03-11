@@ -288,15 +288,14 @@ async def test_lesson_webinar_schema():
 ])
 @pytest.mark.asyncio
 async def test_lesson_task_schema_validation(title, date):
-    lessson = {
+    validated_lesson = schema.LessonTask.model_validate({
         "id": 1,
         "lesson_id": 101,
         "type": "homework",
         "title": title,
         "block_title": "DevOps Basics",
         "path": "/tasks/docker-setup"
-    }
-    validated_lesson = schema.LessonTask.model_validate(lessson)
+    })
     if date:
         excepted_deadline = datetime.datetime(*date).astimezone(datetime.timezone.utc)
     else:
