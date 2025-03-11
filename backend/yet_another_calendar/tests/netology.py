@@ -1,3 +1,4 @@
+import datetime
 import json
 from unittest.mock import AsyncMock, patch
 
@@ -8,13 +9,10 @@ from httpx import AsyncClient
 from pydantic import ValidationError
 from starlette import status
 from yet_another_calendar.settings import settings
-from yet_another_calendar.web.api.netology import integration
-from yet_another_calendar.web.api.netology.schema import (
-    NetologyCookies,
-    ModeusTimeBody,
-)
+from yet_another_calendar.web.api.netology import integration, schema
 
-mock_cookies = NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
+
+mock_cookies = schema.NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
 
 
 def handler(request: httpx.Request) -> httpx.Response:  # noqa: PLR0911
@@ -126,7 +124,7 @@ async def test_auth_netology_ok() -> None:
     client.cookies = httpx.Cookies({"_netology-on-rails_session": "aboba"})
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
         netology_cookies = await integration.auth_netology("alex", "password12345")
-        assert netology_cookies == NetologyCookies.model_validate(client.cookies)
+        assert netology_cookies == schema.NetologyCookies.model_validate(client.cookies)
 
 
 @pytest.mark.asyncio
@@ -170,7 +168,7 @@ async def test_get_program_ids_ok() -> None:
 @pytest.mark.asyncio
 async def test_get_calendar_not_found() -> None:
     client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=transport)
-    modeus_time_body = ModeusTimeBody.model_validate({
+    modeus_time_body = schema.ModeusTimeBody.model_validate({
         "timeMin": "2024-09-23T00:00:00+00:00",
         "timeMax": "2024-09-29T23:59:59+00:00",
     })
@@ -185,7 +183,7 @@ async def test_get_calendar_not_found() -> None:
 @pytest.mark.asyncio
 async def test_modeus_time_body() -> None:
     with pytest.raises(ValidationError) as exc_info:
-        ModeusTimeBody.model_validate({
+        schema.ModeusTimeBody.model_validate({
             "timeMin": "2024-09-23T00:00:00+03:00",
             "timeMax": "2028-09-10T23:59:59+03:00",
         })
@@ -194,7 +192,7 @@ async def test_modeus_time_body() -> None:
     assert "Time must be UTC" in str(exc_info.value)
 
     with pytest.raises(ValidationError) as exc_info:
-        ModeusTimeBody.model_validate({
+        schema.ModeusTimeBody.model_validate({
             "timeMin": "2024-09-23T15:34:53+00:00",
             "timeMax": "2028-09-10T23:56:54+00:00",
         })
@@ -204,7 +202,7 @@ async def test_modeus_time_body() -> None:
     assert "Time must me 23:59:59" in str(exc_info.value)
 
     with pytest.raises(ValidationError) as exc_info:
-        ModeusTimeBody.model_validate({
+        schema.ModeusTimeBody.model_validate({
             "timeMin": "2024-09-24T15:34:53+00:00",
             "timeMax": "2028-09-11T23:59:59+00:00",
         })
@@ -217,7 +215,7 @@ async def test_modeus_time_body() -> None:
 @pytest.mark.asyncio
 async def test_get_calendar_ok() -> None:
     client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=transport)
-    modeus_time_body = ModeusTimeBody.model_validate({
+    modeus_time_body = schema.ModeusTimeBody.model_validate({
         "timeMin": "2024-09-23T00:00:00+00:00",
         "timeMax": "2028-09-10T23:59:59+00:00",
     })
@@ -228,3 +226,127 @@ async def test_get_calendar_ok() -> None:
         assert len(serialized_events.homework) == 2
         assert len(serialized_events.webinars) == 2
 
+
+
+@pytest.mark.asyncio
+async def test_courses_response_schema():
+    with open(settings.test_parent_path / "fixtures/course_response_schema.json") as f:
+        programs_json = json.load(f)
+
+    courses_response = schema.CoursesResponse.model_validate(programs_json)
+    utmn_program = courses_response.get_utmn_program()
+
+    assert len(json.loads(courses_response.model_dump_json())["programs"]) == 3
+    assert utmn_program.id == 2
+    assert utmn_program.type == "course"
+    assert settings.netology_course_name in utmn_program.title
+
+
+@pytest.mark.asyncio
+async def test_lesson_webinar_schema():
+    lesson_webinar = schema.LessonWebinar.model_validate({
+        "id": 242,
+        "lesson_id": 245,
+        "type": "course",
+        "title": "Aboba",
+        "block_title": "ABOBA",
+        "starts_at": datetime.datetime(2025, 3, 11, 10, 0),
+        "ends_at": datetime.datetime(2025, 3, 11, 16, 0)
+    })
+
+    time_within_range = {
+        "time_min": datetime.datetime(2025, 3, 11, 10, 0),
+        "time_max": datetime.datetime(2025, 3, 11, 16, 0)
+    }
+    assert lesson_webinar.is_suitable_time(**time_within_range)
+
+    time_starts_before_range = {
+        "time_min": datetime.datetime(2025, 3, 11, 11, 0),
+        "time_max": datetime.datetime(2025, 3, 11, 17, 0)
+    }
+    assert not lesson_webinar.is_suitable_time(**time_starts_before_range)
+
+    time_ends_after_range = {
+        "time_min": datetime.datetime(2025, 3, 11, 9, 0),
+        "time_max": datetime.datetime(2025, 3, 11, 15, 0)
+    }
+    assert not lesson_webinar.is_suitable_time(**time_ends_after_range)
+
+    time_both_outside_range = {
+        "time_min": datetime.datetime(2025, 3, 11, 11, 0),
+        "time_max": datetime.datetime(2025, 3, 11, 15, 0)
+    }
+    assert not lesson_webinar.is_suitable_time(**time_both_outside_range)
+
+
+@pytest.mark.asyncio
+async def test_lesson_task_schema_validation():
+    base_data = {
+        "id": 1,
+        "lesson_id": 101,
+        "type": "homework",
+        "title": "",
+        "block_title": "DevOps Basics",
+        "path": "/tasks/docker-setup"
+    }
+
+    # Test valid data
+    data_valid_date_in_title = base_data.copy()
+    data_valid_date_in_title["title"] = "Complete task by 12.03.24"
+    validated_data = schema.LessonTask.model_validate(data_valid_date_in_title)
+    excepted_deadline = datetime.datetime(2024, 3, 12).astimezone(datetime.timezone.utc)
+    assert validated_data.url == settings.netology_base_url + validated_data.path
+    assert validated_data.deadline == excepted_deadline
+
+    # Test no date in title
+    data_no_date_in_title = base_data.copy()
+    data_no_date_in_title["title"] = "Final exam - No date"
+    validated_data = schema.LessonTask.model_validate(data_no_date_in_title)
+    assert validated_data.deadline is None
+
+    # Test invalid date
+    data_invalid_date_format = base_data.copy()
+    data_invalid_date_format["title"] = "Project submission by 45.03.24"
+    validated_data = schema.LessonTask.model_validate(data_invalid_date_format)
+    assert validated_data.deadline is None
+
+    # Test handle 00 in date
+    data_handle_00_in_date = base_data.copy()
+    data_handle_00_in_date["title"] = "Submit by 00.04.24"
+    validated_data = schema.LessonTask.model_validate(data_handle_00_in_date)
+    excepted_deadline = datetime.datetime(2024, 4, 1).astimezone(datetime.timezone.utc)
+    assert validated_data.deadline == excepted_deadline
+
+
+@pytest.mark.asyncio
+async def test_lesson_task_schema_suitable_time():
+    lesson_task = schema.LessonTask.model_validate({
+        "id": 1,
+        "lesson_id": 101,
+        "type": "homework",
+        "title": "",
+        "block_title": "DevOps Basics",
+        "path": "/tasks/docker-setup",
+        "deadline": datetime.datetime(2025, 3, 15, 12, 0)
+    })
+
+    time_deadline_within_range = {
+        "time_min": datetime.datetime(2025, 3, 14, 12, 0),
+        "time_max": datetime.datetime(2025, 3, 16, 12, 0)
+    }
+    assert lesson_task.is_suitable_time(**time_deadline_within_range)
+
+    time_deadline_before_range = {
+        "time_min": datetime.datetime(2025, 3, 16, 12, 0),
+        "time_max": datetime.datetime(2025, 3, 17, 12, 0)
+    }
+    assert not lesson_task.is_suitable_time(**time_deadline_before_range)
+
+    time_deadline_after_range = {
+        "time_min": datetime.datetime(2025, 3, 13, 12, 0),
+        "time_max": datetime.datetime(2025, 3, 14, 12, 0)
+    }
+    assert not lesson_task.is_suitable_time(**time_deadline_after_range)
+
+    lesson_task.deadline = None
+    assert not lesson_task.is_suitable_time(**time_deadline_within_range)

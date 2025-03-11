@@ -1,0 +1,22 @@
+{
+  "programs": [
+    {
+      "id": 1,
+      "title": "DevOps Engineer",
+      "urlcode": "devops-engineer",
+      "type": "course"
+    },
+    {
+      "id": 2,
+      "title": "Разработка IT-продуктов и информационных систем",
+      "urlcode": "python-developer",
+      "type": "course"
+    },
+    {
+      "id": 3,
+      "title": "Data Science",
+      "urlcode": "data-science",
+      "type": "specialization"
+    }
+  ]
+}
