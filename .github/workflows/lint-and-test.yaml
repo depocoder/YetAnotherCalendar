@@ -1,0 +1,48 @@
+name: lint and test
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+    paths-ignore:
+      - "README.md"
+  workflow_dispatch:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12.8
+
+      - name: Configure UV
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: uv sync --project backend --frozen
+
+      - name: Run linters
+        run: |
+          cd backend
+          uv run ruff check yet_another_calendar
+          uv run mypy yet_another_calendar
+
+      - name: Run tests
+        run: |
+          cd backend
+          uv run pytest yet_another_calendar/tests/*

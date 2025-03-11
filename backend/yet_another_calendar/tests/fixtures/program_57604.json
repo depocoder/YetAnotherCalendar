@@ -1,0 +1,592 @@
+{
+  "current_program_coordinator": {
+    "name": "Азамат Азаматыч",
+    "image": "https://example.com"
+  },
+  "manager": {
+    "name": "Ксения Ксениевна",
+    "image": "https://1234.com"
+  },
+  "lessons": [
+    {
+      "feedback": {
+        "passed": false
+      },
+      "id": 239962,
+      "title": "Как совмещать учёбу с другими делами",
+      "number": 0,
+      "block_id": 117966,
+      "locked_description": null,
+      "locked": false,
+      "type": "onboarding",
+      "starts_at": null,
+      "resource_package_ids": [],
+      "has_access": true,
+      "access_levels_ids": [
+        61188
+      ],
+      "lesson_items": [
+        {
+          "id": 239962,
+          "position": 1,
+          "lesson_id": 239962,
+          "locked": false,
+          "type": "quiz",
+          "approximate_progress_time": 10,
+          "title": "Сила планирования: что делать, если всё отвлекает",
+          "feedback": {
+            "passed": false
+          },
+          "passed": false,
+          "path": "/profile/program/bhebdps-1-vb-24-1/planning",
+          "deadline": "2025-02-21T00:00:00+00:00"
+        }
+      ]
+    },
+    {
+      "feedback": {
+        "passed": false
+      },
+      "id": 415307,
+      "block_id": 117966,
+      "title": "Добро пожаловать в бакалавриат",
+      "locked_description": "",
+      "number": 1,
+      "locked": false,
+      "type": "task",
+      "starts_at": null,
+      "resource_package_ids": [],
+      "lesson_items": [
+        {
+          "id": 2243184,
+          "position": 1,
+          "lesson_id": 415307,
+          "locked": false,
+          "type": "text",
+          "approximate_progress_time": 1,
+          "title": "Цель адаптационного курса",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415307/lesson_items/2243184",
+          "passed": true,
+          "deadline": "2025-02-21T00:00:00+00:00"
+        },
+        {
+          "id": 2261866,
+          "position": 2,
+          "lesson_id": 415307,
+          "locked": false,
+          "type": "webinar",
+          "approximate_progress_time": 1,
+          "title": "Краткий словарик студента онлайн программы",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415307/lesson_items/2261866",
+          "passed": true,
+          "deadline": "2025-02-21T00:00:00+00:00"
+        },
+        {
+          "id": 2261867,
+          "position": 3,
+          "lesson_id": 415307,
+          "locked": false,
+          "type": "test",
+          "approximate_progress_time": 3,
+          "title": "Рекомендации по прохождению программы",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415307/lesson_items/2261867",
+          "passed": true,
+          "deadline": "2024-12-23T00:00:00+00:00"
+        },
+        {
+          "id": 2274152,
+          "position": 4,
+          "lesson_id": 415307,
+          "locked": false,
+          "type": "text",
+          "approximate_progress_time": 1,
+          "title": "Анкета студента",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415307/lesson_items/2274152",
+          "passed": true,
+          "deadline": "2025-02-21T00:00:00+00:00"
+        }
+      ],
+      "has_access": true,
+      "access_levels_ids": [
+        61188
+      ]
+    },
+    {
+      "feedback": {
+        "passed": false
+      },
+      "id": 415308,
+      "block_id": 117966,
+      "title": "Ключевая информация о программе",
+      "locked_description": "",
+      "number": 2,
+      "locked": false,
+      "type": "common",
+      "starts_at": null,
+      "resource_package_ids": [],
+      "lesson_items": [
+        {
+          "id": 2256706,
+          "position": 1,
+          "lesson_id": 415308,
+          "locked": false,
+          "type": "text",
+          "approximate_progress_time": 1,
+          "title": "Расписание",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415308/lesson_items/2256706",
+          "passed": true,
+          "deadline": "2025-02-21T00:00:00+00:00"
+        },
+        {
+          "id": 2256712,
+          "position": 2,
+          "lesson_id": 415308,
+          "locked": false,
+          "type": "text",
+          "approximate_progress_time": 1,
+          "title": "Журнал успеваемости",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415308/lesson_items/2256712",
+          "passed": true,
+          "deadline": "2025-02-21T00:00:00+00:00"
+        },
+        {
+          "id": 2268405,
+          "position": 3,
+          "lesson_id": 415308,
+          "locked": false,
+          "type": "longread",
+          "approximate_progress_time": 11,
+          "title": "Навигатор для студентов",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415308/lesson_items/2268405",
+          "passed": true
+        }
+      ],
+      "has_access": true,
+      "access_levels_ids": [
+        61188
+      ]
+    },
+    {
+      "feedback": {
+        "passed": false
+      },
+      "id": 415309,
+      "block_id": 117966,
+      "title": "Организация процесса обучения",
+      "locked_description": "",
+      "number": 3,
+      "locked": false,
+      "type": "common",
+      "starts_at": null,
+      "resource_package_ids": [],
+      "lesson_items": [
+        {
+          "id": 2243188,
+          "position": 1,
+          "lesson_id": 415309,
+          "locked": false,
+          "type": "attachment",
+          "approximate_progress_time": 9,
+          "title": "Организация сопровождения процесса обучения",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415309/lesson_items/2243188",
+          "passed": true
+        },
+        {
+          "id": 2243189,
+          "position": 2,
+          "lesson_id": 415309,
+          "locked": false,
+          "type": "video",
+          "approximate_progress_time": 2,
+          "title": "Как учатся в онлайн-бакалавриате",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415309/lesson_items/2243189",
+          "passed": true
+        },
+        {
+          "id": 2243190,
+          "position": 3,
+          "lesson_id": 415309,
+          "locked": false,
+          "type": "attachment",
+          "approximate_progress_time": 1,
+          "title": "Правила обучения на программе",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415309/lesson_items/2243190",
+          "passed": true
+        }
+      ],
+      "has_access": true,
+      "access_levels_ids": [
+        61188
+      ]
+    },
+    {
+      "feedback": {
+        "passed": false
+      },
+      "id": 415310,
+      "block_id": 117966,
+      "title": "Цифровая грамотность",
+      "locked_description": "",
+      "number": 4,
+      "locked": false,
+      "type": "common",
+      "starts_at": null,
+      "resource_package_ids": [],
+      "lesson_items": [
+        {
+          "id": 2243191,
+          "position": 1,
+          "lesson_id": 415310,
+          "locked": false,
+          "type": "attachment",
+          "approximate_progress_time": 1,
+          "title": "Цифровая среда и инструменты обучения",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415310/lesson_items/2243191",
+          "passed": false
+        },
+        {
+          "id": 2263550,
+          "position": 2,
+          "lesson_id": 415310,
+          "locked": false,
+          "type": "attachment",
+          "approximate_progress_time": 12,
+          "title": "Инструкция по работе на платформе МТС Линк",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415310/lesson_items/2263550",
+          "passed": false
+        },
+        {
+          "id": 2243192,
+          "position": 3,
+          "lesson_id": 415310,
+          "locked": false,
+          "type": "attachment",
+          "approximate_progress_time": 8,
+          "title": "Работа с Google- и Яндекс-дисками",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415310/lesson_items/2243192",
+          "passed": false
+        },
+        {
+          "id": 2243195,
+          "position": 4,
+          "lesson_id": 415310,
+          "locked": false,
+          "type": "attachment",
+          "approximate_progress_time": 2,
+          "title": "Технические неполадки",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415310/lesson_items/2243195",
+          "passed": false
+        },
+        {
+          "id": 2243196,
+          "position": 5,
+          "lesson_id": 415310,
+          "locked": false,
+          "type": "text",
+          "approximate_progress_time": 1,
+          "title": "Хранилище данных. Виды",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415310/lesson_items/2243196",
+          "passed": false
+        },
+        {
+          "id": 2243197,
+          "position": 6,
+          "lesson_id": 415310,
+          "locked": false,
+          "type": "text",
+          "approximate_progress_time": 2,
+          "title": "Облачное хранилище данных ",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415310/lesson_items/2243197",
+          "passed": false
+        },
+        {
+          "id": 2243198,
+          "position": 7,
+          "lesson_id": 415310,
+          "locked": false,
+          "type": "text",
+          "approximate_progress_time": 5,
+          "title": "Google Drive",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415310/lesson_items/2243198",
+          "passed": false
+        },
+        {
+          "id": 2243199,
+          "position": 8,
+          "lesson_id": 415310,
+          "locked": false,
+          "type": "text",
+          "approximate_progress_time": 4,
+          "title": "Яндекс.Диск",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415310/lesson_items/2243199",
+          "passed": false
+        },
+        {
+          "id": 2243200,
+          "position": 9,
+          "lesson_id": 415310,
+          "locked": false,
+          "type": "text",
+          "approximate_progress_time": 4,
+          "title": "OneDrive",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415310/lesson_items/2243200",
+          "passed": false
+        },
+        {
+          "id": 2243201,
+          "position": 10,
+          "lesson_id": 415310,
+          "locked": false,
+          "type": "text",
+          "approximate_progress_time": 1,
+          "title": "Полезные ссылки",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415310/lesson_items/2243201",
+          "passed": false
+        },
+        {
+          "id": 2243202,
+          "position": 11,
+          "lesson_id": 415310,
+          "locked": false,
+          "type": "attachment",
+          "approximate_progress_time": 2,
+          "title": "Горящие клавиши",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415310/lesson_items/2243202",
+          "passed": false
+        }
+      ],
+      "has_access": true,
+      "access_levels_ids": [
+        61188
+      ]
+    },
+    {
+      "feedback": {
+        "passed": false
+      },
+      "id": 415311,
+      "block_id": 117966,
+      "title": "Учимся учиться",
+      "locked_description": "",
+      "number": 5,
+      "locked": false,
+      "type": "common",
+      "starts_at": null,
+      "resource_package_ids": [],
+      "lesson_items": [
+        {
+          "id": 2243204,
+          "position": 1,
+          "lesson_id": 415311,
+          "locked": false,
+          "type": "attachment",
+          "approximate_progress_time": 10,
+          "title": "Как учиться онлайн",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/415311/lesson_items/2243204",
+          "passed": true
+        }
+      ],
+      "has_access": true,
+      "access_levels_ids": [
+        61188
+      ]
+    },
+    {
+      "feedback": {
+        "passed": false
+      },
+      "id": 421158,
+      "block_id": 117966,
+      "title": "Вводный вебинар",
+      "locked_description": "",
+      "number": 6,
+      "locked": false,
+      "type": "common",
+      "starts_at": "2024-09-03T13:00:00.000Z",
+      "resource_package_ids": [],
+      "lesson_items": [
+        {
+          "id": 2274211,
+          "position": 1,
+          "lesson_id": 421158,
+          "locked": false,
+          "type": "webinar",
+          "status": "passed",
+          "approximate_progress_time": 76,
+          "title": "Вводный вебинар",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/421158/lesson_items/2274211",
+          "passed": false,
+          "starts_at": "2024-09-03T13:00:00.000Z",
+          "ends_at": "2024-09-03T14:30:00.000Z",
+          "experts": [
+            {
+              "id": 8684094,
+              "full_name": "Михаил Григорьев",
+              "avatar_path": "https://u.netology.ru/backend/uploads/legacy/users/avatar/8684094/8c514cff9e3ea788.jpg",
+              "has_photo": true
+            },
+            {
+              "id": 9011967,
+              "full_name": "Оксана Борисова",
+              "avatar_path": "https://u.netology.ru/backend/uploads/legacy/users/avatar/9011967/6a8aa95490ac8e21.jpeg",
+              "has_photo": true
+            },
+            {
+              "id": 9147221,
+              "full_name": "Анна Колганова",
+              "avatar_path": "/images2/nouser.jpg",
+              "has_photo": false
+            },
+            {
+              "id": 9179534,
+              "full_name": "Евгения Кудряшева",
+              "avatar_path": "/images2/nouser.jpg",
+              "has_photo": false
+            }
+          ],
+          "video_url": "https://kinescope.io/0oXxWxcvhoeuFxt3g98X4R",
+          "webinar_url": "https://netology.ru/backend/api/webinars/130689/redirect?code=765280974e9ab930fa74c1e1801eb1fb",
+          "youtube_video_id": null,
+          "translation_adapter": "webinar_ru_native",
+          "ulms_duration": null,
+          "ulms_video_available": false
+        },
+        {
+          "id": 2294202,
+          "position": 2,
+          "lesson_id": 421158,
+          "locked": false,
+          "type": "attachment",
+          "approximate_progress_time": 6,
+          "title": "Презентация к вебинару «Вводная встреча»",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/421158/lesson_items/2294202",
+          "passed": false
+        },
+        {
+          "id": 2347040,
+          "position": 3,
+          "lesson_id": 421158,
+          "locked": false,
+          "type": "webinar",
+          "status": "passed",
+          "approximate_progress_time": 43,
+          "title": "Сессия вопросов-ответов по организации обучения для студентов-переводников",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/421158/lesson_items/2347040",
+          "passed": false,
+          "starts_at": "2024-10-09T14:10:00.000Z",
+          "ends_at": "2024-10-09T15:00:00.000Z",
+          "experts": [
+            {
+              "id": 9147221,
+              "full_name": "Анна Колганова",
+              "avatar_path": "/images2/nouser.jpg",
+              "has_photo": false
+            },
+            {
+              "id": 9179534,
+              "full_name": "Евгения Кудряшева",
+              "avatar_path": "/images2/nouser.jpg",
+              "has_photo": false
+            }
+          ],
+          "video_url": "https://kinescope.io/sfJV737aRytqbLMXZ778Eq",
+          "webinar_url": "https://netology.ru/backend/api/webinars/134610/redirect?code=ba651ac04c9a67d255d512348a207b65",
+          "youtube_video_id": null,
+          "translation_adapter": "webinar_ru_native",
+          "ulms_duration": null,
+          "ulms_video_available": false
+        }
+      ],
+      "has_access": true,
+      "access_levels_ids": [
+        61188
+      ]
+    },
+    {
+      "feedback": {
+        "passed": false
+      },
+      "id": 467089,
+      "block_id": 117966,
+      "title": "Встреча с командой программы: рефлексия по итогам 1 семестра и обзор 2 семестра ",
+      "locked_description": "",
+      "number": 7,
+      "locked": false,
+      "type": "common",
+      "starts_at": "2025-02-04T15:50:00.000Z",
+      "resource_package_ids": [],
+      "lesson_items": [
+        {
+          "id": 2525334,
+          "position": 1,
+          "lesson_id": 467089,
+          "locked": false,
+          "type": "webinar",
+          "status": "passed",
+          "approximate_progress_time": 66,
+          "title": "Встреча с командой программы: рефлексия по итогам 1 семестра и обзор 2 семестра",
+          "path": "/profile/program/bhebdps-1-vb-24-1/lessons/467089/lesson_items/2525334",
+          "passed": false,
+          "starts_at": "2025-02-04T15:50:00.000Z",
+          "ends_at": "2025-02-04T16:50:00.000Z",
+          "experts": [
+            {
+              "id": 9147221,
+              "full_name": "Анна Колганова",
+              "avatar_path": "/images2/nouser.jpg",
+              "has_photo": false
+            }
+          ],
+          "video_url": "https://kinescope.io/iWHX22tzj8ciQU5NxCQiMw",
+          "webinar_url": "https://netology.ru/backend/api/webinars/142740/redirect?code=76491cbefe244380b2ea58c02eded47e",
+          "youtube_video_id": null,
+          "translation_adapter": "webinar_ru_native",
+          "ulms_duration": null,
+          "ulms_video_available": false
+        }
+      ],
+      "has_access": true,
+      "access_levels_ids": [
+        61188
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": 117966,
+      "title": "Вводный модуль ",
+      "position": 1,
+      "has_seen_achievement": false
+    }
+  ],
+  "resource_packages": [],
+  "has_only_demo_access": false,
+  "has_demo_access": false,
+  "user_accesses": [
+    {
+      "level_type": "common",
+      "access_expired_at": null
+    }
+  ],
+  "access_levels": [
+    {
+      "id": 61188,
+      "level_type": "common",
+      "name": "Обычный",
+      "description": null,
+      "status": "active",
+      "title": null,
+      "has_access": true,
+      "can_buy": false,
+      "current_program_id": 57604,
+      "price": 0,
+      "price_without_discount": 0
+    }
+  ],
+  "title": "Вводный модуль",
+  "type": "distance_course",
+  "format_type": "new_format",
+  "program_family_url": "vvodnii-blok-razrabotka-it-i-is",
+  "program_type": "bachelor",
+  "terms": null
+}
