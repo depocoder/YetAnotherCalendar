@@ -1,4 +1,5 @@
 import datetime
+import logging
 import re
 from typing import Optional, Annotated, Any
 from urllib.parse import urljoin
@@ -9,7 +10,8 @@ from pydantic import BaseModel, Field, computed_field, field_validator, model_va
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus.schema import ModeusTimeBody
 
-_DATE_PATTERN = r"\d{2}.\d{2}.\d{2}"
+_DATE_PATTERN = r"(\d{2})\.+(\d{2})\.+(\d{2})"
+logger = logging.getLogger(__name__)
 
 
 class NetologyCreds(BaseModel):
@@ -89,20 +91,36 @@ class LessonTask(BaseLesson):
     @model_validator(mode='before')
     @classmethod
     def deadline_validation(cls, data: Any) -> Any:
+        """
+        Extracts and normalizes a deadline date from the 'title' field if present.
+
+        The method looks for dates in the format 'DD.MM.YY', ensures that '00' values are replaced with '01',
+        and converts the resulting date into a timezone-aware UTC datetime object.
+
+        Args:
+            data (Any): Input data, expected to be a dictionary with a 'title' field.
+
+        Returns:
+            Any: The modified data dictionary including a 'deadline' field if extraction is successful.
+        """
         if not isinstance(data, dict):
             return data
-        match = re.search(_DATE_PATTERN, data.get('title', ''))
+        title = str(data.get('title', ''))
+        match = re.search(_DATE_PATTERN, title)
         if not match:
             return data
         try:
-            date = match.group(0).replace('00.', '01.')
-            data['deadline'] = datetime.datetime.strptime(date, "%d.%m.%y").astimezone(datetime.timezone.utc)
-            return data
-        except Exception:
-            return data
+            day, month, year = match.groups()
+            day = "01" if day == "00" else day
+            month = "01" if month == "00" else month
+            normalized_date = f"{day}.{month}.{year}"
+            data['deadline'] = datetime.datetime.strptime(normalized_date, "%d.%m.%y").astimezone(datetime.timezone.utc)
+        except (OverflowError, ValueError) as e:
+            logger.exception(f"Error in deadline validation: {data}. Exception: {e}")
+        return data
 
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:
-        """Check if lesson have suitable time"""
+        """Check if lesson has suitable time"""
         if self.deadline and time_max > self.deadline > time_min:
             return True
         return False
