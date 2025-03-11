@@ -1,4 +1,5 @@
 import datetime
+import logging
 import re
 from typing import Optional, Annotated, Any
 from urllib.parse import urljoin
@@ -9,7 +10,8 @@ from pydantic import BaseModel, Field, computed_field, field_validator, model_va
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus.schema import ModeusTimeBody
 
-_DATE_PATTERN = r"\d{2}.\d{2}.\d{2}"
+_DATE_PATTERN = r"(\d{2})\.+(\d{2})\.+(\d{2})"
+logger = logging.getLogger(__name__)
 
 
 class NetologyCreds(BaseModel):
@@ -89,17 +91,29 @@ class LessonTask(BaseLesson):
     @model_validator(mode='before')
     @classmethod
     def deadline_validation(cls, data: Any) -> Any:
+        """
+        Validates and extracts a deadline date from the 'title' field in the given data.
+        If a date in the format 'DD.MM.YY' is found, it normalizes it by replacing '00' with '01'
+        where necessary and converts it to a timezone-aware datetime object in UTC.
+
+        Args:
+            data (Any): The input data, expected to be a dictionary.
+
+        Returns:
+            Any: The modified data dictionary with an added 'deadline' field if validation succeeds.
+        """
         if not isinstance(data, dict):
             return data
         match = re.search(_DATE_PATTERN, data.get('title', ''))
         if not match:
             return data
         try:
-            date = match.group(0).replace('00.', '01.')
-            data['deadline'] = datetime.datetime.strptime(date, "%d.%m.%y").astimezone(datetime.timezone.utc)
-            return data
+            day, month, year = match.groups()
+            normalized_date = f"{day}.{month}.{year}".replace('00.', '01.')
+            data['deadline'] = datetime.datetime.strptime(normalized_date, "%d.%m.%y").astimezone(datetime.timezone.utc)
         except Exception:
-            return data
+            logger.exception(f"Error in deadline validation {data}.")
+        return data
 
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:
         """Check if lesson have suitable time"""
