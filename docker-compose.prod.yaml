@@ -16,6 +16,7 @@ services:
       YET_ANOTHER_CALENDAR_HOST: 0.0.0.0
       YET_ANOTHER_CALENDAR_REDIS_HOST: yet_another_calendar-redis
       LOGURU_DIAGNOSE: "False"
+      YET_ANOTHER_CALENDAR_DEBUG: "False"
 
   redis:
     image: redis:latest

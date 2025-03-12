@@ -4,14 +4,15 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import UJSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
 from httpx import HTTPError
 from pydantic import ValidationError
 from starlette.responses import Response
 
 from yet_another_calendar.log import configure_logging
+from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.router import api_router
 from yet_another_calendar.web.lifespan import lifespan_setup
 
@@ -71,9 +72,15 @@ def get_app() -> FastAPI:
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,
     )
+    if settings.debug:
+        origins = ["*"]
+    else:
+        origins = [
+            'https://yetanothercalendar.ru/'
+        ]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
