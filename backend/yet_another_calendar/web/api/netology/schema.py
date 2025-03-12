@@ -5,10 +5,11 @@ from typing import Optional, Annotated, Any
 from urllib.parse import urljoin
 
 from fastapi import Header
-from pydantic import BaseModel, Field, computed_field, field_validator, model_validator, ConfigDict
+from pydantic import BaseModel, Field, computed_field, model_validator, ConfigDict
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus.schema import ModeusTimeBody
+from yet_another_calendar.web.api.validators import OptionalUTCDate
 
 _DATE_PATTERN = r"(\d{2})\.+(\d{2})\.+(\d{2})"
 logger = logging.getLogger(__name__)
@@ -185,22 +186,8 @@ class ExtendedLessonResponse(BaseModel):
 class DetailedProgram(BaseModel):
     id: int
     name: str
-    start_date: Optional[datetime.datetime] = Field(default=None)
-    finish_date: Optional[datetime.datetime] = Field(default=None)
-
-    @field_validator("start_date")
-    @classmethod
-    def validate_start_date(cls, start_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
-        if start_date is None:
-            return start_date
-        return start_date.astimezone(datetime.timezone.utc)
-
-    @field_validator("finish_date")
-    @classmethod
-    def validate_finish_date(cls, finish_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
-        if finish_date is None:
-            return finish_date
-        return finish_date.astimezone(datetime.timezone.utc)
+    start_date: OptionalUTCDate = Field(default=None)
+    finish_date: OptionalUTCDate = Field(default=None)
 
 
 class Program(BaseModel):

@@ -8,6 +8,8 @@ from fastapi import Header
 from pydantic import BaseModel, Field, computed_field, model_validator, field_validator
 from starlette import status
 
+from yet_another_calendar.web.api.validators import OptionalUTCDate
+
 
 class Creds(BaseModel):
     """Modeus creds."""
@@ -202,25 +204,11 @@ class ModeusCalendar(BaseModel):
 class StudentsSpeciality(BaseModel):
     id: uuid.UUID = Field(alias="personId")
     flow_code: Optional[str] = Field(alias="flowCode")
-    learning_start_date: Optional[datetime.datetime] = Field(alias="learningStartDate")
-    learning_end_date: Optional[datetime.datetime] = Field(alias="learningEndDate")
+    learning_start_date: OptionalUTCDate = Field(alias="learningStartDate")
+    learning_end_date: OptionalUTCDate = Field(alias="learningEndDate")
     specialty_code: Optional[str] = Field(alias="specialtyCode")
     specialty_name: Optional[str] = Field(alias="specialtyName")
     specialty_profile: Optional[str] = Field(alias="specialtyProfile")
-
-    @field_validator("learning_start_date")
-    @classmethod
-    def validate_starts_at(cls, learning_start_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
-        if not learning_start_date:
-            return learning_start_date
-        return learning_start_date.astimezone(datetime.timezone.utc)
-
-    @field_validator("learning_end_date")
-    @classmethod
-    def validate_learning_end_date(cls, learning_end_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
-        if not learning_end_date:
-            return learning_end_date
-        return learning_end_date.astimezone(datetime.timezone.utc)
 
 
 class ExtendedPerson(StudentsSpeciality, ShortPerson):
@@ -258,6 +246,7 @@ def get_person_id(__jwt: str) -> str:
         raise HTTPException(
             detail="Modeus error. Can't decode token", status_code=status.HTTP_400_BAD_REQUEST,
         ) from None
+
 
 def get_cookies_from_headers(modeus_jwt_token: Annotated[str, Header()]) -> str:
     return get_person_id(modeus_jwt_token)
