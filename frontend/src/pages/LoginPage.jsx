@@ -20,9 +20,17 @@ const LoginPage = () => {
                 setError(""); // Очищаем ошибку
                 navigate("/login/modeus"); // Переходим на страницу логина Модеуса
                 return { success: true };
+            } if (response.status === 401) {
+                return {success: false, message: "Неверный логин или пароль."};
+            } if (response.status === 400 || response.status === 422) {
+                return {success: false, message: "Были переданы неверный данные"};
+                return {success: true};
+            } if (response.status === 401) {
+                return {success: false, message: "Неверный логин или пароль."};
+            } if (response.status === 400 || response.status === 422) {
+                return {success: false, message: "Были переданы неверный данные"};
             } else {
-                setError("Неверный логин или пароль."); // Устанавливаем сообщение об ошибке
-                return { success: false };
+                return {success: false, message: "Произошла ошибка. Попробуйте снова."};
             }
         } catch (error) {
             setError("Произошла ошибка. Попробуйте снова."); // Устанавливаем сообщение об ошибке
@@ -50,13 +58,14 @@ const LoginPage = () => {
                     setError(""); // Очищаем ошибку
                     navigate("/");
                     return { success: true };
-                } else {
-                    setError("Ошибка при входе в LMS."); // Устанавливаем сообщение об ошибке
-                    return { success: false };
+            } if (response.status === 401) {
+                return {success: false, message: "Неверный логин или пароль."};
+            } if (response.status === 400 || response.status === 422) {
+                return {
+                    success: false, message: "Были переданы неверный данные, проверьте правильность введенной почты."};
                 }
             } else {
-                setError("Неверный логин или пароль для Модеуса."); // Устанавливаем сообщение об ошибке
-                return { success: false };
+                return {success: false, message: "Произошла ошибка. Попробуйте снова."};
             }
         } catch (error) {
             setError("Произошла ошибка. Попробуйте снова."); // Устанавливаем сообщение об ошибке
