@@ -14,6 +14,8 @@ const LoginPage = () => {
         try {
             let response = await loginNetology(email, password);
 
+            console.log('response', response)
+
             if (response.status === 200) {
                 localStorage.setItem('token', response.data["_netology-on-rails_session"]);
                 setIsNetologyLoggedIn(true); // Успешный вход в Нетологию
@@ -24,7 +26,6 @@ const LoginPage = () => {
                 return {success: false, message: "Неверный логин или пароль."};
             } if (response.status === 400 || response.status === 422) {
                 return {success: false, message: "Были переданы неверный данные"};
-                return {success: true};
             } if (response.status === 401) {
                 return {success: false, message: "Неверный логин или пароль."};
             } if (response.status === 400 || response.status === 422) {
@@ -58,12 +59,19 @@ const LoginPage = () => {
                     setError(""); // Очищаем ошибку
                     navigate("/");
                     return { success: true };
-            } if (response.status === 401) {
-                return {success: false, message: "Неверный логин или пароль."};
-            } if (response.status === 400 || response.status === 422) {
-                return {
-                    success: false, message: "Были переданы неверный данные, проверьте правильность введенной почты."};
+                } if (lmsResponse.status === 401) {
+                    return {success: false, message: "Неверный логин или пароль."};
+                } if (lmsResponse.status === 400 || lmsResponse.status === 422) {
+                    return { success: false, message: "Были переданы неверный данные, проверьте правильность введенной почты."}
+                } else {
+                    return {success: false, message: "Произошла ошибка. Попробуйте снова."};
                 }
+
+
+            } if (modeusResponse.status === 401) {
+                    return {success: false, message: "Неверный логин или пароль."};
+            } if (modeusResponse.status === 400 || modeusResponse.status === 422) {
+                return { success: false, message: "Были переданы неверный данные, проверьте правильность введенной почты."}
             } else {
                 return {success: false, message: "Произошла ошибка. Попробуйте снова."};
             }
