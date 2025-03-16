@@ -1,68 +1,94 @@
-import {useState} from "react";
+import { useState } from "react";
 import Login from "../components/login/login";
-import {loginModeus, loginNetology} from "../services/api";
-import {useNavigate} from "react-router-dom";
-
+import { loginLms, loginModeus, loginNetology } from "../services/api";
+import { useLocation, useNavigate } from "react-router-dom";
 import '../style/login.scss';
 
-
-
 const LoginPage = () => {
-    const [isNetologyLoggedIn, setIsNetologyLoggedIn] = useState(false); // Флаг для первой формы
-    const [isModeusLoggedIn, setIsModeusLoggedIn] = useState(false); // Флаг для второй формы
+    const [isNetologyLoggedIn, setIsNetologyLoggedIn] = useState(false);
+    const [error, setError] = useState(""); // Состояние для хранения ошибок
     const navigate = useNavigate(); // Навигация
+    const location = useLocation(); // Получаем текущий маршрут
 
     const handleNetologyLogin = async (email, password) => {
         try {
             let response = await loginNetology(email, password);
 
             if (response.status === 200) {
-                // setAuthData({email, password});
                 localStorage.setItem('token', response.data["_netology-on-rails_session"]);
                 setIsNetologyLoggedIn(true); // Успешный вход в Нетологию
-                return {success: true};
+                setError(""); // Очищаем ошибку
+                navigate("/login/modeus"); // Переходим на страницу логина Модеуса
+                return { success: true };
             } else {
-                return {success: false, message: "Неверный логин или пароль."};
+                setError("Неверный логин или пароль."); // Устанавливаем сообщение об ошибке
+                return { success: false };
             }
         } catch (error) {
-            return {success: false, message: "Произошла ошибка. Попробуйте снова."};
+            setError("Произошла ошибка. Попробуйте снова."); // Устанавливаем сообщение об ошибке
+            return { success: false };
         }
     };
 
     const handleModeusLogin = async (email, password) => {
         try {
-            let response = await loginModeus(email, password);
+            // Шаг 1: Вход в Модеус
+            let modeusResponse = await loginModeus(email, password);
 
-            if (response.status === 200) {
-                // setAuthData({email, password});
-                localStorage.setItem('jwt-token', response.data);
-                setIsModeusLoggedIn(true); // Успешный вход в Модеус
-                navigate("/");
-                return {success: true};
+            if (modeusResponse.status === 200) {
+                localStorage.setItem('jwt-token', modeusResponse.data);
+
+                // Шаг 2: Вход в LMS
+                let lmsResponse = await loginLms(email, password);
+
+                if (lmsResponse.status === 200) {
+                    // Сохраняем id и token от LMS
+                    localStorage.setItem('lms-id', lmsResponse.data.id);
+                    localStorage.setItem('lms-token', lmsResponse.data.token);
+
+                    // Переходим на главную страницу после успешного входа
+                    setError(""); // Очищаем ошибку
+                    navigate("/");
+                    return { success: true };
+                } else {
+                    setError("Ошибка при входе в LMS."); // Устанавливаем сообщение об ошибке
+                    return { success: false };
+                }
             } else {
-                return {success: false, message: "Неверный логин или пароль."};
+                setError("Неверный логин или пароль для Модеуса."); // Устанавливаем сообщение об ошибке
+                return { success: false };
             }
         } catch (error) {
-            return {success: false, message: "Произошла ошибка. Попробуйте снова."};
+            setError("Произошла ошибка. Попробуйте снова."); // Устанавливаем сообщение об ошибке
+            return { success: false };
         }
     };
+
+    // Определяем, какой маршрут активен
+    const isNetologyRoute = location.pathname === "/login";
+    const isModeusRoute = location.pathname === "/login/modeus";
 
     return (
         <div className="login-container">
             <h2 className="login-container__title shedule-login">Мое расписание</h2>
 
-            {!isNetologyLoggedIn && ( // Показывать форму Нетологии, если вход не выполнен
+            {/* Форма для входа в Нетологию */}
+            {isNetologyRoute && (
                 <Login
                     onLogin={handleNetologyLogin}
                     title="Введите логин и пароль от Нетологии, чтобы увидеть свое расписание"
                     name="Нетологии"
+                    error={error} // Передаем ошибку в компонент Login
                 />
             )}
-            {isNetologyLoggedIn && !isModeusLoggedIn && ( // Показывать форму Модеус только после успешного входа в Нетологию
+
+            {/* Форма для входа в Модеус */}
+            {isModeusRoute && isNetologyLoggedIn && (
                 <Login
                     onLogin={handleModeusLogin}
                     title="Введите логин и пароль от Модеус, чтобы увидеть lms в своем расписании"
                     name="Модеус"
+                    error={error} // Передаем ошибку в компонент Login
                 />
             )}
         </div>
