@@ -209,7 +209,7 @@ async def test_modeus_time_body() -> None:
 
     assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
     assert "Weekday time_min must be Monday" in str(exc_info.value)
-    assert "Weekday time_min must be Sunday" in str(exc_info.value)
+    assert "Weekday time_max must be Sunday" in str(exc_info.value)
 
 
 @pytest.mark.asyncio
@@ -229,21 +229,22 @@ async def test_get_calendar_ok() -> None:
 
 
 @pytest.mark.asyncio
-async def test_courses_response_schema():
+async def test_courses_response_schema() -> None:
     with open(settings.test_parent_path / "fixtures/course_response_schema.json") as f:
         programs_json = json.load(f)
 
     courses_response = schema.CoursesResponse.model_validate(programs_json)
-    utmn_program = courses_response.get_utmn_program()
+    utmn_program: schema.NetologyProgramId | None = courses_response.get_utmn_program()
 
     assert len(json.loads(courses_response.model_dump_json())["programs"]) == 3
+    assert utmn_program
     assert utmn_program.id == 2
     assert utmn_program.type == "course"
     assert settings.netology_course_name in utmn_program.title
 
 
 @pytest.mark.asyncio
-async def test_lesson_webinar_schema():
+async def test_lesson_webinar_schema() -> None:
     lesson_webinar = schema.LessonWebinar.model_validate({
         "id": 242,
         "lesson_id": 245,
@@ -287,7 +288,7 @@ async def test_lesson_webinar_schema():
     ("Submit by 00..04..24", (2024, 4, 1)),
 ])
 @pytest.mark.asyncio
-async def test_lesson_task_schema_validation(title, date):
+async def test_lesson_task_schema_validation(title: str, date: tuple[int]) -> None:
     validated_lesson = schema.LessonTask.model_validate({
         "id": 1,
         "lesson_id": 101,
@@ -297,7 +298,7 @@ async def test_lesson_task_schema_validation(title, date):
         "path": "/tasks/docker-setup"
     })
     if date:
-        excepted_deadline = datetime.datetime(*date).astimezone(datetime.timezone.utc)
+        excepted_deadline = datetime.datetime(*date).astimezone(datetime.timezone.utc)  # type: ignore
     else:
         excepted_deadline = None
     assert validated_lesson.url == settings.netology_base_url + validated_lesson.path
@@ -305,7 +306,7 @@ async def test_lesson_task_schema_validation(title, date):
 
 
 @pytest.mark.asyncio
-async def test_lesson_task_schema_suitable_time():
+async def test_lesson_task_schema_suitable_time() -> None:
     lesson_task = schema.LessonTask.model_validate({
         "id": 1,
         "lesson_id": 101,
@@ -336,3 +337,98 @@ async def test_lesson_task_schema_suitable_time():
 
     lesson_task.deadline = None
     assert not lesson_task.is_suitable_time(**time_deadline_within_range)
+
+
+@pytest.mark.parametrize('desc, time_min, time_max, expected_tasks, expected_webinars', [
+    (
+            "Lessons within range",
+            datetime.datetime(2025, 3, 10, 10, 0),
+            datetime.datetime(2025, 3, 20, 20, 0), # 2025-03-18T14:00:00
+            ["Complete Assignment"],
+            ["Live Lecture"],
+    ),
+    (
+            "No lessons within range",
+            datetime.datetime(2025, 3, 25, 0, 0),
+            datetime.datetime(2025, 3, 30, 0, 0),
+            [],
+            [],
+    ),
+    (
+            "Only webinar within range",
+            datetime.datetime(2025, 3, 17, 0, 0),
+            datetime.datetime(2025, 3, 18, 17, 0),
+            [],
+            ["Live Lecture"],
+    ),
+    (
+            "Only task within range",
+            datetime.datetime(2025, 3, 14, 0, 0),
+            datetime.datetime(2025, 3, 16, 0, 0),
+            ["Complete Assignment"],
+            [],
+    ),
+])
+@pytest.mark.asyncio
+async def test_calendar_response_methods(desc: str,
+                                         time_min: datetime.datetime,
+                                         time_max: datetime.datetime,
+                                         expected_tasks: list[str | None],
+                                         expected_webinars: list[str | None]) -> None:
+    with open(settings.test_parent_path / "fixtures/filter_lessons.json") as f:
+        lessons = json.load(f)
+
+    program = schema.NetologyProgram(
+        lesson_items=lessons
+    )
+
+    # Test filter_lessons()
+    homework_events, webinars = schema.CalendarResponse.filter_lessons(
+        block_title="DevOps Basics",
+        program=program,
+        time_min=time_min,
+        time_max=time_max,
+    )
+
+    assert [task.title for task in homework_events] == expected_tasks, f"Failed: {desc}"
+    assert [webinar.title for webinar in webinars] == expected_webinars, f"Failed: {desc}"
+
+
+
+@pytest.mark.asyncio
+async def test_extended_lesson_response_methods() -> None:
+    with open(settings.test_parent_path / "fixtures/extended_lessons.json") as f:
+        lessons = json.load(f)
+
+    extended_lesson_response = schema.ExtendedLessonResponse.model_validate({
+        "lesson_items": lessons
+    })
+
+    filtered_lessons = extended_lesson_response.exclude_attachment()
+
+    assert [lesson.title for lesson in filtered_lessons] == ["Live Lecture", "Assignment 1"]
+
+
+@pytest.mark.parametrize(
+    "input_date, expected_date",
+    [
+        (None, None),  # Test with None input
+        (
+            datetime.datetime(2025, 3, 20, 10, 0, tzinfo=datetime.timezone.utc),  # Already UTC
+            datetime.datetime(2025, 3, 20, 10, 0, tzinfo=datetime.timezone.utc),  # Should remain the same
+        ),
+        (
+            datetime.datetime(2025, 3, 20, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(hours=3))),  # UTC+3
+            datetime.datetime(2025, 3, 20, 7, 0, tzinfo=datetime.timezone.utc),  # Expected conversion to UTC
+        ),
+    ]
+)
+@pytest.mark.asyncio
+async def test_detailed_program_methods(input_date: datetime.datetime, expected_date: datetime.datetime) -> None:
+    program = schema.DetailedProgram.model_validate({
+        "id": 1,
+        "name": "DevOps Basics",
+        "start_date": input_date
+    })
+
+    assert program.start_date == expected_date

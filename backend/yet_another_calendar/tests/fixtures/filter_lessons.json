@@ -1,0 +1,27 @@
+[
+    {
+        "id": 1,
+        "lesson_id": 100,
+        "path": "/lesson/1",
+        "type": "task",
+        "title": "Complete Assignment",
+        "deadline": "2025-03-15T12:00:00"
+    },
+    {
+        "id": 2,
+        "lesson_id": 101,
+        "path": "/lesson/2",
+        "type": "webinar",
+        "title": "Live Lecture",
+        "starts_at": "2025-03-18T14:00:00",
+        "ends_at": "2025-03-18T16:30:00"
+    },
+    {
+        "id": 3,
+        "lesson_id": 102,
+        "path": "/lesson/3",
+        "type": "quiz",
+        "title": "Weekly Quiz",
+        "deadline": "2025-03-22T15:00:00"
+    }
+]
