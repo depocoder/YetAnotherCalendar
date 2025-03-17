@@ -299,8 +299,7 @@ async def test_lesson_task_schema_validation(title: str, date: Optional[tuple[in
         "path": "/tasks/docker-setup"
     })
     if date:
-        excepted_deadline = datetime.datetime(*date)
-        excepted_deadline = excepted_deadline.astimezone(datetime.timezone.utc)
+        excepted_deadline = datetime.datetime(*date).astimezone(datetime.timezone.utc)
     else:
         excepted_deadline = None
     assert validated_lesson.url == settings.netology_base_url + validated_lesson.path
