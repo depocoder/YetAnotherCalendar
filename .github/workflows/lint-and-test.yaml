@@ -1,6 +1,7 @@
 name: lint and test
 
 on:
+  workflow_call:
   push:
     branches:
       - 'feature/**'
