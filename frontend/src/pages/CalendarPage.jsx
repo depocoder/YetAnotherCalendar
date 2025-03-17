@@ -3,8 +3,7 @@ import {
     getNetologyCourse,
     bulkEvents,
     getTokenFromLocalStorage,
-    getPersonIdLocalStorage,
-    getCalendarIdLocalStorage, getJWTTokenFromLocalStorage,
+    getCalendarIdLocalStorage, getJWTTokenFromLocalStorage, getLMSTokenFromLocalStorage, getLMSIdFromLocalStorage,
 } from '../services/api';
 import Loader from "../elements/Loader";
 import '../style/header.scss';
@@ -49,11 +48,12 @@ const CalendarPage = () => {
             const eventsResponse = await bulkEvents({
                 calendarId,
                 timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                attendeePersonId: getPersonIdLocalStorage(),
                 timeMin: date.start,
                 timeMax: date.end,
                 sessionToken: getTokenFromLocalStorage(),
-                jwtToken: getJWTTokenFromLocalStorage()
+                jwtToken: getJWTTokenFromLocalStorage(),
+                lxpToken: getLMSTokenFromLocalStorage(),
+                lxpId: getLMSIdFromLocalStorage()
             });
 
             if (eventsResponse?.data) {
@@ -77,11 +77,6 @@ const CalendarPage = () => {
     const handleDataUpdate = (updatedEvents) => {
         setEvents(updatedEvents);
     };
-
-    const allEvents = [
-        ...(events?.utmn?.modeus_events || []),
-        ...(events?.netology?.webinars || []),
-    ];
 
     return (
         <div className="calendar-page">

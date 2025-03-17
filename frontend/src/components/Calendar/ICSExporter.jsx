@@ -2,7 +2,6 @@ import React from 'react';
 import {
     exportICS, getCalendarIdLocalStorage,
     getJWTTokenFromLocalStorage,
-    getPersonIdLocalStorage,
     getTokenFromLocalStorage
 } from "../../services/api";
 
@@ -14,7 +13,6 @@ const ICSExporter = ({date}) => {
             const icsContent = await exportICS({
                 calendarId,
                 timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                attendeePersonId: getPersonIdLocalStorage(),
                 timeMin: date.start,
                 timeMax: date.end,
                 sessionToken: getTokenFromLocalStorage(),

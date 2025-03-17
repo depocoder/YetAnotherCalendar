@@ -1,45 +1,54 @@
-import React, {useState} from 'react';
-import {useNavigate} from "react-router-dom";
+import React, { useState } from 'react';
 
-const Login = ({ onLogin, title, name }) => {
+const Login = ({ onLogin, title, name, error }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState("");
-    // const navigate = useNavigate(); // Навигация
 
-      const onClickLogin = async () => {
-        const result = await onLogin(email, password);
+    const onClickLogin = async (e) => {
+        e.preventDefault(); // Предотвращаем стандартное поведение формы
 
-        if (result.success) {
-            // localStorage.setItem('personId', personId); // Сохраняем personId localstorage
-            setErrorMessage(""); // Очищаем ошибку при успешном логине
-            // navigate("/");
-        } else {
-            setErrorMessage(result.message);
+        try {
+            // Вызываем функцию входа и получаем результат
+            const result = await onLogin(email, password);
+
+            if (!result.success) {
+                // Если вход неуспешен, показываем сообщение об ошибке
+                console.error(result.message || "Произошла ошибка.");
+            }
+        } catch (error) {
+            console.error("Не удалось выполнить вход. Попробуйте снова.");
         }
     };
 
     return (
         <div className="login-netologiya">
             <label>{title}</label>
-            <div style={{display: "flex", flexDirection: "column"}}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
                 <input
                     className="input-email"
                     type="email"
                     placeholder={`Логин от ${name}`}
                     onChange={(e) => setEmail(e.target.value)}
+                    required // Добавляем атрибут required для обязательного поля
                 />
                 <input
                     className="input-email"
                     type="password"
                     placeholder={`Пароль от ${name}`}
                     onChange={(e) => setPassword(e.target.value)}
+                    required // Добавляем атрибут required для обязательного поля
                 />
             </div>
-            {/* Сообщение об ошибке */}
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-            <button className="login-btn-log" id="login" onClick={onClickLogin}>
+            {/* Сообщение об ошибке */}
+            {error && <p className="error-message">{error}</p>}
+
+            <button
+                className="login-btn-log"
+                id="login"
+                onClick={onClickLogin}
+                disabled={!email || !password} // Блокируем кнопку, если поля пустые
+            >
                 Войти
             </button>
         </div>
