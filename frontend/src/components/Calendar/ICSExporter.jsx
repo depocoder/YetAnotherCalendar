@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     exportICS, getCalendarIdLocalStorage,
-    getJWTTokenFromLocalStorage,
+    getJWTTokenFromLocalStorage, getLMSIdFromLocalStorage, getLMSTokenFromLocalStorage,
     getTokenFromLocalStorage
 } from "../../services/api";
 
@@ -16,7 +16,9 @@ const ICSExporter = ({date}) => {
                 timeMin: date.start,
                 timeMax: date.end,
                 sessionToken: getTokenFromLocalStorage(),
-                jwtToken: getJWTTokenFromLocalStorage()
+                jwtToken: getJWTTokenFromLocalStorage(),
+                lxpToken: getLMSTokenFromLocalStorage(),
+                lxpId: getLMSIdFromLocalStorage()
             });
             if (icsContent.data === '') return; // Если не удалось создать файл, выходим
 
