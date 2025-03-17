@@ -13,8 +13,11 @@ export function getJWTTokenFromLocalStorage() {
 export function getCalendarIdLocalStorage() {
     return localStorage.getItem('calendarId')
 }
-export function getPersonIdLocalStorage() {
-    return localStorage.getItem('personId')
+export function getLMSTokenFromLocalStorage() {
+    return localStorage.getItem('lms-token')
+}
+export function getLMSIdFromLocalStorage() {
+    return localStorage.getItem('lms-id')
 }
 
 // login Netology
@@ -29,6 +32,14 @@ export async function loginNetology(username, password) {
 export async function loginModeus(username, password) {
     try {
         return await axios.post(`${BACKEND_URL}/api/modeus/auth/`, {username, password});
+    } catch (e) {
+        return e.response;
+    }
+}
+// login lms
+export async function loginLms(username, password, service = "test") {
+    try {
+        return await axios.post(`${BACKEND_URL}/api/lms/auth`, {username, password, service});
     } catch (e) {
         return e.response;
     }
@@ -51,15 +62,20 @@ export async function getNetologyCourse(sessionToken) {
 }
 
 
-const apiRequest = async (endpoint, {calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken, jwtToken, lms_user}) => {
+const apiRequest = async (endpoint, {
+    calendarId,
+    timeZone,
+    timeMin,
+    timeMax,
+    sessionToken,
+    jwtToken,
+    lxpToken,
+    lxpId
+}) => {
+    // Формируем тело запроса
     const requestBody = {
-        body: {
-            timeMin: timeMin,
-            timeMax: timeMax,
-            size: 50,
-            attendeePersonId: [attendeePersonId],
-        },
-        lms_user: lms_user || { id: 0, token: sessionToken, is_enabled: false },
+        timeMin: timeMin,
+        timeMax: timeMax
     };
 
     try {
@@ -70,7 +86,9 @@ const apiRequest = async (endpoint, {calendarId, timeZone, attendeePersonId, tim
                 headers: {
                     'Content-Type': 'application/json',
                     '_netology-on-rails_session': sessionToken,
-                    'modeus-jwt-token': jwtToken
+                    'modeus-jwt-token': jwtToken,
+                    'lxp-token': lxpToken, // Добавляем заголовок для LXP
+                    'lxp-id': lxpId       // Добавляем заголовок для LXP ID
                 },
             }
         );
@@ -81,7 +99,6 @@ const apiRequest = async (endpoint, {calendarId, timeZone, attendeePersonId, tim
     }
 };
 
-// Теперь используем apiRequest для реализации ваших функций
 export const bulkEvents = (params) => {
     return apiRequest('/api/bulk/events/', params);
 };
@@ -93,103 +110,3 @@ export const refreshBulkEvents = (params) => {
 export const exportICS = (params) => {
     return apiRequest('/api/bulk/export_ics/', params);
 };
-
-
-
-
-
-// // calendar
-// export async function bulkEvents({calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken, lms_user })  {
-//     // console.log('calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken', calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken)
-//     // const calendarId = 45526; // Ваш ID календаря
-//     // const timeZone = 'Europe/Moscow'; // Часовой пояс
-//     // const attendeePersonId = '5a3d9024-d210-4bfb-a622-0a55ab5bac1a'; // Ваш ID участника
-//
-//     const requestBody = {
-//         body: {
-//             timeMin: timeMin,
-//             timeMax: timeMax,
-//             size: 50,
-//             attendeePersonId: [attendeePersonId], // Обратите внимание на правильность имени свойства
-//         },
-//         lms_user: lms_user || { id: 0, token: sessionToken, is_enabled: false }, // Использовать переданный lms_user или значение по умолчанию
-//
-//     };
-//
-//     try {
-//         const response = await axios.post(
-//             `${BACKEND_URL}/api/bulk/events/?calendar_id=${calendarId}&time_zone=${timeZone}`,
-//             requestBody,
-//             {
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     '_netology-on-rails_session': sessionToken,
-//                 },
-//             }
-//         );
-//         return response;
-//     } catch (error) {
-//         console.error('Ошибка при получении данных:', error.response ? error.response.data : error.message);
-//     }
-// };
-//
-// // Refresh calendar
-// export async function refreshBulkEvents({calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken, lms_user }) {
-//     try {
-//         const requestBody = {
-//             body: {
-//                 timeMin: timeMin,
-//                 timeMax: timeMax,
-//                 size: 50,
-//                 attendeePersonId: [attendeePersonId], // Обратите внимание на правильность имени свойства
-//             },
-//             lms_user: lms_user || { id: 0, token: sessionToken, is_enabled: false }, // Использовать переданный lms_user или значение по умолчанию
-//
-//         };
-//
-//         const response = await axios.post(
-//             `${BACKEND_URL}/api/bulk/refresh_events/?calendar_id=${calendarId}&time_zone=${timeZone}`,
-//             requestBody,
-//             {
-//                 headers: {
-//                     "_netology-on-rails_session": sessionToken, // Токен сессии
-//                     "Content-Type": "application/json",
-//                 },
-//             }
-//         );
-//         return response;
-//     } catch (e) {
-//         return e.response;
-//     }
-// }
-//
-// // export file
-// export async function exportICS({calendarId, timeZone, attendeePersonId, timeMin, timeMax, sessionToken, lms_user }) {
-//     try {
-//         const requestBody = {
-//             body: {
-//                 timeMin: timeMin,
-//                 timeMax: timeMax,
-//                 size: 50,
-//                 attendeePersonId: [attendeePersonId], // Обратите внимание на правильность имени свойства
-//             },
-//             lms_user: lms_user || { id: 0, token: sessionToken, is_enabled: false }, // Использовать переданный lms_user или значение по умолчанию
-//
-//         };
-//
-//         const response = await axios.post(
-//             `${BACKEND_URL}/api/bulk/export_ics/?calendar_id=${calendarId}&time_zone=${timeZone}`,
-//             requestBody,
-//             {
-//                 headers: {
-//                     "_netology-on-rails_session": sessionToken,
-//                     "Content-Type": "application/json",
-//                 },
-//             }
-//         );
-//         return response;
-//     } catch (e) {
-//         return e.response;
-//     }
-// }
-

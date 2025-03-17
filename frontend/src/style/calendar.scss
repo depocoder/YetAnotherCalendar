@@ -6,21 +6,33 @@
         //width: 95%;
         text-align: left;
         padding: 6px 8px 8px;
-        border: 2px solid #F46386;
-        background: #F46386;
         border-radius: 6px;
         color: #fff;
         font-family: "Roboto", sans-serif;
         font-weight: 500;
         font-size: 13px;
         transition: color 0.3s linear;
-        height: 86%;
-        width: 95%;
-        &:hover {
-            cursor: pointer;
-            color: #F46386;
-            background-color: #fff;
+        //height: 86%;
+        //width: 95%;
+        &.utmn {
             border: 2px solid #F46386;
+            background: #F46386;
+             &:hover {
+                cursor: pointer;
+                color: #F46386;
+                background-color: #fff;
+                border: 2px solid #F46386;
+            }
+        }
+        &.netology {
+            border: 2px solid #3492c5;
+            background: #3492c5;
+             &:hover {
+                cursor: pointer;
+                color: #3492c5;
+                background-color: #fff;
+                border: 2px solid #3492c5;
+            }
         }
     }
     &-info-on {
@@ -191,7 +203,6 @@
     //justify-content: space-evenly;
     padding-left: 10px;
     text-align: left;
-    //width: 95%;
     height: 84%;
     background: #00A8A833;
     border: none;
