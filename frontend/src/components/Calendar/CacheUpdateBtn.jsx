@@ -1,10 +1,9 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
     getCalendarIdLocalStorage,
-    getPersonIdLocalStorage,
     getTokenFromLocalStorage,
     refreshBulkEvents,
-    getJWTTokenFromLocalStorage
+    getJWTTokenFromLocalStorage, getLMSTokenFromLocalStorage, getLMSIdFromLocalStorage
 } from "../../services/api";
 
 const CacheUpdateBtn = ({date, onDataUpdate}) => {
@@ -15,11 +14,12 @@ const CacheUpdateBtn = ({date, onDataUpdate}) => {
             const refreshEventsResponse = await refreshBulkEvents({
                 calendarId: getCalendarIdLocalStorage(), // ID календаря
                 timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Часовой пояс
-                attendeePersonId: getPersonIdLocalStorage(), // ID участника
                 timeMin: date.start, // Дата начала
                 timeMax: date.end, // Дата окончания
                 sessionToken: getTokenFromLocalStorage(),
-                jwtToken: getJWTTokenFromLocalStorage()
+                jwtToken: getJWTTokenFromLocalStorage(),
+                lxpToken: getLMSTokenFromLocalStorage(),
+                lxpId: getLMSIdFromLocalStorage()
 
             });
 

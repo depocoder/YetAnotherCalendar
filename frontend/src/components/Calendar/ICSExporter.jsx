@@ -1,8 +1,7 @@
 import React from 'react';
 import {
     exportICS, getCalendarIdLocalStorage,
-    getJWTTokenFromLocalStorage,
-    getPersonIdLocalStorage,
+    getJWTTokenFromLocalStorage, getLMSIdFromLocalStorage, getLMSTokenFromLocalStorage,
     getTokenFromLocalStorage
 } from "../../services/api";
 
@@ -14,11 +13,12 @@ const ICSExporter = ({date}) => {
             const icsContent = await exportICS({
                 calendarId,
                 timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                attendeePersonId: getPersonIdLocalStorage(),
                 timeMin: date.start,
                 timeMax: date.end,
                 sessionToken: getTokenFromLocalStorage(),
-                jwtToken: getJWTTokenFromLocalStorage()
+                jwtToken: getJWTTokenFromLocalStorage(),
+                lxpToken: getLMSTokenFromLocalStorage(),
+                lxpId: getLMSIdFromLocalStorage()
             });
             if (icsContent.data === '') return; // Если не удалось создать файл, выходим
 

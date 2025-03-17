@@ -13,19 +13,13 @@ const App = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/login" element={
-                    <LoginPage
-                        // setAuthData={setAuthData}
-                    />
-                }/>
-                <Route
-                    path="/"
+                <Route path="/login" element={ <LoginPage /> }/>
+                {/* Маршрут для входа в Модеус */}
+                <Route path="/login/modeus" element={<LoginPage />} />
+                <Route path="/"
                     element={
                         <PrivateRoute>
-                            <CalendarPage
-                                // email={authData.email}
-                                // password={authData.password}
-                            />
+                            <CalendarPage />
                         </PrivateRoute>
                     }
                 />

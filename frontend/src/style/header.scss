@@ -43,7 +43,15 @@ input:focus-within {
       border-radius: 6px;
       text-decoration: none;
 
-      &.task, &.test {
+      &.task, &.test, &.quiz {
+        background: #3492c573;
+        border: 1px solid #3492c5;
+
+        .source {
+          color: #f46386;
+        }
+      }
+      &.utmn {
         background: #f4638633;
         border: 1px solid #f46386;
 
@@ -51,6 +59,7 @@ input:focus-within {
           color: #f46386;
         }
       }
+
       &.modeus {
         background: #7B61FF33;
         border: 1px solid #7B61FF;
