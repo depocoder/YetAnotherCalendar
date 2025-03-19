@@ -69,22 +69,6 @@ async def test_send_request_ok() -> None:
 
 @pytest.mark.asyncio
 async def test_auth_netology_unauthorized() -> None:
-    mock_response = AsyncMock()
-    mock_response.status_code = status.HTTP_401_UNAUTHORIZED
-
-    mock_client = AsyncMock(spec=AsyncClient)
-    mock_client.post.return_value = mock_response
-
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient.__aenter__", return_value=mock_client):
-        with pytest.raises(HTTPException) as exc_info:
-            await integration.auth_netology("alex", "password12345")
-
-    assert exc_info.value.detail == "Netology error. Username/password is incorrect."
-    assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-@pytest.mark.asyncio
-async def test_auth_netology_unauthorized() -> None:
     client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.bad_request_transport)
     client.cookies = httpx.Cookies({"_netology-on-rails_session": "aboba"})
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
@@ -159,7 +143,7 @@ async def test_get_calendar_not_found() -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_utmn_course_ok():
+async def test_get_utmn_course_ok() -> None:
     client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
 
     pass
