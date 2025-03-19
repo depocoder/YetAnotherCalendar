@@ -43,7 +43,6 @@ repos:
         types: [ python ]
         'types_or': [ python, pyi ]
         args: [
-          "--cov=backend/yet_another_calendar/web",
-          "./backend/yet_another_calendar/tests/",
+          backend/yet_another_calendar/tests/,
         ]
         additional_dependencies: [ uv ]

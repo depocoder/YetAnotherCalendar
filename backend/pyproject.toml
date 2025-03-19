@@ -110,6 +110,8 @@ exclude = [
     "S101", # Use of assert detected
     "PLR0911", #  Too many return statements (8 > 6)
     "PLR2004", #  Magic value used in comparison, consider replacing `6` with a constant variable
+    "ASYNC230", # Async functions should not open files with blocking methods like `open`
+    
 ]
 "schema.py" = [
     "PLR2004", #  Magic value used in comparison, consider replacing `6` with a constant variable

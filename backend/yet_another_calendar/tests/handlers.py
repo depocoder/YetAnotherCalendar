@@ -2,14 +2,16 @@ import json
 import pathlib
 
 import httpx
-
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.netology import schema
 
 mock_cookies = schema.NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
 
 
-def get_httpx_response(status_code: int, body: dict[str, str | bool], fixture_path: pathlib.Path | None = None) -> httpx.Response:
+def get_httpx_response(
+        status_code: int, body: dict[str, str | bool],
+        fixture_path: pathlib.Path | None = None,
+) -> httpx.Response:
     if fixture_path is None:
         return httpx.Response(status_code, json=body)
 
