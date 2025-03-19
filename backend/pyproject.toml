@@ -49,6 +49,7 @@ src_paths = ["yet_another_calendar", ]
 
 [tool.mypy]
 strict = true
+explicit_package_bases = true
 ignore_missing_imports = true
 allow_subclassing_any = true
 allow_untyped_calls = true
