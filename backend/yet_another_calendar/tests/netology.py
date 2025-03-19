@@ -1,5 +1,6 @@
 import datetime
 import json
+from typing import Optional
 from unittest.mock import AsyncMock, patch
 
 import httpx
@@ -272,7 +273,7 @@ async def test_lesson_webinar_schema() -> None:
     ("Submit by 00..04..24", (2024, 4, 1)),
 ])
 @pytest.mark.asyncio
-async def test_lesson_task_schema_validation(title: str, date: tuple[int]) -> None:
+async def test_lesson_task_schema_validation(title: str, date: Optional[tuple[int, int, int]]) -> None:
     validated_lesson = schema.LessonTask.model_validate({
         "id": 1,
         "lesson_id": 101,
@@ -282,7 +283,7 @@ async def test_lesson_task_schema_validation(title: str, date: tuple[int]) -> No
         "path": "/tasks/docker-setup"
     })
     if date:
-        excepted_deadline = datetime.datetime(*date).astimezone(datetime.timezone.utc)  # type: ignore
+        excepted_deadline = datetime.datetime(*date).astimezone(datetime.timezone.utc)
     else:
         excepted_deadline = None
     assert validated_lesson.url == settings.netology_base_url + validated_lesson.path
