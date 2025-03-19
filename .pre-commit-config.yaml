@@ -33,3 +33,17 @@ repos:
           "--config-file=backend/pyproject.toml",
         ]
         additional_dependencies: [ uv ]
+
+      - id: pytest
+        name: pytest
+        entry: uv --project backend run pytest
+        require_serial: true
+        pass_filenames: true
+        language: python
+        types: [ python ]
+        'types_or': [ python, pyi ]
+        args: [
+          "--cov=backend/yet_another_calendar/web",
+          "./backend/yet_another_calendar/tests/",
+        ]
+        additional_dependencies: [ uv ]
