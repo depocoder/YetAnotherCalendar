@@ -1,7 +1,6 @@
 import enum
 from pathlib import Path
 from tempfile import gettempdir
-from typing import Optional
 
 from environs import Env
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -43,9 +42,9 @@ class Settings(BaseSettings):
     # Variables for Redis
     redis_host: str = "yet_another_calendar-redis"
     redis_port: int = 6379
-    redis_user: Optional[str] = None
-    redis_pass: Optional[str] = None
-    redis_base: Optional[int] = None
+    redis_user: str | None = None
+    redis_pass: str | None = None
+    redis_base: int | None = None
     redis_cookie_key: str = "MODEUS_JWT"
     redis_jwt_time_live: int = 60 * 60 * 12  # 12 hours
     redis_events_time_live: int = 60 * 60 * 24 * 14  # 2 weeks

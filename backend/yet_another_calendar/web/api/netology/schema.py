@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import Optional, Annotated, Any
+from typing import Annotated, Any
 from urllib.parse import urljoin
 
 from fastapi import Header
@@ -43,7 +43,7 @@ class CoursesResponse(BaseModel):
     """Program id."""
     programs: list[NetologyProgramId]
 
-    def get_utmn_program(self) -> Optional[NetologyProgramId]:
+    def get_utmn_program(self) -> NetologyProgramId | None:
         for program in self.programs:
             if settings.netology_course_name in program.title:
                 return program
@@ -58,12 +58,12 @@ class BaseLesson(BaseModel):
 
 
 class LessonWebinar(BaseLesson):
-    starts_at: Optional[datetime.datetime] = Field(default=None)
-    ends_at: Optional[datetime.datetime] = Field(default=None)
-    status: Optional[str] = Field(default=None)
-    experts: Optional[list[dict[str, Any]]] = Field(default=None)
-    video_url: Optional[str] = None
-    webinar_url: Optional[str] = None
+    starts_at: datetime.datetime | None = Field(default=None)
+    ends_at: datetime.datetime | None = Field(default=None)
+    status: str | None = Field(default=None)
+    experts: list[dict[str, Any]] | None = Field(default=None)
+    video_url: str | None = None
+    webinar_url: str | None = None
 
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:
         """Check if lesson have suitable time"""
@@ -79,7 +79,7 @@ class LessonTask(BaseLesson):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     path: str
-    deadline: Optional[datetime.datetime] = Field(default=None)
+    deadline: datetime.datetime | None = Field(default=None)
 
     @computed_field  # type: ignore
     @property
@@ -96,7 +96,7 @@ class LessonTask(BaseLesson):
             return data
         try:
             date = match.group(0).replace('00.', '01.')
-            data['deadline'] = datetime.datetime.strptime(date, "%d.%m.%y").astimezone(datetime.timezone.utc)
+            data['deadline'] = datetime.datetime.strptime(date, "%d.%m.%y").astimezone(datetime.UTC)
             return data
         except Exception:
             return data
@@ -150,7 +150,7 @@ class CalendarResponse(BaseModel):
 
 class ExtendedLesson(LessonWebinar):
     passed: bool
-    experts: Optional[list[dict[str, Any]]] = Field(default=None)
+    experts: list[dict[str, Any]] | None = Field(default=None)
 
 
 class ExtendedLessonResponse(BaseModel):
@@ -167,22 +167,22 @@ class ExtendedLessonResponse(BaseModel):
 class DetailedProgram(BaseModel):
     id: int
     name: str
-    start_date: Optional[datetime.datetime] = Field(default=None)
-    finish_date: Optional[datetime.datetime] = Field(default=None)
+    start_date: datetime.datetime | None = Field(default=None)
+    finish_date: datetime.datetime | None = Field(default=None)
 
     @field_validator("start_date")
     @classmethod
-    def validate_start_date(cls, start_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
+    def validate_start_date(cls, start_date: datetime.datetime | None) -> datetime.datetime | None:
         if start_date is None:
             return start_date
-        return start_date.astimezone(datetime.timezone.utc)
+        return start_date.astimezone(datetime.UTC)
 
     @field_validator("finish_date")
     @classmethod
-    def validate_finish_date(cls, finish_date: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
+    def validate_finish_date(cls, finish_date: datetime.datetime | None) -> datetime.datetime | None:
         if finish_date is None:
             return finish_date
-        return finish_date.astimezone(datetime.timezone.utc)
+        return finish_date.astimezone(datetime.UTC)
 
 
 class Program(BaseModel):

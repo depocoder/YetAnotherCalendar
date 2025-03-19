@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Optional, Annotated
+from typing import Any, Annotated
 
 from fastapi import Header
 from pydantic import BaseModel, Field, model_validator
@@ -53,13 +53,13 @@ class DateModule(BaseModel):
         timestamp = data.get('timestamp')
         if timestamp is None:
             return data
-        data['timestamp'] = datetime.datetime.fromtimestamp(timestamp, tz=datetime.timezone.utc)
+        data['timestamp'] = datetime.datetime.fromtimestamp(timestamp, tz=datetime.UTC)
         return data
 
 
 class BaseModule(BaseModel):
     id: int
-    url: Optional[str] = Field(default=None)
+    url: str | None = Field(default=None)
     name: str
     user_visible: bool = Field(alias="uservisible")
     modname: str
@@ -67,7 +67,7 @@ class BaseModule(BaseModel):
 
 class Module(BaseModule):
     dates: list[DateModule]
-    completion_state: Optional[ModuleState] = Field(alias="completiondata", default=None)
+    completion_state: ModuleState | None = Field(alias="completiondata", default=None)
 
 
 class ModuleResponse(BaseModule):

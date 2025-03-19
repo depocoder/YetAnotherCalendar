@@ -17,7 +17,7 @@ from yet_another_calendar.web.api.netology.schema import (
 mock_cookies = NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
 
 
-def handler(request: httpx.Request) -> httpx.Response:  # noqa: PLR0911
+def handler(request: httpx.Request) -> httpx.Response:
     match request.url.path:
         case '/backend/api/user/programs/calendar/filters/not-auth':
             return httpx.Response(401, json={"text": "Not authorized"})

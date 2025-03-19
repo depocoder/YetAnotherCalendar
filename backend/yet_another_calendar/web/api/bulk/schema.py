@@ -12,7 +12,7 @@ from ..lms import schema as lms_schema
 from ..netology import schema as netology_schema
 
 def now_dt_utc() -> datetime.datetime:
-    return datetime.datetime.now(tz=datetime.timezone.utc)
+    return datetime.datetime.now(tz=datetime.UTC)
 
 class UtmnResponse(BaseModel):
     modeus_events: list[modeus_schema.FullEvent]
