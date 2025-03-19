@@ -1,7 +1,7 @@
 import datetime
 import json
 from typing import Optional
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import httpx
 import pytest
@@ -140,13 +140,6 @@ async def test_get_calendar_not_found() -> None:
             await integration.get_calendar(mock_cookies, 2, modeus_time_body)
 
         assert exc_info.value.response.status_code == 404
-
-
-@pytest.mark.asyncio
-async def test_get_utmn_course_ok() -> None:
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
-
-    pass
 
 
 @pytest.mark.asyncio
