@@ -16,6 +16,7 @@ dependencies = [
     "icalendar>=6.1.1",
     "loguru>=0.7.3",
     "lxml>=5.3.1",
+    "pre-commit>=4.2.0",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.8.1",
     "pyjwt>=2.10.1",
@@ -41,13 +42,14 @@ dev = [
     "types-icalendar>=6.1.0.20250301",
 ]
 
-[isort]
+[tool.isort]
 profile = "black"
 multi_line_output = 3
 src_paths = ["yet_another_calendar", ]
 
 [tool.mypy]
 strict = true
+explicit_package_bases = true
 ignore_missing_imports = true
 allow_subclassing_any = true
 allow_untyped_calls = true
@@ -74,7 +76,6 @@ env = [
 [tool.ruff]
 target-version = "py311"
 
-[ruff]
 lint.select = [
     "A", # prevent using keywords that clobber python builtins
     "N", # pep8-naming
@@ -94,27 +95,31 @@ lint.select = [
     "PL", # Pylint
 ]
 lint.ignore = [
-    "ANN101",
     "ANN401",
-    "ANN102",
     "B008", # Depends
-    "PLR0913"  # Depends
+    "PLR0913", # Depends
+    "ASYNC109", # Async function definition with a `timeout` parameter
 ]
 line-length = 119
 exclude = [
     ".venv/"
 ]
 
-[ruff.lint.per-file-ignores]
-"tests/*" = [
+[tool.ruff.lint.per-file-ignores]
+"*/tests/*" = [
     "S101", # Use of assert detected
+    "PLR0911", #  Too many return statements (8 > 6)
+    "PLR2004", #  Magic value used in comparison, consider replacing `6` with a constant variable
+]
+"schema.py" = [
+    "PLR2004", #  Magic value used in comparison, consider replacing `6` with a constant variable
 ]
 
-[ruff.lint.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "pep257"
 ignore-decorators = ["typing.overload"]
 
-[ruff.lint.pylint]
+[tool.ruff.lint.pylint]
 allow-magic-value-types = ["int", "str", "float", "bytes"]
 
 

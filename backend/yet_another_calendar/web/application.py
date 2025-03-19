@@ -10,7 +10,6 @@ from fastapi.staticfiles import StaticFiles
 from httpx import HTTPError
 from pydantic import ValidationError
 from starlette.responses import Response
-
 from yet_another_calendar.log import configure_logging
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.router import api_router
@@ -76,7 +75,7 @@ def get_app() -> FastAPI:
         origins = ["*"]
     else:
         origins = [
-            'https://yetanothercalendar.ru/'
+            'https://yetanothercalendar.ru/',
         ]
     app.add_middleware(
         CORSMiddleware,

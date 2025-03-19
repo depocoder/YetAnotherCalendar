@@ -18,14 +18,14 @@ def get_httpx_response(status_code: int, body: dict[str, str | bool], fixture_pa
         return httpx.Response(status_code, json=response_json)
 
 
-def _bad_handler(request: httpx.Request) -> httpx.Response:  # noqa: PLR0911
+def _bad_handler(request: httpx.Request) -> httpx.Response:
     response_cases = {
         "/backend/api/user/programs/calendar/filters/not-auth": get_httpx_response(401,
                                                                                    {"text": "Not authorized"}),
         "/backend/api/unknown": get_httpx_response(404, {"detail": "Not Found"}),
         "/backend/api/server_problem": get_httpx_response(500, {}),
         settings.netology_sign_in_part: get_httpx_response(401, {"detail": "Unauthorized"}),
-        settings.netology_get_events_part.format(program_id=2): get_httpx_response(404, {})
+        settings.netology_get_events_part.format(program_id=2): get_httpx_response(404, {}),
     }
 
     case = response_cases.get(request.url.path)
@@ -36,7 +36,7 @@ def _bad_handler(request: httpx.Request) -> httpx.Response:  # noqa: PLR0911
     return case
 
 
-def _handler(request: httpx.Request) -> httpx.Response:  # noqa: PLR0911
+def _handler(request: httpx.Request) -> httpx.Response:
     response_cases = {
         "/backend/api/user/programs/calendar/filters": get_httpx_response(200, {"ok": True}),
         "/backend/api/unauthorized": get_httpx_response(404, {"detail": "Not Found"}),

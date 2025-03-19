@@ -1,8 +1,8 @@
 import datetime
-from typing import Optional, Annotated
+from typing import Annotated
 
 
-def validate_utc_date(value: Optional[datetime.datetime]) -> Optional[datetime.datetime]:
+def validate_utc_date(value: datetime.datetime | None) -> datetime.datetime | None:
     """
     Convert a datetime object to UTC timezone.
 
@@ -14,7 +14,7 @@ def validate_utc_date(value: Optional[datetime.datetime]) -> Optional[datetime.d
     """
     if not value:
         return value
-    return value.astimezone(datetime.timezone.utc)
+    return value.astimezone(datetime.UTC)
 
 
-OptionalUTCDate = Annotated[Optional[datetime.datetime], validate_utc_date]
+OptionalUTCDate = Annotated[datetime.datetime | None, validate_utc_date]

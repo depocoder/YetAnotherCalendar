@@ -1,6 +1,5 @@
 import datetime
 import json
-from typing import Optional
 from unittest.mock import patch
 
 import httpx
@@ -214,30 +213,30 @@ async def test_lesson_webinar_schema() -> None:
         "title": "Aboba",
         "block_title": "ABOBA",
         "starts_at": datetime.datetime(2025, 3, 11, 10, 0),
-        "ends_at": datetime.datetime(2025, 3, 11, 16, 0)
+        "ends_at": datetime.datetime(2025, 3, 11, 16, 0),
     })
 
     time_within_range = {
         "time_min": datetime.datetime(2025, 3, 11, 10, 0),
-        "time_max": datetime.datetime(2025, 3, 11, 16, 0)
+        "time_max": datetime.datetime(2025, 3, 11, 16, 0),
     }
     assert lesson_webinar.is_suitable_time(**time_within_range)
 
     time_starts_before_range = {
         "time_min": datetime.datetime(2025, 3, 11, 11, 0),
-        "time_max": datetime.datetime(2025, 3, 11, 17, 0)
+        "time_max": datetime.datetime(2025, 3, 11, 17, 0),
     }
     assert not lesson_webinar.is_suitable_time(**time_starts_before_range)
 
     time_ends_after_range = {
         "time_min": datetime.datetime(2025, 3, 11, 9, 0),
-        "time_max": datetime.datetime(2025, 3, 11, 15, 0)
+        "time_max": datetime.datetime(2025, 3, 11, 15, 0),
     }
     assert not lesson_webinar.is_suitable_time(**time_ends_after_range)
 
     time_both_outside_range = {
         "time_min": datetime.datetime(2025, 3, 11, 11, 0),
-        "time_max": datetime.datetime(2025, 3, 11, 15, 0)
+        "time_max": datetime.datetime(2025, 3, 11, 15, 0),
     }
     assert not lesson_webinar.is_suitable_time(**time_both_outside_range)
 
@@ -250,17 +249,17 @@ async def test_lesson_webinar_schema() -> None:
     ("Submit by 00..04..24", (2024, 4, 1)),
 ])
 @pytest.mark.asyncio
-async def test_lesson_task_schema_validation(title: str, date: Optional[tuple[int, int, int]]) -> None:
+async def test_lesson_task_schema_validation(title: str, date: tuple[int, int, int] | None) -> None:
     validated_lesson = schema.LessonTask.model_validate({
         "id": 1,
         "lesson_id": 101,
         "type": "homework",
         "title": title,
         "block_title": "DevOps Basics",
-        "path": "/tasks/docker-setup"
+        "path": "/tasks/docker-setup",
     })
     if date:
-        excepted_deadline = datetime.datetime(*date).astimezone(datetime.timezone.utc)
+        excepted_deadline = datetime.datetime(*date).astimezone(datetime.UTC)
     else:
         excepted_deadline = None
     assert validated_lesson.url == settings.netology_base_url + validated_lesson.path
@@ -276,24 +275,24 @@ async def test_lesson_task_schema_suitable_time() -> None:
         "title": "",
         "block_title": "DevOps Basics",
         "path": "/tasks/docker-setup",
-        "deadline": datetime.datetime(2025, 3, 15, 12, 0)
+        "deadline": datetime.datetime(2025, 3, 15, 12, 0),
     })
 
     time_deadline_within_range = {
         "time_min": datetime.datetime(2025, 3, 14, 12, 0),
-        "time_max": datetime.datetime(2025, 3, 16, 12, 0)
+        "time_max": datetime.datetime(2025, 3, 16, 12, 0),
     }
     assert lesson_task.is_suitable_time(**time_deadline_within_range)
 
     time_deadline_before_range = {
         "time_min": datetime.datetime(2025, 3, 16, 12, 0),
-        "time_max": datetime.datetime(2025, 3, 17, 12, 0)
+        "time_max": datetime.datetime(2025, 3, 17, 12, 0),
     }
     assert not lesson_task.is_suitable_time(**time_deadline_before_range)
 
     time_deadline_after_range = {
         "time_min": datetime.datetime(2025, 3, 13, 12, 0),
-        "time_max": datetime.datetime(2025, 3, 14, 12, 0)
+        "time_max": datetime.datetime(2025, 3, 14, 12, 0),
     }
     assert not lesson_task.is_suitable_time(**time_deadline_after_range)
 
@@ -341,7 +340,7 @@ async def test_calendar_response_methods(desc: str,
         lessons = json.load(f)
 
     program = schema.NetologyProgram(
-        lesson_items=lessons
+        lesson_items=lessons,
     )
 
     # Test filter_lessons()
@@ -363,7 +362,7 @@ async def test_extended_lesson_response_methods() -> None:
         lessons = json.load(f)
 
     extended_lesson_response = schema.ExtendedLessonResponse.model_validate({
-        "lesson_items": lessons
+        "lesson_items": lessons,
     })
 
     filtered_lessons = extended_lesson_response.exclude_attachment()
@@ -376,21 +375,21 @@ async def test_extended_lesson_response_methods() -> None:
     [
         (None, None),  # Test with None input
         (
-            datetime.datetime(2025, 3, 20, 10, 0, tzinfo=datetime.timezone.utc),  # Already UTC
-            datetime.datetime(2025, 3, 20, 10, 0, tzinfo=datetime.timezone.utc),  # Should remain the same
+            datetime.datetime(2025, 3, 20, 10, 0, tzinfo=datetime.UTC),  # Already UTC
+            datetime.datetime(2025, 3, 20, 10, 0, tzinfo=datetime.UTC),  # Should remain the same
         ),
         (
             datetime.datetime(2025, 3, 20, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(hours=3))),  # UTC+3
-            datetime.datetime(2025, 3, 20, 7, 0, tzinfo=datetime.timezone.utc),  # Expected conversion to UTC
+            datetime.datetime(2025, 3, 20, 7, 0, tzinfo=datetime.UTC),  # Expected conversion to UTC
         ),
-    ]
+    ],
 )
 @pytest.mark.asyncio
 async def test_detailed_program_methods(input_date: datetime.datetime, expected_date: datetime.datetime) -> None:
     program = schema.DetailedProgram.model_validate({
         "id": 1,
         "name": "DevOps Basics",
-        "start_date": input_date
+        "start_date": input_date,
     })
 
     assert program.start_date == expected_date

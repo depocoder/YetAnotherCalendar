@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from typing import Optional, Self, Annotated
+from typing import Self, Annotated
 
 import jwt
 from fastapi import HTTPException
@@ -42,7 +42,7 @@ class ModeusTimeBody(BaseModel):
             raise ValueError("Weekday time_min must be Monday.")
         if time_min.second or time_min.hour or time_min.minute:
             raise ValueError("Time must me 00:00:00.")
-        if time_min.tzinfo != datetime.timezone.utc:
+        if time_min.tzinfo != datetime.UTC:
             raise ValueError("Time must be UTC.")
         return time_min
 
@@ -53,7 +53,7 @@ class ModeusTimeBody(BaseModel):
             raise ValueError("Weekday time_max must be Sunday.")
         if time_max.hour != 23 or time_max.second != 59 or time_max.minute != 59:
             raise ValueError("Time must me 23:59:59.")
-        if time_max.tzinfo != datetime.timezone.utc:
+        if time_max.tzinfo != datetime.UTC:
             raise ValueError("Time must be UTC.")
         return time_max
 
@@ -85,7 +85,7 @@ class FullModeusPersonSearch(BaseModel):
 
 class Location(BaseModel):
     id: uuid.UUID = Field(alias="eventId")
-    custom_location: Optional[str] = Field(alias="customLocation", default=None)
+    custom_location: str | None = Field(alias="customLocation", default=None)
 
     @computed_field  # type: ignore
     @property
@@ -97,8 +97,8 @@ class Location(BaseModel):
 
 class Event(BaseModel):
     name: str = Field(alias="name")
-    name_short: Optional[str] = Field(alias="nameShort", default=None)
-    description: Optional[str] = Field(alias="description")
+    name_short: str | None = Field(alias="nameShort", default=None)
+    description: str | None = Field(alias="description")
     start_time: datetime.datetime = Field(alias="start")
     end_time: datetime.datetime = Field(alias="end")
     id: uuid.UUID
@@ -114,8 +114,8 @@ class Href(BaseModel):
 
 
 class EventLinks(BaseModel):
-    course_unit_realization: Optional[Href] = Field(alias="course-unit-realization", default=None)
-    cycle_realization: Optional[Href] = Field(alias="cycle-realization", default=None)
+    course_unit_realization: Href | None = Field(alias="course-unit-realization", default=None)
+    cycle_realization: Href | None = Field(alias="cycle-realization", default=None)
 
 
 class EventWithLinks(Event):
@@ -203,12 +203,12 @@ class ModeusCalendar(BaseModel):
 
 class StudentsSpeciality(BaseModel):
     id: uuid.UUID = Field(alias="personId")
-    flow_code: Optional[str] = Field(alias="flowCode")
+    flow_code: str | None = Field(alias="flowCode")
     learning_start_date: OptionalUTCDate = Field(alias="learningStartDate")
     learning_end_date: OptionalUTCDate = Field(alias="learningEndDate")
-    specialty_code: Optional[str] = Field(alias="specialtyCode")
-    specialty_name: Optional[str] = Field(alias="specialtyName")
-    specialty_profile: Optional[str] = Field(alias="specialtyProfile")
+    specialty_code: str | None = Field(alias="specialtyCode")
+    specialty_name: str | None = Field(alias="specialtyName")
+    specialty_profile: str | None = Field(alias="specialtyProfile")
 
 
 class ExtendedPerson(StudentsSpeciality, ShortPerson):

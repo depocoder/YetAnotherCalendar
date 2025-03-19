@@ -6,6 +6,7 @@ import httpx
 import pytest
 from fastapi import HTTPException
 from httpx import AsyncClient
+
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus import integration
 
@@ -28,13 +29,13 @@ def handler(request: httpx.Request) -> httpx.Response:
         case '/bad-request':
             return httpx.Response(400, json={"ok": False})
         case '/error-tag':
-            with open(settings.test_parent_path / "fixtures/auth_form_error_tag.html", "r") as f:
+            with open(settings.test_parent_path / "fixtures/auth_form_error_tag.html") as f:
                 return httpx.Response(200, text=f.read())
         case '/form-none':
-            with open(settings.test_parent_path / "fixtures/auth_form_none.html", "r") as f:
+            with open(settings.test_parent_path / "fixtures/auth_form_none.html") as f:
                 return httpx.Response(200, text=f.read())
         case '/form-ok':
-            with open(settings.test_parent_path / "fixtures/auth_form_ok.html", "r") as f:
+            with open(settings.test_parent_path / "fixtures/auth_form_ok.html") as f:
                 return httpx.Response(200, text=f.read())
         case _:
             return httpx.Response(200, json={"Azamat": 'Lox'})
@@ -69,7 +70,7 @@ async def test_get_auth_form_bad_request() -> None:
     client = AsyncClient(
         http2=True,
         base_url="https://utmn.modeus.org",
-        transport=transport
+        transport=transport,
     )
 
     with patch("yet_another_calendar.web.api.modeus.integration.get_post_url",
@@ -86,7 +87,7 @@ async def test_get_auth_form_with_error_tag() -> None:
     client = AsyncClient(
         http2=True,
         base_url="https://utmn.modeus.org",
-        transport=transport
+        transport=transport,
     )
 
     with patch("yet_another_calendar.web.api.modeus.integration.get_post_url",
@@ -103,7 +104,7 @@ async def test_get_auth_form_none() -> None:
     client = AsyncClient(
         http2=True,
         base_url="https://utmn.modeus.org",
-        transport=transport
+        transport=transport,
     )
 
     with patch("yet_another_calendar.web.api.modeus.integration.get_post_url",
@@ -121,7 +122,7 @@ async def test_get_auth_form_ok() -> None:
     client = AsyncClient(
         http2=True,
         base_url="https://utmn.modeus.org",
-        transport=transport
+        transport=transport,
     )
 
     with patch("yet_another_calendar.web.api.modeus.integration.get_post_url",

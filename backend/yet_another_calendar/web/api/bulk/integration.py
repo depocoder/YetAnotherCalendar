@@ -1,7 +1,8 @@
 import asyncio
 import datetime
 import logging
-from typing import Any, Iterable, Optional
+from typing import Any
+from collections.abc import Iterable
 
 import icalendar
 from fastapi import HTTPException
@@ -23,8 +24,8 @@ logger = logging.getLogger(__name__)
 
 
 def create_ics_event(title: str, starts_at: datetime.datetime, ends_at: datetime.datetime,
-                     lesson_id: Any, description: Optional[str] = None,
-                     url: Optional[str] = None) -> icalendar.Event:
+                     lesson_id: Any, description: str | None = None,
+                     url: str | None = None) -> icalendar.Event:
     event = icalendar.Event()
     dt_now = datetime.datetime.now()
     event.add('summary', title)
