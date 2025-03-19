@@ -1,13 +1,35 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
+  #  - repo: https://github.com/pre-commit/mirrors-mypy
+  #    rev: v1.15.0
+  #    hooks:
+  #      - id: mypy
+  #        additional_dependencies: [ types-pytz, types-icalendar ]
+  #        args: [ --config-file, backend/pyproject.toml, backend/yet_another_calendar/ ]
+
 
   - repo: local
     hooks:
       - id: ruff
         name: Format with Ruff
-        entry: uv run ruff
+        entry: uv --project backend run ruff
+        require_serial: true
         language: python
         types: [ python ]
-        args: [ --config, backend/pyproject.toml, check, backend/yet_another_calendar ]
+        args: [ --config, backend/pyproject.toml, check, backend/yet_another_calendar, --fix, --exit-non-zero-on-fix ]
+        additional_dependencies: [ uv ]
+
+      - id: mypy
+        name: mypy
+        entry: uv --project backend run mypy
+        require_serial: true
+        pass_filenames: true
+        language: python
+        types: [ python ]
+        'types_or': [ python, pyi ]
+        args: [
+          "--explicit-package-bases",
+          "--config-file=backend/pyproject.toml",
+        ]
         additional_dependencies: [ uv ]

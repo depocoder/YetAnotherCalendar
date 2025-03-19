@@ -55,6 +55,9 @@ uv sync
 cp .env.dist .env
 # Edit .env with your configuration
 
+# install pre-commit hooks
+uv run pre-commit install
+
 # Run the application
 uv run python -m yet_another_calendar
 ```
