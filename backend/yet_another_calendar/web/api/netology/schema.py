@@ -1,7 +1,7 @@
 import datetime
 import logging
 import re
-from typing import Optional, Annotated, Any
+from typing import Annotated, Any
 from urllib.parse import urljoin
 
 from fastapi import Header
@@ -46,7 +46,7 @@ class CoursesResponse(BaseModel):
     """Program id."""
     programs: list[NetologyProgramId]
 
-    def get_utmn_program(self) -> Optional[NetologyProgramId]:
+    def get_utmn_program(self) -> NetologyProgramId | None:
         for program in self.programs:
             if settings.netology_course_name in program.title:
                 return program
@@ -61,12 +61,12 @@ class BaseLesson(BaseModel):
 
 
 class LessonWebinar(BaseLesson):
-    starts_at: Optional[datetime.datetime] = Field(default=None)
-    ends_at: Optional[datetime.datetime] = Field(default=None)
-    status: Optional[str] = Field(default=None)
-    experts: Optional[list[dict[str, Any]]] = Field(default=None)
-    video_url: Optional[str] = None
-    webinar_url: Optional[str] = None
+    starts_at: datetime.datetime | None = Field(default=None)
+    ends_at: datetime.datetime | None = Field(default=None)
+    status: str | None = Field(default=None)
+    experts: list[dict[str, Any]] | None = Field(default=None)
+    video_url: str | None = None
+    webinar_url: str | None = None
 
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:
         """Check if lesson have suitable time"""
@@ -82,7 +82,7 @@ class LessonTask(BaseLesson):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     path: str
-    deadline: Optional[datetime.datetime] = Field(default=None)
+    deadline: datetime.datetime | None = Field(default=None)
 
     @computed_field  # type: ignore
     @property
@@ -115,7 +115,7 @@ class LessonTask(BaseLesson):
             day = "01" if day == "00" else day
             month = "01" if month == "00" else month
             normalized_date = f"{day}.{month}.{year}"
-            data['deadline'] = datetime.datetime.strptime(normalized_date, "%d.%m.%y").astimezone(datetime.timezone.utc)
+            data['deadline'] = datetime.datetime.strptime(normalized_date, "%d.%m.%y").astimezone(datetime.UTC)
         except (OverflowError, ValueError) as e:
             logger.exception(f"Error in deadline validation: {data}. Exception: {e}")
         return data
@@ -169,7 +169,7 @@ class CalendarResponse(BaseModel):
 
 class ExtendedLesson(LessonWebinar):
     passed: bool
-    experts: Optional[list[dict[str, Any]]] = Field(default=None)
+    experts: list[dict[str, Any]] | None = Field(default=None)
 
 
 class ExtendedLessonResponse(BaseModel):
