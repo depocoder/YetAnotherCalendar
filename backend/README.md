@@ -86,7 +86,7 @@ Once the application is running, you can access the Swagger UI documentation:
 - OpenAPI documentation: [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
 - ReDoc: [http://localhost:8000/api/redoc](http://localhost:8000/api/redoc)
 
-![OpenAPI Documentation](https://github.com/user-attachments/assets/03b0fd01-50ac-4d17-9001-e22d0df7cda5)
+![Swagger](https://github.com/user-attachments/assets/bca25df5-fd1a-4942-adb8-72f3f18ab178)
 
 ## 🙏 Acknowledgements
 
