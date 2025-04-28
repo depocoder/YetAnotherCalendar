@@ -20,8 +20,8 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
         endOfWeek.setDate(startOfWeek.getDate() + 6); // Вс
 
         return {
-            start: `${startOfWeek.getFullYear()}-${(startOfWeek.getMonth() + 1).toString().padStart(2, '0')}-${startOfWeek.getDate().toString().padStart(2, '0')}T00:00:00+00:00`,
-            end: `${endOfWeek.getFullYear()}-${(endOfWeek.getMonth() + 1).toString().padStart(2, '0')}-${endOfWeek.getDate().toString().padStart(2, '0')}T23:59:59+00:00`,
+            start: `${startOfWeek.getFullYear()}-${(startOfWeek.getMonth() + 1).toString().padStart(2, '0')}-${startOfWeek.getDate().toString().padStart(2, '0')}`,
+            end: `${endOfWeek.getFullYear()}-${(endOfWeek.getMonth() + 1).toString().padStart(2, '0')}-${endOfWeek.getDate().toString().padStart(2, '0')}`,
         };
     }, []);
 

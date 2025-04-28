@@ -3,7 +3,7 @@ import uuid
 from typing import Self, Annotated
 
 import jwt
-from fastapi import HTTPException
+from fastapi import HTTPException, Query
 from fastapi import Header
 from pydantic import BaseModel, Field, computed_field, model_validator, field_validator
 from starlette import status
@@ -32,12 +32,13 @@ class Creds(BaseModel):
 
 
 class ModeusTimeBody(BaseModel):
-    time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+00:00"])
-    time_max: datetime.datetime = Field(alias="timeMax", examples=["2024-09-29T23:59:59+00:00"])
+    time_min: datetime.datetime = Field(alias="timeMin")
+    time_max: datetime.datetime = Field(alias="timeMax")
 
     @field_validator("time_min")
     @classmethod
     def validate_time_min(cls, time_min: datetime.datetime) -> datetime.datetime:
+        time_min = time_min.replace(tzinfo=datetime.UTC)
         if time_min.weekday() != 0:
             raise ValueError("Weekday time_min must be Monday.")
         if time_min.second or time_min.hour or time_min.minute:
@@ -49,6 +50,8 @@ class ModeusTimeBody(BaseModel):
     @field_validator("time_max")
     @classmethod
     def validate_time_max(cls, time_max: datetime.datetime) -> datetime.datetime:
+        time_max = time_max.replace(tzinfo=datetime.UTC)
+        time_max += datetime.timedelta(hours=23, minutes=59, seconds=59)
         if time_max.weekday() != 6:
             raise ValueError("Weekday time_max must be Sunday.")
         if time_max.hour != 23 or time_max.second != 59 or time_max.minute != 59:
@@ -56,6 +59,10 @@ class ModeusTimeBody(BaseModel):
         if time_max.tzinfo != datetime.UTC:
             raise ValueError("Time must be UTC.")
         return time_max
+
+    def create_dump_date(self) -> dict[str, datetime.date]:
+        """Create dump with date."""
+        return {'timeMax': self.time_max.date(), 'timeMin': self.time_min.date()}
 
 
 # noinspection PyNestedDecorators
@@ -250,3 +257,13 @@ def get_person_id(__jwt: str) -> str:
 
 def get_cookies_from_headers(modeus_jwt_token: Annotated[str, Header()]) -> str:
     return get_person_id(modeus_jwt_token)
+
+
+async def get_time_from_query(
+        time_min: Annotated[datetime.datetime, Query(alias="timeMin")],
+        time_max: Annotated[datetime.datetime, Query(alias="timeMax")],
+) -> ModeusTimeBody:
+    return ModeusTimeBody.model_validate({
+        "timeMin": time_min,
+        "timeMax": time_max,
+    })

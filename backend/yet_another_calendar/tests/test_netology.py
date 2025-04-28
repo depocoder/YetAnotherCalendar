@@ -9,8 +9,8 @@ from httpx import AsyncClient
 from pydantic import ValidationError
 from starlette import status
 
-from yet_another_calendar.tests import handlers
 from yet_another_calendar.settings import settings
+from yet_another_calendar.tests import handlers
 from yet_another_calendar.web.api.netology import integration, schema
 
 mock_cookies = schema.NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
@@ -130,8 +130,8 @@ async def test_get_program_ids_ok() -> None:
 async def test_get_calendar_not_found() -> None:
     client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
     modeus_time_body = schema.ModeusTimeBody.model_validate({
-        "timeMin": "2024-09-23T00:00:00+00:00",
-        "timeMax": "2024-09-29T23:59:59+00:00",
+        "timeMin": "2024-09-23",
+        "timeMax": "2024-09-29",
     })
 
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
@@ -143,29 +143,26 @@ async def test_get_calendar_not_found() -> None:
 
 @pytest.mark.asyncio
 async def test_modeus_time_body() -> None:
-    with pytest.raises(ValidationError) as exc_info:
+    with pytest.raises(ValueError) as exc_info:
         schema.ModeusTimeBody.model_validate({
-            "timeMin": "2024-09-23T00:00:00+03:00",
-            "timeMax": "2028-09-10T23:59:59+03:00",
+            "timeMin": "2025-04-29",
+            "timeMax": "2025-05-04",
         })
 
-    assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
-    assert "Time must be UTC" in str(exc_info.value)
+    assert "1 validation error for ModeusTimeBody" in str(exc_info.value)
 
-    with pytest.raises(ValidationError) as exc_info:
+    with pytest.raises(ValueError) as exc_info:
         schema.ModeusTimeBody.model_validate({
-            "timeMin": "2024-09-23T15:34:53+00:00",
-            "timeMax": "2028-09-10T23:56:54+00:00",
+            "timeMin": "2024-09-23",
+            "timeMax": "2024-09-30",
         })
 
-    assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
-    assert "Time must me 00:00:00" in str(exc_info.value)
-    assert "Time must me 23:59:59" in str(exc_info.value)
+    assert "1 validation error for ModeusTimeBody" in str(exc_info.value)
 
     with pytest.raises(ValidationError) as exc_info:
         schema.ModeusTimeBody.model_validate({
-            "timeMin": "2024-09-24T15:34:53+00:00",
-            "timeMax": "2028-09-11T23:59:59+00:00",
+            "timeMin": "2024-09-24",
+            "timeMax": "2028-09-15",
         })
 
     assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
@@ -177,8 +174,8 @@ async def test_modeus_time_body() -> None:
 async def test_get_calendar_ok() -> None:
     client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
     modeus_time_body = schema.ModeusTimeBody.model_validate({
-        "timeMin": "2024-09-23T00:00:00+00:00",
-        "timeMax": "2028-09-10T23:59:59+00:00",
+        "timeMin": "2024-09-23",
+        "timeMax": "2028-09-10",
     })
 
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient.__aenter__", return_value=client):
