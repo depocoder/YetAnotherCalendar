@@ -73,15 +73,10 @@ const apiRequest = async (endpoint, {
     lxpId
 }) => {
     // Формируем тело запроса
-    const requestBody = {
-        timeMin: timeMin,
-        timeMax: timeMax
-    };
 
     try {
-        const response = await axios.post(
-            `${BACKEND_URL}${endpoint}?calendar_id=${calendarId}&time_zone=${timeZone}`,
-            requestBody,
+        const response = await axios.get(
+            `${BACKEND_URL}${endpoint}?calendar_id=${calendarId}&time_zone=${timeZone}&timeMin=${timeMin}&timeMax=${timeMax}`,
             {
                 headers: {
                     'Content-Type': 'application/json',

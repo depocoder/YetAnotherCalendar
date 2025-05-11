@@ -12,9 +12,9 @@ from . import schema
 router = APIRouter()
 
 
-@router.post("/events/")
+@router.get("/events/")
 async def get_calendar(
-        body: schema.ModeusTimeBody,
+        body: Annotated[schema.ModeusTimeBody, Depends(schema.get_time_from_query)],
         modeus_jwt_token: Annotated[str, Header()],
         person_id: Annotated[str, Depends(schema.get_cookies_from_headers)],
 ) -> list[schema.FullEvent]:
@@ -22,7 +22,7 @@ async def get_calendar(
     Get events from Modeus.
     """
     full_body = schema.ModeusEventsBody.model_validate(
-        {**body.model_dump(by_alias=True), 'attendeePersonId': [person_id]},
+        {**body.create_dump_date(), 'attendeePersonId': [person_id]},
     )
     return await integration.get_events(full_body, modeus_jwt_token)
 

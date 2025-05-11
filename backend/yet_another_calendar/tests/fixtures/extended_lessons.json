@@ -1,0 +1,39 @@
+[
+  {
+    "id": 1,
+    "lesson_id": 100,
+    "type": "webinar",
+    "title": "Live Lecture",
+    "starts_at": "2025-03-19T14:00:00Z",
+    "ends_at": "2025-03-19T16:00:00Z",
+    "block_title": "Webinar Series",
+    "passed": true,
+    "experts": [
+      {
+        "name": "Expert 1"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "lesson_id": 200,
+    "type": "attachment",
+    "title": "Lecture Notes",
+    "starts_at": "2025-03-19T14:00:00Z",
+    "ends_at": "2025-03-19T16:00:00Z",
+    "block_title": "Webinar Series",
+    "passed": false,
+    "experts": null
+  },
+  {
+    "id": 3,
+    "lesson_id": 300,
+    "type": "task",
+    "title": "Assignment 1",
+    "starts_at": "2025-03-20T10:00:00Z",
+    "ends_at": "2025-03-20T12:00:00Z",
+    "block_title": "Assignments",
+    "passed": false,
+    "experts": null
+  }
+]
