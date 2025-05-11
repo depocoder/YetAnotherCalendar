@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from typing import Self, Annotated
+from typing import Self, Annotated, Any
 
 import jwt
 from fastapi import HTTPException
@@ -56,11 +56,16 @@ class ModeusTimeBody(BaseModel):
         return time_max
 
 
+
+
 # noinspection PyNestedDecorators
 class ModeusEventsBody(ModeusTimeBody):
     """Modeus search events body."""
     size: int = Field(default=50)
     attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId")
+
+    # def __init__(self, datetime: datetime.datetime, asd):
+    #     self.datetime_min = datetime.day.
 
     @model_validator(mode='after')
     def check_delta_days(self) -> Self:
@@ -71,6 +76,10 @@ class ModeusEventsBody(ModeusTimeBody):
         if delta.days != 6:
             raise ValueError("Defence between dates must be 7 days.")
         return self
+
+
+class _ModeusEventsBodyWithFilter(ModeusEventsBody):
+    events_filter: dict[str, Any] | None = Field(default=None, alias="eventsFilter")
 
 
 class FullModeusPersonSearch(BaseModel):
@@ -259,5 +268,13 @@ def get_person_id(__jwt: str) -> str:
             detail="Modeus error. Can't decode token", status_code=status.HTTP_400_BAD_REQUEST,
         ) from None
 
+
 def get_cookies_from_headers(modeus_jwt_token: Annotated[str, Header()]) -> str:
     return get_person_id(modeus_jwt_token)
+
+
+class FilteredDayEventsRequest(BaseModel):
+    date: datetime.datetime
+    learning_start_year: list[int] | None = None #Field(examples=["2024"]) # "2024"
+    specialty_code: list[str] | None = None #Field(examples=["09.03.02"]) #"09.03.02"
+    profile_name: list[str] | None = None #Field(examples=["Разработка IT-продуктов и информационных систем"]) #"Разработка IT-продуктов и информационных систем"

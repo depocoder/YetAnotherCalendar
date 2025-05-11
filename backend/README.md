@@ -46,7 +46,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Clone the repository
 git clone https://github.com/depocoder/YetAnotherCalendar.git
-cd YetAnotherCalendar
+cd YetAnotherCalendar/backend
 
 # Install dependencies
 uv sync
@@ -74,7 +74,7 @@ cp .env.dist .env
 # Edit .env with your configuration
 
 # Start the services
-docker compose up --build -d
+docker-compose up --build -d
 ```
 
 ## 📖 Documentation
