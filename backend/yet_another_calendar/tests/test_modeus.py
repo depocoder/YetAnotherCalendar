@@ -9,7 +9,6 @@ from httpx import AsyncClient, HTTPStatusError
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus import integration, schema
-from yet_another_calendar.tests import handlers
 
 
 def handler(request: httpx.Request) -> httpx.Response:
@@ -145,7 +144,7 @@ async def test_get_auth_form_ok() -> None:
 @pytest.mark.skip(reason="problems with mocking response.text")
 @typing.no_type_check
 async def test_login_bad_request() -> None:
-    client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.bad_request_transport)
+    # client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.bad_request_transport)
 
     mock_response = MagicMock()
     mock_response.text = open(settings.test_parent_path / "fixtures/auth_form_ok.html").read()
@@ -159,10 +158,8 @@ async def test_login_bad_request() -> None:
 
     with patch("yet_another_calendar.web.api.modeus.integration.get_auth_form",
                return_value=valid_auth_form):
-        with pytest.raises(HTTPStatusError) as exc_info:
+        with pytest.raises(HTTPStatusError):
             await integration.login("Azamat", "Azamat_12345")
-
-    print(exc_info)
 
 
 @pytest.mark.asyncio
@@ -170,7 +167,7 @@ async def test_login_bad_request() -> None:
     "https://example.com/page?no_token_here=true",
     "https://example.com/page?user=abc&value=123",
 ])
-async def test_extract_token_from_url_none_return(url):
+async def test_extract_token_from_url_none_return(url: str) -> None:
     # Should return None safely (no match, so broken line not reached)
     assert integration._extract_token_from_url(url) is None
 
@@ -180,20 +177,20 @@ async def test_extract_token_from_url_none_return(url):
     ("https://example.com/callback?id_token=abc123-def456.ghi789_xyz", "abc123-def456.ghi789_xyz"),
     ("https://example.com/page?id_token=tok-en.123_456&other=1", "tok-en.123_456"),
 ])
-async def test_extract_token_from_url_raises_typeerror(url, expected_token):
+async def test_extract_token_from_url_raises_typeerror(url: str, expected_token: str) -> None:
     # Match is found -> code reaches broken line -> TypeError
 
     assert integration._extract_token_from_url(url) == expected_token
 
 
 @pytest.mark.asyncio
-async def test_post_modeus_unauthorized():
+async def test_post_modeus_unauthorized() -> None:
     client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=transport)
     body = schema.ModeusEventsBody.model_validate({
         "timeMin": "2024-09-23",
         "timeMax": "2024-09-29",
         "size": 50,
-        "attendeePersonId": ["307ad0dd-7211-4152-b0db-d6242b6c81f0", "47124e24-1c6c-40ae-ba89-49503d8e9a3c"]
+        "attendeePersonId": ["307ad0dd-7211-4152-b0db-d6242b6c81f0", "47124e24-1c6c-40ae-ba89-49503d8e9a3c"],
     })
 
     with patch("yet_another_calendar.web.api.modeus.integration.AsyncClient.__aenter__", return_value=client):
@@ -206,13 +203,13 @@ async def test_post_modeus_unauthorized():
 
 
 @pytest.mark.asyncio
-async def test_post_modeus_ok():
+async def test_post_modeus_ok() -> None:
     client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=transport)
     body = schema.ModeusEventsBody.model_validate({
         "timeMin": "2024-09-23",
         "timeMax": "2024-09-29",
         "size": 50,
-        "attendeePersonId": ["307ad0dd-7211-4152-b0db-d6242b6c81f0", "47124e24-1c6c-40ae-ba89-49503d8e9a3c"]
+        "attendeePersonId": ["307ad0dd-7211-4152-b0db-d6242b6c81f0", "47124e24-1c6c-40ae-ba89-49503d8e9a3c"],
     })
 
     with patch("yet_another_calendar.web.api.modeus.integration.AsyncClient.__aenter__", return_value=client):
