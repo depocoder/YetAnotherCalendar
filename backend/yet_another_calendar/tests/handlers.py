@@ -28,7 +28,7 @@ def _bad_handler(request: httpx.Request) -> httpx.Response:
         "/backend/api/server_problem": get_httpx_response(500, {}),
         settings.netology_sign_in_part: get_httpx_response(401, {"detail": "Unauthorized"}),
         settings.netology_get_events_part.format(program_id=2): get_httpx_response(404, {}),
-        settings.modeus_continue_auth_url: get_httpx_response(400, {"detail": "Bad request"})
+        settings.modeus_continue_auth_url: get_httpx_response(400, {"detail": "Bad request"}),
     }
 
     case = response_cases.get(request.url.path)
