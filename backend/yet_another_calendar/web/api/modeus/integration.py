@@ -9,7 +9,7 @@ import reretry
 from bs4 import BeautifulSoup, Tag
 from fastapi import HTTPException
 from fastapi_cache.decorator import cache
-from httpx import URL, AsyncClient
+from httpx import URL, AsyncClient, Response
 from starlette import status
 
 from yet_another_calendar.settings import settings
@@ -17,6 +17,8 @@ from .schema import (
     ModeusCalendar,
     FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusEventsBody,
 )
+
+from ...cache_builder import key_builder
 
 logger = logging.getLogger(__name__)
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
@@ -152,6 +154,27 @@ async def get_events(
     response = await post_modeus(__jwt, body, settings.modeus_search_events_part)
     modeus_calendar = ModeusCalendar.model_validate_json(response)
     return modeus_calendar.serialize_modeus_response()
+
+
+
+@cache(expire=settings.redis_events_time_live, key_builder=key_builder)
+async def get_day_events(token: str, payload: dict[str, Any]) -> list[dict[str, Any]]:
+    """
+    Запрашивает календарь Modeus на один день.
+
+    :param token: Bearer-токен (без префикса «Bearer »).
+    :param payload: Тело запроса, сформированное DayEventsRequest.to_search_payload().
+    :return: Список событий в «сыро́м» формате Modeus.
+    """
+
+    async with AsyncClient(http2=True, base_url=settings.modeus_base_url, follow_redirects=True, timeout=30) as client:
+        client.headers["Authorization"] = f"Bearer {token}"
+        client.headers["content-type"] = "application/json"
+        client.headers["Accept"] = "application/json"
+        resp: Response = await client.post(settings.modeus_search_events_part, json=payload)
+        resp.raise_for_status()
+        modeus_calendar = ModeusCalendar.model_validate_json(resp.text)
+        return modeus_calendar.serialize_modeus_response()
 
 
 async def get_people(
