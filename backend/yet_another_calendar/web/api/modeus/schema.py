@@ -1,4 +1,5 @@
 import datetime
+from datetime import date, time
 import uuid
 from typing import Self, Annotated, Any
 
@@ -78,8 +79,26 @@ class ModeusEventsBody(ModeusTimeBody):
         return self
 
 
-class _ModeusEventsBodyWithFilter(ModeusEventsBody):
-    events_filter: dict[str, Any] | None = Field(default=None, alias="eventsFilter")
+class DayEventsRequest(BaseModel):
+    """Тело запроса от клиента - «дай расписание на конкретный день»."""
+    date: date
+    learning_start_year: list[int] = Field(..., alias="learningStartYear", min_items=1)
+    profile_name: list[str] = Field(..., alias="profileName", min_items=1)
+    specialty_code: list[str] = Field(..., alias="specialtyCode", min_items=1)
+
+    # Конвертация в payload, который ждёт Modeus-API
+    def to_search_payload(self) -> dict[str, Any]:
+        utc = datetime.UTC
+        time_min = datetime.datetime.combine(self.date, time.min, tzinfo=utc)
+        # time.max = 23:59:59.999999 → отбрасываем микросекунды
+        time_max = datetime.datetime.combine(self.date, time.max.replace(microsecond=0), tzinfo=utc)
+        return {
+            "timeMin": time_min.isoformat(),
+            "timeMax": time_max.isoformat(),
+            "learningStartYear": self.learning_start_year,
+            "profileName": self.profile_name,
+            "specialtyCode": self.specialty_code,
+        }
 
 
 class FullModeusPersonSearch(BaseModel):
