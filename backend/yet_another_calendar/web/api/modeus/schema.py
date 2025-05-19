@@ -175,7 +175,7 @@ class ModeusCalendar(BaseModel):
 
     embedded: CalendarEmbedded = Field(alias="_embedded")
 
-    def serialize_modeus_response(self) -> list[FullEvent]:
+    def serialize_modeus_response(self, skip_lxp: bool = True) -> list[FullEvent]:
         """Serialize calendar api response from modeus."""
         locations = {location.id: location for location in self.embedded.locations}
         teachers = {teacher.id: teacher for teacher in self.embedded.people}
@@ -198,7 +198,7 @@ class ModeusCalendar(BaseModel):
                 course_name = 'unknown'
                 teacher_full_name = 'unknown'
             location = locations[event.id]
-            if location.is_lxp:
+            if skip_lxp and location.is_lxp:
                 continue
             full_events.append(FullEvent(**{
                 "teacher_full_name": teacher_full_name, "course_name": course_name,
@@ -243,6 +243,25 @@ class SearchPeople(BaseModel):
                 **teacher_event.model_dump(by_alias=True), **person.model_dump(by_alias=True),
             }))
         return extended_people
+
+
+class DayEventsRequest(BaseModel):
+    date: datetime.date
+    learning_start_year: list[int] = Field(..., alias="learningStartYear", examples=[[2024]])
+    profile_name:        list[str] = Field(..., alias="profileName", examples=[["Разработка IT-продуктов и информационных систем"]])
+    specialty_code:      list[str] = Field(..., alias="specialtyCode", examples=[["09.03.02"]])
+
+    def to_search_payload(self) -> dict[str, object]:
+        utc = datetime.UTC
+        t_min = datetime.datetime.combine(self.date, datetime.time.min, tzinfo=utc)
+        t_max = datetime.datetime.combine(self.date, datetime.time.max.replace(microsecond=0), tzinfo=utc)
+        return {
+            "timeMin": t_min.isoformat(),
+            "timeMax": t_max.isoformat(),
+            "learningStartYear": self.learning_start_year,
+            "profileName": self.profile_name,
+            "specialtyCode": self.specialty_code,
+        }
 
 
 def get_person_id(__jwt: str) -> str:

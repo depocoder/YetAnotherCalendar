@@ -27,6 +27,20 @@ async def get_calendar(
     return await integration.get_events(full_body, modeus_jwt_token)
 
 
+@router.post(
+    "/day-events/",
+    summary="The group's schedule for the day",
+    response_rescription="Get daily Modeus Events with specific filters"
+    response_model=list[schema.FullEvent],
+)
+async def day_events(
+    body: schema.DayEventsRequest,
+    modeus_jwt_token: Annotated[str, Header(alias="modeus-jwt-token")],
+):
+    return await integration.get_day_events(modeus_jwt_token, body.to_search_payload())
+
+
+
 @router.post("/auth/")
 async def auth(
         creds: schema.Creds,
