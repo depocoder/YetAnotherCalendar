@@ -9,51 +9,15 @@ from httpx import AsyncClient, HTTPStatusError
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus import integration, schema
-
-
-def handler(request: httpx.Request) -> httpx.Response:
-    match request.url.path:
-        case '/schedule-calendar/assets/app.config.json':
-            file_path, status_code = ("fixtures/app_config.json", 200)
-
-            if request.headers.get("invalid_app_config"):
-                file_path, status_code = ("fixtures/wrong_app_config.json", 500)
-
-            with open(settings.test_parent_path / file_path) as f:
-                response_json = json.load(f)
-                return httpx.Response(status_code, json=response_json)
-        case '/oauth2/authorize':
-            if request.headers.get("invalid_authorize"):
-                return httpx.Response(400, headers={"Location": ""})  # todo: fix
-            return httpx.Response(302, headers={"Location": "https://fs.utmn.ru/adfs/ls?aboba=true"})
-        case '/bad-request':
-            return httpx.Response(400, json={"ok": False})
-        case '/unauthorized':
-            return httpx.Response(401, json={"ok": False})
-        case '/ok':
-            return httpx.Response(201, json={"ok": True})
-        case '/error-tag':
-            with open(settings.test_parent_path / "fixtures/auth_form_error_tag.html") as f:
-                return httpx.Response(200, text=f.read())
-        case '/form-none':
-            with open(settings.test_parent_path / "fixtures/auth_form_none.html") as f:
-                return httpx.Response(200, text=f.read())
-        case '/form-ok':
-            with open(settings.test_parent_path / "fixtures/auth_form_ok.html") as f:
-                return httpx.Response(200, text=f.read())
-        case _:
-            return httpx.Response(200, json={"Azamat": 'Lox'})
-
-
-transport = httpx.MockTransport(handler)
+from . import handlers
 
 
 @pytest.mark.asyncio
 async def test_get_post_url_invalid_app_config() -> None:
     client = AsyncClient(http2=True,
                          base_url="https://utmn.modeus.org",
-                         transport=transport,
-                         headers={"invalid_app_config": "1"})
+                         transport=handlers.bad_request_transport,
+                         )
 
     with pytest.raises(KeyError) as exc_info:
         await integration.get_post_url(client)
@@ -63,7 +27,7 @@ async def test_get_post_url_invalid_app_config() -> None:
 
 @pytest.mark.asyncio
 async def test_get_post_url_ok() -> None:
-    client = AsyncClient(http2=True, base_url="https://utmn.modeus.org", transport=transport)
+    client = AsyncClient(http2=True, base_url="https://utmn.modeus.org", transport=handlers.transport)
     post_url = await integration.get_post_url(client)
 
     assert str(post_url) == "https://fs.utmn.ru/adfs/ls?aboba=true"
@@ -74,7 +38,7 @@ async def test_get_auth_form_bad_request() -> None:
     client = AsyncClient(
         http2=True,
         base_url="https://utmn.modeus.org",
-        transport=transport,
+        transport=handlers.bad_request_transport,
     )
 
     with patch("yet_another_calendar.web.api.modeus.integration.get_post_url",
@@ -91,7 +55,7 @@ async def test_get_auth_form_with_error_tag() -> None:
     client = AsyncClient(
         http2=True,
         base_url="https://utmn.modeus.org",
-        transport=transport,
+        transport=handlers.bad_request_transport,
     )
 
     with patch("yet_another_calendar.web.api.modeus.integration.get_post_url",
@@ -108,7 +72,7 @@ async def test_get_auth_form_none() -> None:
     client = AsyncClient(
         http2=True,
         base_url="https://utmn.modeus.org",
-        transport=transport,
+        transport=handlers.bad_request_transport,
     )
 
     with patch("yet_another_calendar.web.api.modeus.integration.get_post_url",
@@ -126,7 +90,7 @@ async def test_get_auth_form_ok() -> None:
     client = AsyncClient(
         http2=True,
         base_url="https://utmn.modeus.org",
-        transport=transport,
+        transport=handlers.transport,
     )
 
     with patch("yet_another_calendar.web.api.modeus.integration.get_post_url",
@@ -185,7 +149,7 @@ async def test_extract_token_from_url_raises_typeerror(url: str, expected_token:
 
 @pytest.mark.asyncio
 async def test_post_modeus_unauthorized() -> None:
-    client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=transport)
+    client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.bad_request_transport)
     body = schema.ModeusEventsBody.model_validate({
         "timeMin": "2024-09-23",
         "timeMax": "2024-09-29",
@@ -197,14 +161,13 @@ async def test_post_modeus_unauthorized() -> None:
         with pytest.raises(HTTPException) as exc_info:
             await integration.post_modeus("a.b.c", body, "/unauthorized")
 
-    assert exc_info
     assert exc_info.value.detail == "Modeus token expired!"
     assert exc_info.value.status_code == 401
 
 
 @pytest.mark.asyncio
 async def test_post_modeus_ok() -> None:
-    client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=transport)
+    client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.transport)
     body = schema.ModeusEventsBody.model_validate({
         "timeMin": "2024-09-23",
         "timeMax": "2024-09-29",
@@ -216,3 +179,79 @@ async def test_post_modeus_ok() -> None:
         response_text = await integration.post_modeus("a.b.c", body, "/ok")
 
     assert json.loads(response_text) == {"ok": True}
+
+
+@pytest.mark.asyncio
+async def test_get_events_unauthorized() -> None:
+    client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.bad_request_transport)
+    body = schema.ModeusEventsBody.model_validate({
+        "timeMin": "2024-09-23",
+        "timeMax": "2024-09-29",
+        "size": 50,
+        "attendeePersonId": ["307ad0dd-7211-4152-b0db-d6242b6c81f0", "47124e24-1c6c-40ae-ba89-49503d8e9a3c"],
+    })
+
+    with patch("yet_another_calendar.web.api.modeus.integration.AsyncClient.__aenter__", return_value=client):
+        with pytest.raises(HTTPException) as exc_info:
+            _ = await integration.get_events(body, "a.b.c")
+
+    assert exc_info.value.detail == "Modeus token expired!"
+    assert exc_info.value.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_get_events_ok() -> None:
+    client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.transport)
+    body = schema.ModeusEventsBody.model_validate({
+        "timeMin": "2024-09-23",
+        "timeMax": "2024-09-29",
+        "size": 50,
+        "attendeePersonId": ["307ad0dd-7211-4152-b0db-d6242b6c81f0", "47124e24-1c6c-40ae-ba89-49503d8e9a3c"],
+    })
+
+    with patch("yet_another_calendar.web.api.modeus.integration.AsyncClient.__aenter__", return_value=client):
+        events = await integration.get_events(body, "a.b.c")
+
+    assert len(events) == 5
+    assert events[0].custom_location == "Нетология"
+    assert str(events[1].id) == "6859c910-da4f-4ba1-954a-8017b1a13f91"
+    assert not events[2].is_lxp
+    assert events[3].name == "Контрольная работа 3."
+    assert events[4].course_name == "Технологии анимации"
+
+
+@pytest.mark.asyncio
+async def test_get_people_empty_response() -> None:
+    client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.bad_request_transport)
+
+    body = schema.FullModeusPersonSearch.model_validate({
+        "fullName": "Комаев Олег Азаматович",
+        "sort": "+fullName",
+        "size": 10,
+        "page": 0,
+    })
+
+    with patch("yet_another_calendar.web.api.modeus.integration.AsyncClient.__aenter__", return_value=client):
+        filtered_people = await integration.get_people("a.b.c", body)
+
+    assert filtered_people == []
+
+
+@pytest.mark.asyncio
+async def test_get_people_ok() -> None:
+    client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.transport)
+
+    body = schema.FullModeusPersonSearch.model_validate({
+        "fullName": "Комаев Азамат Олегович",
+        "sort": "+fullName",
+        "size": 12345,
+        "page": 0,
+    })
+
+    with patch("yet_another_calendar.web.api.modeus.integration.AsyncClient.__aenter__", return_value=client):
+        filtered_people = await integration.get_people("a.b.c", body)
+
+    assert len(filtered_people) == 1
+    assert str(filtered_people[0].id) == "d69c87c8-aece-4f39-b6a2-7b467b968211"
+    assert filtered_people[0].full_name == "Комаев Азамат Олегович"
+    assert filtered_people[0].specialty_code == "09.03.02"
