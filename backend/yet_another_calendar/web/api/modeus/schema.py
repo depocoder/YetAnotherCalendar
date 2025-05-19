@@ -1,7 +1,6 @@
 import datetime
-from datetime import date, time
 import uuid
-from typing import Self, Annotated, Any
+from typing import Self, Annotated
 
 import jwt
 from fastapi import HTTPException
@@ -57,16 +56,11 @@ class ModeusTimeBody(BaseModel):
         return time_max
 
 
-
-
 # noinspection PyNestedDecorators
 class ModeusEventsBody(ModeusTimeBody):
     """Modeus search events body."""
     size: int = Field(default=50)
     attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId")
-
-    # def __init__(self, datetime: datetime.datetime, asd):
-    #     self.datetime_min = datetime.day.
 
     @model_validator(mode='after')
     def check_delta_days(self) -> Self:
@@ -77,28 +71,6 @@ class ModeusEventsBody(ModeusTimeBody):
         if delta.days != 6:
             raise ValueError("Defence between dates must be 7 days.")
         return self
-
-
-class DayEventsRequest(BaseModel):
-    """Тело запроса от клиента - «дай расписание на конкретный день»."""
-    date: date
-    learning_start_year: list[int] = Field(..., alias="learningStartYear", min_items=1)
-    profile_name: list[str] = Field(..., alias="profileName", min_items=1)
-    specialty_code: list[str] = Field(..., alias="specialtyCode", min_items=1)
-
-    # Конвертация в payload, который ждёт Modeus-API
-    def to_search_payload(self) -> dict[str, Any]:
-        utc = datetime.UTC
-        time_min = datetime.datetime.combine(self.date, time.min, tzinfo=utc)
-        # time.max = 23:59:59.999999 → отбрасываем микросекунды
-        time_max = datetime.datetime.combine(self.date, time.max.replace(microsecond=0), tzinfo=utc)
-        return {
-            "timeMin": time_min.isoformat(),
-            "timeMax": time_max.isoformat(),
-            "learningStartYear": self.learning_start_year,
-            "profileName": self.profile_name,
-            "specialtyCode": self.specialty_code,
-        }
 
 
 class FullModeusPersonSearch(BaseModel):
@@ -194,7 +166,7 @@ class ModeusCalendar(BaseModel):
 
     embedded: CalendarEmbedded = Field(alias="_embedded")
 
-    def serialize_modeus_response(self) -> list[FullEvent]:
+    def serialize_modeus_response(self, skip_lxp: bool = True) -> list[FullEvent]:
         """Serialize calendar api response from modeus."""
         locations = {location.id: location for location in self.embedded.locations}
         teachers = {teacher.id: teacher for teacher in self.embedded.people}
@@ -217,7 +189,7 @@ class ModeusCalendar(BaseModel):
                 course_name = 'unknown'
                 teacher_full_name = 'unknown'
             location = locations[event.id]
-            if location.is_lxp:
+            if skip_lxp and location.is_lxp:
                 continue
             full_events.append(FullEvent(**{
                 "teacher_full_name": teacher_full_name, "course_name": course_name,
@@ -278,6 +250,25 @@ class SearchPeople(BaseModel):
         return extended_people
 
 
+class DayEventsRequest(BaseModel):
+    date: datetime.date
+    learning_start_year: list[int] = Field(..., alias="learningStartYear", examples=[[2024]])
+    profile_name:        list[str] = Field(..., alias="profileName", examples=[["Разработка IT-продуктов и информационных систем"]])
+    specialty_code:      list[str] = Field(..., alias="specialtyCode", examples=[["09.03.02"]])
+
+    def to_search_payload(self) -> dict[str, object]:
+        utc = datetime.UTC
+        t_min = datetime.datetime.combine(self.date, datetime.time.min, tzinfo=utc)
+        t_max = datetime.datetime.combine(self.date, datetime.time.max.replace(microsecond=0), tzinfo=utc)
+        return {
+            "timeMin": t_min.isoformat(),
+            "timeMax": t_max.isoformat(),
+            "learningStartYear": self.learning_start_year,
+            "profileName": self.profile_name,
+            "specialtyCode": self.specialty_code,
+        }
+
+
 def get_person_id(__jwt: str) -> str:
     try:
         decoded_token = jwt.decode(__jwt, options={"verify_signature": False})
@@ -287,13 +278,5 @@ def get_person_id(__jwt: str) -> str:
             detail="Modeus error. Can't decode token", status_code=status.HTTP_400_BAD_REQUEST,
         ) from None
 
-
 def get_cookies_from_headers(modeus_jwt_token: Annotated[str, Header()]) -> str:
     return get_person_id(modeus_jwt_token)
-
-
-class FilteredDayEventsRequest(BaseModel):
-    date: datetime.datetime
-    learning_start_year: list[int] | None = None #Field(examples=["2024"]) # "2024"
-    specialty_code: list[str] | None = None #Field(examples=["09.03.02"]) #"09.03.02"
-    profile_name: list[str] | None = None #Field(examples=["Разработка IT-продуктов и информационных систем"]) #"Разработка IT-продуктов и информационных систем"
