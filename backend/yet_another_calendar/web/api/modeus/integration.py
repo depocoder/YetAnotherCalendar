@@ -8,7 +8,6 @@ import httpx
 import reretry
 from bs4 import BeautifulSoup, Tag
 from fastapi import HTTPException
-from fastapi_cache.decorator import cache
 from httpx import URL, AsyncClient
 from starlette import status
 
