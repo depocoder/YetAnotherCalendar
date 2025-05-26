@@ -71,7 +71,6 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
 
 
 @reretry.retry(exceptions=httpx.TransportError, tries=settings.retry_tries, delay=settings.retry_delay)
-@cache(expire=settings.redis_jwt_time_live)
 async def login(username: str, __password: str, timeout: int = 15) -> str:
     """
     Log in Modeus.
