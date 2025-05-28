@@ -1,5 +1,9 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+
+default_language_version:
+  python: python3.12
+
 repos:
   - repo: local
     hooks:
@@ -28,7 +32,7 @@ repos:
 
       - id: pytest
         name: pytest
-        entry: uv --project backend run pytest
+        entry: uv --project backend run pytest -v
         require_serial: true
         pass_filenames: true
         language: python
