@@ -60,8 +60,8 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 --push ./frontend \
                        --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:latest \
                        --tag $REGISTRY_URL/$REGISTRY_USERNAME/yet_another_calendar_frontend:$IMAGE_TAG \
-                       --cache-to   type=s3,endpoint_url=$S3_ENDPOINT_URL,bucket=$BUCKET_NAME,name=calendar_frontend,access_key_id=$ACCESS_KEY,secret_access_key=$SECRET_KEY \
-                       --cache-from type=s3,endpoint_url=$S3_ENDPOINT_URL,bucket=$BUCKET_NAME,name=calendar_frontend,access_key_id=$ACCESS_KEY,secret_access_key=$SECRET_KEY
+                       --cache-to   type=s3,region=$S3_REGION,bucket=$BUCKET_NAME,name=calendar_frontend,access_key_id=$ACCESS_KEY,secret_access_key=$SECRET_KEY \
+                       --cache-from type=s3,region=$S3_REGION,bucket=$BUCKET_NAME,name=calendar_frontend,access_key_id=$ACCESS_KEY,secret_access_key=$SECRET_KEY
 
   deploy:
     runs-on: ubuntu-latest
