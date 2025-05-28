@@ -4,6 +4,7 @@ import re
 from secrets import token_hex
 from typing import Any
 
+from ...cache_builder import key_builder
 import httpx
 import reretry
 from bs4 import BeautifulSoup, Tag
@@ -13,8 +14,8 @@ from starlette import status
 
 from yet_another_calendar.settings import settings
 from .schema import (
-    ModeusCalendar,
-    FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusEventsBody,
+    ModeusCalendar, FullEvent, FullModeusPersonSearch,
+    SearchPeople, ExtendedPerson, ModeusEventsBody,
 )
 
 logger = logging.getLogger(__name__)
@@ -150,6 +151,21 @@ async def get_events(
     response = await post_modeus(__jwt, body, settings.modeus_search_events_part)
     modeus_calendar = ModeusCalendar.model_validate_json(response)
     return modeus_calendar.serialize_modeus_response()
+
+
+@cache(expire=settings.redis_events_time_live, key_builder=key_builder)
+async def get_day_events(jwt: str, payload: dict[str, object]) -> list[FullEvent]:
+    headers = {
+        "Authorization": f"Bearer {jwt}",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    }
+    async with AsyncClient(base_url=settings.modeus_base_url, timeout=30) as client:
+        resp = await client.post(settings.modeus_search_events_part, json=payload, headers=headers)
+        resp.raise_for_status()
+
+    calendar = ModeusCalendar.model_validate_json(resp.text)
+    return calendar.serialize_modeus_response(skip_lxp=False)
 
 
 async def get_people(
