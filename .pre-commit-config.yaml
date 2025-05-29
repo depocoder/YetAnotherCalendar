@@ -34,7 +34,7 @@ repos:
         name: pytest
         entry: uv --project backend run pytest -v
         require_serial: true
-        pass_filenames: true
+        pass_filenames: false
         language: python
         types: [ python ]
         'types_or': [ python, pyi ]
