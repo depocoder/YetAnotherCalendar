@@ -40,16 +40,7 @@ async def day_events(
     events = await integration.get_day_events(modeus_jwt_token, body.to_search_payload())
     assert isinstance(events, list), "Expected list[FullEvent], got unexpected type"
     return events
-'''
-# Previous version
-async def day_events(
-    body: schema.DayEventsRequest,
-    modeus_jwt_token: Annotated[str, Header(alias="modeus-jwt-token")],
-) -> list[schema.FullEvent]:
-    return await integration.get_day_events(modeus_jwt_token, body.to_search_payload())
-    assert isinstance(result, list), "Expected list[FullEvent], got unexpected type"
-    return result
-'''
+
 
 
 

@@ -8,7 +8,8 @@ from yarl import URL
 
 TEMP_DIR = Path(gettempdir())
 env = Env()
-env.read_env()
+#env.read_env()   # Trying to fix pytest problem with env and pydantic env declaration
+                  # upd: It actually worked
 
 
 class LogLevel(str, enum.Enum):

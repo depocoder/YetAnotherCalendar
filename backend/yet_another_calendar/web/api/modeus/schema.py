@@ -252,13 +252,13 @@ class SearchPeople(BaseModel):
 
 class DayEventsRequest(BaseModel):
     date: datetime.date
-    learning_start_year: list[int] = Field(..., alias="learningStartYear", examples=[[2024]])
+    learning_start_year: list[int] = Field(alias="learningStartYear", examples=[[2024]])
     profile_name: list[str] = Field(
-        ...,
         alias="profileName",
         examples=[["Разработка IT-продуктов и информационных систем"]],
+        default=["Разработка IT-продуктов и информационных систем"]
     )
-    specialty_code: list[str] = Field(..., alias="specialtyCode", examples=[["09.03.02"]])
+    specialty_code: list[str] = Field(alias="specialtyCode", examples=[["09.03.02"]], default=["09.03.02"])
 
     def to_search_payload(self) -> dict[str, object]:
         utc = datetime.UTC
