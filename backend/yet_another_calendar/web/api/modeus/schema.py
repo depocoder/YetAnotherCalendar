@@ -256,7 +256,7 @@ class DayEventsRequest(BaseModel):
     profile_name: list[str] = Field(
         alias="profileName",
         examples=[["Разработка IT-продуктов и информационных систем"]],
-        default=["Разработка IT-продуктов и информационных систем"]
+        default=["Разработка IT-продуктов и информационных систем"],
     )
     specialty_code: list[str] = Field(alias="specialtyCode", examples=[["09.03.02"]], default=["09.03.02"])
 
