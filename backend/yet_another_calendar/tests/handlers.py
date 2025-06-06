@@ -1,5 +1,6 @@
 import json
 import pathlib
+import typing
 
 import httpx
 from yet_another_calendar.settings import settings
@@ -10,7 +11,7 @@ mock_cookies = schema.NetologyCookies.model_validate({"_netology-on-rails_sessio
 
 def get_httpx_response(
         status_code: int,
-        body: dict[str, str | bool],
+        body: typing.Any,
         fixture_path: pathlib.Path | None = None,
         headers: dict[str, str] | None = None,
 ) -> httpx.Response:
@@ -50,6 +51,12 @@ def _bad_handler(request: httpx.Request) -> httpx.Response:
         settings.modeus_search_people_part: get_httpx_response(200, {},
                                                                settings.test_parent_path /
                                                                "fixtures/people_search_empty.json"),
+
+        # lms
+        settings.lms_login_part: get_httpx_response(200, {"error": "Something went wrong"}),
+        "/lms/send_request_unknown": get_httpx_response(404, {"detail": "Not Found"}),
+        "/lms/send_request_server_error": get_httpx_response(500, {}),
+        settings.lms_get_user_part: get_httpx_response(403, {"text": "Forbidden"}),
     }
 
     case = response_cases.get(request.url.path)
@@ -93,6 +100,11 @@ def _handler(request: httpx.Request) -> httpx.Response:
         settings.modeus_search_people_part: get_httpx_response(200, {},
                                                                settings.test_parent_path /
                                                                "fixtures/people_search_ok.json"),
+
+        # lms
+        settings.lms_login_part: get_httpx_response(200, {"token": "token_12345"}),
+        "/lms/send_request_list": get_httpx_response(200, {"token": [1,2,3]}),
+        settings.lms_get_user_part: get_httpx_response(200, [{"name": "azamat"}]),
     }
 
     case = response_cases.get(request.url.path)

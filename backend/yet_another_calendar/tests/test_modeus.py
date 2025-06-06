@@ -6,6 +6,7 @@ import httpx
 import pytest
 from fastapi import HTTPException
 from httpx import AsyncClient, HTTPStatusError
+from pydantic import ValidationError
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus import integration, schema
@@ -255,3 +256,25 @@ async def test_get_people_ok() -> None:
     assert str(filtered_people[0].id) == "d69c87c8-aece-4f39-b6a2-7b467b968211"
     assert filtered_people[0].full_name == "Комаев Азамат Олегович"
     assert filtered_people[0].specialty_code == "09.03.02"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("username,expected", [
+        ("ivan@utmn.ru", "ivan@study.utmn.ru"),
+        ("ivan@study.utmn.ru", "ivan@study.utmn.ru"),
+])
+async def test_valid_usernames_creds(username: str, expected: str) -> None:
+    creds = schema.Creds(username=username, password="secret")
+    assert creds.username == expected
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("username, error_msg", [
+        ("ivanutmn.ru", "Email must contain one @."),
+        ("ivan@@utmn.ru", "Email must contain one @."),
+        ("ivan@gmail.com", "Email must contain @study.utmn.ru."),
+])
+async def test_invalid_usernames_creds(username: str, error_msg: str) -> None:
+    with pytest.raises(ValidationError):
+        schema.Creds(username=username, password="secret")
+
