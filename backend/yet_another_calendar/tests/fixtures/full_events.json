@@ -1,0 +1,1244 @@
+{
+    "_embedded": {
+        "events": [
+            {
+                "name": "Project Presentation",
+                "nameShort": "Лабораторное занятие 29",
+                "description": null,
+                "typeId": "LAB",
+                "formatId": null,
+                "start": "2025-05-23T17:30:00+05:00",
+                "end": "2025-05-23T19:00:00+05:00",
+                "startsAtLocal": "2025-05-23T17:30:00",
+                "endsAtLocal": "2025-05-23T19:00:00",
+                "startsAt": "2025-05-23T12:30:00",
+                "endsAt": "2025-05-23T14:00:00",
+                "holdingStatus": {
+                    "id": "DRAFT",
+                    "name": "Неизвестно",
+                    "audModifiedAt": null,
+                    "audModifiedBy": null,
+                    "audModifiedBySystem": null
+                },
+                "repeatedLessonRealization": null,
+                "userRoleIds": [
+                    "STUDENT"
+                ],
+                "lessonTemplateId": "2e47d545-1989-4590-9b0d-f22a5279176e",
+                "__version": 0,
+                "_links": {
+                    "self": {
+                        "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2"
+                    },
+                    "type": {
+                        "href": "/LAB"
+                    },
+                    "time-zone": {
+                        "href": "/Asia/Tyumen"
+                    },
+                    "grid": {
+                        "href": "/Grid.05"
+                    },
+                    "course-unit-realization": {
+                        "href": "/d85dfb9f-562a-4c78-bac2-913f6519e0ba"
+                    },
+                    "cycle-realization": {
+                        "href": "/5ea6a343-8b91-444d-b3a0-3a7dd3e7418b"
+                    },
+                    "lesson-realization": {
+                        "href": "/07b3101b-093e-47d2-98e2-7afc02638522"
+                    },
+                    "lesson-realization-team": {
+                        "href": "/0a40a535-c6fb-4ca1-9f24-9c25165da8d6"
+                    },
+                    "lesson-realization-template": {
+                        "href": "/2e47d545-1989-4590-9b0d-f22a5279176e"
+                    },
+                    "location": {
+                        "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2/location"
+                    },
+                    "duration": {
+                        "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2/duration"
+                    },
+                    "team": {
+                        "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2/team"
+                    },
+                    "organizers": {
+                        "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2/organizers"
+                    }
+                },
+                "id": "004133f0-86cd-47d7-b810-a1a3d07c6da2"
+            },
+            {
+                "name": "Дизайн сайтов и мультимедийных лонгридов",
+                "nameShort": "Практическое занятие 22",
+                "description": null,
+                "typeId": "SEMI",
+                "formatId": null,
+                "start": "2025-05-22T20:50:00+05:00",
+                "end": "2025-05-22T22:20:00+05:00",
+                "startsAtLocal": "2025-05-22T20:50:00",
+                "endsAtLocal": "2025-05-22T22:20:00",
+                "startsAt": "2025-05-22T15:50:00",
+                "endsAt": "2025-05-22T17:20:00",
+                "holdingStatus": {
+                    "id": "DRAFT",
+                    "name": "Неизвестно",
+                    "audModifiedAt": null,
+                    "audModifiedBy": null,
+                    "audModifiedBySystem": null
+                },
+                "repeatedLessonRealization": null,
+                "userRoleIds": [
+                    "STUDENT"
+                ],
+                "lessonTemplateId": "0aecd669-f9a0-4c55-9d08-81af2c03a635",
+                "__version": 0,
+                "_links": {
+                    "self": {
+                        "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e"
+                    },
+                    "type": {
+                        "href": "/SEMI"
+                    },
+                    "time-zone": {
+                        "href": "/Asia/Tyumen"
+                    },
+                    "grid": {
+                        "href": "/Grid.05"
+                    },
+                    "course-unit-realization": {
+                        "href": "/17cc7074-aa6a-4ef5-9c9a-bcfa3ea3724b"
+                    },
+                    "cycle-realization": {
+                        "href": "/ff6d2de8-b80a-4efc-a94c-33505b8412df"
+                    },
+                    "lesson-realization": {
+                        "href": "/b52b1991-8378-40cf-8081-0f594c71c0ea"
+                    },
+                    "lesson-realization-team": {
+                        "href": "/39551eab-e55d-4d50-aacd-f06d928d092b"
+                    },
+                    "lesson-realization-template": {
+                        "href": "/0aecd669-f9a0-4c55-9d08-81af2c03a635"
+                    },
+                    "location": {
+                        "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e/location"
+                    },
+                    "duration": {
+                        "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e/duration"
+                    },
+                    "team": {
+                        "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e/team"
+                    },
+                    "organizers": {
+                        "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e/organizers"
+                    }
+                },
+                "id": "2d4f18ea-60d3-4dcf-a54d-4c892f17443e"
+            },
+            {
+                "name": "Reflection",
+                "nameShort": "Лабораторное занятие 30",
+                "description": null,
+                "typeId": "LAB",
+                "formatId": null,
+                "start": "2025-05-23T19:10:00+05:00",
+                "end": "2025-05-23T20:40:00+05:00",
+                "startsAtLocal": "2025-05-23T19:10:00",
+                "endsAtLocal": "2025-05-23T20:40:00",
+                "startsAt": "2025-05-23T14:10:00",
+                "endsAt": "2025-05-23T15:40:00",
+                "holdingStatus": {
+                    "id": "DRAFT",
+                    "name": "Неизвестно",
+                    "audModifiedAt": null,
+                    "audModifiedBy": null,
+                    "audModifiedBySystem": null
+                },
+                "repeatedLessonRealization": null,
+                "userRoleIds": [
+                    "STUDENT"
+                ],
+                "lessonTemplateId": "6fd22c5f-ce13-48d3-911f-50a1c2c7adbe",
+                "__version": 0,
+                "_links": {
+                    "self": {
+                        "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91"
+                    },
+                    "type": {
+                        "href": "/LAB"
+                    },
+                    "time-zone": {
+                        "href": "/Asia/Tyumen"
+                    },
+                    "grid": {
+                        "href": "/Grid.05"
+                    },
+                    "course-unit-realization": {
+                        "href": "/d85dfb9f-562a-4c78-bac2-913f6519e0ba"
+                    },
+                    "cycle-realization": {
+                        "href": "/5ea6a343-8b91-444d-b3a0-3a7dd3e7418b"
+                    },
+                    "lesson-realization": {
+                        "href": "/697bc983-f9a4-4c56-b32f-8d08c0ff1a83"
+                    },
+                    "lesson-realization-team": {
+                        "href": "/0a40a535-c6fb-4ca1-9f24-9c25165da8d6"
+                    },
+                    "lesson-realization-template": {
+                        "href": "/6fd22c5f-ce13-48d3-911f-50a1c2c7adbe"
+                    },
+                    "location": {
+                        "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91/location"
+                    },
+                    "duration": {
+                        "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91/duration"
+                    },
+                    "team": {
+                        "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91/team"
+                    },
+                    "organizers": {
+                        "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91/organizers"
+                    }
+                },
+                "id": "6859c910-da4f-4ba1-954a-8017b1a13f91"
+            },
+            {
+                "name": "Условный экстремум",
+                "nameShort": "Практическое занятие 24",
+                "description": null,
+                "typeId": "SEMI",
+                "formatId": "SEMINAR",
+                "start": "2025-05-21T15:45:00+05:00",
+                "end": "2025-05-21T17:15:00+05:00",
+                "startsAtLocal": "2025-05-21T15:45:00",
+                "endsAtLocal": "2025-05-21T17:15:00",
+                "startsAt": "2025-05-21T10:45:00",
+                "endsAt": "2025-05-21T12:15:00",
+                "holdingStatus": {
+                    "id": "DRAFT",
+                    "name": "Неизвестно",
+                    "audModifiedAt": null,
+                    "audModifiedBy": null,
+                    "audModifiedBySystem": null
+                },
+                "repeatedLessonRealization": null,
+                "userRoleIds": [
+                    "STUDENT"
+                ],
+                "lessonTemplateId": "cd4e6b2f-86cc-471f-8571-a23378441831",
+                "__version": 0,
+                "_links": {
+                    "self": {
+                        "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010"
+                    },
+                    "type": {
+                        "href": "/SEMI"
+                    },
+                    "format": {
+                        "href": "/SEMINAR"
+                    },
+                    "time-zone": {
+                        "href": "/Asia/Tyumen"
+                    },
+                    "grid": {
+                        "href": "/Grid.05"
+                    },
+                    "course-unit-realization": {
+                        "href": "/a6fb5166-6c87-462c-8901-99094231673c"
+                    },
+                    "cycle-realization": {
+                        "href": "/5b2bfe99-95f8-401f-acd9-8392bdcd5ad6"
+                    },
+                    "lesson-realization": {
+                        "href": "/a8b3b47c-9ce4-4a4e-a651-e6906c0d7625"
+                    },
+                    "lesson-realization-team": {
+                        "href": "/c009e043-333c-480b-9cf9-edfbde895a78"
+                    },
+                    "lesson-realization-template": {
+                        "href": "/cd4e6b2f-86cc-471f-8571-a23378441831"
+                    },
+                    "location": {
+                        "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010/location"
+                    },
+                    "duration": {
+                        "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010/duration"
+                    },
+                    "team": {
+                        "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010/team"
+                    },
+                    "organizers": {
+                        "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010/organizers"
+                    }
+                },
+                "id": "9ceb82a6-4147-42ce-aef2-feb56d9d0010"
+            },
+            {
+                "name": "Контрольная работа 3.",
+                "nameShort": "Лабораторное занятие 30",
+                "description": null,
+                "typeId": "LAB",
+                "formatId": "LAB_REPEAT",
+                "start": "2025-05-19T17:30:00+05:00",
+                "end": "2025-05-19T19:00:00+05:00",
+                "startsAtLocal": "2025-05-19T17:30:00",
+                "endsAtLocal": "2025-05-19T19:00:00",
+                "startsAt": "2025-05-19T12:30:00",
+                "endsAt": "2025-05-19T14:00:00",
+                "holdingStatus": {
+                    "id": "HELD",
+                    "name": "Проведено",
+                    "audModifiedAt": "2025-05-19T14:20:00.29884",
+                    "audModifiedBy": "89016df8-415d-11e7-a66e-bf75d30473c1",
+                    "audModifiedBySystem": true
+                },
+                "repeatedLessonRealization": null,
+                "userRoleIds": [
+                    "STUDENT"
+                ],
+                "lessonTemplateId": "65fc897a-2219-4242-9ebc-922c57d3fb9b",
+                "__version": 1,
+                "_links": {
+                    "self": {
+                        "href": "/be09e478-8b37-4358-970f-c7c296241bea"
+                    },
+                    "type": {
+                        "href": "/LAB"
+                    },
+                    "format": {
+                        "href": "/LAB_REPEAT"
+                    },
+                    "time-zone": {
+                        "href": "/Asia/Tyumen"
+                    },
+                    "grid": {
+                        "href": "/Grid.05"
+                    },
+                    "course-unit-realization": {
+                        "href": "/d03abeaa-cdcf-4857-b71c-4edc824d1a4d"
+                    },
+                    "cycle-realization": {
+                        "href": "/06303631-5e3c-4857-b57c-cff3ec1ab608"
+                    },
+                    "lesson-realization": {
+                        "href": "/d8ea162d-cd97-4bc7-9fcd-6a521f8de710"
+                    },
+                    "lesson-realization-team": {
+                        "href": "/dee20a3a-d405-487b-a36f-36858808bb74"
+                    },
+                    "lesson-realization-template": {
+                        "href": "/65fc897a-2219-4242-9ebc-922c57d3fb9b"
+                    },
+                    "holding-status-modified-by": {
+                        "href": "/89016df8-415d-11e7-a66e-bf75d30473c1"
+                    },
+                    "location": {
+                        "href": "/be09e478-8b37-4358-970f-c7c296241bea/location"
+                    },
+                    "duration": {
+                        "href": "/be09e478-8b37-4358-970f-c7c296241bea/duration"
+                    },
+                    "team": {
+                        "href": "/be09e478-8b37-4358-970f-c7c296241bea/team"
+                    },
+                    "organizers": {
+                        "href": "/be09e478-8b37-4358-970f-c7c296241bea/organizers"
+                    }
+                },
+                "id": "be09e478-8b37-4358-970f-c7c296241bea"
+            },
+            {
+                "name": "Создаем свой проект",
+                "nameShort": "Лабораторное занятие 16",
+                "description": null,
+                "typeId": "LAB",
+                "formatId": "LAB_REPEAT",
+                "start": "2025-05-20T17:30:00+05:00",
+                "end": "2025-05-20T20:40:00+05:00",
+                "startsAtLocal": "2025-05-20T17:30:00",
+                "endsAtLocal": "2025-05-20T20:40:00",
+                "startsAt": "2025-05-20T12:30:00",
+                "endsAt": "2025-05-20T15:40:00",
+                "holdingStatus": {
+                    "id": "DRAFT",
+                    "name": "Неизвестно",
+                    "audModifiedAt": null,
+                    "audModifiedBy": null,
+                    "audModifiedBySystem": null
+                },
+                "repeatedLessonRealization": null,
+                "userRoleIds": [
+                    "STUDENT"
+                ],
+                "lessonTemplateId": "98b1e903-4b7c-43d0-9d13-734db50e4a44",
+                "__version": 0,
+                "_links": {
+                    "self": {
+                        "href": "/c6489e75-c0a0-49fc-be42-b9048365142e"
+                    },
+                    "type": {
+                        "href": "/LAB"
+                    },
+                    "format": {
+                        "href": "/LAB_REPEAT"
+                    },
+                    "time-zone": {
+                        "href": "/Asia/Tyumen"
+                    },
+                    "grid": {
+                        "href": "/Grid.05"
+                    },
+                    "course-unit-realization": {
+                        "href": "/f09c0ba4-4877-4541-a8fc-0fdbb2cbd679"
+                    },
+                    "cycle-realization": {
+                        "href": "/0b2233b4-f437-4e86-a156-9e18039569fa"
+                    },
+                    "lesson-realization": {
+                        "href": "/b91ee9a5-4540-4f4a-aa82-754457cb99d9"
+                    },
+                    "lesson-realization-team": {
+                        "href": "/d0a29b13-4036-4b59-967a-15388b4e6ad0"
+                    },
+                    "lesson-realization-template": {
+                        "href": "/98b1e903-4b7c-43d0-9d13-734db50e4a44"
+                    },
+                    "location": {
+                        "href": "/c6489e75-c0a0-49fc-be42-b9048365142e/location"
+                    },
+                    "duration": {
+                        "href": "/c6489e75-c0a0-49fc-be42-b9048365142e/duration"
+                    },
+                    "team": {
+                        "href": "/c6489e75-c0a0-49fc-be42-b9048365142e/team"
+                    },
+                    "organizers": {
+                        "href": "/c6489e75-c0a0-49fc-be42-b9048365142e/organizers"
+                    }
+                },
+                "id": "c6489e75-c0a0-49fc-be42-b9048365142e"
+            }
+        ],
+        "course-unit-realizations": [
+            {
+                "name": "Дизайн сайтов и мультимедийных лонгридов",
+                "nameShort": "Дизайн лонгридов",
+                "prototypeId": "3e07213b-4e73-4b5b-b456-77dfb1822545",
+                "_links": {
+                    "self": {
+                        "href": "/17cc7074-aa6a-4ef5-9c9a-bcfa3ea3724b"
+                    },
+                    "planning-period": {
+                        "href": "/ffca8031-f842-4135-ad51-998e8f2f3c3e"
+                    }
+                },
+                "id": "17cc7074-aa6a-4ef5-9c9a-bcfa3ea3724b"
+            },
+            {
+                "name": "Математический анализ",
+                "nameShort": "МА",
+                "prototypeId": "52337eb1-cb1b-472a-92ae-76f23d10b2b5",
+                "_links": {
+                    "self": {
+                        "href": "/a6fb5166-6c87-462c-8901-99094231673c"
+                    },
+                    "planning-period": {
+                        "href": "/ffca8031-f842-4135-ad51-998e8f2f3c3e"
+                    }
+                },
+                "id": "a6fb5166-6c87-462c-8901-99094231673c"
+            },
+            {
+                "name": "Дискретная математика 1",
+                "nameShort": "ДМ 1",
+                "prototypeId": "9e82bc56-1bc9-410f-a814-14e3e212fa27",
+                "_links": {
+                    "self": {
+                        "href": "/d03abeaa-cdcf-4857-b71c-4edc824d1a4d"
+                    },
+                    "planning-period": {
+                        "href": "/ffca8031-f842-4135-ad51-998e8f2f3c3e"
+                    }
+                },
+                "id": "d03abeaa-cdcf-4857-b71c-4edc824d1a4d"
+            },
+            {
+                "name": "Иностранный язык: английский (предпороговый уровень II)",
+                "nameShort": "АЯ-Pre-int II",
+                "prototypeId": "1c75ff2a-e2f4-4d21-8867-b1487cedcfdf",
+                "_links": {
+                    "self": {
+                        "href": "/d85dfb9f-562a-4c78-bac2-913f6519e0ba"
+                    },
+                    "planning-period": {
+                        "href": "/ffca8031-f842-4135-ad51-998e8f2f3c3e"
+                    }
+                },
+                "id": "d85dfb9f-562a-4c78-bac2-913f6519e0ba"
+            },
+            {
+                "name": "Технологии анимации",
+                "nameShort": "AW",
+                "prototypeId": "6c7b861a-45da-43bb-8b9e-9123684df111",
+                "_links": {
+                    "self": {
+                        "href": "/f09c0ba4-4877-4541-a8fc-0fdbb2cbd679"
+                    },
+                    "planning-period": {
+                        "href": "/ffca8031-f842-4135-ad51-998e8f2f3c3e"
+                    }
+                },
+                "id": "f09c0ba4-4877-4541-a8fc-0fdbb2cbd679"
+            }
+        ],
+        "cycle-realizations": [
+            {
+                "name": "Лабораторное занятие",
+                "nameShort": "ЛБ",
+                "code": "ДМ 1 ЛБ-10",
+                "courseUnitRealizationNameShort": "ДМ 1",
+                "_links": {
+                    "self": {
+                        "href": "/06303631-5e3c-4857-b57c-cff3ec1ab608"
+                    },
+                    "course-unit-realization": {
+                        "href": "/d03abeaa-cdcf-4857-b71c-4edc824d1a4d"
+                    }
+                },
+                "id": "06303631-5e3c-4857-b57c-cff3ec1ab608"
+            },
+            {
+                "name": "Лабораторное занятие",
+                "nameShort": "ЛБ",
+                "code": "AW ЛБ-01",
+                "courseUnitRealizationNameShort": "AW",
+                "_links": {
+                    "self": {
+                        "href": "/0b2233b4-f437-4e86-a156-9e18039569fa"
+                    },
+                    "course-unit-realization": {
+                        "href": "/f09c0ba4-4877-4541-a8fc-0fdbb2cbd679"
+                    }
+                },
+                "id": "0b2233b4-f437-4e86-a156-9e18039569fa"
+            },
+            {
+                "name": "Практическое занятие",
+                "nameShort": "П",
+                "code": "МА П-17",
+                "courseUnitRealizationNameShort": "МА",
+                "_links": {
+                    "self": {
+                        "href": "/5b2bfe99-95f8-401f-acd9-8392bdcd5ad6"
+                    },
+                    "course-unit-realization": {
+                        "href": "/a6fb5166-6c87-462c-8901-99094231673c"
+                    }
+                },
+                "id": "5b2bfe99-95f8-401f-acd9-8392bdcd5ad6"
+            },
+            {
+                "name": "Лабораторное занятие, Аттестация",
+                "nameShort": "ЛБ, АТ",
+                "code": "АЯ-Pre-int II ЛБ, АТ-10",
+                "courseUnitRealizationNameShort": "АЯ-Pre-int II",
+                "_links": {
+                    "self": {
+                        "href": "/5ea6a343-8b91-444d-b3a0-3a7dd3e7418b"
+                    },
+                    "course-unit-realization": {
+                        "href": "/d85dfb9f-562a-4c78-bac2-913f6519e0ba"
+                    }
+                },
+                "id": "5ea6a343-8b91-444d-b3a0-3a7dd3e7418b"
+            },
+            {
+                "name": "Практическое занятие",
+                "nameShort": "П",
+                "code": "Дизайн лонгридов П-02",
+                "courseUnitRealizationNameShort": "Дизайн лонгридов",
+                "_links": {
+                    "self": {
+                        "href": "/ff6d2de8-b80a-4efc-a94c-33505b8412df"
+                    },
+                    "course-unit-realization": {
+                        "href": "/17cc7074-aa6a-4ef5-9c9a-bcfa3ea3724b"
+                    }
+                },
+                "id": "ff6d2de8-b80a-4efc-a94c-33505b8412df"
+            }
+        ],
+        "lesson-realization-teams": [
+            {
+                "name": "H-АЯ-Pre-int II-24.13 Нетология",
+                "cycleRealizationId": "5ea6a343-8b91-444d-b3a0-3a7dd3e7418b",
+                "_links": {
+                    "self": {
+                        "href": "/0a40a535-c6fb-4ca1-9f24-9c25165da8d6"
+                    }
+                },
+                "id": "0a40a535-c6fb-4ca1-9f24-9c25165da8d6"
+            },
+            {
+                "name": "Дизайн лонгридов П-02 Нетология (lxp)",
+                "cycleRealizationId": "ff6d2de8-b80a-4efc-a94c-33505b8412df",
+                "_links": {
+                    "self": {
+                        "href": "/39551eab-e55d-4d50-aacd-f06d928d092b"
+                    }
+                },
+                "id": "39551eab-e55d-4d50-aacd-f06d928d092b"
+            },
+            {
+                "name": "МА П-17 Нетология",
+                "cycleRealizationId": "5b2bfe99-95f8-401f-acd9-8392bdcd5ad6",
+                "_links": {
+                    "self": {
+                        "href": "/c009e043-333c-480b-9cf9-edfbde895a78"
+                    }
+                },
+                "id": "c009e043-333c-480b-9cf9-edfbde895a78"
+            },
+            {
+                "name": "AW ЛБ-01 Нетология",
+                "cycleRealizationId": "0b2233b4-f437-4e86-a156-9e18039569fa",
+                "_links": {
+                    "self": {
+                        "href": "/d0a29b13-4036-4b59-967a-15388b4e6ad0"
+                    }
+                },
+                "id": "d0a29b13-4036-4b59-967a-15388b4e6ad0"
+            },
+            {
+                "name": "ДМ 1 ЛБ-10 Нетология",
+                "cycleRealizationId": "06303631-5e3c-4857-b57c-cff3ec1ab608",
+                "_links": {
+                    "self": {
+                        "href": "/dee20a3a-d405-487b-a36f-36858808bb74"
+                    }
+                },
+                "id": "dee20a3a-d405-487b-a36f-36858808bb74"
+            }
+        ],
+        "lesson-realizations": [
+            {
+                "name": "Project Presentation",
+                "nameShort": "Лабораторное занятие 29",
+                "prototypeId": "179adb60-ce4a-0e4c-1bb9-7d42dcf07c70",
+                "ordinal": 28,
+                "_links": {
+                    "self": {
+                        "href": "/07b3101b-093e-47d2-98e2-7afc02638522"
+                    }
+                },
+                "id": "07b3101b-093e-47d2-98e2-7afc02638522"
+            },
+            {
+                "name": "Reflection",
+                "nameShort": "Лабораторное занятие 30",
+                "prototypeId": "26ffc102-8f92-6771-6efd-37aa92bafc63",
+                "ordinal": 29,
+                "_links": {
+                    "self": {
+                        "href": "/697bc983-f9a4-4c56-b32f-8d08c0ff1a83"
+                    }
+                },
+                "id": "697bc983-f9a4-4c56-b32f-8d08c0ff1a83"
+            },
+            {
+                "name": "Условный экстремум",
+                "nameShort": "Практическое занятие 24",
+                "prototypeId": "6d295be2-4e6f-4975-837f-1f6e3dee06ca",
+                "ordinal": 23,
+                "_links": {
+                    "self": {
+                        "href": "/a8b3b47c-9ce4-4a4e-a651-e6906c0d7625"
+                    }
+                },
+                "id": "a8b3b47c-9ce4-4a4e-a651-e6906c0d7625"
+            },
+            {
+                "name": "Дизайн сайтов и мультимедийных лонгридов",
+                "nameShort": "Практическое занятие 22",
+                "prototypeId": "0d798e29-af4a-4782-b5b6-ec472fc250d4",
+                "ordinal": 21,
+                "_links": {
+                    "self": {
+                        "href": "/b52b1991-8378-40cf-8081-0f594c71c0ea"
+                    }
+                },
+                "id": "b52b1991-8378-40cf-8081-0f594c71c0ea"
+            },
+            {
+                "name": "Создаем свой проект",
+                "nameShort": "Лабораторное занятие 16",
+                "prototypeId": "5aab8486-827b-44fe-855b-3c1109e5b952",
+                "ordinal": 15,
+                "_links": {
+                    "self": {
+                        "href": "/b91ee9a5-4540-4f4a-aa82-754457cb99d9"
+                    }
+                },
+                "id": "b91ee9a5-4540-4f4a-aa82-754457cb99d9"
+            },
+            {
+                "name": "Контрольная работа 3.",
+                "nameShort": "Лабораторное занятие 30",
+                "prototypeId": "c88466b6-f671-4c35-a0b0-cb244fc7bceb",
+                "ordinal": 29,
+                "_links": {
+                    "self": {
+                        "href": "/d8ea162d-cd97-4bc7-9fcd-6a521f8de710"
+                    }
+                },
+                "id": "d8ea162d-cd97-4bc7-9fcd-6a521f8de710"
+            }
+        ],
+        "event-locations": [
+            {
+                "eventId": "004133f0-86cd-47d7-b810-a1a3d07c6da2",
+                "customLocation": "Нетология",
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2/location"
+                        },
+                        {
+                            "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2"
+                        }
+                    ]
+                }
+            },
+            {
+                "eventId": "2d4f18ea-60d3-4dcf-a54d-4c892f17443e",
+                "customLocation": "LXP",
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e/location"
+                        },
+                        {
+                            "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e"
+                        }
+                    ]
+                }
+            },
+            {
+                "eventId": "6859c910-da4f-4ba1-954a-8017b1a13f91",
+                "customLocation": "Нетология",
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91/location"
+                        },
+                        {
+                            "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91"
+                        }
+                    ]
+                }
+            },
+            {
+                "eventId": "9ceb82a6-4147-42ce-aef2-feb56d9d0010",
+                "customLocation": "Нетология",
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010/location"
+                        },
+                        {
+                            "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010"
+                        }
+                    ]
+                }
+            },
+            {
+                "eventId": "be09e478-8b37-4358-970f-c7c296241bea",
+                "customLocation": "Нетология",
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/be09e478-8b37-4358-970f-c7c296241bea/location"
+                        },
+                        {
+                            "href": "/be09e478-8b37-4358-970f-c7c296241bea"
+                        }
+                    ]
+                }
+            },
+            {
+                "eventId": "c6489e75-c0a0-49fc-be42-b9048365142e",
+                "customLocation": "Нетология",
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/c6489e75-c0a0-49fc-be42-b9048365142e/location"
+                        },
+                        {
+                            "href": "/c6489e75-c0a0-49fc-be42-b9048365142e"
+                        }
+                    ]
+                }
+            }
+        ],
+        "durations": [
+            {
+                "eventId": "004133f0-86cd-47d7-b810-a1a3d07c6da2",
+                "value": 1,
+                "timeUnitId": "PAIR",
+                "minutes": 90,
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2/duration"
+                        },
+                        {
+                            "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2"
+                        }
+                    ],
+                    "time-unit": {
+                        "href": "/PAIR"
+                    }
+                }
+            },
+            {
+                "eventId": "2d4f18ea-60d3-4dcf-a54d-4c892f17443e",
+                "value": 1,
+                "timeUnitId": "PAIR",
+                "minutes": 90,
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e/duration"
+                        },
+                        {
+                            "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e"
+                        }
+                    ],
+                    "time-unit": {
+                        "href": "/PAIR"
+                    }
+                }
+            },
+            {
+                "eventId": "6859c910-da4f-4ba1-954a-8017b1a13f91",
+                "value": 1,
+                "timeUnitId": "PAIR",
+                "minutes": 90,
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91/duration"
+                        },
+                        {
+                            "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91"
+                        }
+                    ],
+                    "time-unit": {
+                        "href": "/PAIR"
+                    }
+                }
+            },
+            {
+                "eventId": "9ceb82a6-4147-42ce-aef2-feb56d9d0010",
+                "value": 1,
+                "timeUnitId": "PAIR",
+                "minutes": 90,
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010/duration"
+                        },
+                        {
+                            "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010"
+                        }
+                    ],
+                    "time-unit": {
+                        "href": "/PAIR"
+                    }
+                }
+            },
+            {
+                "eventId": "be09e478-8b37-4358-970f-c7c296241bea",
+                "value": 1,
+                "timeUnitId": "PAIR",
+                "minutes": 90,
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/be09e478-8b37-4358-970f-c7c296241bea/duration"
+                        },
+                        {
+                            "href": "/be09e478-8b37-4358-970f-c7c296241bea"
+                        }
+                    ],
+                    "time-unit": {
+                        "href": "/PAIR"
+                    }
+                }
+            },
+            {
+                "eventId": "c6489e75-c0a0-49fc-be42-b9048365142e",
+                "value": 2,
+                "timeUnitId": "PAIR",
+                "minutes": 180,
+                "_links": {
+                    "self": [
+                        {
+                            "href": "/c6489e75-c0a0-49fc-be42-b9048365142e/duration"
+                        },
+                        {
+                            "href": "/c6489e75-c0a0-49fc-be42-b9048365142e"
+                        }
+                    ],
+                    "time-unit": {
+                        "href": "/PAIR"
+                    }
+                }
+            }
+        ],
+        "event-rooms": [],
+        "rooms": [],
+        "buildings": [],
+        "event-teams": [
+            {
+                "eventId": "004133f0-86cd-47d7-b810-a1a3d07c6da2",
+                "size": 15,
+                "_links": {
+                    "self": {
+                        "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2/team"
+                    },
+                    "event": {
+                        "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2"
+                    }
+                }
+            },
+            {
+                "eventId": "2d4f18ea-60d3-4dcf-a54d-4c892f17443e",
+                "size": 29,
+                "_links": {
+                    "self": {
+                        "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e/team"
+                    },
+                    "event": {
+                        "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e"
+                    }
+                }
+            },
+            {
+                "eventId": "6859c910-da4f-4ba1-954a-8017b1a13f91",
+                "size": 15,
+                "_links": {
+                    "self": {
+                        "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91/team"
+                    },
+                    "event": {
+                        "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91"
+                    }
+                }
+            },
+            {
+                "eventId": "9ceb82a6-4147-42ce-aef2-feb56d9d0010",
+                "size": 22,
+                "_links": {
+                    "self": {
+                        "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010/team"
+                    },
+                    "event": {
+                        "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010"
+                    }
+                }
+            },
+            {
+                "eventId": "be09e478-8b37-4358-970f-c7c296241bea",
+                "size": 24,
+                "_links": {
+                    "self": {
+                        "href": "/be09e478-8b37-4358-970f-c7c296241bea/team"
+                    },
+                    "event": {
+                        "href": "/be09e478-8b37-4358-970f-c7c296241bea"
+                    }
+                }
+            },
+            {
+                "eventId": "c6489e75-c0a0-49fc-be42-b9048365142e",
+                "size": 14,
+                "_links": {
+                    "self": {
+                        "href": "/c6489e75-c0a0-49fc-be42-b9048365142e/team"
+                    },
+                    "event": {
+                        "href": "/c6489e75-c0a0-49fc-be42-b9048365142e"
+                    }
+                }
+            }
+        ],
+        "event-organizers": [
+            {
+                "eventId": "004133f0-86cd-47d7-b810-a1a3d07c6da2",
+                "_links": {
+                    "self": {
+                        "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2/organizers"
+                    },
+                    "event": {
+                        "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2"
+                    },
+                    "event-attendees": {
+                        "href": "/f27c04ab-198a-49ec-b540-c5140d7d4023"
+                    }
+                }
+            },
+            {
+                "eventId": "2d4f18ea-60d3-4dcf-a54d-4c892f17443e",
+                "_links": {
+                    "self": {
+                        "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e/organizers"
+                    },
+                    "event": {
+                        "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e"
+                    },
+                    "event-attendees": {
+                        "href": "/641a0f3e-ca31-48e8-b36e-6bc8eefbf139"
+                    }
+                }
+            },
+            {
+                "eventId": "6859c910-da4f-4ba1-954a-8017b1a13f91",
+                "_links": {
+                    "self": {
+                        "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91/organizers"
+                    },
+                    "event": {
+                        "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91"
+                    },
+                    "event-attendees": {
+                        "href": "/db50c134-67f2-4bd2-ad1d-032213dd0d0f"
+                    }
+                }
+            },
+            {
+                "eventId": "9ceb82a6-4147-42ce-aef2-feb56d9d0010",
+                "_links": {
+                    "self": {
+                        "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010/organizers"
+                    },
+                    "event": {
+                        "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010"
+                    },
+                    "event-attendees": {
+                        "href": "/5963bd70-ab3a-4803-b52f-069601c2cd2a"
+                    }
+                }
+            },
+            {
+                "eventId": "be09e478-8b37-4358-970f-c7c296241bea",
+                "_links": {
+                    "self": {
+                        "href": "/be09e478-8b37-4358-970f-c7c296241bea/organizers"
+                    },
+                    "event": {
+                        "href": "/be09e478-8b37-4358-970f-c7c296241bea"
+                    },
+                    "event-attendees": {
+                        "href": "/0cfacb1a-acdf-4981-a3da-2fe8f1cff436"
+                    }
+                }
+            },
+            {
+                "eventId": "c6489e75-c0a0-49fc-be42-b9048365142e",
+                "_links": {
+                    "self": {
+                        "href": "/c6489e75-c0a0-49fc-be42-b9048365142e/organizers"
+                    },
+                    "event": {
+                        "href": "/c6489e75-c0a0-49fc-be42-b9048365142e"
+                    },
+                    "event-attendees": {
+                        "href": "/489fc7dd-55b4-42b1-86ca-cf56c36cde13"
+                    }
+                }
+            }
+        ],
+        "event-attendees": [
+            {
+                "roleId": "TEACH",
+                "roleName": "Преподаватель",
+                "roleNamePlural": "Преподаватели",
+                "roleDisplayOrder": 1,
+                "_links": {
+                    "self": {
+                        "href": "/f27c04ab-198a-49ec-b540-c5140d7d4023"
+                    },
+                    "event": {
+                        "href": "/004133f0-86cd-47d7-b810-a1a3d07c6da2"
+                    },
+                    "person": {
+                        "href": "/14260fa7-19d2-11e0-8351-101111111111"
+                    }
+                },
+                "id": "f27c04ab-198a-49ec-b540-c5140d7d4023"
+            },
+            {
+                "roleId": "TEACH",
+                "roleName": "Преподаватель",
+                "roleNamePlural": "Преподаватели",
+                "roleDisplayOrder": 1,
+                "_links": {
+                    "self": {
+                        "href": "/641a0f3e-ca31-48e8-b36e-6bc8eefbf139"
+                    },
+                    "event": {
+                        "href": "/2d4f18ea-60d3-4dcf-a54d-4c892f17443e"
+                    },
+                    "person": {
+                        "href": "/45e3a8ed-be73-485c-a385-de9fb9f4b6e9"
+                    }
+                },
+                "id": "641a0f3e-ca31-48e8-b36e-6bc8eefbf139"
+            },
+            {
+                "roleId": "TEACH",
+                "roleName": "Преподаватель",
+                "roleNamePlural": "Преподаватели",
+                "roleDisplayOrder": 1,
+                "_links": {
+                    "self": {
+                        "href": "/db50c134-67f2-4bd2-ad1d-032213dd0d0f"
+                    },
+                    "event": {
+                        "href": "/6859c910-da4f-4ba1-954a-8017b1a13f91"
+                    },
+                    "person": {
+                        "href": "/14260fa7-19d2-11e0-8351-101111111111"
+                    }
+                },
+                "id": "db50c134-67f2-4bd2-ad1d-032213dd0d0f"
+            },
+            {
+                "roleId": "TEACH",
+                "roleName": "Преподаватель",
+                "roleNamePlural": "Преподаватели",
+                "roleDisplayOrder": 1,
+                "_links": {
+                    "self": {
+                        "href": "/5963bd70-ab3a-4803-b52f-069601c2cd2a"
+                    },
+                    "event": {
+                        "href": "/9ceb82a6-4147-42ce-aef2-feb56d9d0010"
+                    },
+                    "person": {
+                        "href": "/c304479c-f831-42c0-8a3f-9b46152dd421"
+                    }
+                },
+                "id": "5963bd70-ab3a-4803-b52f-069601c2cd2a"
+            },
+            {
+                "roleId": "TEACH",
+                "roleName": "Преподаватель",
+                "roleNamePlural": "Преподаватели",
+                "roleDisplayOrder": 1,
+                "_links": {
+                    "self": {
+                        "href": "/0cfacb1a-acdf-4981-a3da-2fe8f1cff436"
+                    },
+                    "event": {
+                        "href": "/be09e478-8b37-4358-970f-c7c296241bea"
+                    },
+                    "person": {
+                        "href": "/c304479c-f831-42c0-8a3f-9b46152dd421"
+                    }
+                },
+                "id": "0cfacb1a-acdf-4981-a3da-2fe8f1cff436"
+            },
+            {
+                "roleId": "TEACH",
+                "roleName": "Преподаватель",
+                "roleNamePlural": "Преподаватели",
+                "roleDisplayOrder": 1,
+                "_links": {
+                    "self": {
+                        "href": "/489fc7dd-55b4-42b1-86ca-cf56c36cde13"
+                    },
+                    "event": {
+                        "href": "/c6489e75-c0a0-49fc-be42-b9048365142e"
+                    },
+                    "person": {
+                        "href": "/a50cf4a5-8b8d-403e-8eab-63617b61b602"
+                    }
+                },
+                "id": "489fc7dd-55b4-42b1-86ca-cf56c36cde13"
+            }
+        ],
+        "persons": [
+            {
+                "lastName": "Гизатулина",
+                "firstName": "Асия",
+                "middleName": "Станиславовна",
+                "fullName": "Гизатулина Асия Станиславовна",
+                "_links": {
+                    "self": {
+                        "href": "/a50cf4a5-8b8d-403e-8eab-63617b61b602"
+                    }
+                },
+                "id": "a50cf4a5-8b8d-403e-8eab-63617b61b602"
+            },
+            {
+                "lastName": "modeus",
+                "firstName": "system",
+                "middleName": "user",
+                "fullName": "modeus_system_user",
+                "_links": {
+                    "self": {
+                        "href": "/89016df8-415d-11e7-a66e-bf75d30473c1"
+                    }
+                },
+                "id": "89016df8-415d-11e7-a66e-bf75d30473c1"
+            },
+            {
+                "lastName": "Мальков",
+                "firstName": "Иван",
+                "middleName": "Николаевич",
+                "fullName": "Мальков Иван Николаевич",
+                "_links": {
+                    "self": {
+                        "href": "/c304479c-f831-42c0-8a3f-9b46152dd421"
+                    }
+                },
+                "id": "c304479c-f831-42c0-8a3f-9b46152dd421"
+            },
+            {
+                "lastName": "Ильницкая",
+                "firstName": "Татьяна",
+                "middleName": "Олеговна",
+                "fullName": "Ильницкая Татьяна Олеговна",
+                "_links": {
+                    "self": {
+                        "href": "/14260fa7-19d2-11e0-8351-101111111111"
+                    }
+                },
+                "id": "14260fa7-19d2-11e0-8351-101111111111"
+            },
+            {
+                "lastName": "Коломийчук",
+                "firstName": "Ирина",
+                "middleName": "Александровна",
+                "fullName": "Коломийчук Ирина Александровна",
+                "_links": {
+                    "self": {
+                        "href": "/45e3a8ed-be73-485c-a385-de9fb9f4b6e9"
+                    }
+                },
+                "id": "45e3a8ed-be73-485c-a385-de9fb9f4b6e9"
+            }
+        ]
+    },
+    "page": {
+        "size": 500,
+        "totalElements": 6,
+        "totalPages": 1,
+        "number": 0
+    }
+}
