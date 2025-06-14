@@ -100,17 +100,21 @@ const LoginPage = () => {
 
             {isNetologyRoute && (
                 <Login
+                    key="netology"
                     onLogin={handleNetologyLogin}
                     title="Введите логин и пароль от Нетологии, чтобы увидеть свое расписание"
                     name="Нетологии"
+                    formId="netology"
                 />
             )}
 
             {isModeusRoute && isNetologyLoggedIn && (
                 <Login
+                    key="modeus"
                     onLogin={handleModeusLogin}
                     title="Введите логин и пароль от Модеус, чтобы увидеть lms в своем расписании"
                     name="Модеус"
+                    formId="modeus"
                 />
             )}
         </div>
