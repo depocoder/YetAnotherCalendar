@@ -11,7 +11,9 @@ from starlette import status
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.tests import handlers
+from yet_another_calendar.web.api import validators
 from yet_another_calendar.web.api.netology import integration, schema
+
 
 mock_cookies = schema.NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
 
@@ -390,3 +392,43 @@ async def test_detailed_program_methods(input_date: datetime.datetime, expected_
     })
 
     assert program.start_date == expected_date
+
+
+@pytest.mark.parametrize("input_dt, expected", [
+    # (input, expected)
+    # None input
+    (None, None),
+
+    # Naive datetime (will be converted to local time then UTC)
+    (
+            datetime.datetime(2023, 1, 1, 12, 0),
+            datetime.datetime(2023, 1, 1, 12, 0).astimezone(datetime.UTC),
+    ),
+
+    # UTC datetime
+    (
+            datetime.datetime(2023, 1, 1, 12, 0, tzinfo=datetime.UTC),
+            datetime.datetime(2023, 1, 1, 12, 0, tzinfo=datetime.UTC),
+    ),
+
+    # Positive offset timezone (+2 hours)
+    (
+            datetime.datetime(2023, 1, 1, 14, 0, tzinfo=datetime.timezone(datetime.timedelta(hours=2))),
+            datetime.datetime(2023, 1, 1, 12, 0, tzinfo=datetime.UTC),
+    ),
+
+    # Negative offset timezone (-5 hours)
+    (
+            datetime.datetime(2023, 1, 1, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(hours=-5))),
+            datetime.datetime(2023, 1, 1, 12, 0, tzinfo=datetime.UTC),
+    ),
+])
+def test_validate_utc_date(input_dt: datetime.datetime, expected: datetime.datetime) -> None:
+    result = validators.validate_utc_date(input_dt)
+
+    if expected is None:
+        assert result is None
+    else:
+        assert result == expected
+        assert result.tzinfo == datetime.UTC
+        assert result.utcoffset() == datetime.timedelta(0)
