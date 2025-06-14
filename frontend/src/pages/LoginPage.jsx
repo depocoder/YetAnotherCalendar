@@ -1,14 +1,13 @@
 import { useState } from "react";
 import Login from "../components/login/login";
 import { loginLms, loginModeus, loginNetology } from "../services/api";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import '../style/login.scss';
 import { toast } from 'react-toastify';
 
 const LoginPage = () => {
     const [isNetologyLoggedIn, setIsNetologyLoggedIn] = useState(false);
     const navigate = useNavigate();
-    const location = useLocation();
 
     const handleNetologyLogin = async (email, password) => {
         try {
@@ -17,7 +16,14 @@ const LoginPage = () => {
             if (response.status === 200) {
                 localStorage.setItem('token', response.data["_netology-on-rails_session"]);
                 setIsNetologyLoggedIn(true);
-                navigate("/login/modeus");
+
+                // Редирект на поддомен modeus (локально или в проде)
+                const { protocol, hostname } = window.location;
+                const isDev = hostname.includes("localhost");
+                const modeusHost = isDev
+                    ? 'modeus.localhost:3000'
+                    : 'modeus.yetanothercalendar.ru';
+                window.location.href = `${protocol}//${modeusHost}/login`;
                 return { success: true };
             }
 
@@ -91,14 +97,25 @@ const LoginPage = () => {
         }
     };
 
-    const isNetologyRoute = location.pathname === "/login";
-    const isModeusRoute = location.pathname === "/login/modeus";
+
+    // Определяем, какую форму авторизации отображать в зависимости от домена и маршрута:
+    // - Если поддомен содержит "modeus" и путь содержит "/login", рендерим форму авторизации Модеуса
+    // - Во всех остальных случаях, если путь содержит "/login", рендерим форму авторизации Нетологии
+
+    const hostname = window.location.hostname;
+    const pathname = window.location.pathname;
+
+    const isLoginRoute = pathname.includes("/login");
+    const isModeusDomain = hostname.includes("modeus");
+
+    const showModeus = isLoginRoute && isModeusDomain;
+    const showNetology = isLoginRoute && !isModeusDomain;
 
     return (
         <div className="login-container">
             <h2 className="login-container__title shedule-login">Мое расписание</h2>
 
-            {isNetologyRoute && (
+            {showNetology && (
                 <Login
                     key="netology"
                     onLogin={handleNetologyLogin}
@@ -108,7 +125,7 @@ const LoginPage = () => {
                 />
             )}
 
-            {isModeusRoute && isNetologyLoggedIn && (
+            {showModeus && isNetologyLoggedIn && (
                 <Login
                     key="modeus"
                     onLogin={handleModeusLogin}

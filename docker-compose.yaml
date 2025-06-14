@@ -46,8 +46,17 @@ services:
     restart: always
     volumes:
       - ./frontend/src:/app/src
+    expose:
+      - "3000"
+        
+  frontend-proxy:
+    image: nginx:1.23
     ports:
-      - "3000:3000"
+      - "3000:80"
+    volumes:
+      - ./frontend/nginx-dev.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
 
 volumes:
   redis_data:

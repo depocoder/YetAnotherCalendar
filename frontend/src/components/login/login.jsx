@@ -19,8 +19,8 @@ const Login = ({ onLogin, title, name, formId }) => {
 
     return (
         <div className="login-netologiya">
-            <div class="loginLogo-container">
-                <center><img src={`/${formId}.png`} alt={`Лого ${name}`} class="loginLogo"/></center>
+            <div className="loginLogo-container">
+                <center><img src={`/${formId}.png`} alt={`Лого ${name}`} className="loginLogo"/></center>
             </div>
             <label>{title}</label>
             <div style={{ display: "flex", flexDirection: "column" }}>
@@ -45,7 +45,7 @@ const Login = ({ onLogin, title, name, formId }) => {
                     id={`password-${formId}`}
                     name={`password-${formId}`}
                     placeholder={`Пароль от ${name}`}
-                    utoComplete={`${formId}-current-password`}
+                    autoComplete={`${formId}-current-password`}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
