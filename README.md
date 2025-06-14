@@ -63,6 +63,16 @@ YetAnotherCalendar provides a unified interface to manage all your educational e
 docker compose -f docker-compose.prod.yaml up -d
 ```
 
+### 🔁 Local subdomain setup for development
+
+To enable subdomain-based login flows in development (e.g. separate autofill for Netology and Modeus login forms), you need to add a custom host entry:
+
+1. Open your `hosts` file:
+   - **Windows**: `C:\Windows\System32\drivers\etc\hosts`
+   - **macOS / Linux**: `/etc/hosts`
+
+2. Add the following line:
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
