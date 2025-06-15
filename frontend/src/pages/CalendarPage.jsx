@@ -38,7 +38,7 @@ const CalendarPage = () => {
         lastFetchedDate.current = dateKey;
 
         const fetchData = async () => {
-            console.log('[fetchCourseAndEvents called]', dateKey);
+            //console.log('[fetchCourseAndEvents called]', dateKey);
             setLoading(true);
 
             try {

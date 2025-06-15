@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import camera from "../../img/camera.png";
 import {formatHours} from "../../utils/dateUtils";
+import { utcToZonedTime } from 'date-fns-tz';
 
 export function formatDateToAMPM(date) {
   const hours = date.getHours().toString().padStart(2, '0');
@@ -33,12 +34,11 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
             const [start_hours, start_minutes] = start.split(":");
             const [end_hours, end_minutes] = end.split(":");
             // Создаем даты для начала и конца урока
-
             const startDateUTC = new Date(Date.UTC(2024, 0, 1, start_hours, start_minutes));
             const endDateUTC = new Date(Date.UTC(2024, 0, 1, end_hours, end_minutes));
             // Преобразуем в формат пояса пользователя
-            const startUserTime = new Date(startDateUTC.toLocaleString('ru-RU', { timeZone: userTimezone }));
-            const endUserTime = new Date(endDateUTC.toLocaleString('ru-RU', { timeZone: userTimezone }));
+            const startUserTime = utcToZonedTime(startDateUTC, userTimezone);
+            const endUserTime = utcToZonedTime(endDateUTC, userTimezone);
             return `${formatHours(startUserTime)} ${formatHours(endUserTime)}`;
         });
     };
@@ -89,9 +89,18 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
         populateWeekDays(events);
     }, [events]);
 
+    const timeToMinutes = (time) => {
+        const [h, m] = time.split(':').map(Number);
+        return h * 60 + m;
+    };
+
     return (
         <>
             {lessonTimesArray.map((timeSlot, index) => {
+                const [slotStartRaw, slotEndRaw] = timeSlot.split(' ');
+                const slotStartMinutes = timeToMinutes(slotStartRaw);
+                const slotEndMinutes = timeToMinutes(slotEndRaw);
+
                 return (
                     <tr key={index}>
                         <th className="vertical-heading">{index + 1} пара <br/> {timeSlot}</th>
@@ -102,10 +111,15 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
                                 const lessonStartFormatted = formatDateToAMPM(lessonStartTime);
                                 const lessonEndFormatted = formatDateToAMPM(lessonEndTime);
 
+                                const startMinutes = timeToMinutes(lessonStartFormatted);
+                                const endMinutes = timeToMinutes(lessonEndFormatted);
+
                                 return (
-                                    lessonStartFormatted === timeSlot.split(' ')[0] ||
-                                    lessonEndFormatted === timeSlot.split(' ')[1] ||
-                                    (lessonStartFormatted >= timeSlot.split(' ')[0] && lessonEndFormatted <= timeSlot.split(' ')[1])
+                                    startMinutes >= slotStartMinutes && startMinutes < slotEndMinutes
+                                ) || (
+                                endMinutes > slotStartMinutes && endMinutes <= slotEndMinutes
+                                ) || (
+                                startMinutes <= slotStartMinutes && endMinutes >= slotEndMinutes
                                 );
                             });
                             return (

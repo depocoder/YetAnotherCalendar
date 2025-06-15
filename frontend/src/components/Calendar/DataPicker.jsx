@@ -99,6 +99,8 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
                 placeholder="Выберите неделю"
                 readOnly
                 value={weekRange}
+                name="schedule-week"
+                id="schedule-week"
             />
             <div className="week-display">
                 <div className="week-navigation">
