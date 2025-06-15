@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     exportICS,
     getCalendarIdLocalStorage,
@@ -8,10 +8,13 @@ import {
     getTokenFromLocalStorage
 } from "../../services/api";
 import { toast } from 'react-toastify';
+import InlineLoader from '../../elements/InlineLoader';
 
 const ICSExporter = ({ date }) => {
+    const [loading, setLoading] = useState(false);
     const downloadICSFile = async () => {
         const calendarId = getCalendarIdLocalStorage();
+        setLoading(true);
 
         try {
             const icsContent = await exportICS({
@@ -44,12 +47,14 @@ const ICSExporter = ({ date }) => {
         } catch (error) {
             console.error("Ошибка экспорта .ics:", error);
             toast.error("Не удалось экспортировать расписание. Попробуйте позже.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <button className="export-btn" onClick={downloadICSFile}>
-            Экспорт .ics
+        <button className="export-btn" onClick={downloadICSFile} disabled={loading}>
+            {loading ? <InlineLoader /> : 'Экспорт .ics'}
         </button>
     );
 };

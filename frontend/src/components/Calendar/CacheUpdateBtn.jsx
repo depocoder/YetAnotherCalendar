@@ -9,19 +9,44 @@ import {
     getLMSIdFromLocalStorage
 } from "../../services/api";
 import { isTokenExpired } from '../../utils/auth';
+import InlineLoader from '../../elements/InlineLoader';
 
 const CacheUpdateBtn = ({ date, onDataUpdate }) => {
     const [cacheUpdated, setCacheUpdated] = useState(false);
     const timeOffset = parseInt(process.env.REACT_APP_TIME_OFFSET, 10) || 6;
     const toastShownRef = useRef(false); // ✅ защита от дублирующих уведомлений
 
+    // ✅ Очистка флагов при первом монтировании, если нет кэша
+    useEffect(() => {
+        if (!localStorage.getItem("cached_at")) {
+            localStorage.removeItem("toast_shown");
+            localStorage.removeItem("refresh_in_progress");
+        }
+    }, []);
+
+    // ✅ Проверка устаревания кэша
+    const isCacheStale = useCallback(() => {
+        const cachedAt = localStorage.getItem("cached_at");
+        if (!cachedAt) return true;
+        const now = new Date();
+        const cachedDate = new Date(cachedAt);
+        const diffInHours = (now - cachedDate) / (1000 * 60 * 60);
+        return diffInHours >= timeOffset;
+    }, [timeOffset]);
+
+    const refreshingRef = useRef(false);
+
     const handleRefreshEvents = useCallback(async () => {
         const jwtToken = getJWTTokenFromLocalStorage();
+        if (localStorage.getItem("refresh_in_progress") === "true" || refreshingRef.current) return;
+        localStorage.setItem("refresh_in_progress", "true");
+        refreshingRef.current = true;
+        const calendarId = getCalendarIdLocalStorage();
 
         // ✅ Проверка токена с защитой
         if (!jwtToken || isTokenExpired(jwtToken)) {
-            if (!toastShownRef.current) {
-                toastShownRef.current = true;
+            if (!localStorage.getItem("toast_shown")) {
+                localStorage.setItem("toast_shown", "true");
                 toast.error("Сессия истекла. Вы будете перенаправлены на страницу авторизации.");
                 setTimeout(() => {
                     localStorage.clear();
@@ -30,6 +55,13 @@ const CacheUpdateBtn = ({ date, onDataUpdate }) => {
             }
             return;
         }
+
+        if (!calendarId) {
+            console.warn("Попытка обновить кэш без calendarId. Пропущено.");
+            return;
+        }
+
+        setCacheUpdated('loading');
 
         try {
             const refreshEventsResponse = await refreshBulkEvents({
@@ -45,6 +77,7 @@ const CacheUpdateBtn = ({ date, onDataUpdate }) => {
 
             if (refreshEventsResponse && refreshEventsResponse.data) {
                 onDataUpdate(refreshEventsResponse.data);
+                localStorage.setItem("cached_at", new Date().toISOString());
                 setCacheUpdated(true);
                 setTimeout(() => setCacheUpdated(false), 3000);
             } else {
@@ -54,6 +87,9 @@ const CacheUpdateBtn = ({ date, onDataUpdate }) => {
         } catch (error) {
             console.error('Ошибка при обновлении событий:', error);
             toast.error("Не удалось обновить кэш. Попробуйте позже.");
+        } finally {
+            refreshingRef.current = false;
+            localStorage.setItem("refresh_in_progress", "false");
         }
     }, [date, onDataUpdate]);
 
@@ -81,16 +117,35 @@ const CacheUpdateBtn = ({ date, onDataUpdate }) => {
     // ⏱ Автоматическое обновление кэша по таймеру
     useEffect(() => {
         const intervalTime = timeOffset * 60 * 60 * 1000;
-        const intervalId = setInterval(() => handleRefreshEvents(), intervalTime);
-        return () => clearInterval(intervalId);
-    }, [handleRefreshEvents, timeOffset]);
+        // Проверка просроченности кэша перед обновлением
+        const autoRefresh = () => {
+            const jwtToken = getJWTTokenFromLocalStorage();
+            const calendarId = getCalendarIdLocalStorage();
+            if (!jwtToken || isTokenExpired(jwtToken)) return;
+            if (!calendarId) return;
+            if (isCacheStale()) {
+                handleRefreshEvents();
+            }
+        };
+        autoRefresh();
+        const intervalId = setInterval(autoRefresh, intervalTime);
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, [handleRefreshEvents, timeOffset, isCacheStale]);
 
     return (
         <button
             onClick={handleRefreshEvents}
-            className={`cache-btn ${cacheUpdated ? 'updated' : ''}`}
+            className={`cache-btn ${cacheUpdated === true ? 'updated' : ''}`}
         >
-            {cacheUpdated ? 'Кэш обновлен' : 'Сбросить кэш расписания'}
+            {cacheUpdated === 'loading' ? (
+                <InlineLoader />
+            ) : cacheUpdated === true ? (
+                'Кэш обновлен'
+            ) : (
+                'Сбросить кэш расписания'
+            )}
         </button>
     );
 };

@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import InlineLoader from '../../elements/InlineLoader';
 
 const Login = ({ onLogin, title, name, formId }) => {
+    const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const onClickLogin = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             const result = await onLogin(email, password);
 
@@ -14,13 +17,15 @@ const Login = ({ onLogin, title, name, formId }) => {
             }
         } catch (error) {
             console.error("Ошибка при выполнении входа:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="login-netologiya">
-            <div class="loginLogo-container">
-                <center><img src={`/${formId}.png`} alt={`Лого ${name}`} class="loginLogo"/></center>
+            <div className="loginLogo-container">
+                <center><img src={`/${formId}.png`} alt={`Лого ${name}`} className="loginLogo"/></center>
             </div>
             <label>{title}</label>
             <div style={{ display: "flex", flexDirection: "column" }}>
@@ -45,7 +50,7 @@ const Login = ({ onLogin, title, name, formId }) => {
                     id={`password-${formId}`}
                     name={`password-${formId}`}
                     placeholder={`Пароль от ${name}`}
-                    utoComplete={`${formId}-current-password`}
+                    autoComplete={`${formId}-current-password`}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
@@ -57,7 +62,7 @@ const Login = ({ onLogin, title, name, formId }) => {
                 onClick={onClickLogin}
                 disabled={!email || !password}
             >
-                Войти
+                {loading ? <InlineLoader /> : 'Войти'}
             </button>
         </div>
     );

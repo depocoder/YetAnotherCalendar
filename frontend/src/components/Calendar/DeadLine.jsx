@@ -18,6 +18,7 @@ const DeadLine = ({ date, events, setSelectedEvent }) => {
             </th>
             {monthDays.map((day, index) => {
                 const adjustedDay = new Date(new Date(date.start).setDate(new Date(date.start).getDate() + index)).toISOString().split('T')[0];
+                const now = new Date();
 
                 // Фильтрация событий из Netology
                 const netologyDeadlines = events?.netology?.homework
@@ -25,21 +26,28 @@ const DeadLine = ({ date, events, setSelectedEvent }) => {
                         const homeworkDeadline = new Date(homework.deadline).toISOString().split('T')[0];
                         return homeworkDeadline === adjustedDay;
                     })
-                    ?.map((homework, hwIndex) => ({
-                        ...homework,
-                        source: 'netology', // Добавляем метку источника
-                    }));
-
+                    ?.map((homework, hwIndex) => {
+                        const deadlineDate = new Date(homework.deadline);
+                        return {
+                            ...homework,
+                            source: 'netology', // Добавляем метку источника
+                            isPast: deadlineDate < now,
+                        };
+                    });
                 // Фильтрация событий из UTMN (LMS)
                 const utmnDeadlines = events?.utmn?.lms_events
                     ?.filter(event => {
                         const eventDeadline = new Date(event.dt_end).toISOString().split('T')[0];
                         return eventDeadline === adjustedDay;
                     })
-                    ?.map((event, eventIndex) => ({
-                        ...event,
-                        source: 'utmn', // Добавляем метку источника
-                    }));
+                    ?.map((event, eventIndex) => {
+                        const deadlineDate = new Date(event.dt_end);
+                        return {
+                            ...event,
+                            source: 'utmn', // Добавляем метку источника
+                            isPast: deadlineDate < now,
+                        };
+                    });
 
                 // Объединяем события из обоих источников
                 const combinedDeadlines = [...(netologyDeadlines || []), ...(utmnDeadlines || [])];
@@ -50,7 +58,8 @@ const DeadLine = ({ date, events, setSelectedEvent }) => {
                             combinedDeadlines.map((deadline, dlIndex) => (
                                 <div
                                     key={dlIndex}
-                                    className={`deadline-info ${deadline.source}`}
+                                    // Добавляем класс .past-deadline, если дедлайн уже прошёл
+                                    className={`deadline-info ${deadline.source}${deadline.isPast ? ' past' : ''}`}
                                     onClick={() => setSelectedEvent(deadline)} // Передаем событие в EventsDetail
                                 >
                                     {/* Отображаем название события */}
