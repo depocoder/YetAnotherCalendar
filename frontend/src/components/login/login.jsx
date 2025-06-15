@@ -34,23 +34,27 @@ const Login = ({ onLogin, title, name, formId }) => {
                      name="login_system"
                      value={formId}  
                 />
+        
                 <input
                     className="input-email"
                     type="email"
                     id={`email-${formId}`}
-                    name={`email-${formId}`}
+                    name="email"
                     placeholder={`Логин от ${name}`}
-                    autoComplete={`${formId}-email`}
+                    autoComplete="username"
+                    aria-label={`Login ${name}`}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                 />
+
                 <input
                     className="input-email"
                     type="password"
                     id={`password-${formId}`}
-                    name={`password-${formId}`}
+                    name="password"
                     placeholder={`Пароль от ${name}`}
-                    autoComplete={`${formId}-current-password`}
+                    autoComplete="current-password"
+                    aria-label={`Password ${name}`}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
