@@ -4,17 +4,19 @@ import re
 from secrets import token_hex
 from typing import Any
 
+from ...cache_builder import key_builder
 import httpx
 import reretry
 from bs4 import BeautifulSoup, Tag
 from fastapi import HTTPException
+from fastapi_cache.decorator import cache
 from httpx import URL, AsyncClient
 from starlette import status
 
 from yet_another_calendar.settings import settings
 from .schema import (
-    ModeusCalendar,
-    FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusEventsBody,
+    ModeusCalendar, FullEvent, FullModeusPersonSearch,
+    SearchPeople, ExtendedPerson, ModeusEventsBody,
 )
 
 logger = logging.getLogger(__name__)
@@ -70,6 +72,7 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
 
 
 @reretry.retry(exceptions=httpx.TransportError, tries=settings.retry_tries, delay=settings.retry_delay)
+@cache(expire=settings.redis_jwt_time_live)
 async def login(username: str, __password: str, timeout: int = 15) -> str:
     """
     Log in Modeus.
@@ -118,6 +121,11 @@ def _extract_token_from_url(url: str, match_index: int = 1) -> str | None:
     return match[match_index]
 
 
+def extract_token_from_url(url: str) -> str | None:
+    """Public wrapper for `_extract_token_from_url` used in tests."""
+    return _extract_token_from_url(url)
+
+
 @reretry.retry(exceptions=httpx.TransportError, tries=settings.retry_tries, delay=settings.retry_delay)
 async def post_modeus(__jwt: str, body: Any, url_part: str, timeout: int = 15) -> str:
     """
@@ -150,6 +158,21 @@ async def get_events(
     response = await post_modeus(__jwt, body, settings.modeus_search_events_part)
     modeus_calendar = ModeusCalendar.model_validate_json(response)
     return modeus_calendar.serialize_modeus_response()
+
+
+@cache(expire=settings.redis_events_time_live, key_builder=key_builder)
+async def get_day_events(jwt: str, payload: dict[str, object]) -> list[FullEvent]:
+    headers = {
+        "Authorization": f"Bearer {jwt}",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    }
+    async with AsyncClient(base_url=settings.modeus_base_url, timeout=30) as client:
+        resp = await client.post(settings.modeus_search_events_part, json=payload, headers=headers)
+        resp.raise_for_status()
+
+    calendar = ModeusCalendar.model_validate_json(resp.text)
+    return calendar.serialize_modeus_response(skip_lxp=False)
 
 
 async def get_people(

@@ -3,12 +3,10 @@ import uuid
 from typing import Self, Annotated
 
 import jwt
-from fastapi import HTTPException, Query
+from fastapi import HTTPException
 from fastapi import Header
 from pydantic import BaseModel, Field, computed_field, model_validator, field_validator
 from starlette import status
-
-from yet_another_calendar.web.api.validators import OptionalUTCDate
 
 
 class Creds(BaseModel):
@@ -32,13 +30,12 @@ class Creds(BaseModel):
 
 
 class ModeusTimeBody(BaseModel):
-    time_min: datetime.datetime = Field(alias="timeMin")
-    time_max: datetime.datetime = Field(alias="timeMax")
+    time_min: datetime.datetime = Field(alias="timeMin", examples=["2024-09-23T00:00:00+00:00"])
+    time_max: datetime.datetime = Field(alias="timeMax", examples=["2024-09-29T23:59:59+00:00"])
 
     @field_validator("time_min")
     @classmethod
     def validate_time_min(cls, time_min: datetime.datetime) -> datetime.datetime:
-        time_min = time_min.replace(tzinfo=datetime.UTC)
         if time_min.weekday() != 0:
             raise ValueError("Weekday time_min must be Monday.")
         if time_min.second or time_min.hour or time_min.minute:
@@ -50,19 +47,13 @@ class ModeusTimeBody(BaseModel):
     @field_validator("time_max")
     @classmethod
     def validate_time_max(cls, time_max: datetime.datetime) -> datetime.datetime:
-        time_max = time_max.replace(tzinfo=datetime.UTC)
-        time_max += datetime.timedelta(hours=23, minutes=59, seconds=59)
         if time_max.weekday() != 6:
-            raise ValueError("Weekday time_max must be Sunday.")
+            raise ValueError("Weekday time_min must be Sunday.")
         if time_max.hour != 23 or time_max.second != 59 or time_max.minute != 59:
             raise ValueError("Time must me 23:59:59.")
         if time_max.tzinfo != datetime.UTC:
             raise ValueError("Time must be UTC.")
         return time_max
-
-    def create_dump_date(self) -> dict[str, datetime.date]:
-        """Create dump with date."""
-        return {'timeMax': self.time_max.date(), 'timeMin': self.time_min.date()}
 
 
 # noinspection PyNestedDecorators
@@ -175,7 +166,7 @@ class ModeusCalendar(BaseModel):
 
     embedded: CalendarEmbedded = Field(alias="_embedded")
 
-    def serialize_modeus_response(self) -> list[FullEvent]:
+    def serialize_modeus_response(self, skip_lxp: bool = True) -> list[FullEvent]:
         """Serialize calendar api response from modeus."""
         locations = {location.id: location for location in self.embedded.locations}
         teachers = {teacher.id: teacher for teacher in self.embedded.people}
@@ -198,7 +189,7 @@ class ModeusCalendar(BaseModel):
                 course_name = 'unknown'
                 teacher_full_name = 'unknown'
             location = locations[event.id]
-            if location.is_lxp:
+            if skip_lxp and location.is_lxp:
                 continue
             full_events.append(FullEvent(**{
                 "teacher_full_name": teacher_full_name, "course_name": course_name,
@@ -211,11 +202,25 @@ class ModeusCalendar(BaseModel):
 class StudentsSpeciality(BaseModel):
     id: uuid.UUID = Field(alias="personId")
     flow_code: str | None = Field(alias="flowCode")
-    learning_start_date: OptionalUTCDate = Field(alias="learningStartDate")
-    learning_end_date: OptionalUTCDate = Field(alias="learningEndDate")
+    learning_start_date: datetime.datetime | None = Field(alias="learningStartDate")
+    learning_end_date: datetime.datetime | None = Field(alias="learningEndDate")
     specialty_code: str | None = Field(alias="specialtyCode")
     specialty_name: str | None = Field(alias="specialtyName")
     specialty_profile: str | None = Field(alias="specialtyProfile")
+
+    @field_validator("learning_start_date")
+    @classmethod
+    def validate_starts_at(cls, learning_start_date: datetime.datetime | None) -> datetime.datetime | None:
+        if not learning_start_date:
+            return learning_start_date
+        return learning_start_date.astimezone(datetime.UTC)
+
+    @field_validator("learning_end_date")
+    @classmethod
+    def validate_learning_end_date(cls, learning_end_date: datetime.datetime | None) -> datetime.datetime | None:
+        if not learning_end_date:
+            return learning_end_date
+        return learning_end_date.astimezone(datetime.UTC)
 
 
 class ExtendedPerson(StudentsSpeciality, ShortPerson):
@@ -245,6 +250,34 @@ class SearchPeople(BaseModel):
         return extended_people
 
 
+class DayEventsRequest(BaseModel):
+    date: datetime.date
+    learning_start_year: list[int] = Field(alias="learningStartYear", examples=[[2024]])
+    profile_name: list[str] = Field(
+        alias="profileName",
+        examples=[["Разработка IT-продуктов и информационных систем"]],
+        default=["Разработка IT-продуктов и информационных систем"],
+    )
+    specialty_code: list[str] = Field(alias="specialtyCode", examples=[["09.03.02"]], default=["09.03.02"])
+
+    def to_search_payload(self) -> dict[str, object]:
+        utc = datetime.UTC
+        t_min = datetime.datetime.combine(self.date, datetime.time.min, tzinfo=utc)
+        t_max = datetime.datetime.combine(self.date, datetime.time.max.replace(microsecond=0), tzinfo=utc)
+        return {
+            "timeMin": t_min.isoformat(),
+            "timeMax": t_max.isoformat(),
+            "learningStartYear": self.learning_start_year,
+            "profileName": self.profile_name,
+            "specialtyCode": self.specialty_code,
+        }
+
+
+class ModeusDayEventsRequest(DayEventsRequest):
+    """Backward-compatibility wrapper kept for external/tests imports."""
+    pass
+
+
 def get_person_id(__jwt: str) -> str:
     try:
         decoded_token = jwt.decode(__jwt, options={"verify_signature": False})
@@ -254,16 +287,5 @@ def get_person_id(__jwt: str) -> str:
             detail="Modeus error. Can't decode token", status_code=status.HTTP_400_BAD_REQUEST,
         ) from None
 
-
 def get_cookies_from_headers(modeus_jwt_token: Annotated[str, Header()]) -> str:
     return get_person_id(modeus_jwt_token)
-
-
-async def get_time_from_query(
-        time_min: Annotated[datetime.datetime, Query(alias="timeMin")],
-        time_max: Annotated[datetime.datetime, Query(alias="timeMax")],
-) -> ModeusTimeBody:
-    return ModeusTimeBody.model_validate({
-        "timeMin": time_min,
-        "timeMax": time_max,
-    })

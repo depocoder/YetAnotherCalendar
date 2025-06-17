@@ -1,8 +1,8 @@
 import asyncio
 import datetime
 import logging
-from collections.abc import Iterable
 from typing import Any
+from collections.abc import Iterable
 
 import icalendar
 from fastapi import HTTPException
@@ -11,13 +11,13 @@ from fastapi_cache.decorator import cache
 from starlette import status
 
 from yet_another_calendar.settings import settings
-from . import schema
-from ..lms import schema as lms_schema
-from ..lms import views as lms_views
-from ..modeus import schema as modeus_schema
-from ..modeus import views as modeus_views
-from ..netology import schema as netology_schema
 from ..netology import views as netology_views
+from ..lms import views as lms_views
+from ..modeus import views as modeus_views
+from ..modeus import schema as modeus_schema
+from ..lms import schema as lms_schema
+from ..netology import schema as netology_schema
+from . import schema
 from ...cache_builder import key_builder
 
 logger = logging.getLogger(__name__)
@@ -117,8 +117,9 @@ async def get_calendar(
         modeus_jwt_token: str,
 ) -> schema.CalendarResponse:
     full_body = modeus_schema.ModeusEventsBody.model_validate(
-        {**body.create_dump_date(), 'attendeePersonId': [person_id]},
+        {**body.model_dump(by_alias=True), 'attendeePersonId': [person_id]},
     )
+    lms_response = None
     async with asyncio.TaskGroup() as tg:
         netology_response = tg.create_task(netology_views.get_calendar(body, calendar_id, cookies))
         modeus_response = tg.create_task(modeus_views.get_calendar(full_body, modeus_jwt_token, person_id))

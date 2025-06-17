@@ -8,17 +8,17 @@ from fastapi.params import Depends
 from starlette.responses import StreamingResponse
 
 from yet_another_calendar.settings import settings
-from . import integration, schema
-from ..lms import schema as lms_schema
 from ..modeus import schema as modeus_schema
+from ..lms import schema as lms_schema
 from ..netology import schema as netology_schema
+from . import integration, schema
 
 router = APIRouter()
 
 
-@router.get("/events/")
+@router.post("/events/")
 async def get_calendar(
-        body: Annotated[modeus_schema.ModeusTimeBody, Depends(modeus_schema.get_time_from_query)],
+        body: modeus_schema.ModeusTimeBody,
         lms_user: Annotated[lms_schema.User, Depends(lms_schema.get_user)],
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         modeus_jwt_token: Annotated[str, Header()],
@@ -39,9 +39,9 @@ async def get_calendar(
     return schema.CalendarResponse.model_validate(cached_calendar).change_timezone(time_zone)
 
 
-@router.get("/refresh_events/")
+@router.post("/refresh_events/")
 async def refresh_calendar(
-        body: Annotated[modeus_schema.ModeusTimeBody, Depends(modeus_schema.get_time_from_query)],
+        body: modeus_schema.ModeusTimeBody,
         lms_user: Annotated[lms_schema.User, Depends(lms_schema.get_user)],
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         modeus_jwt_token: Annotated[str, Header()],
@@ -57,16 +57,16 @@ async def refresh_calendar(
     )
 
 
-@router.get("/export_ics/")
+
+@router.post("/export_ics/")
 async def export_ics(
-        body: Annotated[modeus_schema.ModeusTimeBody, Depends(modeus_schema.get_time_from_query)],
+        body: modeus_schema.ModeusTimeBody,
         lms_user: Annotated[lms_schema.User, Depends(lms_schema.get_user)],
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         person_id: Annotated[str, Depends(modeus_schema.get_cookies_from_headers)],
         modeus_jwt_token: Annotated[str, Header()],
         calendar_id: int = settings.netology_default_course_id,
         time_zone: str = "Europe/Moscow",
-
 ) -> StreamingResponse:
     """
     Export into .ics format
