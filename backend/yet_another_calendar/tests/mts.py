@@ -1,6 +1,7 @@
 import uuid
 from unittest.mock import AsyncMock, MagicMock
 
+
 import pytest
 from fastapi import HTTPException
 from redis.asyncio import Redis
