@@ -1,0 +1,145 @@
+{
+  "netology": {
+    "homework": [
+      {
+        "id": 2661138,
+        "lesson_id": 491334,
+        "type": "task",
+        "title": "Домашнее задание 1. Чек-пойнт 2. Прототип решения (дедлайн 11.05.25)",
+        "block_title": "2 семестр: Проектно-исследовательская работа",
+        "path": "\/profile\/program\/bhebdps-pir-24-2\/lessons\/491334\/lesson_items\/2661138",
+        "deadline": "2025-05-11T03:00:00+03:00",
+        "url": "https:\/\/netology.ru\/profile\/program\/bhebdps-pir-24-2\/lessons\/491334\/lesson_items\/2661138"
+      },
+      {
+        "id": 2670873,
+        "lesson_id": 468593,
+        "type": "quiz",
+        "title": "Квиз по теме 4.4 (рекомендованный дедлайн 07.05.25)",
+        "block_title": "2 семестр: Программирование и алгоритмизация на С++",
+        "path": "\/profile\/program\/bhebdps-pac-24-2\/lessons\/468593\/lesson_items\/2670873",
+        "deadline": "2025-05-07T03:00:00+03:00",
+        "url": "https:\/\/netology.ru\/profile\/program\/bhebdps-pac-24-2\/lessons\/468593\/lesson_items\/2670873"
+      }
+    ],
+    "webinars": [
+      {
+        "id": 2637949,
+        "lesson_id": 485690,
+        "type": "webinar",
+        "title": "Вебинар 15. Первый машинный цикл",
+        "block_title": "2 семестр: Архитектура цифровых устройств и операционные системы",
+        "starts_at": "2025-05-05T18:50:00+03:00",
+        "ends_at": "2025-05-05T20:20:00+03:00",
+        "status": "passed",
+        "experts": [
+          {
+            "id": 8737734,
+            "full_name": "Сергей Кононов",
+            "avatar_path": "https:\/\/u.netology.ru\/backend\/uploads\/legacy\/users\/avatar\/8737734\/1f1e1cda5a2d2452.png",
+            "has_photo": true
+          }
+        ],
+        "video_url": "https:\/\/kinescope.io\/rwES1gGXAMACFKhBtZ3tmU",
+        "webinar_url": "https:\/\/netology.ru\/backend\/api\/webinars\/147352\/redirect?code=11abf8877a215d99fb15e2134212e9ff"
+      },
+      {
+        "id": 2533355,
+        "lesson_id": 468594,
+        "type": "webinar",
+        "title": "Вебинар «Ассоциативные и неупорядоченные контейнеры», часть 1",
+        "block_title": "2 семестр: Программирование и алгоритмизация на С++",
+        "starts_at": "2025-05-07T17:10:00+03:00",
+        "ends_at": "2025-05-07T18:40:00+03:00",
+        "status": "passed",
+        "experts": [
+          {
+            "id": 9666966,
+            "full_name": "Анна Царина",
+            "avatar_path": "https:\/\/u.netology.ru\/backend\/uploads\/legacy\/users\/avatar\/9666966\/956db0daa649732f.jpg",
+            "has_photo": true
+          }
+        ],
+        "video_url": "https:\/\/kinescope.io\/t7FgJBjp2BVBA25QHSBDTk",
+        "webinar_url": "https:\/\/netology.ru\/backend\/api\/webinars\/143151\/redirect?code=e9e568e0a14e7310bc768f6afa43a3ee"
+      },
+      {
+        "id": 2533356,
+        "lesson_id": 468594,
+        "type": "webinar",
+        "title": "Вебинар «Ассоциативные и неупорядоченные контейнеры», часть 2",
+        "block_title": "2 семестр: Программирование и алгоритмизация на С++",
+        "starts_at": "2025-05-07T18:50:00+03:00",
+        "ends_at": "2025-05-07T20:20:00+03:00",
+        "status": "passed",
+        "experts": [
+          {
+            "id": 9666966,
+            "full_name": "Анна Царина",
+            "avatar_path": "https:\/\/u.netology.ru\/backend\/uploads\/legacy\/users\/avatar\/9666966\/956db0daa649732f.jpg",
+            "has_photo": true
+          }
+        ],
+        "video_url": "https:\/\/kinescope.io\/xkckEYvGnKq9s2vGzGRr7p",
+        "webinar_url": ""
+      }
+    ]
+  },
+  "utmn": {
+    "modeus_events": [
+      {
+        "id": "713d267d-eb1b-47cf-9734-df29fcb26846",
+        "customLocation": "Нетология",
+        "name": "Комбинаторика.",
+        "nameShort": "Лабораторное занятие 28",
+        "description": null,
+        "start": "2025-05-05T15:30:00+03:00",
+        "end": "2025-05-05T17:00:00+03:00",
+        "teacher_full_name": "Мальков Иван Николаевич",
+        "course_name": "Дискретная математика 1",
+        "cycle_realization": {
+          "id": "06303631-5e3c-4857-b57c-cff3ec1ab608",
+          "name": "Лабораторное занятие",
+          "code": "ДМ 1 ЛБ-10"
+        },
+        "is_lxp": 0.0
+      },
+      {
+        "id": "759cf385-f4b8-4071-9085-806089e38574",
+        "customLocation": "Нетология",
+        "name": "Дифференциальное исчисление функции многих переменных",
+        "nameShort": "Практическое занятие 22",
+        "description": null,
+        "start": "2025-05-07T13:45:00+03:00",
+        "end": "2025-05-07T15:15:00+03:00",
+        "teacher_full_name": "Мальков Иван Николаевич",
+        "course_name": "Математический анализ",
+        "cycle_realization": {
+          "id": "5b2bfe99-95f8-401f-acd9-8392bdcd5ad6",
+          "name": "Практическое занятие",
+          "code": "МА П-17"
+        },
+        "is_lxp": 0.0
+      },
+      {
+        "id": "f621118b-c9d1-4116-b73f-60ce12d812ea",
+        "customLocation": "Нетология",
+        "name": "Gif-анимация это не только весело,но и полезно",
+        "nameShort": "Лабораторное занятие 14",
+        "description": null,
+        "start": "2025-05-06T15:30:00+03:00",
+        "end": "2025-05-06T18:40:00+03:00",
+        "teacher_full_name": "Гизатулина Асия Станиславовна",
+        "course_name": "Технологии анимации",
+        "cycle_realization": {
+          "id": "0b2233b4-f437-4e86-a156-9e18039569fa",
+          "name": "Лабораторное занятие",
+          "code": "AW ЛБ-01"
+        },
+        "is_lxp": 0.0
+      }
+    ],
+    "lms_events": []
+  },
+  "cached_at": "2025-06-24T12:28:30.290558Z"
+}
