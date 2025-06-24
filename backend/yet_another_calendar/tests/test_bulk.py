@@ -1,8 +1,12 @@
 import datetime
+import typing
+from copy import deepcopy
 
 from icalendar.prop import vText
 
+from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.bulk.integration import create_ics_event
+from yet_another_calendar.web.api.bulk.schema import BulkResponse
 
 
 def test_create_ics_event_start_after_end() -> None:
@@ -48,3 +52,13 @@ def test_create_ics_event_ok() -> None:
     assert (now_aware - dtstamp).total_seconds() < 5
 
 
+@typing.no_type_check
+def test_bulk_change_tz() -> None:
+    with open(settings.test_parent_path / "fixtures/bulk_fixture.json") as f:
+        content = f.read()
+    bulk = BulkResponse.model_validate_json(content)
+    new_bulk = deepcopy(bulk)
+    new_bulk.change_timezone('America/los_angeles')
+
+    assert (bulk.netology.webinars[0].starts_at.hour - new_bulk.netology.webinars[0].starts_at.hour) == 10
+    assert (bulk.utmn.modeus_events[0].start_time.hour - new_bulk.utmn.modeus_events[0].start_time.hour) == 10

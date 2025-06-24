@@ -3,6 +3,8 @@ import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom
 import LoginPage from './pages/LoginPage';
 import CalendarPage from './pages/CalendarPage';
 import PrivateRoute from "./elements/PrivateRoute";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
     // const [authData, setAuthData] = useState({
@@ -26,6 +28,7 @@ const App = () => {
                 {/* Дефолтный маршрут, который перенаправляет на /login */}
                 <Route path="*" element={<Navigate to="/login" />} />
             </Routes>
+            <ToastContainer position="top-center" autoClose={3000} />
         </Router>
     );
 };

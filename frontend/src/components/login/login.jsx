@@ -1,55 +1,72 @@
 import React, { useState } from 'react';
+import InlineLoader from '../../elements/InlineLoader';
 
-const Login = ({ onLogin, title, name, error }) => {
+const Login = ({ onLogin, title, name, formId }) => {
+    const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const onClickLogin = async (e) => {
-        e.preventDefault(); // Предотвращаем стандартное поведение формы
-
+        e.preventDefault();
+        setLoading(true);
         try {
-            // Вызываем функцию входа и получаем результат
             const result = await onLogin(email, password);
 
             if (!result.success) {
-                // Если вход неуспешен, показываем сообщение об ошибке
                 console.error(result.message || "Произошла ошибка.");
             }
         } catch (error) {
-            console.error("Не удалось выполнить вход. Попробуйте снова.");
+            console.error("Ошибка при выполнении входа:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="login-netologiya">
+            <div className="loginLogo-container">
+                <center><img src={`/${formId}.png`} alt={`Лого ${name}`} className="loginLogo"/></center>
+            </div>
             <label>{title}</label>
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <input
+                   type="hidden"
+                     name="login_system"
+                     value={formId}  
+                />
+        
+                <input
                     className="input-email"
                     type="email"
+                    id={`email-${formId}`}
+                    name="email"
                     placeholder={`Логин от ${name}`}
+                    autoComplete="username"
+                    aria-label={`Login ${name}`}
                     onChange={(e) => setEmail(e.target.value)}
-                    required // Добавляем атрибут required для обязательного поля
+                    required
                 />
+
                 <input
                     className="input-email"
                     type="password"
+                    id={`password-${formId}`}
+                    name="password"
                     placeholder={`Пароль от ${name}`}
+                    autoComplete="current-password"
+                    aria-label={`Password ${name}`}
                     onChange={(e) => setPassword(e.target.value)}
-                    required // Добавляем атрибут required для обязательного поля
+                    required
                 />
             </div>
-
-            {/* Сообщение об ошибке */}
-            {error && <p className="error-message">{error}</p>}
 
             <button
                 className="login-btn-log"
                 id="login"
                 onClick={onClickLogin}
-                disabled={!email || !password} // Блокируем кнопку, если поля пустые
+                disabled={!email || !password}
             >
-                Войти
+                {loading ? <InlineLoader /> : 'Войти'}
             </button>
         </div>
     );
