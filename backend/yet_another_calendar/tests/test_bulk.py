@@ -1,4 +1,5 @@
 import datetime
+import typing
 from copy import deepcopy
 
 from icalendar.prop import vText
@@ -51,6 +52,7 @@ def test_create_ics_event_ok() -> None:
     assert (now_aware - dtstamp).total_seconds() < 5
 
 
+@typing.no_type_check
 def test_bulk_change_tz() -> None:
     with open(settings.test_parent_path / "fixtures/bulk_fixture.json") as f:
         content = f.read()
