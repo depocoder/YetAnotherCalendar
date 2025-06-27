@@ -163,7 +163,7 @@ async def get_people(
     return search_people.serialize_modeus_response()
 
 
-async def get_day_events(jwt: str, payload: dict[str, object]) -> list[FullEvent]:
+async def get_day_events(jwt: str, payload: dict[str, str]) -> list[FullEvent]:
     headers = {
         "Authorization": f"Bearer {jwt}",
         "Accept": "application/json",
