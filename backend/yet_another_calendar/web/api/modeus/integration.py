@@ -161,3 +161,17 @@ async def get_people(
     response = await post_modeus(__jwt, body, settings.modeus_search_people_part)
     search_people = SearchPeople.model_validate_json(response)
     return search_people.serialize_modeus_response()
+
+
+async def get_day_events(jwt: str, payload: dict[str, object]) -> list[FullEvent]:
+    headers = {
+        "Authorization": f"Bearer {jwt}",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    }
+    async with AsyncClient(base_url=settings.modeus_base_url, timeout=30) as client:
+        resp = await client.post(settings.modeus_search_events_part, json=payload, headers=headers)
+        resp.raise_for_status()
+
+    calendar = ModeusCalendar.model_validate_json(resp.text)
+    return calendar.serialize_modeus_response(skip_lxp=False)
