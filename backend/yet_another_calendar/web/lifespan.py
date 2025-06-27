@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis.asyncio import Redis
@@ -26,6 +26,8 @@ async def lifespan_setup(
         port=settings.redis_port,
         encoding='utf-8',
     )
+    app.state.redis = redis
+    await redis.ping()
     FastAPICache.init(RedisBackend(redis), prefix=settings.redis_prefix)
 
     try:
@@ -33,3 +35,6 @@ async def lifespan_setup(
     finally:
         await redis.close()
 
+# ???
+async def get_redis(request: Request) -> Redis:
+    return request.app.state.redis

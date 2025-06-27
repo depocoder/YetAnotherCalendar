@@ -4,9 +4,9 @@ Netology API implemented using a controller.
 
 from fastapi import APIRouter, Depends
 
-import yet_another_calendar.web.api.modeus.schema
 from yet_another_calendar.settings import settings
 from . import integration, schema
+from ..modeus.schema import ModeusTimeBody
 
 router = APIRouter()
 
@@ -35,9 +35,9 @@ async def get_course(
     return await integration.get_utmn_course(cookies)
 
 
-@router.get('/calendar/')
+@router.post('/calendar/')
 async def get_calendar(
-        body: schema.ModeusTimeBody = Depends(yet_another_calendar.web.api.modeus.schema.get_time_from_query),
+        body: ModeusTimeBody,
         calendar_id: int = settings.netology_default_course_id,
         cookies: schema.NetologyCookies = Depends(schema.get_cookies_from_headers),
 ) -> schema.SerializedEvents:

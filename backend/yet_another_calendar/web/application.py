@@ -11,7 +11,6 @@ from httpx import HTTPError
 from pydantic import ValidationError
 from starlette.responses import Response
 from yet_another_calendar.log import configure_logging
-from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.router import api_router
 from yet_another_calendar.web.lifespan import lifespan_setup
 
@@ -66,20 +65,14 @@ def get_app() -> FastAPI:
         title="yet_another_calendar",
         version=metadata.version("yet_another_calendar"),
         lifespan=lifespan_setup,
-        docs_url=None,
-        redoc_url=None,
+        docs_url="/api/docs",
+        redoc_url="/api/redoc",
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,
     )
-    if settings.debug:
-        origins = ["*"]
-    else:
-        origins = [
-            'https://yetanothercalendar.ru/',
-        ]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

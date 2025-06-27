@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from . import integration, schema
-from ..modeus import schema as modeus_schema
+from ..modeus.schema import ModeusTimeBody
 
 router = APIRouter()
 
@@ -18,7 +18,7 @@ async def get_netology_cookies(
     return await integration.auth_lms(creds)
 
 
-@router.get("/courses")
+@router.post("/courses")
 async def get_courses(
         user: Annotated[schema.User, Depends(schema.get_user)],
 ) -> list[schema.Course]:
@@ -28,7 +28,7 @@ async def get_courses(
     return await integration.get_courses(user)
 
 
-@router.get("/course_info")
+@router.post("/course_info")
 async def get_user_info(
         user: Annotated[schema.User, Depends(schema.get_user)],
         course_id: int = 2745,
@@ -39,10 +39,10 @@ async def get_user_info(
     return await integration.get_extended_course(user, course_id)
 
 
-@router.get("/events")
+@router.post("/events")
 async def get_events(
         user: Annotated[schema.User, Depends(schema.get_user)],
-        body: modeus_schema.ModeusTimeBody = Depends(modeus_schema.get_time_from_query),
+        body: ModeusTimeBody,
 ) -> list[schema.ModuleResponse]:
     """
     Get LMS events for current user.

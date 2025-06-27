@@ -8,7 +8,8 @@ from yarl import URL
 
 TEMP_DIR = Path(gettempdir())
 env = Env()
-env.read_env()
+#env.read_env()   # Trying to fix pytest problem with env and pydantic env declaration
+                  # upd: It actually worked
 
 
 class LogLevel(str, enum.Enum):
@@ -31,7 +32,7 @@ class Settings(BaseSettings):
     """
 
     host: str = "127.0.0.1"
-    port: int = 8000
+    port: int = 8001
     # quantity of workers for uvicorn
     workers_count: int = 1
     # Enable uvicorn reloading, debug and docs
@@ -40,7 +41,7 @@ class Settings(BaseSettings):
     log_level: LogLevel = LogLevel.INFO
 
     # Variables for Redis
-    redis_host: str = "yet_another_calendar-redis"
+    redis_host: str = "localhost" #"yet_another_calendar-redis"
     redis_port: int = 6379
     redis_user: str | None = None
     redis_pass: str | None = None
