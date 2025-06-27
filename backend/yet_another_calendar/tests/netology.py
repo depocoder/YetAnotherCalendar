@@ -211,7 +211,7 @@ async def test_modeus_time_body() -> None:
 
     assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
     assert "Weekday time_min must be Monday" in str(exc_info.value)
-    assert "Weekday time_min must be Sunday" in str(exc_info.value)
+    assert "Weekday time_max must be Sunday" in str(exc_info.value)
 
 
 @pytest.mark.asyncio
