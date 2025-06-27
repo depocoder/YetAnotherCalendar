@@ -1,11 +1,11 @@
 import json
 import typing
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import patch, AsyncMock, MagicMock
 
 import httpx
 import pytest
 from fastapi import HTTPException
-from httpx import AsyncClient, HTTPStatusError
+from httpx import HTTPStatusError, AsyncClient
 from pydantic import ValidationError
 
 from yet_another_calendar.settings import settings
@@ -260,8 +260,8 @@ async def test_get_people_ok() -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("username,expected", [
-        ("ivan@utmn.ru", "ivan@study.utmn.ru"),
-        ("ivan@study.utmn.ru", "ivan@study.utmn.ru"),
+    ("ivan@utmn.ru", "ivan@study.utmn.ru"),
+    ("ivan@study.utmn.ru", "ivan@study.utmn.ru"),
 ])
 async def test_valid_usernames_creds(username: str, expected: str) -> None:
     creds = schema.Creds(username=username, password="secret")
@@ -270,11 +270,90 @@ async def test_valid_usernames_creds(username: str, expected: str) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("username, error_msg", [
-        ("ivanutmn.ru", "Email must contain one @."),
-        ("ivan@@utmn.ru", "Email must contain one @."),
-        ("ivan@gmail.com", "Email must contain @study.utmn.ru."),
+    ("ivanutmn.ru", "Email must contain one @."),
+    ("ivan@@utmn.ru", "Email must contain one @."),
+    ("ivan@gmail.com", "Email must contain @study.utmn.ru."),
 ])
 async def test_invalid_usernames_creds(username: str, error_msg: str) -> None:
     with pytest.raises(ValidationError):
         schema.Creds(username=username, password="secret")
 
+
+def test_day_events_request_validation() -> None:
+    """Test DayEventsRequest validation."""
+    from yet_another_calendar.web.api.modeus.schema import DayEventsRequest
+    import datetime
+
+    request = DayEventsRequest(
+        date=datetime.date(2024, 1, 15),
+        learningStartYear=[2024],
+        profileName=["Test Profile"],
+        specialtyCode=["09.03.02"],
+    )
+
+    payload = request.to_search_payload()
+
+    assert "timeMin" in payload
+    assert "timeMax" in payload
+    assert payload["learningStartYear"] == [2024]
+    assert payload["profileName"] == ["Test Profile"]
+    assert payload["specialtyCode"] == ["09.03.02"]
+
+
+def test_day_events_request_defaults() -> None:
+    """Test DayEventsRequest with default values."""
+    from yet_another_calendar.web.api.modeus.schema import DayEventsRequest
+    import datetime
+
+    request = DayEventsRequest(
+        date=datetime.date(2024, 1, 15),
+        learningStartYear=[2024],
+    )
+
+    assert request.profile_name == ["Разработка IT-продуктов и информационных систем"]
+    assert request.specialty_code == ["09.03.02"]
+
+
+def test_day_events_request_to_search_payload() -> None:
+    """Test DayEventsRequest to_search_payload method."""
+    from yet_another_calendar.web.api.modeus.schema import DayEventsRequest
+    import datetime
+
+    test_date = datetime.date(2024, 1, 15)
+    request = DayEventsRequest(
+        date=test_date,
+        learningStartYear=[2024],
+        profileName=["Custom Profile"],
+        specialtyCode=["Custom Code"],
+    )
+
+    payload = request.to_search_payload()
+
+    assert payload["timeMin"] == "2024-01-15T00:00:00+00:00"
+    assert payload["timeMax"] == "2024-01-15T23:59:59+00:00"
+    assert payload["learningStartYear"] == [2024]
+    assert payload["profileName"] == ["Custom Profile"]
+    assert payload["specialtyCode"] == ["Custom Code"]
+
+
+@pytest.mark.asyncio
+class TestModeusIntegration:
+    """Tests for the integration logic in `integration.py`."""
+
+    async def test_get_day_events_success(self) -> None:
+        """
+        Tests successful retrieval of day events from the mocked Modeus API.
+        """
+        # Mock the external API call
+        client = AsyncClient(
+            http2=True,
+            base_url="https://utmn.modeus.org",
+            transport=handlers.transport,
+        )
+
+        jwt = "fake-jwt-token"
+        payload = {"timeMin": "2024-09-02T00:00:00Z"}
+        with patch("yet_another_calendar.web.api.modeus.integration.AsyncClient.__aenter__", return_value=client):
+            events = await integration.get_day_events(jwt, payload)
+
+        assert len(events) == 6
