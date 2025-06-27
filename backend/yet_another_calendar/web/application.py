@@ -65,8 +65,8 @@ def get_app() -> FastAPI:
         title="yet_another_calendar",
         version=metadata.version("yet_another_calendar"),
         lifespan=lifespan_setup,
-        docs_url="/api/docs",
-        redoc_url="/api/redoc",
+        docs_url=None,
+        redoc_url=None,
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,
     )
