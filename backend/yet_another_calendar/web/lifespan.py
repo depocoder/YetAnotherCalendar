@@ -26,8 +26,7 @@ async def lifespan_setup(
         port=settings.redis_port,
         encoding='utf-8',
     )
-    app.state.redis = redis
-    await redis.ping()
+
     FastAPICache.init(RedisBackend(redis), prefix=settings.redis_prefix)
 
     try:
@@ -35,6 +34,5 @@ async def lifespan_setup(
     finally:
         await redis.close()
 
-# ???
 async def get_redis(request: Request) -> Redis:
     return request.app.state.redis
