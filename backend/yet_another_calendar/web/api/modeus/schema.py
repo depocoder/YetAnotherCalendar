@@ -1,4 +1,5 @@
 import datetime
+import typing
 import uuid
 from typing import Self, Annotated
 
@@ -279,7 +280,7 @@ class DayEventsRequest(BaseModel):
     )
     specialty_code: list[str] = Field(alias="specialtyCode", examples=[["09.03.02"]], default=["09.03.02"])
 
-    def to_search_payload(self) -> dict[str, object]:
+    def to_search_payload(self) -> dict[str, typing.Any]:
         utc = datetime.UTC
         t_min = datetime.datetime.combine(self.date, datetime.time.min, tzinfo=utc)
         t_max = datetime.datetime.combine(self.date, datetime.time.max.replace(microsecond=0), tzinfo=utc)
