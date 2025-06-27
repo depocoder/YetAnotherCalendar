@@ -48,7 +48,7 @@ class ModeusTimeBody(BaseModel):
     @classmethod
     def validate_time_max(cls, time_max: datetime.datetime) -> datetime.datetime:
         if time_max.weekday() != 6:
-            raise ValueError("Weekday time_min must be Sunday.")
+            raise ValueError("Weekday time_max must be Sunday.")
         if time_max.hour != 23 or time_max.second != 59 or time_max.minute != 59:
             raise ValueError("Time must me 23:59:59.")
         if time_max.tzinfo != datetime.UTC:

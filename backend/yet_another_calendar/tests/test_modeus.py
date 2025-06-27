@@ -152,8 +152,8 @@ async def test_extract_token_from_url_raises_typeerror(url: str, expected_token:
 async def test_post_modeus_unauthorized() -> None:
     client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.bad_request_transport)
     body = schema.ModeusEventsBody.model_validate({
-        "timeMin": "2024-09-23",
-        "timeMax": "2024-09-29",
+        "timeMin": "2024-09-23T00:00:00+00:00",
+        "timeMax": "2024-09-29T23:59:59+00:00",
         "size": 50,
         "attendeePersonId": ["307ad0dd-7211-4152-b0db-d6242b6c81f0", "47124e24-1c6c-40ae-ba89-49503d8e9a3c"],
     })
@@ -170,8 +170,8 @@ async def test_post_modeus_unauthorized() -> None:
 async def test_post_modeus_ok() -> None:
     client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.transport)
     body = schema.ModeusEventsBody.model_validate({
-        "timeMin": "2024-09-23",
-        "timeMax": "2024-09-29",
+        "timeMin": "2024-09-23T00:00:00+00:00",
+        "timeMax": "2024-09-29T23:59:59+00:00",
         "size": 50,
         "attendeePersonId": ["307ad0dd-7211-4152-b0db-d6242b6c81f0", "47124e24-1c6c-40ae-ba89-49503d8e9a3c"],
     })
@@ -186,8 +186,8 @@ async def test_post_modeus_ok() -> None:
 async def test_get_events_unauthorized() -> None:
     client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.bad_request_transport)
     body = schema.ModeusEventsBody.model_validate({
-        "timeMin": "2024-09-23",
-        "timeMax": "2024-09-29",
+        "timeMin": "2024-09-23T00:00:00+00:00",
+        "timeMax": "2024-09-29T23:59:59+00:00",
         "size": 50,
         "attendeePersonId": ["307ad0dd-7211-4152-b0db-d6242b6c81f0", "47124e24-1c6c-40ae-ba89-49503d8e9a3c"],
     })
@@ -204,8 +204,8 @@ async def test_get_events_unauthorized() -> None:
 async def test_get_events_ok() -> None:
     client = AsyncClient(http2=True, base_url=settings.modeus_base_url, transport=handlers.transport)
     body = schema.ModeusEventsBody.model_validate({
-        "timeMin": "2024-09-23",
-        "timeMax": "2024-09-29",
+        "timeMin": "2024-09-23T00:00:00+00:00",
+        "timeMax": "2024-09-29T23:59:59+00:00",
         "size": 50,
         "attendeePersonId": ["307ad0dd-7211-4152-b0db-d6242b6c81f0", "47124e24-1c6c-40ae-ba89-49503d8e9a3c"],
     })

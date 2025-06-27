@@ -132,8 +132,8 @@ async def test_get_program_ids_ok() -> None:
 async def test_get_calendar_not_found() -> None:
     client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
     modeus_time_body = schema.ModeusTimeBody.model_validate({
-        "timeMin": "2024-09-23",
-        "timeMax": "2024-09-29",
+        "timeMin": "2024-09-23T00:00:00+00:00",
+        "timeMax": "2024-09-29T23:59:59+00:00",
     })
 
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
@@ -147,24 +147,24 @@ async def test_get_calendar_not_found() -> None:
 async def test_modeus_time_body() -> None:
     with pytest.raises(ValueError) as exc_info:
         schema.ModeusTimeBody.model_validate({
-            "timeMin": "2025-04-29",
-            "timeMax": "2025-05-04",
+            "timeMin": "2025-04-29T00:00:00+00:00",
+            "timeMax": "2025-05-04T23:59:59+00:00",
         })
 
     assert "1 validation error for ModeusTimeBody" in str(exc_info.value)
 
     with pytest.raises(ValueError) as exc_info:
         schema.ModeusTimeBody.model_validate({
-            "timeMin": "2024-09-23",
-            "timeMax": "2024-09-30",
+            "timeMin": "2024-09-23T00:00:00+00:00",
+            "timeMax": "2024-09-30T23:59:59+00:00",
         })
 
     assert "1 validation error for ModeusTimeBody" in str(exc_info.value)
 
     with pytest.raises(ValidationError) as exc_info:
         schema.ModeusTimeBody.model_validate({
-            "timeMin": "2024-09-24",
-            "timeMax": "2028-09-15",
+            "timeMin": "2024-09-24T00:00:00+00:00",
+            "timeMax": "2028-09-15T23:59:59+00:00",
         })
 
     assert "2 validation errors for ModeusTimeBody" in str(exc_info.value)
@@ -176,8 +176,8 @@ async def test_modeus_time_body() -> None:
 async def test_get_calendar_ok() -> None:
     client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
     modeus_time_body = schema.ModeusTimeBody.model_validate({
-        "timeMin": "2024-09-23",
-        "timeMax": "2028-09-10",
+        "timeMin": "2024-09-23T00:00:00+00:00",
+        "timeMax": "2028-09-10T23:59:59+00:00",
     })
 
     with patch("yet_another_calendar.web.api.netology.integration.AsyncClient.__aenter__", return_value=client):

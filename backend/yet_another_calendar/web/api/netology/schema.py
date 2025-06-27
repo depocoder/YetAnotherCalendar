@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field, computed_field, field_validator, model_va
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus.schema import ModeusTimeBody
 
-_DATE_PATTERN = r"\d{2}.\d{2}.\d{2}"
+_DATE_PATTERN = r"\d{2}\.+\d{2}\.+\d{2}"
 
 
 class NetologyCreds(BaseModel):
@@ -95,7 +95,8 @@ class LessonTask(BaseLesson):
         if not match:
             return data
         try:
-            date = match.group(0).replace('00.', '01.')
+            date_str = re.sub(r'\.+', '.', match.group(0))
+            date = date_str.replace('00.', '01.')
             data['deadline'] = datetime.datetime.strptime(date, "%d.%m.%y").astimezone(datetime.UTC)
             return data
         except Exception:
