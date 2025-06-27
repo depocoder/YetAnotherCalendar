@@ -9,30 +9,6 @@ from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.mts import integration
 
 
-#
-# @pytest.fixture
-# def app(redis_pool: ConnectionPool) -> FastAPI:
-#     """
-#     Fixture to create a FastAPI application instance for testing.
-#     It includes the MTS router and overrides the Redis dependency.
-#     """
-#     test_app = FastAPI()
-#     test_app.include_router(mts_router, prefix="/mts")
-#
-#     # Override the dependency to use the fake redis pool from our fixture
-#     test_app.dependency_overrides[get_redis_pool] = lambda: redis_pool
-#     return test_app
-#
-#
-# @pytest.fixture
-# async def client(app: FastAPI) -> AsyncClient:
-#     """
-#     Fixture to create an async test client for the FastAPI application.
-#     """
-#     async with AsyncClient(app=app, base_url="http://test") as c:
-#         yield c
-
-
 @pytest.mark.asyncio
 class TestMtsIntegration:
     """Tests for the Redis integration logic in `integration.py`."""
