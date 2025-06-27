@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import camera from "../../img/camera.png";
-import {formatHours} from "../../utils/dateUtils";
+//import {formatHours} from "../../utils/dateUtils";
 import { utcToZonedTime } from 'date-fns-tz';
 
 export function formatDateToAMPM(date) {
@@ -11,6 +11,7 @@ export function formatDateToAMPM(date) {
 }
 
 const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const [weekDays, setWeekDays] = useState(Array.from({length: 7}, () => []));
 
     // console.log('events', events)
@@ -25,41 +26,34 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
         "15:50 17:20"  // 6 пара
     ];
 
-    // Функция для преобразования времени в часовой пояс пользователя
-    const convertToUserTimezone = (timeArray) => {
-        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        return timeArray.map((timeRange) => {
-            const [start, end] = timeRange.split(" ");
-            const [start_hours, start_minutes] = start.split(":");
-            const [end_hours, end_minutes] = end.split(":");
-            // Создаем даты для начала и конца урока
-            const startDateUTC = new Date(Date.UTC(2024, 0, 1, start_hours, start_minutes));
-            const endDateUTC = new Date(Date.UTC(2024, 0, 1, end_hours, end_minutes));
-            // Преобразуем в формат пояса пользователя
-            const startUserTime = utcToZonedTime(startDateUTC, userTimezone);
-            const endUserTime = utcToZonedTime(endDateUTC, userTimezone);
-            return `${formatHours(startUserTime)} ${formatHours(endUserTime)}`;
-        });
-    };
-
     // Получаем преобразованные времена уроков
-    const lessonTimesArray = convertToUserTimezone(lessonTimesArrayUTC);
+    const lessonTimesArray = lessonTimesArrayUTC;
     const populateWeekDays = (events) => {
         if (!events) return;
         const newWeekDays = Array.from({length: 7}, () => []);
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        // Хелпер: смещает день назад, если пара началась ночью
+        const getAdjustedDayOfWeek = (date) => {
+            const localDate = utcToZonedTime(date, userTimezone);
+            if (localDate.getHours() < 3) {
+                localDate.setDate(localDate.getDate() - 1);
+            }
+            return (localDate.getDay() + 6) % 7; // Понедельник — 0
+        };
 
         // Заполнение массива дней недели занятиями
         if (events?.utmn?.modeus_events) {
             events.utmn.modeus_events.forEach((lesson) => {
-                const startTime = new Date(lesson.start);
-                const endTime = new Date(lesson.end);
-                const dayOfWeek = (startTime.getDay() + 6) % 7;
+                const startUTC = new Date(lesson.start);
+                const endUTC = new Date(lesson.end);
+
+                const dayOfWeek = getAdjustedDayOfWeek(startUTC);
 
                 newWeekDays[dayOfWeek].push({
                     ...lesson,
-                    startTime,
-                    endTime,
+                    startTime: utcToZonedTime(startUTC, userTimezone),
+                    endTime: utcToZonedTime(endUTC, userTimezone),
                     type: 'modeus' // Добавляем тип события
                 });
             });
@@ -68,15 +62,15 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
         // Заполнение массива дней недели вебинарами netology
         if (events?.netology?.webinars) {
             events.netology.webinars.forEach((webinar) => {
-                const startTime = new Date(webinar.starts_at);
-                const endTime = new Date(webinar.ends_at);
+                const startUTC = new Date(webinar.starts_at);
+                const endUTC = new Date(webinar.ends_at);
 
-                const dayOfWeek = (startTime.getDay() + 6) % 7;
+                const dayOfWeek = getAdjustedDayOfWeek(startUTC);
 
                 newWeekDays[dayOfWeek].push({
                     ...webinar,
-                    startTime,
-                    endTime,
+                    startTime: utcToZonedTime(startUTC, userTimezone),
+                    endTime: utcToZonedTime(endUTC, userTimezone),
                     type: 'netology' // Добавляем тип события
                 });
             });
@@ -89,38 +83,40 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
         populateWeekDays(events);
     }, [events]);
 
-    const timeToMinutes = (time) => {
-        const [h, m] = time.split(':').map(Number);
-        return h * 60 + m;
-    };
-
     return (
         <>
             {lessonTimesArray.map((timeSlot, index) => {
                 const [slotStartRaw, slotEndRaw] = timeSlot.split(' ');
-                const slotStartMinutes = timeToMinutes(slotStartRaw);
-                const slotEndMinutes = timeToMinutes(slotEndRaw);
+
+                const [startH, startM] = slotStartRaw.split(':');
+                const [endH, endM] = slotEndRaw.split(':');
+
+                const slotStartDate = new Date(Date.UTC(2024, 0, 1, startH, startM));
+                const slotEndDate = new Date(Date.UTC(2024, 0, 1, endH, endM));
+
+                const slotStartLocal = utcToZonedTime(slotStartDate, userTimezone);
+                const slotEndLocal = utcToZonedTime(slotEndDate, userTimezone);
+
+                const slotStartMinutesUTC = parseInt(startH) * 60 + parseInt(startM);
+                const slotEndMinutesUTC = parseInt(endH) * 60 + parseInt(endM);
+
+                const displayedTime = `${formatDateToAMPM(slotStartLocal)}-${formatDateToAMPM(slotEndLocal)}`;
 
                 return (
                     <tr key={index}>
-                        <th className="vertical-heading">{index + 1} пара <br/> {timeSlot}</th>
+                        <th className="vertical-heading">{index + 1} пара <br/> {displayedTime}</th>
                         {weekDays.map((lessons, dayIndex) => {
                             const lesson = lessons.find(lesson => {
-                                const lessonStartTime = new Date(lesson.start || lesson.starts_at);
-                                const lessonEndTime = new Date(lesson.end || lesson.ends_at);
-                                const lessonStartFormatted = formatDateToAMPM(lessonStartTime);
-                                const lessonEndFormatted = formatDateToAMPM(lessonEndTime);
+                                const lessonStartUTC = new Date(lesson.start || lesson.starts_at);
+                                const lessonEndUTC = new Date(lesson.end || lesson.ends_at);
 
-                                const startMinutes = timeToMinutes(lessonStartFormatted);
-                                const endMinutes = timeToMinutes(lessonEndFormatted);
+                                const startMinutesUTC = lessonStartUTC.getUTCHours() * 60 + lessonStartUTC.getUTCMinutes();
+                                const endMinutesUTC = lessonEndUTC.getUTCHours() * 60 + lessonEndUTC.getUTCMinutes();
 
-                                return (
-                                    startMinutes >= slotStartMinutes && startMinutes < slotEndMinutes
-                                ) || (
-                                endMinutes > slotStartMinutes && endMinutes <= slotEndMinutes
-                                ) || (
-                                startMinutes <= slotStartMinutes && endMinutes >= slotEndMinutes
-                                );
+                                const overlap = Math.min(endMinutesUTC, slotEndMinutesUTC) - Math.max(startMinutesUTC, slotStartMinutesUTC);
+                                const slotDuration = slotEndMinutesUTC - slotStartMinutesUTC;
+
+                                return overlap >= slotDuration * 0.5; // Пара считается занятой, если >= 50% перекрытия
                             });
                             return (
                                 <td key={dayIndex} className="vertical" onClick={() => {
