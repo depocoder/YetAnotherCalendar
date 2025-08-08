@@ -60,16 +60,26 @@ async def send_request(
         return response.json()
 
 
-async def get_utmn_course(cookies: schema.NetologyCookies) -> schema.NetologyProgramId:
-    """Get utmn course from netology API."""
+async def get_netology_courses(cookies: schema.NetologyCookies) -> schema.CoursesResponse:
+    """Get netology courses from netology API."""
     request_settings = {'method': 'GET', 'url': settings.netology_get_course_part}
 
     response = await send_request(cookies, request_settings=request_settings)
-    netology_program = schema.CoursesResponse(**response).get_utmn_program()
+    netology_program = schema.CoursesResponse(**response)
+    return netology_program
+
+async def get_utmn_course(cookies: schema.NetologyCookies) -> schema.NetologyProgramId:
+    """Get utmn course from netology API."""
+    netology_programs = await get_netology_courses(cookies)
+
+    netology_program = netology_programs.get_utmn_program()
     if not netology_program:
         raise HTTPException(detail=f"Netology error. Can't find netology program {settings.netology_course_name}",
                             status_code=status.HTTP_404_NOT_FOUND)
     return netology_program
+
+
+
 
 
 async def get_events_by_id(

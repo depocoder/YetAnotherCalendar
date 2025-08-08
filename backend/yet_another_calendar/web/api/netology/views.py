@@ -30,10 +30,19 @@ async def get_course(
         cookies: schema.NetologyCookies = Depends(schema.get_cookies_from_headers),
 ) -> schema.NetologyProgramId:
     """
-    Get netology course ID.
+    Get netology course ID, filter by utmn name.
     """
     return await integration.get_utmn_course(cookies)
 
+
+@router.get('/courses/')
+async def get_courses(
+        cookies: schema.NetologyCookies = Depends(schema.get_cookies_from_headers),
+) -> schema.CoursesResponse:
+    """
+    Get netology courses
+    """
+    return await integration.get_netology_courses(cookies)
 
 @router.get('/calendar/')
 async def get_calendar(
