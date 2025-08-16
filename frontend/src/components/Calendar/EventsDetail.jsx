@@ -83,21 +83,16 @@ const EventsDetail = ({ event }) => {
                         </div>
                     </div>
                 )}
-                {['quiz', 'task', 'test'].includes(event.type) && (
+                {['quiz', 'task', 'test'].includes(event.type) && event.type !== 'netology' && (
                     <div className="task-event">
                         <span className="task-event-text">
-                            Курс: {event.course_name || 'Не указано'}
+                            {event.block_title || 'Название предмета не указано'}
                         </span>
-                        {event.type === 'quiz' && (
-                            <span className="task-event-text">
-                                Время на прохождение: {event.duration ? `${event.duration} минут` : 'Не указано'}
-                            </span>
-                        )}
-                        {event.type === 'quiz' && (
-                            <span className="task-event-text">
-                                Попыток: {event.attempts_allowed || 'Не ограничено'}
-                            </span>
-                        )}
+                        <br/>
+                        <span className="task-event-text">
+                            Пройдено: {event.passed ? '✅' : '❌'}
+                        </span>
+
                     </div>
                 )}
                 {event.type === 'modeus' && (
