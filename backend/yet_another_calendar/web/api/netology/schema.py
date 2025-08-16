@@ -83,6 +83,7 @@ class LessonTask(BaseLesson):
 
     path: str
     deadline: datetime.datetime | None = Field(default=None)
+    passed: bool = Field()
 
     @computed_field  # type: ignore
     @property
