@@ -119,13 +119,13 @@ class TestMtsViews:
 
     async def test_redirect_not_found(self, client: AsyncClient) -> None:
         """
-        Tests that the redirect endpoint returns 404 if the lesson_id is not found.
+        Tests that the redirect endpoint redirects to 404 page if the lesson_id is not found.
         """
         non_existent_lesson_id = uuid.uuid4()
         response = await client.get(f"/api/mts/{non_existent_lesson_id}", follow_redirects=False)
 
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "not found" in response.json()["detail"].lower()
+        assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
+        assert response.headers["location"].endswith("/404")
 
     async def test_redirect_invalid_uuid(self, client: AsyncClient) -> None:
         """
