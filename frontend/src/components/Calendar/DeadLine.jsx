@@ -1,82 +1,101 @@
-import React from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { format, startOfDay } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
+
+const DeadlineCell = ({ deadlines, setSelectedEvent }) => (
+    <td className="vertical-deadline">
+        <div className="deadline-content">
+            {deadlines.length > 0 ? (
+                deadlines.map((deadline, dlIndex) => (
+                    <div
+                        key={dlIndex}
+                        className={`deadline-info ${deadline.source}${deadline.isPast ? ' past' : ''}`}
+                        onClick={() => setSelectedEvent(deadline)}
+                    >
+                        <span className="source-tag">
+                            {deadline.source === 'netology' ? 'Нетология' : 'ТюмГу'}
+                        </span>
+                    </div>
+                ))
+            ) : (
+                <div className="no-deadlines"></div>
+            )}
+        </div>
+    </td>
+);
+
+const DeadlineRow = ({ monthDays, deadlinesByDay, setSelectedEvent, onToggleVisibility, isVisible }) => (
+    <tr className={!isVisible ? 'deadlines-hidden' : ''}>
+        <th className="vertical-heading">
+            <div className="deadline-header-container">
+                Дедлайны
+                <button className="off-deadline" onClick={onToggleVisibility}>
+                    {isVisible ? 'Скрыть' : 'Показать'}
+                </button>
+            </div>
+        </th>
+        {monthDays.map((day, index) => {
+            const dailyDeadlines = deadlinesByDay[day] || [];
+            return <DeadlineCell key={index} deadlines={dailyDeadlines} setSelectedEvent={setSelectedEvent} />;
+        })}
+    </tr>
+);
 
 const DeadLine = ({ date, events, setSelectedEvent }) => {
-    // Получение всех дат между началом и концом недели
-    const startDate = new Date(date.start);
-    const monthDays = [];
-    for (let i = 0; i < 7; i++) {
-        const currentDate = new Date(startDate);
-        currentDate.setDate(startDate.getDate() + i);
-        monthDays.push(currentDate.toISOString().split('T')[0]);
-    }
+    const [isVisible, setIsVisible] = useState(() => {
+        const storedVisibility = localStorage.getItem('deadlinesVisible');
+        return storedVisibility !== null ? JSON.parse(storedVisibility) : true;
+    });
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    useEffect(() => {
+        localStorage.setItem('deadlinesVisible', JSON.stringify(isVisible));
+    }, [isVisible]);
+
+    const deadlinesByDay = useMemo(() => {
+        const deadlines = {};
+        const now = new Date();
+
+        const processDeadlines = (deadlineEvents, type) => {
+            deadlineEvents?.forEach(event => {
+                const deadlineDate = utcToZonedTime(new Date(event.deadline || event.dt_end), userTimezone);
+                const dayKey = format(startOfDay(deadlineDate), 'yyyy-MM-dd');
+
+                if (!deadlines[dayKey]) {
+                    deadlines[dayKey] = [];
+                }
+
+                deadlines[dayKey].push({
+                    ...event,
+                    source: type,
+                    isPast: deadlineDate < now,
+                });
+            });
+        };
+
+        processDeadlines(events?.netology?.homework, 'netology');
+        processDeadlines(events?.utmn?.lms_events, 'utmn');
+
+        return deadlines;
+    }, [events, userTimezone]);
+
+    const monthDays = useMemo(() => {
+        const startDate = new Date(date.start);
+        return Array.from({ length: 7 }, (_, i) => {
+            const currentDate = new Date(startDate);
+            currentDate.setDate(startDate.getDate() + i);
+            return format(currentDate, 'yyyy-MM-dd');
+        });
+    }, [date.start]);
 
     return (
-        <tr>
-            <th className="vertical-heading">
-                Дедлайны
-                <button className="off-deadline">Скрыть</button>
-            </th>
-            {monthDays.map((day, index) => {
-                const adjustedDay = new Date(new Date(date.start).setDate(new Date(date.start).getDate() + index)).toISOString().split('T')[0];
-                const now = new Date();
-
-                // Фильтрация событий из Netology
-                const netologyDeadlines = events?.netology?.homework
-                    ?.filter(homework => {
-                        const homeworkDeadline = new Date(homework.deadline).toISOString().split('T')[0];
-                        return homeworkDeadline === adjustedDay;
-                    })
-                    ?.map((homework, hwIndex) => {
-                        const deadlineDate = new Date(homework.deadline);
-                        return {
-                            ...homework,
-                            source: 'netology', // Добавляем метку источника
-                            isPast: deadlineDate < now,
-                        };
-                    });
-                // Фильтрация событий из UTMN (LMS)
-                const utmnDeadlines = events?.utmn?.lms_events
-                    ?.filter(event => {
-                        const eventDeadline = new Date(event.dt_end).toISOString().split('T')[0];
-                        return eventDeadline === adjustedDay;
-                    })
-                    ?.map((event, eventIndex) => {
-                        const deadlineDate = new Date(event.dt_end);
-                        return {
-                            ...event,
-                            source: 'utmn', // Добавляем метку источника
-                            isPast: deadlineDate < now,
-                        };
-                    });
-
-                // Объединяем события из обоих источников
-                const combinedDeadlines = [...(netologyDeadlines || []), ...(utmnDeadlines || [])];
-
-                return (
-                    <td key={index} className="vertical-deadline">
-                        {combinedDeadlines && combinedDeadlines.length > 0 ? (
-                            combinedDeadlines.map((deadline, dlIndex) => (
-                                <div
-                                    key={dlIndex}
-                                    // Добавляем класс .past-deadline, если дедлайн уже прошёл
-                                    className={`deadline-info ${deadline.source}${deadline.isPast ? ' past' : ''}`}
-                                    onClick={() => setSelectedEvent(deadline)} // Передаем событие в EventsDetail
-                                >
-                                    {/* Отображаем название события */}
-                                    {/*<strong>{deadline.title || deadline.name}</strong>*/}
-                                    {/* Метка источника */}
-                                    <span className="source-tag">
-                                        {deadline.source === 'netology' ? 'Нетология' : 'ТюмГу'}
-                                    </span>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="no-deadlines"></div>
-                        )}
-                    </td>
-                );
-            })}
-        </tr>
+        <DeadlineRow
+            monthDays={monthDays}
+            deadlinesByDay={deadlinesByDay}
+            setSelectedEvent={setSelectedEvent}
+            onToggleVisibility={() => setIsVisible(!isVisible)}
+            isVisible={isVisible}
+        />
     );
 };
 
