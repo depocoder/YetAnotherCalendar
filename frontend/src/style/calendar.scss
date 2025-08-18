@@ -278,3 +278,115 @@
     opacity: 0;
     transform: translateY(-10px);
 }
+
+// Styles for special timing events (events that don't fit standard time slots)
+.special-timing-events-row {
+    .special-timing-header {
+        background-color: #f8f9fa;
+        border-top: 2px solid #e9ecef;
+        font-size: 12px;
+        color: #6c757d;
+        font-weight: 600;
+        
+        small {
+            font-size: 10px;
+            color: #adb5bd;
+        }
+    }
+    
+    .special-timing-events-cell {
+        background-color: #f8f9fa;
+        border-top: 2px solid #e9ecef;
+        padding: 6px;
+        vertical-align: top;
+        
+        .special-timing-event {
+            margin: 4px 0;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 12px;
+            position: relative;
+            border: 2px solid;
+            background-color: #fff;
+            
+            &.TyumGU-lesson {
+                border-color: #F46386;
+                
+                .event-time-badge {
+                    background: linear-gradient(135deg, #F46386, #e55577);
+                }
+            }
+            
+            &.netology-lesson {
+                border-color: #3492c5;
+                
+                .event-time-badge {
+                    background: linear-gradient(135deg, #3492c5, #2a7ba8);
+                }
+            }
+            
+            .event-time-badge {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: -8px -8px 8px -8px;
+                padding: 6px;
+                border-radius: 6px 6px 0 0;
+                color: white;
+                font-weight: 600;
+                font-size: 11px;
+                
+                .time-start, .time-end {
+                    font-weight: 700;
+                }
+                
+                .time-separator {
+                    margin: 0 4px;
+                    opacity: 0.8;
+                }
+            }
+            
+            .company-name {
+                font-size: 11px;
+                margin-bottom: 4px;
+                color: #666;
+                
+                img {
+                    width: 12px;
+                    height: 12px;
+                    margin-right: 2px;
+                }
+            }
+            
+            .lesson-name {
+                font-size: 12px;
+                line-height: 1.3;
+                font-weight: 600;
+                color: #2c2d2e;
+                margin-bottom: 2px;
+            }
+            
+            .lesson-subtitle {
+                font-size: 11px;
+                line-height: 1.2;
+                color: #666;
+                font-style: italic;
+            }
+            
+            &:hover {
+                cursor: pointer;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                transition: all 0.2s ease-in-out;
+            }
+            
+            &.past {
+                opacity: 0.6;
+                
+                .event-time-badge {
+                    background: #adb5bd !important;
+                }
+            }
+        }
+    }
+}
