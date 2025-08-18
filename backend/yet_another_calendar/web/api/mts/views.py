@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse, JSONResponse
 from redis.asyncio import ConnectionPool
 
@@ -25,5 +25,10 @@ async def redirect_to_mts(
         lesson_id: uuid.UUID,
         redis: ConnectionPool = Depends(get_redis_pool),
 ) -> RedirectResponse:
-    url = await integration.get_link(redis, lesson_id)
-    return RedirectResponse(url)
+    try:
+        url = await integration.get_link(redis, lesson_id)
+        return RedirectResponse(url)
+    except HTTPException:
+        # Редирект на 404 страницу фронтенда вместо HTTP 404
+        from yet_another_calendar.settings import settings
+        return RedirectResponse(f"{settings.app_domain}/404")

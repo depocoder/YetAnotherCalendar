@@ -22,6 +22,7 @@ import DeadLine from "../components/Calendar/DeadLine";
 import DaysNumber from "../components/Calendar/DaysNumber";
 import LessonTimes from "../components/Calendar/LessonTimes";
 
+
 const CalendarPage = () => {
     const [date, setDate] = useState(() => getCurrentWeekDates());
     const [events, setEvents] = useState(null);
@@ -110,6 +111,7 @@ const CalendarPage = () => {
                         </div>
                         <ExitBtn />
                     </div>
+
 
                     <div className="events-container">
                         <EventsDetail event={selectedEvent} />

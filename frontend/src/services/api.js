@@ -105,3 +105,59 @@ export const refreshBulkEvents = (params) => {
 export const exportICS = (params) => {
     return apiRequest('/api/bulk/export_ics/', params);
 };
+
+// Modeus API functions
+export async function getDayEvents(date, learningStartYear, profileName, specialtyCode) {
+    try {
+        const modeusToken = getJWTTokenFromLocalStorage();
+        console.log('Modeus token found:', !!modeusToken, modeusToken ? `${modeusToken.substring(0, 20)}...` : 'null');
+        
+        if (!modeusToken) {
+            throw new Error('Modeus token not found');
+        }
+
+        const requestBody = {
+            date: date,
+            learningStartYear: learningStartYear || [2024],
+            profileName: profileName || ["Разработка IT-продуктов и информационных систем"],
+            specialtyCode: specialtyCode || ["09.03.02"]
+        };
+
+        console.log('Отправляем запрос к Modeus API:', {
+            url: `${BACKEND_URL}/api/modeus/day-events/`,
+            body: requestBody,
+            hasToken: !!modeusToken
+        });
+
+        const response = await axios.post(`${BACKEND_URL}/api/modeus/day-events/`, requestBody, {
+            headers: {
+                'Content-Type': 'application/json',
+                'modeus-jwt-token': modeusToken
+            }
+        });
+
+        console.log('Получен ответ от Modeus API:', response.status, response.data);
+        return response;
+    } catch (e) {
+        console.error('Ошибка в getDayEvents:', e.response?.status, e.response?.data, e.message);
+        return e.response;
+    }
+}
+
+// MTS API functions
+export async function saveLinkToEvent(lessonId, url) {
+    try {
+        const requestBody = {
+            lessonId: lessonId,
+            url: url
+        };
+
+        return await axios.post(`${BACKEND_URL}/api/mts/link`, requestBody, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    } catch (e) {
+        return e.response;
+    }
+}

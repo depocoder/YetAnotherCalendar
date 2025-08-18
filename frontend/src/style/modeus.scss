@@ -1,0 +1,1344 @@
+// Modern Modeus Schedule Page - Ultra 2024 Design
+// Inspired by latest design trends: Glassmorphism, Neumorphism, Mesh Gradients
+
+// Ultra Modern Animations
+@keyframes subtle-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes slideInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+@keyframes shimmer {
+    0% { 
+        background-position: -200px 0;
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% { 
+        background-position: calc(200px + 100%) 0;
+        opacity: 0.5;
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-5px) rotate(1deg); }
+    50% { transform: translateY(-10px) rotate(0deg); }
+    75% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+@keyframes glow {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+    }
+    50% { 
+        box-shadow: 0 0 40px rgba(124, 58, 237, 0.6), 0 0 60px rgba(59, 130, 246, 0.4);
+    }
+}
+
+@keyframes morphing-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes particle-float {
+    0%, 100% { 
+        transform: translateY(0px) translateX(0px) rotate(0deg); 
+        opacity: 0.3;
+    }
+    25% { 
+        transform: translateY(-10px) translateX(5px) rotate(90deg); 
+        opacity: 0.6;
+    }
+    50% { 
+        transform: translateY(-20px) translateX(0px) rotate(180deg); 
+        opacity: 1;
+    }
+    75% { 
+        transform: translateY(-10px) translateX(-5px) rotate(270deg); 
+        opacity: 0.6;
+    }
+}
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        opacity: 0.4;
+        transform: translateX(-50%) scaleX(1);
+    }
+    50% { 
+        opacity: 0.8;
+        transform: translateX(-50%) scaleX(1.2);
+    }
+}
+
+// Ultra Modern Main Containers
+.modeus-page {
+    min-height: 100vh;
+    padding: 20px 0;
+    position: relative;
+    overflow-x: hidden;
+    
+    // Ultra modern mesh gradient background
+    background: 
+        radial-gradient(ellipse at top left, rgba(124, 58, 237, 0.15) 0%, transparent 45%),
+        radial-gradient(ellipse at top right, rgba(59, 130, 246, 0.15) 0%, transparent 45%),
+        radial-gradient(ellipse at bottom left, rgba(236, 72, 153, 0.15) 0%, transparent 45%),
+        radial-gradient(ellipse at bottom right, rgba(34, 197, 94, 0.15) 0%, transparent 45%),
+        linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.9) 0%, 
+            rgba(248, 250, 252, 0.95) 25%,
+            rgba(241, 245, 249, 0.9) 50%,
+            rgba(248, 250, 252, 0.95) 75%,
+            rgba(255, 255, 255, 0.9) 100%
+        );
+    background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 400% 400%;
+    animation: morphing-gradient 20s ease infinite;
+
+    // Floating particles
+    &::before {
+        content: '';
+        position: absolute;
+        top: 10%;
+        left: 10%;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(45deg, rgba(124, 58, 237, 0.6), rgba(59, 130, 246, 0.6));
+        border-radius: 50%;
+        animation: particle-float 8s ease-in-out infinite;
+        z-index: 1;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 60%;
+        right: 15%;
+        width: 15px;
+        height: 15px;
+        background: linear-gradient(45deg, rgba(236, 72, 153, 0.6), rgba(34, 197, 94, 0.6));
+        border-radius: 50%;
+        animation: particle-float 12s ease-in-out infinite reverse;
+        z-index: 1;
+    }
+
+    .wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .header {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 2;
+
+        .header-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        // Убираем любые фоны и границы у shedule-export на странице Modeus
+        .shedule-export {
+            display: flex;
+            align-items: center;
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .modeus-page-title {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            animation: glow 4s ease-in-out infinite alternate;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+    }
+}
+
+.modeus-filters-container {
+    margin: 30px auto 40px auto;
+    padding: 40px;
+    max-width: 1000px;
+    position: relative;
+    overflow: hidden;
+    
+    // Ultra modern glassmorphism with neumorphism elements
+    background: 
+        radial-gradient(circle at 15% 25%, rgba(124, 58, 237, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 75%, rgba(59, 130, 246, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.08) 0%, transparent 60%),
+        linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.25) 0%, 
+            rgba(255, 255, 255, 0.15) 25%,
+            rgba(255, 255, 255, 0.1) 50%,
+            rgba(255, 255, 255, 0.15) 75%,
+            rgba(255, 255, 255, 0.25) 100%
+        );
+    
+    backdrop-filter: blur(30px) saturate(200%) brightness(110%);
+    border-radius: 28px;
+    
+    // Ultra modern layered shadows
+    box-shadow: 
+        0 32px 64px rgba(0, 0, 0, 0.12),
+        0 16px 32px rgba(0, 0, 0, 0.08),
+        0 8px 16px rgba(0, 0, 0, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.3);
+    
+    // Убираем лишнюю границу для чистого вида
+    border: none;
+    
+    // Animated floating elements
+    &::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        width: 120px;
+        height: 120px;
+        background: 
+            radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite;
+        z-index: 0;
+    }
+    
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -30px;
+        left: -30px;
+        width: 150px;
+        height: 150px;
+        background: 
+            radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: float 12s ease-in-out infinite reverse;
+        z-index: 0;
+    }
+
+    // Ultra modern header styles
+    .filters-header {
+        margin-bottom: 35px;
+        position: relative;
+        z-index: 1;
+        text-align: center;
+
+        h3 {
+            margin: 0 0 12px 0;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            color: white;
+            text-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.4),
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                0 1px 2px rgba(0, 0, 0, 0.2);
+            
+            // Градиент только для текста, исключая эмодзи
+            .gradient-text {
+                background: linear-gradient(135deg, 
+                    #667eea 0%, 
+                    #764ba2 30%, 
+                    #f093fb 60%, 
+                    #f5576c 100%
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                animation: shimmer 3s ease-in-out infinite alternate;
+            }
+        }
+
+        p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            letter-spacing: 0.3px;
+            opacity: 0.95;
+        }
+    }
+
+    // Main filters grid
+    .filters-main-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+        justify-items: center;
+    }
+
+    // Advanced filters
+    .filters-advanced {
+        margin-top: 25px;
+        padding-top: 25px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        position: relative;
+        z-index: 1;
+        animation: fadeIn 0.3s ease-in-out;
+        justify-items: center;
+    }
+}
+
+// Schedule content with loading animation
+.schedule-content {
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    
+    &.calendar-loading {
+        opacity: 0.6;
+        transform: scale(0.98);
+        pointer-events: none;
+    }
+    
+    &.calendar-loaded {
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
+    }
+}
+
+.modeus-events-list {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 32px 80px 32px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 36px;
+    
+    // Ultra modern glassmorphism background
+    background: 
+        radial-gradient(ellipse at 25% 25%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 75% 75%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(236, 72, 153, 0.05) 0%, transparent 70%),
+        linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.9) 0%,
+            rgba(255, 255, 255, 0.7) 25%,
+            rgba(255, 255, 255, 0.8) 50%,
+            rgba(255, 255, 255, 0.7) 75%,
+            rgba(255, 255, 255, 0.9) 100%
+        );
+    
+    backdrop-filter: blur(35px) saturate(200%) brightness(110%);
+    
+    // Ultra modern shadow system
+    box-shadow: 
+        0 48px 96px rgba(0, 0, 0, 0.08),
+        0 24px 48px rgba(0, 0, 0, 0.05),
+        0 12px 24px rgba(0, 0, 0, 0.03),
+        0 6px 12px rgba(0, 0, 0, 0.02),
+        inset 0 2px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -2px 0 rgba(255, 255, 255, 0.3),
+        0 0 0 2px rgba(255, 255, 255, 0.4);
+    
+    // Убираем лишнюю границу для чистого вида
+    border: none;
+
+    // Ultra modern animated background
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            conic-gradient(from 0deg at 20% 20%, rgba(124, 58, 237, 0.04) 0deg, transparent 90deg),
+            conic-gradient(from 90deg at 80% 30%, rgba(59, 130, 246, 0.03) 0deg, transparent 90deg),
+            conic-gradient(from 180deg at 30% 80%, rgba(236, 72, 153, 0.03) 0deg, transparent 90deg),
+            conic-gradient(from 270deg at 70% 70%, rgba(34, 197, 94, 0.02) 0deg, transparent 90deg),
+            radial-gradient(ellipse at 50% 50%, transparent 60%, rgba(124, 58, 237, 0.01) 100%);
+        background-size: 400% 400%, 400% 400%, 400% 400%, 400% 400%, 100% 100%;
+        animation: 
+            subtle-rotate 180s linear infinite,
+            morphing-gradient 25s ease infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    // Floating particle effects
+    &::after {
+        content: '';
+        position: absolute;
+        top: 20%;
+        right: 10%;
+        width: 6px;
+        height: 6px;
+        background: linear-gradient(45deg, rgba(124, 58, 237, 0.4), rgba(59, 130, 246, 0.4));
+        border-radius: 50%;
+        animation: particle-float 15s ease-in-out infinite;
+        z-index: 0;
+        box-shadow: 
+            0 0 20px rgba(124, 58, 237, 0.3),
+            0 0 40px rgba(59, 130, 246, 0.2);
+    }
+
+    // Content above background
+    > * {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+// Новый современный Schedule Header - Минималистичный дизайн
+.modeus-schedule-header {
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto 40px auto;
+    max-width: 800px;
+    
+    // Новый светлый современный дизайн
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
+        linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(255, 255, 255, 0.85) 100%
+        );
+    
+    backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 32px;
+    padding: 36px 48px 32px 48px;
+    
+    // Элегантные тени
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.08),
+        0 8px 16px rgba(0, 0, 0, 0.04),
+        0 2px 8px rgba(0, 0, 0, 0.02),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.6);
+    
+    // Тонкая граница
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    
+    // Анимированный акцент сверху
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, 
+            transparent 0%,
+            rgba(59, 130, 246, 0.6) 20%,
+            rgba(147, 51, 234, 0.7) 50%,
+            rgba(236, 72, 153, 0.6) 80%,
+            transparent 100%
+        );
+        border-radius: 0 0 3px 3px;
+        animation: pulse-glow 3s ease-in-out infinite;
+        z-index: 1;
+    }
+    
+    // Декоративные точки
+    &::after {
+        content: '';
+        position: absolute;
+        top: 24px;
+        right: 32px;
+        width: 6px;
+        height: 6px;
+        background: rgba(147, 51, 234, 0.4);
+        border-radius: 50%;
+        box-shadow: 
+            -16px 0 0 -1px rgba(59, 130, 246, 0.3),
+            -32px 0 0 -2px rgba(236, 72, 153, 0.2);
+        animation: float 6s ease-in-out infinite;
+    }
+
+    // Современный заголовок - четкий и читаемый
+    h2 {
+        margin: 0 0 12px 0;
+        font-size: 32px;
+        font-weight: 900;
+        letter-spacing: -1px;
+        line-height: 1.1;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+        
+        // Четкий темный текст без градиента
+        color: #1a202c;
+        
+        // Более четкие тени для глубины
+        text-shadow: 
+            0 2px 4px rgba(0, 0, 0, 0.15),
+            0 1px 2px rgba(0, 0, 0, 0.1);
+        
+        // Убираем градиент - просто четкий темный текст
+        .schedule-gradient-text {
+            color: #1a202c;
+            // Убираем все градиентные эффекты для читаемости
+        }
+    }
+
+    // Более контрастная подпись
+    p {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: rgba(45, 55, 72, 0.9);
+        text-align: center;
+        letter-spacing: 0.2px;
+        position: relative;
+        z-index: 2;
+        line-height: 1.4;
+        // Добавляем легкую тень для четкости
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+}
+
+// Event cards
+.modeus-events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+    gap: 30px;
+    padding: 0 10px 60px 10px;
+    align-items: start;
+}
+
+.modeus-event-card {
+    position: relative;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 20px;
+    padding: 28px;
+    overflow: hidden;
+    
+    // Ultra modern glassmorphism
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.25) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+        rgba(255, 255, 255, 0.85);
+    
+    backdrop-filter: blur(25px) saturate(180%) brightness(105%);
+    
+    // Ultra modern layered shadows and borders
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.08),
+        0 10px 20px rgba(0, 0, 0, 0.04),
+        0 5px 10px rgba(0, 0, 0, 0.02),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.4);
+    
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+
+    // Ultra modern hover effects
+    &:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 
+            0 32px 64px rgba(124, 58, 237, 0.15),
+            0 16px 32px rgba(59, 130, 246, 0.1),
+            0 8px 16px rgba(0, 0, 0, 0.08),
+            inset 0 2px 0 rgba(255, 255, 255, 0.8),
+            0 0 0 2px rgba(124, 58, 237, 0.3);
+        
+        background: 
+            radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+            rgba(255, 255, 255, 0.95);
+    }
+
+    // Floating animation effect
+    &:nth-child(odd) {
+        animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+                   float 8s ease-in-out infinite 1s;
+    }
+    
+    &:nth-child(even) {
+        animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+                   float 10s ease-in-out infinite reverse 1.5s;
+    }
+
+    // Staggered animation delays
+    &:nth-child(1) { animation-delay: 0.1s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.3s; }
+    &:nth-child(4) { animation-delay: 0.4s; }
+    &:nth-child(5) { animation-delay: 0.5s; }
+    &:nth-child(6) { animation-delay: 0.6s; }
+
+    // Color strip убрана - более чистый дизайн
+    .event-color-strip {
+        display: none;
+    }
+
+    // Event header
+    .event-header {
+        margin-bottom: 30px;
+
+        h4 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.3;
+            min-height: 42px;
+            max-height: 42px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            word-break: break-word;
+
+            .short-name {
+                font-size: 13px;
+                color: #6c757d;
+                font-weight: 400;
+                margin-left: 8px;
+            }
+        }
+
+        .event-time {
+            color: #007bff;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .duration-badge {
+                background-color: #e3f2fd;
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                color: #1976d2;
+            }
+        }
+    }
+
+    // Event details grid
+    .event-details {
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex: 1;
+    }
+
+    // Two-column layout for type and code
+    .event-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+}
+
+// Course and teacher blocks (full width)
+.modeus-info-block-full {
+    padding: 16px 20px;
+    background: rgba(248, 249, 250, 0.8);
+    backdrop-filter: blur(5px);
+    border-radius: 12px;
+    border: 2px solid rgba(233, 236, 239, 0.6);
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 12px;
+
+    .label {
+        color: #6c757d;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .content {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 1.3;
+        flex: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        word-break: break-word;
+    }
+}
+
+// Individual info blocks (course, teacher, type, code, description)
+.info-block {
+    &.course {
+        padding: 16px 20px;
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        border: 2px solid #e9ecef;
+        height: 80px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        overflow: hidden;
+
+        .label {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .content {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 1.3;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-word;
+        }
+    }
+
+    &.teacher {
+        padding: 16px 20px;
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        border: 2px solid #e9ecef;
+        height: 80px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        overflow: hidden;
+
+        .label {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .content {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 1.3;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-word;
+        }
+    }
+
+    &.type {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        min-height: 64px;
+        max-height: 64px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        &.lecture {
+            background-color: #d4edda;
+            border-color: #28a745;
+            .content { color: #155724; }
+        }
+
+        &.practice {
+            background-color: #cce5ff;
+            border-color: #007bff;
+            .content { color: #004085; }
+        }
+
+        &.lab {
+            background-color: #ffe8d4;
+            border-color: #fd7e14;
+            .content { color: #a05b00; }
+        }
+
+        &.seminar {
+            background-color: #e7d3ff;
+            border-color: #6f42c1;
+            .content { color: #4c2c85; }
+        }
+
+        &.default {
+            background-color: #f8f9fa;
+            border-color: #e9ecef;
+            .content { color: #495057; }
+        }
+
+        .label {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .content {
+            font-weight: 600;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.2;
+            font-size: 13px;
+            flex: 1;
+        }
+    }
+
+    &.code {
+        padding: 10px;
+        background-color: #e8f4fd;
+        border-radius: 8px;
+        border: 1px solid #b8daff;
+        min-height: 64px;
+        max-height: 64px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        .label {
+            color: #004085;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .content {
+            color: #004085;
+            font-weight: 500;
+            font-family: monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 13px;
+            flex: 1;
+        }
+    }
+
+    &.description {
+        padding: 10px;
+        background-color: #fff3cd;
+        border-radius: 8px;
+        border: 1px solid #ffeaa7;
+        grid-column: 1 / -1;
+        min-height: 64px;
+        max-height: 64px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        .label {
+            color: #856404;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .content {
+            color: #856404;
+            font-weight: 400;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.2;
+            font-size: 13px;
+            flex: 1;
+        }
+    }
+}
+
+// Two column layout for type and code
+.modeus-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.modeus-info-block {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(233, 236, 239, 0.6);
+    height: 64px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+
+    &.type-lektsionnoe {
+        background: rgba(212, 237, 218, 0.8);
+        border-color: rgba(40, 167, 69, 0.3);
+    }
+
+    &.type-prakticheskoe {
+        background: rgba(204, 229, 255, 0.8);
+        border-color: rgba(0, 123, 255, 0.3);
+    }
+
+    &.type-laboratornoe {
+        background: rgba(255, 232, 212, 0.8);
+        border-color: rgba(253, 126, 20, 0.3);
+    }
+
+    &.type-seminar {
+        background: rgba(231, 211, 255, 0.8);
+        border-color: rgba(111, 66, 193, 0.3);
+    }
+
+    &.code-block {
+        background: rgba(232, 244, 253, 0.8);
+        border-color: rgba(184, 218, 255, 0.6);
+    }
+
+    .label {
+        color: #6c757d;
+        font-size: 12px;
+        font-weight: 500;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .content {
+        color: #495057;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 13px;
+        flex: 1;
+        display: flex;
+        align-items: center;
+
+        // Type-specific colors
+        .type-lektsionnoe & { color: #155724; }
+        .type-prakticheskoe & { color: #004085; }
+        .type-laboratornoe & { color: #a05b00; }
+        .type-seminar & { color: #4c2c85; }
+        .code-block & { 
+            color: #004085; 
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+        }
+    }
+}
+
+// Link section at bottom
+.modeus-link-section {
+    padding: 16px 20px;
+    margin-top: auto;
+    background: #f8f9ff;
+    border-radius: 12px;
+    border: 2px dashed #6c5ce7;
+    min-height: 80px;
+
+    label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        font-weight: 600;
+        color: #6c5ce7;
+        font-size: 14px;
+    }
+
+    .link-input-container {
+        display: flex;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    input[type="url"] {
+        flex: 1;
+        padding: 12px 16px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        outline: none;
+        transition: all 0.2s;
+
+        &:focus {
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+    }
+
+    small {
+        color: #6c757d;
+        font-size: 12px;
+        display: block;
+        margin-top: 8px;
+        font-style: italic;
+    }
+}
+
+// Ultra Modern Bulk Save Button
+.modeus-bulk-save {
+    margin-bottom: 60px;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+
+    button {
+        position: relative;
+        padding: 22px 48px;
+        border: none;
+        border-radius: 20px;
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        min-width: 320px;
+        max-width: 480px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        // Ultra modern glassmorphism enabled state
+        &:enabled {
+            background: 
+                radial-gradient(ellipse at 30% 30%, rgba(34, 197, 94, 0.9) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 70%, rgba(16, 185, 129, 0.8) 0%, transparent 60%),
+                linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+            
+            color: white;
+            cursor: pointer;
+            backdrop-filter: blur(20px) saturate(180%);
+            
+            // Ultra modern shadow system
+            box-shadow: 
+                0 20px 40px rgba(16, 185, 129, 0.4),
+                0 10px 20px rgba(34, 197, 94, 0.3),
+                0 5px 10px rgba(0, 0, 0, 0.2),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -2px 0 rgba(255, 255, 255, 0.1),
+                0 0 0 2px rgba(255, 255, 255, 0.2);
+            
+            text-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                0 1px 2px rgba(0, 0, 0, 0.2);
+
+            // Animated background shimmer
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    transparent 100%
+                );
+                transition: left 0.6s ease;
+            }
+
+            &:hover {
+                transform: translateY(-6px) scale(1.03);
+                box-shadow: 
+                    0 32px 64px rgba(16, 185, 129, 0.5),
+                    0 16px 32px rgba(34, 197, 94, 0.4),
+                    0 8px 16px rgba(0, 0, 0, 0.3),
+                    inset 0 3px 0 rgba(255, 255, 255, 0.4),
+                    0 0 0 3px rgba(255, 255, 255, 0.3);
+                
+                background: 
+                    radial-gradient(ellipse at 30% 30%, rgba(34, 197, 94, 1) 0%, transparent 60%),
+                    radial-gradient(ellipse at 70% 70%, rgba(16, 185, 129, 0.9) 0%, transparent 60%),
+                    linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%);
+
+                &::before {
+                    left: 100%;
+                }
+            }
+
+            &:active {
+                transform: translateY(-3px) scale(1.01);
+                transition: all 0.1s ease;
+            }
+        }
+
+        // Disabled state with modern glassmorphism
+        &:disabled {
+            background: 
+                radial-gradient(ellipse at 50% 50%, rgba(148, 163, 184, 0.6) 0%, transparent 70%),
+                linear-gradient(135deg, rgba(148, 163, 184, 0.8) 0%, rgba(100, 116, 139, 0.8) 100%);
+            
+            color: rgba(255, 255, 255, 0.6);
+            cursor: not-allowed;
+            backdrop-filter: blur(15px) saturate(120%);
+            
+            box-shadow: 
+                0 8px 16px rgba(148, 163, 184, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            transform: none;
+        }
+    }
+}
+
+// Empty state
+.modeus-no-events {
+    text-align: center;
+    padding: 80px 40px;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+
+    .icon {
+        font-size: 72px;
+        margin-bottom: 30px;
+        opacity: 0.7;
+    }
+
+    h3 {
+        margin: 0 0 20px 0;
+        color: #495057;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+}
+
+// Form elements styling
+.modern-input-group {
+    width: 100%;
+    max-width: 280px;
+
+    &.wide {
+        max-width: 400px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        text-align: center;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(5px);
+        font-size: 14px;
+        transition: all 0.2s ease;
+        outline: none;
+        box-sizing: border-box;
+
+        &:focus {
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 1);
+        }
+    }
+
+    select {
+        cursor: pointer;
+        min-height: 80px;
+
+        &.large {
+            min-height: 100px;
+        }
+
+        option {
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 500;
+
+            &.monospace {
+                font-family: monospace;
+                font-size: 14px;
+            }
+        }
+    }
+
+    // Date input special styling
+    input[type="date"] {
+        padding: 14px 16px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #2c3e50;
+        background: transparent;
+        border: none;
+        border-radius: 10px;
+        font-family: inherit;
+    }
+
+    // Input containers with background
+    .input-container {
+        position: relative;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 2px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    small {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 12px;
+        display: block;
+        margin-top: 4px;
+        font-style: italic;
+    }
+}
+
+// Filter buttons
+.filter-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: flex-end;
+    width: 100%;
+    max-width: 280px;
+    align-items: center;
+
+    button {
+        padding: 12px 24px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        &.primary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+            }
+
+            &:disabled {
+                background: rgba(108, 117, 125, 0.9);
+                box-shadow: none;
+            }
+        }
+    }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+    .modeus-events-grid {
+        grid-template-columns: 1fr;
+        padding: 0 5px 40px 5px;
+    }
+
+    .modeus-event-card {
+        min-height: auto;
+        padding: 20px;
+    }
+
+    .modeus-filters-container,
+    .modeus-events-list {
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 20px;
+    }
+
+    .modeus-info-grid {
+        grid-template-columns: 1fr;
+    }
+}

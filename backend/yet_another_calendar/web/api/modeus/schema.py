@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field, computed_field, model_validator, field_va
 from starlette import status
 
 from yet_another_calendar.web.api.validators import OptionalUTCDate
+from yet_another_calendar.settings import settings
 
 
 class Creds(BaseModel):
@@ -169,6 +170,11 @@ class FullEvent(Event, Location):
     teacher_full_name: str
     course_name: str
     cycle_realization: CycleRealization
+
+    @computed_field  # type: ignore
+    @property
+    def mts_url(self) -> str:
+        return f"{settings.app_domain}/api/mts/{self.id}"
 
 
 class ModeusCalendar(BaseModel):

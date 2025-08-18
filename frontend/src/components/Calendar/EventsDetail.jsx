@@ -79,7 +79,7 @@ const EventsDetail = ({ event }) => {
 
                     {/* Название события */}
                     <div className="name-event">
-                        <a href={event.url || event.video_url || event.webinar_url} target="_blank" rel="noopener noreferrer">
+                        <a href={event.url || event.video_url || event.webinar_url || event.mts_url} target="_blank" rel="noopener noreferrer">
                             <span className="name-event-text">{event.title || event.name}</span>
                         </a>
                     </div>

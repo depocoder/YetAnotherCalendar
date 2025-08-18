@@ -79,6 +79,9 @@ class Settings(BaseSettings):
     lms_get_extended_course_part: str = '/webservice/rest/server.php'
     lms_login_part: str = '/login/token.php'
 
+    # Application domain for generating full URLs
+    app_domain: str = env.str("YET_ANOTHER_CALENDAR_APP_DOMAIN", "https://yetanothercalendar.ru")
+
     @property
     def redis_url(self) -> URL:
         """
