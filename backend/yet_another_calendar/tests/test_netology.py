@@ -256,6 +256,7 @@ async def test_lesson_task_schema_validation(title: str, date: tuple[int, int, i
         "title": title,
         "block_title": "DevOps Basics",
         "path": "/tasks/docker-setup",
+        "passed": True,
     })
     if date:
         excepted_deadline = datetime.datetime(*date).astimezone(datetime.UTC)
@@ -275,6 +276,7 @@ async def test_lesson_task_schema_suitable_time() -> None:
         "block_title": "DevOps Basics",
         "path": "/tasks/docker-setup",
         "deadline": datetime.datetime(2025, 3, 15, 12, 0),
+        "passed": True,
     })
 
     time_deadline_within_range = {
