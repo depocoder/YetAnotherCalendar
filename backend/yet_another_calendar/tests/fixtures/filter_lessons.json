@@ -5,7 +5,8 @@
         "path": "/lesson/1",
         "type": "task",
         "title": "Complete Assignment",
-        "deadline": "2025-03-15T12:00:00"
+        "deadline": "2025-03-15T12:00:00",
+        "passed": true
     },
     {
         "id": 2,
@@ -22,6 +23,7 @@
         "path": "/lesson/3",
         "type": "quiz",
         "title": "Weekly Quiz",
-        "deadline": "2025-03-22T15:00:00"
+        "deadline": "2025-03-22T15:00:00",
+        "passed": true
     }
 ]

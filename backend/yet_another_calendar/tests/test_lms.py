@@ -7,6 +7,7 @@ import pytest
 from fastapi import HTTPException
 from httpx import AsyncClient, HTTPStatusError
 from pydantic import ValidationError
+import copy
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.lms import integration, schema
@@ -242,6 +243,7 @@ async def test_get_user_invalid_inputs(lxp_token: str, lxp_id: str, expected_err
     ],
 )
 def test_deadline_validation(input_data: dict[str, str], expected_date: datetime.datetime, should_raise: bool) -> None:
+    input_data = copy.deepcopy(input_data)
     if should_raise:
         with pytest.raises((ValidationError, TypeError, ValueError)):
             schema.DateModule.model_validate(input_data)
