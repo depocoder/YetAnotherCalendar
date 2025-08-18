@@ -27,6 +27,7 @@ const CalendarPage = () => {
     const [events, setEvents] = useState(null);
     const [loading, setLoading] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [isTransitioning, setIsTransitioning] = useState(false);
 
     const lastFetchedDate = useRef(null);
 
@@ -36,6 +37,12 @@ const CalendarPage = () => {
         const dateKey = `${date.start}_${date.end}`;
         if (lastFetchedDate.current === dateKey) return;
         lastFetchedDate.current = dateKey;
+
+        // Очищаем выбранное событие при смене недели
+        setSelectedEvent(null);
+        
+        // Запускаем анимацию перехода
+        setIsTransitioning(true);
 
         const fetchData = async () => {
             //console.log('[fetchCourseAndEvents called]', dateKey);
@@ -79,6 +86,8 @@ const CalendarPage = () => {
                 toast.error("Ошибка при загрузке расписания. Перезагрузите страницу или войдите заново.");
             } finally {
                 setLoading(false);
+                // Небольшая задержка для завершения анимации
+                setTimeout(() => setIsTransitioning(false), 100);
             }
         };
 
@@ -102,11 +111,13 @@ const CalendarPage = () => {
                         <ExitBtn />
                     </div>
 
-                    <EventsDetail event={selectedEvent} />
+                    <div className="events-container">
+                        <EventsDetail event={selectedEvent} />
+                    </div>
                     <DatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
                 </header>
 
-                <div className="calendar">
+                <div className={`calendar ${loading || isTransitioning ? 'calendar-loading' : 'calendar-loaded'}`}>
                     {loading ? (
                         <Loader />
                     ) : (
