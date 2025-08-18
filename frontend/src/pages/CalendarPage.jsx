@@ -21,6 +21,7 @@ import EventsDetail from "../components/Calendar/EventsDetail";
 import DeadLine from "../components/Calendar/DeadLine";
 import DaysNumber from "../components/Calendar/DaysNumber";
 import LessonTimes from "../components/Calendar/LessonTimes";
+import GitHubStarModal from "../components/GitHubStarModal";
 
 
 const CalendarPage = () => {
@@ -29,10 +30,44 @@ const CalendarPage = () => {
     const [loading, setLoading] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [isTransitioning, setIsTransitioning] = useState(false);
+    const [showGithubModal, setShowGithubModal] = useState(false);
 
     const lastFetchedDate = useRef(null);
 
     //console.log('[CalendarPage render]');
+
+    // Проверяем, нужно ли показать модальное окно GitHub Star
+    useEffect(() => {
+        const hasSeenGithubModal = localStorage.getItem('githubStarModalShown');
+        const remindDateStr = localStorage.getItem('githubStarRemindDate');
+        
+        let shouldShowModal = false;
+        
+        if (!hasSeenGithubModal && !remindDateStr) {
+            // Пользователь видит модальное окно впервые
+            shouldShowModal = true;
+        } else if (remindDateStr && !hasSeenGithubModal) {
+            // Проверяем, прошла ли неделя с момента отложенного напоминания
+            const remindDate = new Date(remindDateStr);
+            const currentDate = new Date();
+            
+            if (currentDate >= remindDate) {
+                // Время напоминания наступило
+                shouldShowModal = true;
+                // Удаляем дату напоминания, чтобы не показывать повторно
+                localStorage.removeItem('githubStarRemindDate');
+            }
+        }
+        
+        if (shouldShowModal) {
+            // Показываем модальное окно с небольшой задержкой для лучшего UX
+            const timer = setTimeout(() => {
+                setShowGithubModal(true);
+            }, 2000); // 2 секунды после загрузки страницы
+            
+            return () => clearTimeout(timer);
+        }
+    }, []);
 
     useEffect(() => {
         const dateKey = `${date.start}_${date.end}`;
@@ -99,8 +134,16 @@ const CalendarPage = () => {
         setEvents(updatedEvents);
     };
 
+    const handleCloseGithubModal = () => {
+        setShowGithubModal(false);
+    };
+
     return (
         <div className="calendar-page">
+            <GitHubStarModal 
+                isOpen={showGithubModal}
+                onClose={handleCloseGithubModal}
+            />
             <div className="wrapper">
                 <header className="header">
                     <div className="header-line">
