@@ -6,7 +6,8 @@ import {
     getCalendarIdLocalStorage,
     getJWTTokenFromLocalStorage,
     getLMSTokenFromLocalStorage,
-    getLMSIdFromLocalStorage
+    getLMSIdFromLocalStorage,
+    getMtsLinks
 } from '../services/api';
 import { toast } from 'react-toastify';
 import Loader from "../elements/Loader";
@@ -31,6 +32,7 @@ const CalendarPage = () => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [showGithubModal, setShowGithubModal] = useState(false);
+    const [mtsUrls, setMtsUrls] = useState({});
 
     const lastFetchedDate = useRef(null);
 
@@ -112,6 +114,22 @@ const CalendarPage = () => {
 
                 if (eventsResponse?.data) {
                     setEvents(eventsResponse.data);
+                    
+                    // Получаем все Modeus события и загружаем их MTS ссылки
+                    const modeusEvents = eventsResponse.data?.utmn?.modeus_events || [];
+                    const lessonIds = modeusEvents.map(event => event.id).filter(Boolean);
+                    
+                    if (lessonIds.length > 0) {
+                        try {
+                            const mtsResponse = await getMtsLinks(lessonIds);
+                            if (mtsResponse?.status === 200 && mtsResponse.data?.links) {
+                                setMtsUrls(mtsResponse.data.links);
+                            }
+                        } catch (error) {
+                            console.error('Error loading MTS URLs:', error);
+                            // Не показываем пользователю ошибку, так как это не критично
+                        }
+                    }
                 } else {
                     toast.error("Не удалось загрузить события. Повторите попытку.");
                     console.error("Пустой ответ от bulkEvents:", eventsResponse);
@@ -157,7 +175,7 @@ const CalendarPage = () => {
 
 
                     <div className="events-container">
-                        <EventsDetail event={selectedEvent} />
+                        <EventsDetail event={selectedEvent} mtsUrls={mtsUrls} />
                     </div>
                     <DatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
                 </header>

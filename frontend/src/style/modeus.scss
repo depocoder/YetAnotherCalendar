@@ -1342,3 +1342,56 @@
         grid-template-columns: 1fr;
     }
 }
+
+// Cloud Badge for saved links
+.cloud-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+    animation: float 3s ease-in-out infinite;
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+    
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+    }
+}
+
+// Input styling for saved links
+input.has-saved-link {
+    border: 2px solid #4a90e2;
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.05) 0%, rgba(53, 122, 189, 0.05) 100%);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    
+    &:focus {
+        border-color: #357abd;
+        box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.2);
+    }
+}
+
+// Link section styling improvements
+.modeus-link-section {
+    label {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .link-input-container {
+        position: relative;
+        
+        input {
+            transition: all 0.3s ease;
+        }
+    }
+}

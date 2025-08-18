@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { getDayEvents, saveLinkToEvent, getJWTTokenFromLocalStorage } from '../services/api';
+import { getDayEvents, saveLinkToEvent, getJWTTokenFromLocalStorage, getMtsLinks } from '../services/api';
 import Loader from "../elements/Loader";
 import ExitBtn from "../components/Calendar/ExitBtn";
 
@@ -19,6 +19,7 @@ const ModeusDaySchedulePage = () => {
     const [loading, setLoading] = useState(false);
     const [linkInputs, setLinkInputs] = useState({});
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+    const [mtsUrls, setMtsUrls] = useState({});
 
     // Генерируем список годов (2023-2026)
     const yearOptions = [];
@@ -72,10 +73,32 @@ const ModeusDaySchedulePage = () => {
                 
                 // Инициализируем поля для ссылок (только для событий с ID)
                 const initialLinks = {};
+                const lessonIds = [];
                 sortedEvents.filter(event => event && event.id).forEach(event => {
                     initialLinks[event.id] = '';
+                    lessonIds.push(event.id);
                 });
                 setLinkInputs(initialLinks);
+                
+                // Загружаем существующие MTS ссылки
+                if (lessonIds.length > 0) {
+                    try {
+                        const mtsResponse = await getMtsLinks(lessonIds);
+                        if (mtsResponse?.status === 200 && mtsResponse.data?.links) {
+                            setMtsUrls(mtsResponse.data.links);
+                            
+                            // Предзаполняем поля ввода существующими ссылками
+                            const updatedLinks = { ...initialLinks };
+                            Object.keys(mtsResponse.data.links).forEach(lessonId => {
+                                updatedLinks[lessonId] = mtsResponse.data.links[lessonId];
+                            });
+                            setLinkInputs(updatedLinks);
+                        }
+                    } catch (error) {
+                        console.error('Error loading MTS URLs:', error);
+                        // Не показываем ошибку пользователю, так как это не критично
+                    }
+                }
                 
                 console.log("Загружено событий:", sortedEvents.length);
                 console.log("Тип данных events:", typeof sortedEvents, sortedEvents);
@@ -495,13 +518,21 @@ const ModeusDaySchedulePage = () => {
                                             </div>
 
                                             <div className="modeus-link-section">
-                                                <label>🔗 Добавить ссылку на вебинар:</label>
+                                                <label>
+                                                    🔗 Добавить ссылку на вебинар:
+                                                    {mtsUrls[event.id] && (
+                                                        <span className="cloud-badge" title="Ссылка уже сохранена в системе">
+                                                            ☁️ Сохранено
+                                                        </span>
+                                                    )}
+                                                </label>
                                                 <div className="link-input-container">
                                                     <input
                                                         type="url"
                                                         placeholder="https://my.mts-link.ru/j/58117453/74387679/session/72309048"
                                                         value={linkInputs[event.id] || ''}
                                                         onChange={(e) => handleLinkInputChange(event.id, e.target.value)}
+                                                        className={mtsUrls[event.id] ? 'has-saved-link' : ''}
                                                     />
                                                 </div>
                                                 <small>💡 Заполните ссылки для всех событий и нажмите "Сохранить все ссылки"</small>

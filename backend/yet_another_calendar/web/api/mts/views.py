@@ -5,7 +5,7 @@ from fastapi.responses import RedirectResponse, JSONResponse
 from redis.asyncio import ConnectionPool
 
 from . import integration
-from .schema import MtsLinkBody
+from .schema import MtsLinkBody, MtsLinkRequest, MtsLinkResponse
 from ...lifespan import get_redis_pool
 
 router = APIRouter()
@@ -18,6 +18,15 @@ async def add_link(
 ) -> JSONResponse:
     await integration.save_link(redis, body.lesson_id, str(body.url))
     return JSONResponse(content={"status": "ok"})
+
+
+@router.post("/links", summary='get links for multiple lesson IDs')
+async def get_multiple_links(
+        body: MtsLinkRequest,
+        redis: ConnectionPool = Depends(get_redis_pool),
+) -> MtsLinkResponse:
+    links = await integration.get_links(redis, body.lesson_ids)
+    return MtsLinkResponse(links=links)
 
 
 @router.get("/{lesson_id}", summary='redirect to webinar')

@@ -161,3 +161,19 @@ export async function saveLinkToEvent(lessonId, url) {
         return e.response;
     }
 }
+
+export async function getMtsLinks(lessonIds) {
+    try {
+        const requestBody = {
+            lessonIds: lessonIds
+        };
+
+        return await axios.post(`${BACKEND_URL}/api/mts/links`, requestBody, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    } catch (e) {
+        return e.response;
+    }
+}
