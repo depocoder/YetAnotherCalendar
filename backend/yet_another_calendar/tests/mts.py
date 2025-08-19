@@ -9,6 +9,20 @@ from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.mts import integration
 
 
+class TestMtsIntegrationHelpers:
+    """Tests for helper functions in integration.py."""
+
+    def test_key_function(self) -> None:
+        """Test _key function generates correct Redis key."""
+        lesson_id = uuid.uuid4()
+        expected_key = f"mtslink:{lesson_id}"
+        
+        actual_key = integration._key(lesson_id)
+        
+        assert actual_key == expected_key
+        assert actual_key.startswith("mtslink:")
+
+
 @pytest.mark.asyncio
 class TestMtsIntegration:
     """Tests for the Redis integration logic in `integration.py`."""

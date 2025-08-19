@@ -1,11 +1,13 @@
 from typing import Any
+from collections.abc import Callable
 from collections.abc import AsyncGenerator
 from unittest import mock
+from unittest.mock import Mock
 
 import pytest
 from fakeredis import FakeServer
 from fakeredis.aioredis import FakeConnection
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from httpx import AsyncClient
 from redis.asyncio import ConnectionPool
 
@@ -74,3 +76,15 @@ async def client(
     """
     async with AsyncClient(app=fastapi_app, base_url="http://test", timeout=2.0) as ac:
         yield ac
+
+
+@pytest.fixture
+def mock_request() -> Callable[[str], Mock]:
+    """Create a mock request fixture."""
+    def _create_request(client_ip: str = "127.0.0.1") -> Mock:
+        request = Mock(spec=Request)
+        request.headers = {}
+        request.client = Mock()
+        request.client.host = client_ip
+        return request
+    return _create_request

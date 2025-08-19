@@ -2,7 +2,6 @@
 Netology API implemented using a controller.
 """
 
-from typing import Annotated
 from fastapi import APIRouter, Depends
 
 import yet_another_calendar.web.api.modeus.schema
@@ -15,7 +14,7 @@ router = APIRouter()
 
 @router.post("/auth")
 async def get_netology_cookies(
-    item: Annotated[schema.NetologyCreds, Depends(rate_limited_dependency)],
+    item: schema.NetologyCreds,
     _: None = Depends(rate_limited_dependency),
 ) -> schema.NetologyCookies:
     """
