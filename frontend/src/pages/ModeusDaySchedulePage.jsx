@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { getDayEvents, saveLinkToEvent, getTutorTokenFromLocalStorage, getMtsLinks } from '../services/api';
 import Loader from "../elements/Loader";
@@ -43,7 +43,7 @@ const ModeusDaySchedulePage = () => {
         "10.03.01"
     ];
 
-    const fetchEvents = async () => {
+    const fetchEvents = useCallback(async () => {
         const tutorToken = getTutorTokenFromLocalStorage();
         console.log('Проверка токена преподавателя:', !!tutorToken);
         
@@ -115,11 +115,11 @@ const ModeusDaySchedulePage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [selectedDate, selectedYear, profileName, specialtyCode]);
 
     useEffect(() => {
         fetchEvents();
-    }, [selectedDate, selectedYear, profileName, specialtyCode]);
+    }, [selectedDate, selectedYear, profileName, specialtyCode, fetchEvents]);
 
     const handleDateChange = (e) => {
         setSelectedDate(e.target.value);
@@ -147,37 +147,6 @@ const ModeusDaySchedulePage = () => {
         }));
     };
 
-    const handleSaveLink = async (eventId) => {
-        const url = linkInputs[eventId];
-        if (!url.trim()) {
-            toast.error("Введите ссылку");
-            return;
-        }
-
-        // Проверяем формат URL
-        try {
-            new URL(url);
-        } catch {
-            toast.error("Введите корректную ссылку (с http:// или https://)");
-            return;
-        }
-
-        try {
-            const response = await saveLinkToEvent(eventId, url);
-            if (response?.status === 200) {
-                toast.success("Ссылка успешно сохранена!");
-                setLinkInputs(prev => ({
-                    ...prev,
-                    [eventId]: ''
-                }));
-            } else {
-                toast.error("Не удалось сохранить ссылку");
-            }
-        } catch (error) {
-            console.error('Ошибка при сохранении ссылки:', error);
-            toast.error("Ошибка при сохранении ссылки");
-        }
-    };
 
     const handleBulkSaveLinks = async () => {
         const linksToSave = Object.entries(linkInputs).filter(([eventId, url]) => url.trim());
@@ -220,7 +189,7 @@ const ModeusDaySchedulePage = () => {
         if (successCount > 0) {
             setLinkInputs(prev => {
                 const newInputs = { ...prev };
-                for (const [eventId, url] of linksToSave) {
+                for (const [eventId] of linksToSave) {
                     newInputs[eventId] = '';
                 }
                 return newInputs;

@@ -169,7 +169,7 @@ class CalendarEmbedded(BaseModel):
 class FullEvent(Event, Location):
     teacher_full_name: str
     course_name: str
-    cycle_realization: CycleRealization
+    cycle_realization: CycleRealization | str
 
     @computed_field  # type: ignore
     @property

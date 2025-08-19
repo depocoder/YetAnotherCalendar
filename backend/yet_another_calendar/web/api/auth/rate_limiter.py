@@ -68,7 +68,7 @@ class LoginRateLimiter:
             logger.warning(f"Failed {login_type} login attempt from {client_ip} (attempt {attempts_data['count']})")
             
             if attempts_data["count"] >= settings.login_max_attempts:
-                attempts_data["locked_until"] = current_time + settings.login_lockout_time
+                attempts_data["locked_until"] = int(current_time + settings.login_lockout_time)
                 logger.warning(
                     f"IP {client_ip} locked out for {login_type} login for {settings.login_lockout_time} seconds",
                 )
