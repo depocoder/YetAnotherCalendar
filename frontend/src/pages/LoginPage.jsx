@@ -26,6 +26,12 @@ const LoginPage = () => {
                 return { success: false, message: "Неверный логин или пароль." };
             }
 
+            if (response.status === 429) {
+                const message = response.data?.detail || 'Слишком много неудачных попыток. Попробуйте позже.';
+                toast.error(message);
+                return { success: false, message: message };
+            }
+
             if (response.status === 400 || response.status === 422) {
                 toast.error("Были переданы неверные данные.");
                 return { success: false, message: "Неверные данные." };
@@ -73,6 +79,12 @@ const LoginPage = () => {
 
             if (modeusResponse.status === 401) {
                 toast.error("Неверный логин или пароль для Modeus.");
+                return { success: false };
+            }
+
+            if (modeusResponse.status === 429) {
+                const message = modeusResponse.data?.detail || 'Слишком много неудачных попыток входа в Modeus. Попробуйте позже.';
+                toast.error(message);
                 return { success: false };
             }
 

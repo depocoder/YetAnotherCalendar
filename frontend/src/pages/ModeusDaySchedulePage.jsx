@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { getDayEvents, saveLinkToEvent, getJWTTokenFromLocalStorage, getMtsLinks } from '../services/api';
+import { getDayEvents, saveLinkToEvent, getTutorTokenFromLocalStorage, getMtsLinks } from '../services/api';
 import Loader from "../elements/Loader";
 import ExitBtn from "../components/Calendar/ExitBtn";
 
@@ -44,12 +44,12 @@ const ModeusDaySchedulePage = () => {
     ];
 
     const fetchEvents = async () => {
-        const token = getJWTTokenFromLocalStorage();
-        console.log('Проверка токена Modeus:', !!token);
+        const tutorToken = getTutorTokenFromLocalStorage();
+        console.log('Проверка токена преподавателя:', !!tutorToken);
         
-        if (!token) {
-            toast.error("Отсутствует токен Modeus. Войдите в систему.");
-            console.error('Токен Modeus не найден в localStorage');
+        if (!tutorToken) {
+            toast.error("Отсутствует токен авторизации. Войдите в систему.");
+            console.error('Токен преподавателя не найден в localStorage');
             return;
         }
 

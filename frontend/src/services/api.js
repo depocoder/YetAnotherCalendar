@@ -19,6 +19,9 @@ export function getLMSTokenFromLocalStorage() {
 export function getLMSIdFromLocalStorage() {
     return localStorage.getItem('lms-id')
 }
+export function getTutorTokenFromLocalStorage() {
+    return localStorage.getItem('tutorToken')
+}
 
 // login Netology
 export async function loginNetology(username, password) {
@@ -43,6 +46,12 @@ export async function loginLms(username, password, service = "test") {
     } catch (e) {
         return e.response;
     }
+}
+
+// tutor login
+export async function tutorLogin(password) {
+    const response = await axios.post(`${BACKEND_URL}/api/auth/tutor/login`, {password});
+    return response.data;
 }
 
 
@@ -109,11 +118,11 @@ export const exportICS = (params) => {
 // Modeus API functions
 export async function getDayEvents(date, learningStartYear, profileName, specialtyCode) {
     try {
-        const modeusToken = getJWTTokenFromLocalStorage();
-        console.log('Modeus token found:', !!modeusToken, modeusToken ? `${modeusToken.substring(0, 20)}...` : 'null');
+        const tutorToken = getTutorTokenFromLocalStorage();
+        console.log('Tutor token found:', !!tutorToken);
         
-        if (!modeusToken) {
-            throw new Error('Modeus token not found');
+        if (!tutorToken) {
+            throw new Error('Tutor token not found');
         }
 
         const requestBody = {
@@ -126,13 +135,13 @@ export async function getDayEvents(date, learningStartYear, profileName, special
         console.log('Отправляем запрос к Modeus API:', {
             url: `${BACKEND_URL}/api/modeus/day-events/`,
             body: requestBody,
-            hasToken: !!modeusToken
+            hasToken: !!tutorToken
         });
 
         const response = await axios.post(`${BACKEND_URL}/api/modeus/day-events/`, requestBody, {
             headers: {
                 'Content-Type': 'application/json',
-                'modeus-jwt-token': modeusToken
+                'Authorization': `Bearer ${tutorToken}`
             }
         });
 

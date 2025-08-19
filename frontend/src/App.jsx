@@ -3,8 +3,10 @@ import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom
 import LoginPage from './pages/LoginPage';
 import CalendarPage from './pages/CalendarPage';
 import ModeusDaySchedulePage from './pages/ModeusDaySchedulePage';
+import TutorLoginPage from './pages/TutorLoginPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PrivateRoute from "./elements/PrivateRoute";
+import TutorPrivateRoute from "./elements/TutorPrivateRoute";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -27,12 +29,14 @@ const App = () => {
                         </PrivateRoute>
                     }
                 />
+                {/* Вход для преподавателей */}
+                <Route path="/admin/login" element={<TutorLoginPage />} />
                 {/* Маршрут для расписания Modeus на день */}
-                <Route path="/modeus-schedule"
+                <Route path="/admin/calendar-links"
                     element={
-                        <PrivateRoute>
+                        <TutorPrivateRoute>
                             <ModeusDaySchedulePage />
-                        </PrivateRoute>
+                        </TutorPrivateRoute>
                     }
                 />
                 {/* 404 страница */}
