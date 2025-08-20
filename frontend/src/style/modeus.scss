@@ -1395,3 +1395,296 @@ input.has-saved-link {
         }
     }
 }
+
+// Grouped Cards Styling
+.modeus-event-card.grouped-card {
+    // Same minimum height as individual cards for consistency
+    min-height: 520px;
+    
+    // Grouped card specific styling
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+        rgba(255, 255, 255, 0.92);
+    
+    border: 2px solid rgba(124, 58, 237, 0.2);
+    
+    // Enhanced shadow for grouped cards
+    box-shadow: 
+        0 24px 48px rgba(124, 58, 237, 0.1),
+        0 12px 24px rgba(59, 130, 246, 0.06),
+        0 6px 12px rgba(0, 0, 0, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.4),
+        0 0 0 1px rgba(124, 58, 237, 0.15);
+
+    &:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 
+            0 36px 72px rgba(124, 58, 237, 0.18),
+            0 18px 36px rgba(59, 130, 246, 0.12),
+            0 9px 18px rgba(0, 0, 0, 0.08),
+            inset 0 2px 0 rgba(255, 255, 255, 0.8),
+            0 0 0 2px rgba(124, 58, 237, 0.4);
+        
+        background: 
+            radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+            rgba(255, 255, 255, 0.97);
+    }
+}
+
+// Group indicator styling
+.group-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.group-badge {
+    background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+    animation: float 4s ease-in-out infinite;
+}
+
+.expand-group-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(124, 58, 237, 0.3);
+    color: #7c3aed;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+
+    &:hover {
+        background: rgba(124, 58, 237, 0.1);
+        border-color: rgba(124, 58, 237, 0.5);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+    }
+
+    &:active {
+        transform: translateY(0);
+        transition: all 0.1s ease;
+    }
+}
+
+// Expanded group events styling
+.expanded-group-events {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.individual-event-in-group {
+    position: relative;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    border: 1px solid rgba(124, 58, 237, 0.15);
+    backdrop-filter: blur(5px);
+    
+    // Same minimum height for consistency
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+
+    &:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.7);
+        border-left: 4px solid rgba(124, 58, 237, 0.4);
+    }
+
+    &:nth-child(even) {
+        background: rgba(248, 250, 252, 0.7);
+        border-left: 4px solid rgba(59, 130, 246, 0.4);
+    }
+
+    .event-index {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 700;
+        box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+        z-index: 10;
+    }
+
+    // Color strip for individual events in group
+    .event-color-strip {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        border-radius: 12px 0 0 12px;
+        display: block;
+
+        &.lecture {
+            background: linear-gradient(180deg, #28a745 0%, #20c997 100%);
+        }
+
+        &.practice {
+            background: linear-gradient(180deg, #007bff 0%, #6610f2 100%);
+        }
+
+        &.lab {
+            background: linear-gradient(180deg, #fd7e14 0%, #e83e8c 100%);
+        }
+
+        &.seminar {
+            background: linear-gradient(180deg, #6f42c1 0%, #e83e8c 100%);
+        }
+
+        &.default {
+            background: linear-gradient(180deg, #6c757d 0%, #495057 100%);
+        }
+    }
+
+    // Event header in expanded view
+    .event-header {
+        margin-bottom: 20px;
+        padding-left: 8px;
+
+        h5 {
+            margin: 0 0 6px 0;
+            color: #2c3e50;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.3;
+            min-height: 36px;
+            max-height: 36px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            word-break: break-word;
+
+            .short-name {
+                font-size: 12px;
+                color: #6c757d;
+                font-weight: 400;
+                margin-left: 6px;
+            }
+        }
+
+        .event-time {
+            color: #007bff;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            .duration-badge {
+                background-color: #e3f2fd;
+                padding: 3px 6px;
+                border-radius: 10px;
+                font-size: 11px;
+                color: #1976d2;
+            }
+        }
+    }
+
+    // Event details in expanded view
+    .event-details {
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex: 1;
+        padding-left: 8px;
+
+        // Smaller info blocks for expanded view
+        .info-block {
+            &.course, &.teacher {
+                height: 70px;
+                padding: 12px 16px;
+
+                .label {
+                    font-size: 11px;
+                    margin-bottom: 6px;
+                }
+
+                .content {
+                    font-size: 14px;
+                }
+            }
+
+            &.type, &.code {
+                min-height: 56px;
+                max-height: 56px;
+                padding: 8px;
+
+                .label {
+                    font-size: 11px;
+                    margin-bottom: 3px;
+                }
+
+                .content {
+                    font-size: 12px;
+                }
+            }
+
+            &.description {
+                min-height: 56px;
+                max-height: 56px;
+                padding: 8px;
+
+                .label {
+                    font-size: 11px;
+                    margin-bottom: 3px;
+                }
+
+                .content {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+
+    // Link section in expanded view
+    .modeus-link-section {
+        margin-top: auto;
+        padding: 12px 16px;
+        min-height: 70px;
+        padding-left: 24px;
+
+        label {
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        input[type="url"] {
+            padding: 10px 12px;
+            font-size: 13px;
+        }
+
+        small {
+            font-size: 11px;
+            margin-top: 6px;
+        }
+    }
+}
