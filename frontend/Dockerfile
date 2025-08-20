@@ -3,7 +3,7 @@ FROM node:20.11.1-alpine AS node-build
 WORKDIR /app
 COPY package*.json /app/
 
-RUN npm i
+RUN npm install --retry=3 --retry-delay=1000 --timeout=300000
 COPY . /app
 
 RUN npm run build
