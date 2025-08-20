@@ -64,6 +64,25 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
     // Проверяем, что event существует перед вызовом getSourceInfo
     const sourceInfo = event ? getSourceInfo() : null;
 
+    // Функция для получения цвета кнопки в зависимости от типа события
+    const getEventButtonColor = () => {
+        if (event.type === 'netology') {
+            return '#00A8A8'; // Teal
+        }
+        if (['quiz', 'task', 'test'].includes(event.type)) {
+            return '#3492c5'; // Blue
+        }
+        if (event.type === 'modeus') {
+            return '#7B61FF'; // Purple
+        }
+        if (event.source === 'utmn') {
+            return '#f46386'; // Pink
+        }
+        return '#7B61FF'; // Default purple
+    };
+
+    const buttonColor = event ? getEventButtonColor() : '#7B61FF';
+
     return (
         <div className={`rectangle ${isVisible ? 'rectangle-visible' : 'rectangle-hidden'}`}>
             {event && sourceInfo && (
@@ -79,41 +98,9 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
 
                     {/* Название события */}
                     <div className="name-event">
-                        {(() => {
-                            // Для Modeus событий проверяем наличие ссылки
-                            if (event.type === 'modeus') {
-                                const mtsUrl = mtsUrls[event.id];
-                                if (mtsUrl) {
-                                    return (
-                                        <a href={mtsUrl} target="_blank" rel="noopener noreferrer">
-                                            <span className="name-event-text">{event.title || event.name}</span>
-                                        </a>
-                                    );
-                                } else {
-                                    return (
-                                        <span className="name-event-text name-event-text--no-link">
-                                            {event.title || event.name}
-                                        </span>
-                                    );
-                                }
-                            }
-                            
-                            // Для остальных типов событий используем обычную логику
-                            const eventUrl = event.url || event.video_url || event.webinar_url;
-                            if (eventUrl) {
-                                return (
-                                    <a href={eventUrl} target="_blank" rel="noopener noreferrer">
-                                        <span className="name-event-text">{event.title || event.name}</span>
-                                    </a>
-                                );
-                            } else {
-                                return (
-                                    <span className="name-event-text name-event-text--no-link">
-                                        {event.title || event.name}
-                                    </span>
-                                );
-                            }
-                        })()}
+                        <span className="name-event-text name-event-text--no-link">
+                            {event.title || event.name}
+                        </span>
                     </div>
 
                 {/* Дополнительная информация */}
@@ -167,6 +154,37 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
                         </span>
                     </div>
                 )}
+
+                {/* Кнопка перехода к уроку в правом нижнем углу */}
+                {(() => {
+                    // Определяем URL для кнопки
+                    let eventUrl = null;
+                    if (event.type === 'modeus') {
+                        eventUrl = mtsUrls[event.id];
+                    } else {
+                        eventUrl = event.url || event.video_url || event.webinar_url;
+                    }
+                    
+                    // Показываем кнопку только если есть URL
+                    if (eventUrl) {
+                        return (
+                            <div className="lesson-button-container">
+                                <a 
+                                    href={eventUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="lesson-button"
+                                    style={{
+                                        '--button-color': buttonColor
+                                    }}
+                                >
+                                    Перейти ➜
+                                </a>
+                            </div>
+                        );
+                    }
+                    return null;
+                })()}
                 </div>
             )}
         </div>

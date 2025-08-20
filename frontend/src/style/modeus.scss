@@ -305,7 +305,10 @@
             font-size: 16px;
             font-weight: 500;
             color: rgba(255, 255, 255, 0.95);
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            text-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.6),
+                0 1px 2px rgba(0, 0, 0, 0.8),
+                0 0 1px rgba(0, 0, 0, 0.9);
             letter-spacing: 0.3px;
             opacity: 0.95;
         }
@@ -1193,7 +1196,10 @@
         color: white;
         font-size: 14px;
         font-weight: 600;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        text-shadow: 
+            0 2px 4px rgba(0, 0, 0, 0.6),
+            0 1px 2px rgba(0, 0, 0, 0.8),
+            0 0 1px rgba(0, 0, 0, 0.9);
         text-align: center;
     }
 
@@ -1258,7 +1264,7 @@
     }
 
     small {
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(45, 55, 72, 0.8);
         font-size: 12px;
         display: block;
         margin-top: 4px;
@@ -1287,7 +1293,10 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        text-shadow: 
+            0 2px 4px rgba(0, 0, 0, 0.6),
+            0 1px 2px rgba(0, 0, 0, 0.8),
+            0 0 1px rgba(0, 0, 0, 0.9);
 
         &:hover {
             background: rgba(255, 255, 255, 0.25);

@@ -99,4 +99,40 @@
     display: flex;
     flex-direction: column;
   }
+
+  &__password-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 16px;
+  }
+
+  &__input {
+    margin-top: 0;
+  }
+
+  &__toggle-password {
+    background: #7b61ff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    height: 32px;
+    min-width: 32px;
+
+    &:hover {
+      background-color: #5856d6;
+    }
+
+    &:focus {
+      outline: 2px solid #7b61ff;
+      outline-offset: 2px;
+    }
+  }
 }

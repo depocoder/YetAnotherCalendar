@@ -7,6 +7,7 @@ import '../../style/tutor-login.scss';
 const TutorLogin = ({ onSuccess }) => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -50,18 +51,28 @@ const TutorLogin = ({ onSuccess }) => {
                 <label>Введите пароль для доступа к панели администратора</label>
                 
                 <div className="tutor-login__input-container">
-                    <input
-                        className="tutor-login__input"
-                        type="password"
-                        id="tutor-password"
-                        name="password"
-                        placeholder="Пароль администратора"
-                        autoComplete="current-password"
-                        aria-label="Admin Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
+                    <div className="tutor-login__password-wrapper">
+                        <input
+                            className="tutor-login__input"
+                            type={showPassword ? "text" : "password"}
+                            id="tutor-password"
+                            name="password"
+                            placeholder="Пароль администратора"
+                            autoComplete="current-password"
+                            aria-label="Admin Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        <button
+                            className="tutor-login__toggle-password"
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            title={showPassword ? "Скрыть пароль" : "Показать пароль"}
+                        >
+                            {showPassword ? "🙈" : "👁️"}
+                        </button>
+                    </div>
                 </div>
 
                 <button
