@@ -79,7 +79,7 @@ class Settings(BaseSettings):
     
     # Tutor authentication (password in hashed format)
     tutor_password_hash: str = env.str("YET_ANOTHER_CALENDAR_TUTOR_PASSWORD_HASH", "")
-    tutor_secret_key: str = env.str("YET_ANOTHER_CALENDAR_TUTOR_SECRET_KEY", "default-secret-key-change-in-production")
+    tutor_secret_key: str = env.str("YET_ANOTHER_CALENDAR_TUTOR_SECRET_KEY")
     tutor_jwt_time_live: int = 60 * 60 * 24 * 30  # 1 month
     
     # Rate limiting settings (applies to all login endpoints)
