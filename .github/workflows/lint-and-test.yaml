@@ -46,4 +46,4 @@ jobs:
       - name: Run tests
         run: |
           cd backend
-          uv run pytest --cov-fail-under=80 --cov=yet_another_calendar/web yet_another_calendar/tests/*
+          YET_ANOTHER_CALENDAR_TUTOR_SECRET_KEY='test' uv run pytest --cov-fail-under=80 --cov=yet_another_calendar/web yet_another_calendar/tests/*
