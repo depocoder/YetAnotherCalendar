@@ -1,11 +1,11 @@
 import uuid
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse, JSONResponse
 from redis.asyncio import ConnectionPool
 
 from . import integration
-from .schema import MtsLinkBody
+from .schema import MtsLinkBody, MtsLinkRequest, MtsLinkResponse
 from ...lifespan import get_redis_pool
 
 router = APIRouter()
@@ -20,10 +20,24 @@ async def add_link(
     return JSONResponse(content={"status": "ok"})
 
 
+@router.post("/links", summary='get links for multiple lesson IDs')
+async def get_multiple_links(
+        body: MtsLinkRequest,
+        redis: ConnectionPool = Depends(get_redis_pool),
+) -> MtsLinkResponse:
+    links = await integration.get_links(redis, body.lesson_ids)
+    return MtsLinkResponse(links=links)
+
+
 @router.get("/{lesson_id}", summary='redirect to webinar')
 async def redirect_to_mts(
         lesson_id: uuid.UUID,
         redis: ConnectionPool = Depends(get_redis_pool),
 ) -> RedirectResponse:
-    url = await integration.get_link(redis, lesson_id)
-    return RedirectResponse(url)
+    try:
+        url = await integration.get_link(redis, lesson_id)
+        return RedirectResponse(url)
+    except HTTPException:
+        # Редирект на 404 страницу фронтенда вместо HTTP 404
+        from yet_another_calendar.settings import settings
+        return RedirectResponse(f"{settings.app_domain}/404")

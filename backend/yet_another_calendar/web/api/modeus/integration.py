@@ -8,10 +8,12 @@ import httpx
 import reretry
 from bs4 import BeautifulSoup, Tag
 from fastapi import HTTPException
+from fastapi_cache.decorator import cache
 from httpx import URL, AsyncClient
 from starlette import status
 
 from yet_another_calendar.settings import settings
+from yet_another_calendar.web.cache_builder import key_builder
 from .schema import (
     ModeusCalendar,
     FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusEventsBody,
@@ -161,6 +163,24 @@ async def get_people(
     response = await post_modeus(__jwt, body, settings.modeus_search_people_part)
     search_people = SearchPeople.model_validate_json(response)
     return search_people.serialize_modeus_response()
+
+
+@cache(expire=settings.redis_jwt_time_live, key_builder=key_builder)  # 12 hours
+async def get_donor_token() -> str:
+    """Get donor account token (cached for 12 hours)."""
+    if not settings.modeus_username or not settings.modeus_password:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Donor account credentials not configured",
+        )
+    
+    logger.info("Authenticating donor account")
+    token = await login(
+        settings.modeus_username, 
+        settings.modeus_password,
+    )
+    logger.info("Donor account authenticated successfully")
+    return token
 
 
 async def get_day_events(jwt: str, payload: dict[str, str]) -> list[FullEvent]:

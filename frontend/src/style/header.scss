@@ -27,11 +27,37 @@ input:focus-within {
   }
 }
 
+// Контейнер для событий - всегда резервирует место
+.events-container {
+    min-height: 150px; // Резервируем место для блока событий
+    margin-bottom: 16px; // Добавляем отступ снизу для визуального разделения
+}
+
 .rectangle {
     display: flex;
     justify-content: flex-end;
     flex-direction: row-reverse;
     align-items: stretch;
+    transition: all 0.3s ease-in-out;
+    transform-origin: top center;
+    
+    // Начальное состояние (скрытое)
+    opacity: 0;
+    transform: translateY(-15px) scale(0.95);
+    max-height: 0;
+    overflow: hidden;
+
+    &.rectangle-visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        max-height: 200px; // Достаточно для отображения контента
+    }
+
+    &.rectangle-hidden {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.95);
+        max-height: 0;
+    }
 
     &-info {
       display: block;
@@ -352,4 +378,20 @@ margin-bottom: -20px;
     margin: 20px 0;
     font-size: 16px;
     width: 100%;
+}
+
+// Анимация для календаря при смене недели
+.calendar {
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    
+    &.calendar-loading {
+        opacity: 0.6;
+        transform: scale(0.98);
+        pointer-events: none;
+    }
+    
+    &.calendar-loaded {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

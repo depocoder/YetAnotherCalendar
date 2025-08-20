@@ -19,6 +19,9 @@ export function getLMSTokenFromLocalStorage() {
 export function getLMSIdFromLocalStorage() {
     return localStorage.getItem('lms-id')
 }
+export function getTutorTokenFromLocalStorage() {
+    return localStorage.getItem('tutorToken')
+}
 
 // login Netology
 export async function loginNetology(username, password) {
@@ -43,6 +46,12 @@ export async function loginLms(username, password, service = "test") {
     } catch (e) {
         return e.response;
     }
+}
+
+// tutor login
+export async function tutorLogin(password) {
+    const response = await axios.post(`${BACKEND_URL}/api/auth/tutor/login`, {password});
+    return response.data;
 }
 
 
@@ -105,3 +114,75 @@ export const refreshBulkEvents = (params) => {
 export const exportICS = (params) => {
     return apiRequest('/api/bulk/export_ics/', params);
 };
+
+// Modeus API functions
+export async function getDayEvents(date, learningStartYear, profileName, specialtyCode) {
+    try {
+        const tutorToken = getTutorTokenFromLocalStorage();
+        console.log('Tutor token found:', !!tutorToken);
+        
+        if (!tutorToken) {
+            throw new Error('Tutor token not found');
+        }
+
+        const requestBody = {
+            date: date,
+            learningStartYear: learningStartYear || [2024],
+            profileName: profileName || ["Разработка IT-продуктов и информационных систем"],
+            specialtyCode: specialtyCode || ["09.03.02"]
+        };
+
+        console.log('Отправляем запрос к Modeus API:', {
+            url: `${BACKEND_URL}/api/modeus/day-events/`,
+            body: requestBody,
+            hasToken: !!tutorToken
+        });
+
+        const response = await axios.post(`${BACKEND_URL}/api/modeus/day-events/`, requestBody, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tutorToken}`
+            }
+        });
+
+        console.log('Получен ответ от Modeus API:', response.status, response.data);
+        return response;
+    } catch (e) {
+        console.error('Ошибка в getDayEvents:', e.response?.status, e.response?.data, e.message);
+        return e.response;
+    }
+}
+
+// MTS API functions
+export async function saveLinkToEvent(lessonId, url) {
+    try {
+        const requestBody = {
+            lessonId: lessonId,
+            url: url
+        };
+
+        return await axios.post(`${BACKEND_URL}/api/mts/link`, requestBody, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    } catch (e) {
+        return e.response;
+    }
+}
+
+export async function getMtsLinks(lessonIds) {
+    try {
+        const requestBody = {
+            lessonIds: lessonIds
+        };
+
+        return await axios.post(`${BACKEND_URL}/api/mts/links`, requestBody, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    } catch (e) {
+        return e.response;
+    }
+}

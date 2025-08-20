@@ -9,6 +9,20 @@ from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.mts import integration
 
 
+class TestMtsIntegrationHelpers:
+    """Tests for helper functions in integration.py."""
+
+    def test_key_function(self) -> None:
+        """Test _key function generates correct Redis key."""
+        lesson_id = uuid.uuid4()
+        expected_key = f"mtslink:{lesson_id}"
+        
+        actual_key = integration._key(lesson_id)
+        
+        assert actual_key == expected_key
+        assert actual_key.startswith("mtslink:")
+
+
 @pytest.mark.asyncio
 class TestMtsIntegration:
     """Tests for the Redis integration logic in `integration.py`."""
@@ -49,6 +63,47 @@ class TestMtsIntegration:
 
         assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
         assert "URL for this lesson is not found" in exc_info.value.detail
+
+    async def test_get_links_multiple(self, fake_redis_pool: ConnectionPool) -> None:
+        """
+        Tests that multiple links can be retrieved at once.
+        """
+        # Prepare test data
+        lesson_uuids = [uuid.uuid4() for _ in range(3)]
+        urls = [f"https://webinar{i}.com/room/test" for i in range(3)]
+        
+        # Save links
+        for lesson_uuid, url in zip(lesson_uuids, urls, strict=False):
+            await integration.save_link(fake_redis_pool, lesson_uuid, url)
+        
+        # Add one more lesson_id that doesn't have a URL
+        lesson_uuids.append(uuid.uuid4())
+        
+        # Test get_links
+        result = await integration.get_links(fake_redis_pool, lesson_uuids)
+        
+        # Should only return the 3 existing links, not the 4th one
+        assert len(result) == 3
+        for i in range(3):
+            assert result[str(lesson_uuids[i])] == urls[i]
+        
+        # The 4th lesson_id should not be in the result
+        assert str(lesson_uuids[3]) not in result
+
+    async def test_get_links_empty_list(self, fake_redis_pool: ConnectionPool) -> None:
+        """
+        Tests that get_links returns empty dict for empty input.
+        """
+        result = await integration.get_links(fake_redis_pool, [])
+        assert result == {}
+
+    async def test_get_links_all_missing(self, fake_redis_pool: ConnectionPool) -> None:
+        """
+        Tests that get_links returns empty dict when no links exist.
+        """
+        lesson_uuids = [uuid.uuid4() for _ in range(2)]
+        result = await integration.get_links(fake_redis_pool, lesson_uuids)
+        assert result == {}
 
 
 @pytest.mark.asyncio
@@ -119,13 +174,13 @@ class TestMtsViews:
 
     async def test_redirect_not_found(self, client: AsyncClient) -> None:
         """
-        Tests that the redirect endpoint returns 404 if the lesson_id is not found.
+        Tests that the redirect endpoint redirects to 404 page if the lesson_id is not found.
         """
         non_existent_lesson_id = uuid.uuid4()
         response = await client.get(f"/api/mts/{non_existent_lesson_id}", follow_redirects=False)
 
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert "not found" in response.json()["detail"].lower()
+        assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
+        assert response.headers["location"].endswith("/404")
 
     async def test_redirect_invalid_uuid(self, client: AsyncClient) -> None:
         """
@@ -137,3 +192,60 @@ class TestMtsViews:
         error_details = response.json()["detail"]
         assert error_details[0]["loc"] == ["path", "lesson_id"]
         assert "Input should be a valid UUID, invalid character" in error_details[0]["msg"]
+
+    async def test_get_multiple_links_success(self, client: AsyncClient, fake_redis_pool: ConnectionPool) -> None:
+        """
+        Tests the successful retrieval of multiple links via the POST /links endpoint.
+        """
+        # Prepare test data - save some links to Redis
+        lesson_uuids = [uuid.uuid4() for _ in range(3)]
+        lesson_ids = [str(lesson_uuid) for lesson_uuid in lesson_uuids]
+        urls = [f"https://webinar{i}.com/room/test" for i in range(3)]
+        
+        # Save links to Redis
+        for lesson_uuid, url in zip(lesson_uuids, urls, strict=False):
+            await integration.save_link(fake_redis_pool, lesson_uuid, url)
+        
+        # Add one more lesson_id that doesn't exist
+        lesson_ids.append(str(uuid.uuid4()))
+        
+        # Make request
+        payload = {"lessonIds": lesson_ids}
+        response = await client.post("/api/mts/links", json=payload)
+        
+        assert response.status_code == status.HTTP_200_OK
+        response_data = response.json()
+        
+        # Should have 'links' key
+        assert "links" in response_data
+        links = response_data["links"]
+        
+        # Should only return the 3 existing links
+        assert len(links) == 3
+        for i in range(3):
+            assert links[lesson_ids[i]] == urls[i]
+        
+        # The 4th lesson_id should not be in the response
+        assert lesson_ids[3] not in links
+
+    async def test_get_multiple_links_empty_request(self, client: AsyncClient) -> None:
+        """
+        Tests the POST /links endpoint with empty lesson IDs list.
+        """
+        response = await client.post("/api/mts/links", json={"lessonIds": []})
+        
+        assert response.status_code == status.HTTP_200_OK
+        response_data = response.json()
+        assert response_data["links"] == {}
+
+    async def test_get_multiple_links_all_missing(self, client: AsyncClient) -> None:
+        """
+        Tests the POST /links endpoint when no links exist for given IDs.
+        """
+        lesson_ids = [str(uuid.uuid4()) for _ in range(2)]
+        payload = {"lessonIds": lesson_ids}
+        response = await client.post("/api/mts/links", json=payload)
+        
+        assert response.status_code == status.HTTP_200_OK
+        response_data = response.json()
+        assert response_data["links"] == {}

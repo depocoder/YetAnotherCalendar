@@ -17,15 +17,17 @@ better user experience. It combines multiple educational platforms into a single
 
 ## ✨ Features
 
-* 📱 Responsive interface for all devices
-* 🔄 Export to .ics calendar format for integration with Google Calendar, Apple Calendar, etc.
-* 🌍 Your timezone support (default Moscow)
-* 🔌 Modeus + Netology integration
-* 📚 LMS support
-* 📦 Redis caching for improved performance
-* 🏷️ Custom event tagging and categorization
-* 🔍 Advanced search and filtering options
-* 🔒 Secure authentication
+* 📱 **Responsive Interface** - Works seamlessly on all devices
+* 🔄 **Export to ICS** - Sync with Google Calendar, Apple Calendar, and more
+* 🌍 **Timezone Support** - Automatic timezone handling (default Moscow)
+* 🔌 **Multi-Platform Integration** - Modeus + Netology + LMS unified
+* 📦 **Redis Caching** - Lightning-fast performance with smart caching
+* 🏷️ **Event Management** - Custom tagging and categorization
+* 🔍 **Advanced Search** - Powerful filtering and search capabilities
+* 🔒 **Enterprise Security** - Rate limiting, JWT tokens, and brute force protection
+* 👨‍🏫 **Admin Panel** - Secure tutor authentication with donor account system
+* 🚀 **High Performance** - Async Python with optimized database queries
+* 📊 **Monitoring Ready** - Comprehensive logging and error tracking
 
 ## 🚀 Getting Started
 
@@ -53,7 +55,7 @@ uv sync
 
 # Create environment file
 cp .env.dist .env
-# Edit .env with your configuration
+# Edit .env with your configuration (see Environment Variables section below)
 
 # install pre-commit hooks
 uv run pre-commit install
@@ -71,22 +73,76 @@ cd YetAnotherCalendar
 
 # Create environment file
 cp .env.dist .env
-# Edit .env with your configuration
+# Edit .env with your configuration (see Environment Variables section below)
 
 # Start the services
 docker compose up --build -d
 ```
 
+## 🔧 Environment Variables
+
+Configure your application by setting these environment variables in your `.env` file:
+
+### 🏗️ **Core Settings**
+```bash
+YET_ANOTHER_CALENDAR_WORKERS_COUNT=10          # 🔄 Number of uvicorn workers
+YET_ANOTHER_CALENDAR_DEBUG=False               # 🐛 Enable debug mode
+```
+
+### 🔐 **Security & Authentication**
+```bash
+# Tutor Admin Panel Authentication
+YET_ANOTHER_CALENDAR_TUTOR_PASSWORD_HASH=""            # 🔒 Hashed password for admin access
+YET_ANOTHER_CALENDAR_TUTOR_SECRET_KEY=""               # 🔑 JWT secret key for tutor tokens
+
+# Modeus Donor Account (for tutors to access student schedules)
+YET_ANOTHER_CALENDAR_MODEUS_USERNAME=""                # 👤 Modeus donor account username
+YET_ANOTHER_CALENDAR_MODEUS_PASSWORD=""                # 🔐 Modeus donor account password
+```
+
+### 🛡️ **Rate Limiting Protection**
+```bash
+YET_ANOTHER_CALENDAR_LOGIN_MAX_ATTEMPTS=5              # 🚫 Max failed login attempts
+YET_ANOTHER_CALENDAR_LOGIN_LOCKOUT_TIME=900            # ⏱️ Lockout time in seconds (15 min)
+```
+
+### 🌐 **External Services**
+```bash
+# Netology Integration
+NETOLOGY_DEFAULT_COURSE_ID=45526                       # 📚 Default course ID
+NETOLOGY_COURSE_NAME="Разработка IT-продуктов"         # 📖 Course name
+NETOLOGY_URL="https://netology.ru"                     # 🔗 Netology base URL
+
+# Application Domain
+YET_ANOTHER_CALENDAR_APP_DOMAIN="https://yetanothercalendar.ru"  # 🌍 Your domain
+```
+
+### ⚙️ **Generate Password Hash**
+To set up admin access, run this script to generate a secure password hash:
+
+```bash
+cd backend
+python generate_password_hash.py
+```
+
+Copy the generated hash to your `.env` file as `YET_ANOTHER_CALENDAR_TUTOR_PASSWORD_HASH`.
+
 ## 📖 Documentation
 
-### API Documentation
+### 📊 **API Documentation**
 
-Once the application is running, you can access the Swagger UI documentation:
+Once the application is running, you can access the interactive API documentation:
 
-- OpenAPI documentation: [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
-- ReDoc: [http://localhost:8000/api/redoc](http://localhost:8000/api/redoc)
+- 🎯 **Swagger UI**: [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
+- 📚 **ReDoc**: [http://localhost:8000/api/redoc](http://localhost:8000/api/redoc)
 
 ![Swagger](https://github.com/user-attachments/assets/bca25df5-fd1a-4942-adb8-72f3f18ab178)
+
+### 👨‍🏫 **Admin Panel Access**
+
+After setting up your tutor password, access the admin panel at:
+- 🔐 **Admin Login**: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
+- 📅 **Calendar Links**: [http://localhost:3000/admin/calendar-links](http://localhost:3000/admin/calendar-links)
 
 ## 🙏 Acknowledgements
 

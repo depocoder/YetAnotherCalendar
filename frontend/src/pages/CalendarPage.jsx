@@ -6,7 +6,8 @@ import {
     getCalendarIdLocalStorage,
     getJWTTokenFromLocalStorage,
     getLMSTokenFromLocalStorage,
-    getLMSIdFromLocalStorage
+    getLMSIdFromLocalStorage,
+    getMtsLinks
 } from '../services/api';
 import { toast } from 'react-toastify';
 import Loader from "../elements/Loader";
@@ -21,21 +22,65 @@ import EventsDetail from "../components/Calendar/EventsDetail";
 import DeadLine from "../components/Calendar/DeadLine";
 import DaysNumber from "../components/Calendar/DaysNumber";
 import LessonTimes from "../components/Calendar/LessonTimes";
+import GitHubStarModal from "../components/GitHubStarModal";
+
 
 const CalendarPage = () => {
     const [date, setDate] = useState(() => getCurrentWeekDates());
     const [events, setEvents] = useState(null);
     const [loading, setLoading] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const [showGithubModal, setShowGithubModal] = useState(false);
+    const [mtsUrls, setMtsUrls] = useState({});
 
     const lastFetchedDate = useRef(null);
 
     //console.log('[CalendarPage render]');
 
+    // Проверяем, нужно ли показать модальное окно GitHub Star
+    useEffect(() => {
+        const hasSeenGithubModal = localStorage.getItem('githubStarModalShown');
+        const remindDateStr = localStorage.getItem('githubStarRemindDate');
+        
+        let shouldShowModal = false;
+        
+        if (!hasSeenGithubModal && !remindDateStr) {
+            // Пользователь видит модальное окно впервые
+            shouldShowModal = true;
+        } else if (remindDateStr && !hasSeenGithubModal) {
+            // Проверяем, прошла ли неделя с момента отложенного напоминания
+            const remindDate = new Date(remindDateStr);
+            const currentDate = new Date();
+            
+            if (currentDate >= remindDate) {
+                // Время напоминания наступило
+                shouldShowModal = true;
+                // Удаляем дату напоминания, чтобы не показывать повторно
+                localStorage.removeItem('githubStarRemindDate');
+            }
+        }
+        
+        if (shouldShowModal) {
+            // Показываем модальное окно с небольшой задержкой для лучшего UX
+            const timer = setTimeout(() => {
+                setShowGithubModal(true);
+            }, 2000); // 2 секунды после загрузки страницы
+            
+            return () => clearTimeout(timer);
+        }
+    }, []);
+
     useEffect(() => {
         const dateKey = `${date.start}_${date.end}`;
         if (lastFetchedDate.current === dateKey) return;
         lastFetchedDate.current = dateKey;
+
+        // Очищаем выбранное событие при смене недели
+        setSelectedEvent(null);
+        
+        // Запускаем анимацию перехода
+        setIsTransitioning(true);
 
         const fetchData = async () => {
             //console.log('[fetchCourseAndEvents called]', dateKey);
@@ -69,6 +114,22 @@ const CalendarPage = () => {
 
                 if (eventsResponse?.data) {
                     setEvents(eventsResponse.data);
+                    
+                    // Получаем все Modeus события и загружаем их MTS ссылки
+                    const modeusEvents = eventsResponse.data?.utmn?.modeus_events || [];
+                    const lessonIds = modeusEvents.map(event => event.id).filter(Boolean);
+                    
+                    if (lessonIds.length > 0) {
+                        try {
+                            const mtsResponse = await getMtsLinks(lessonIds);
+                            if (mtsResponse?.status === 200 && mtsResponse.data?.links) {
+                                setMtsUrls(mtsResponse.data.links);
+                            }
+                        } catch (error) {
+                            console.error('Error loading MTS URLs:', error);
+                            // Не показываем пользователю ошибку, так как это не критично
+                        }
+                    }
                 } else {
                     toast.error("Не удалось загрузить события. Повторите попытку.");
                     console.error("Пустой ответ от bulkEvents:", eventsResponse);
@@ -79,6 +140,8 @@ const CalendarPage = () => {
                 toast.error("Ошибка при загрузке расписания. Перезагрузите страницу или войдите заново.");
             } finally {
                 setLoading(false);
+                // Небольшая задержка для завершения анимации
+                setTimeout(() => setIsTransitioning(false), 100);
             }
         };
 
@@ -89,8 +152,16 @@ const CalendarPage = () => {
         setEvents(updatedEvents);
     };
 
+    const handleCloseGithubModal = () => {
+        setShowGithubModal(false);
+    };
+
     return (
         <div className="calendar-page">
+            <GitHubStarModal 
+                isOpen={showGithubModal}
+                onClose={handleCloseGithubModal}
+            />
             <div className="wrapper">
                 <header className="header">
                     <div className="header-line">
@@ -102,11 +173,14 @@ const CalendarPage = () => {
                         <ExitBtn />
                     </div>
 
-                    <EventsDetail event={selectedEvent} />
+
+                    <div className="events-container">
+                        <EventsDetail event={selectedEvent} mtsUrls={mtsUrls} />
+                    </div>
                     <DatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
                 </header>
 
-                <div className="calendar">
+                <div className={`calendar ${loading || isTransitioning ? 'calendar-loading' : 'calendar-loaded'}`}>
                     {loading ? (
                         <Loader />
                     ) : (

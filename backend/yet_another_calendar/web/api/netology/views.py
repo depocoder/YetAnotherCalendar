@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends
 
 import yet_another_calendar.web.api.modeus.schema
 from yet_another_calendar.settings import settings
+from yet_another_calendar.web.api.auth.rate_limiter import rate_limited_dependency
 from . import integration, schema
 
 router = APIRouter()
@@ -13,16 +14,16 @@ router = APIRouter()
 
 @router.post("/auth")
 async def get_netology_cookies(
-        item: schema.NetologyCreds,
+    item: schema.NetologyCreds,
+    _: None = Depends(rate_limited_dependency),
 ) -> schema.NetologyCookies:
     """
     Auth in Netology and return cookies.
     """
-    cookies = await integration.auth_netology(
+    return await integration.auth_netology(
         item.username,
         item.password,
     )
-    return cookies
 
 
 @router.get('/course/')

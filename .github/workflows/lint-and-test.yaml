@@ -41,7 +41,7 @@ jobs:
         run: |
           cd backend
           uv run ruff check yet_another_calendar
-          uv run mypy --config pyproject.toml yet_another_calendar
+          uv run mypy --config-file=pyproject.toml yet_another_calendar
 
       - name: Run tests
         run: |

@@ -64,7 +64,7 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
     for modeus_lesson in calendar.utmn.modeus_events:
         event = create_ics_event(title=f"Modeus: {modeus_lesson.course_name}", starts_at=modeus_lesson.start_time,
                                  ends_at=modeus_lesson.end_time, lesson_id=modeus_lesson.id,
-                                 description=modeus_lesson.name)
+                                 description=modeus_lesson.name, url=modeus_lesson.mts_url)
         ics_calendar.add_component(event)
     for lms_event in calendar.utmn.lms_events:
         dt_start = lms_event.dt_end - datetime.timedelta(hours=2)

@@ -1,11 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import arrowGreen from "../../img/ArrowGreen.svg";
 import arrowPink from "../../img/ArrowPink.svg";
 import arrowViolet from "../../img/ArrowViolet.svg";
 import { formatDate } from "../../utils/dateUtils";
 
-const EventsDetail = ({ event }) => {
-    if (!event) return null;
+const EventsDetail = ({ event, mtsUrls = {} }) => {
+    const [isVisible, setIsVisible] = useState(false);
+    const [shouldRender, setShouldRender] = useState(false);
+
+    useEffect(() => {
+        if (event) {
+            setShouldRender(true);
+            // Небольшая задержка для плавной анимации появления
+            setTimeout(() => setIsVisible(true), 10);
+        } else {
+            setIsVisible(false);
+            // Ждем завершения анимации перед удалением из DOM
+            setTimeout(() => setShouldRender(false), 300);
+        }
+    }, [event]);
+
+    if (!shouldRender) return null;
 
     // console.log('event', event);
 
@@ -46,26 +61,60 @@ const EventsDetail = ({ event }) => {
         };
     };
 
-    const sourceInfo = getSourceInfo();
+    // Проверяем, что event существует перед вызовом getSourceInfo
+    const sourceInfo = event ? getSourceInfo() : null;
 
     return (
-        <div className="rectangle">
-            <div className={`rectangle-info ${event.type || event.source}`}>
-                {/* Отображение источника события */}
-                <div className="source">
-                    {sourceInfo.label}
-                    <span className="date-event">
-                        <img src={sourceInfo.icon} alt="Arrow" />
-                        {formatDate(sourceInfo.date)}
-                    </span>
-                </div>
+        <div className={`rectangle ${isVisible ? 'rectangle-visible' : 'rectangle-hidden'}`}>
+            {event && sourceInfo && (
+                <div className={`rectangle-info ${event.type || event.source}`}>
+                    {/* Отображение источника события */}
+                    <div className="source">
+                        {sourceInfo.label}
+                        <span className="date-event">
+                            <img src={sourceInfo.icon} alt="Arrow" />
+                            {formatDate(sourceInfo.date)}
+                        </span>
+                    </div>
 
-                {/* Название события */}
-                <div className="name-event">
-                    <a href={event.url || event.video_url || event.webinar_url} target="_blank" rel="noopener noreferrer">
-                        <span className="name-event-text">{event.title || event.name}</span>
-                    </a>
-                </div>
+                    {/* Название события */}
+                    <div className="name-event">
+                        {(() => {
+                            // Для Modeus событий проверяем наличие ссылки
+                            if (event.type === 'modeus') {
+                                const mtsUrl = mtsUrls[event.id];
+                                if (mtsUrl) {
+                                    return (
+                                        <a href={mtsUrl} target="_blank" rel="noopener noreferrer">
+                                            <span className="name-event-text">{event.title || event.name}</span>
+                                        </a>
+                                    );
+                                } else {
+                                    return (
+                                        <span className="name-event-text name-event-text--no-link">
+                                            {event.title || event.name}
+                                        </span>
+                                    );
+                                }
+                            }
+                            
+                            // Для остальных типов событий используем обычную логику
+                            const eventUrl = event.url || event.video_url || event.webinar_url;
+                            if (eventUrl) {
+                                return (
+                                    <a href={eventUrl} target="_blank" rel="noopener noreferrer">
+                                        <span className="name-event-text">{event.title || event.name}</span>
+                                    </a>
+                                );
+                            } else {
+                                return (
+                                    <span className="name-event-text name-event-text--no-link">
+                                        {event.title || event.name}
+                                    </span>
+                                );
+                            }
+                        })()}
+                    </div>
 
                 {/* Дополнительная информация */}
                 {event.type === 'netology' && (
@@ -118,7 +167,8 @@ const EventsDetail = ({ event }) => {
                         </span>
                     </div>
                 )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };

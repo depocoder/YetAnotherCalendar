@@ -3,9 +3,10 @@ Modeus API implemented using a controller.
 """
 from typing import Annotated
 
-from fastapi import APIRouter, Header
-from fastapi.params import Depends
+from fastapi import APIRouter, Depends, Header
 
+from yet_another_calendar.web.api.auth.rate_limiter import rate_limited_dependency
+from yet_another_calendar.web.api.auth.utils import verify_tutor_token
 from . import integration
 from . import schema
 
@@ -29,7 +30,8 @@ async def get_calendar(
 
 @router.post("/auth/")
 async def auth(
-        creds: schema.Creds,
+    creds: schema.Creds,
+    _: None = Depends(rate_limited_dependency),
 ) -> str:
     """
     Authenticate with credentials in modeus.
@@ -39,14 +41,15 @@ async def auth(
 
 @router.post(
     "/day-events/",
-    summary="The group's schedule for the day",
+    summary="The group's schedule for the day (requires tutor authentication)",
     response_description="Get daily Modeus Events with specific filters",
     response_model=list[schema.FullEvent],
 )
 async def day_events(
         body: schema.DayEventsRequest,
-        modeus_jwt_token: Annotated[str, Header(alias="modeus-jwt-token")],
+        _: Annotated[None, Depends(verify_tutor_token)],
+        donor_token: Annotated[str, Depends(integration.get_donor_token)],
 ) -> list[schema.FullEvent]:
-    events = await integration.get_day_events(modeus_jwt_token, body.to_search_payload())
+    events = await integration.get_day_events(donor_token, body.to_search_payload())
     assert isinstance(events, list), "Expected list[FullEvent], got unexpected type"
     return events

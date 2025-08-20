@@ -11,7 +11,7 @@
         font-family: "Roboto", sans-serif;
         font-weight: 500;
         font-size: 13px;
-        transition: color 0.3s linear;
+        transition: color 0.3s linear, opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         //height: 86%;
         //width: 95%;
         &.utmn {
@@ -92,6 +92,17 @@
     }
 }
 
+.deadline-header {
+    position: relative;
+    padding-bottom: 30px; /* Add padding to make space for the button */
+}
+
+.deadline-header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
 .vertical-deadline {
     vertical-align: top;
     text-align: center;
@@ -99,6 +110,8 @@
     width: 195px;
     padding: 1px 4px;
     border-bottom: 1px dotted #adadad;
+    transition: height 0.4s ease-in-out, padding 0.4s ease-in-out;
+    overflow: hidden;
     &-heading {
         padding-left: 47px;
         padding-top: 7px;
@@ -108,6 +121,7 @@
         font-size: 12px;
         width: 0;
         border-bottom: 1px dotted #adadad;
+        vertical-align: top;
         &::first-line {
             font-family: "Roboto", sans-serif;
             font-weight: 700;
@@ -142,7 +156,13 @@
     }
 }
 
+.centered-header {
+    text-align: center;
+}
+
 .off-deadline {
+    width: 80px; /* Set a fixed width for the button */
+    text-align: center; /* Center the text inside the button */
     margin-top: 7px;
     font-family: "Roboto", sans-serif;
     font-weight: 400;
@@ -246,4 +266,340 @@
     position: absolute;
     border-left: 2px solid #7B61FF;
     height: 590px;
+}
+
+.deadline-content {
+    max-height: 500px; /* A large enough value to accommodate the content */
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out;
+}
+
+.deadlines-hidden .deadline-info {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+// Styles for special timing events (events that don't fit standard time slots)
+.special-timing-events-row {
+    .special-timing-header {
+        background-color: #f8f9fa;
+        border-top: 2px solid #e9ecef;
+        font-size: 12px;
+        color: #6c757d;
+        font-weight: 600;
+        
+        small {
+            font-size: 10px;
+            color: #adb5bd;
+        }
+    }
+    
+    .special-timing-events-cell {
+        background-color: #f8f9fa;
+        border-top: 2px solid #e9ecef;
+        padding: 6px;
+        vertical-align: top;
+        
+        .special-timing-event {
+            margin: 4px 0;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 12px;
+            position: relative;
+            border: 2px solid;
+            background-color: #fff;
+            
+            &.TyumGU-lesson {
+                border-color: #F46386;
+                
+                .event-time-badge {
+                    background: linear-gradient(135deg, #F46386, #e55577);
+                }
+            }
+            
+            &.netology-lesson {
+                border-color: #3492c5;
+                
+                .event-time-badge {
+                    background: linear-gradient(135deg, #3492c5, #2a7ba8);
+                }
+            }
+            
+            .event-time-badge {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: -8px -8px 8px -8px;
+                padding: 6px;
+                border-radius: 6px 6px 0 0;
+                color: white;
+                font-weight: 600;
+                font-size: 11px;
+                
+                .time-start, .time-end {
+                    font-weight: 700;
+                }
+                
+                .time-separator {
+                    margin: 0 4px;
+                    opacity: 0.8;
+                }
+            }
+            
+            .company-name {
+                font-size: 11px;
+                margin-bottom: 4px;
+                color: #666;
+                
+                img {
+                    width: 12px;
+                    height: 12px;
+                    margin-right: 2px;
+                }
+            }
+            
+            .lesson-name {
+                font-size: 12px;
+                line-height: 1.3;
+                font-weight: 600;
+                color: #2c2d2e;
+                margin-bottom: 2px;
+            }
+            
+            .lesson-subtitle {
+                font-size: 11px;
+                line-height: 1.2;
+                color: #666;
+                font-style: italic;
+            }
+            
+            &:hover {
+                cursor: pointer;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                transition: all 0.2s ease-in-out;
+            }
+            
+            &.past {
+                opacity: 0.6;
+                
+                .event-time-badge {
+                    background: #adb5bd !important;
+                }
+            }
+        }
+    }
+}
+
+// GitHub Star Modal Styles
+.github-star-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(3px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.github-star-modal {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.4s ease-out;
+    border: 1px solid #e9ecef;
+}
+
+.github-star-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6c757d;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        background-color: #f8f9fa;
+        color: #495057;
+        transform: scale(1.1);
+    }
+}
+
+.github-star-modal-content {
+    padding: 32px;
+}
+
+.github-star-modal-header {
+    text-align: center;
+    margin-bottom: 24px;
+    
+    h2 {
+        font-family: "Roboto", sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: #2c2d2e;
+        margin: 0;
+        line-height: 1.3;
+    }
+}
+
+.github-star-modal-body {
+    margin-bottom: 32px;
+    
+    p {
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        color: #495057;
+        margin-bottom: 16px;
+        text-align: center;
+        
+        strong {
+            color: #2c2d2e;
+            font-weight: 600;
+        }
+    }
+}
+
+
+
+.github-star-modal-contribute {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+    
+    p {
+        margin-bottom: 12px;
+        text-align: left;
+        font-size: 14px;
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+        
+        strong {
+            color: #1976d2;
+        }
+    }
+}
+
+.github-star-modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.github-star-btn {
+    background: linear-gradient(135deg, #24292e 0%, #1a1e22 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 28px;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    
+    &:hover {
+        background: linear-gradient(135deg, #2c323a 0%, #24292e 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(36, 41, 46, 0.3);
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.github-star-modal-later {
+    background: transparent;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 300px;
+    
+    &:hover {
+        background-color: #f8f9fa;
+        color: #495057;
+        border-color: #adb5bd;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+// Адаптивные стили для мобильных устройств
+@media (max-width: 768px) {
+    .github-star-modal {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .github-star-modal-content {
+        padding: 24px;
+    }
+    
+    .github-star-modal-header h2 {
+        font-size: 20px;
+    }
+    
+    .github-star-modal-body p {
+        font-size: 14px;
+    }
+    
+    .github-star-btn {
+        font-size: 14px;
+        padding: 12px 20px;
+    }
 }
