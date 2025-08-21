@@ -32,8 +32,8 @@ class Course(BaseModel):
     id: int
     short_name: str = Field(alias="shortname")
     full_name: str = Field(alias="fullname")
-    completed: bool
-    hidden: bool
+    completed: bool | None = Field(default=None)
+    hidden: bool | None = Field(default=None)
 
 
 class ModuleState(BaseModel):
