@@ -162,7 +162,7 @@ class CalendarEmbedded(BaseModel):
     locations: list[Location] = Field(alias="event-locations", default=[])
     attendees: list[Attender] = Field(alias="event-attendees", default=[])
     people: list[ShortPerson] = Field(alias="persons", default=[])
-    courses: list[Course] = Field(alias="course-unit-realizations", default=[])
+    courses: list[Course] | None = Field(alias="course-unit-realizations", default=[])
     cycle_realizations: list[CycleRealization] = Field(alias="cycle-realizations", default=[])
 
 
@@ -186,7 +186,7 @@ class ModeusCalendar(BaseModel):
         """Serialize calendar api response from modeus."""
         locations = {location.id: location for location in self.embedded.locations}
         teachers = {teacher.id: teacher for teacher in self.embedded.people}
-        courses = {course.id: course for course in self.embedded.courses}
+        courses = {course.id: course for course in self.embedded.courses} if self.embedded.courses else {}
         cycle_realizations = {cycle_realization.id: cycle_realization for cycle_realization in
                               self.embedded.cycle_realizations}
         teachers_with_events = {teacher.links.event.id: teacher.links for teacher in self.embedded.attendees}
