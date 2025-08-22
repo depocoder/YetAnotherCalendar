@@ -44,16 +44,28 @@ const CalendarPage = () => {
     useEffect(() => {
         const hasSeenGithubModal = localStorage.getItem('githubStarModalShown');
         const remindDateStr = localStorage.getItem('githubStarRemindDate');
+        const firstVisitStr = localStorage.getItem('calendarFirstVisit');
+        
+        // Сохраняем дату первого визита, если её нет
+        if (!firstVisitStr) {
+            const firstVisitDate = new Date();
+            localStorage.setItem('calendarFirstVisit', firstVisitDate.toISOString());
+            return; // Не показываем модальное окно в первый визит
+        }
         
         let shouldShowModal = false;
+        const firstVisitDate = new Date(firstVisitStr);
+        const currentDate = new Date();
+        const daysSinceFirstVisit = (currentDate - firstVisitDate) / (1000 * 60 * 60 * 24);
         
         if (!hasSeenGithubModal && !remindDateStr) {
-            // Пользователь видит модальное окно впервые
-            shouldShowModal = true;
+            // Показываем модальное окно только если прошла неделя с первого визита
+            if (daysSinceFirstVisit >= 7) {
+                shouldShowModal = true;
+            }
         } else if (remindDateStr && !hasSeenGithubModal) {
             // Проверяем, прошла ли неделя с момента отложенного напоминания
             const remindDate = new Date(remindDateStr);
-            const currentDate = new Date();
             
             if (currentDate >= remindDate) {
                 // Время напоминания наступило

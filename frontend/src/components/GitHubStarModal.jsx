@@ -9,6 +9,7 @@ const GitHubStarModal = ({ isOpen, onClose }) => {
         localStorage.setItem('githubStarModalShown', 'true');
         // Удаляем дату напоминания, если она была установлена
         localStorage.removeItem('githubStarRemindDate');
+        // Оставляем дату первого визита для статистики, но помечаем что модальное окно уже показано
         onClose();
     };
 
@@ -51,8 +52,7 @@ const GitHubStarModal = ({ isOpen, onClose }) => {
                         <div className="github-star-button-container">
                             <iframe
                                 src="https://ghbtns.com/github-btn.html?user=depocoder&repo=YetAnotherCalendar&type=star&count=true&size=large"
-                                frameBorder="0"
-                                scrolling="0"
+                                style={{border: 0, overflow: 'hidden'}}
                                 width="120"
                                 height="30"
                                 title="GitHub Star Button"

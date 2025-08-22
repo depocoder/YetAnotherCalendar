@@ -9,6 +9,7 @@ import {
     getLMSIdFromLocalStorage
 } from "../../services/api";
 import { isTokenExpired } from '../../utils/auth';
+import { clearWithBackup } from '../../utils/localStorageBackup';
 import InlineLoader from '../../elements/InlineLoader';
 
 const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false }) => {
@@ -68,20 +69,7 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
                 localStorage.setItem("toast_shown", "true");
                 toast.error("Сессия истекла. Вы будете перенаправлены на страницу авторизации.");
                 setTimeout(() => {
-                    // Сохраняем информацию о модальном окне GitHub перед очисткой
-                    const githubStarModalShown = localStorage.getItem('githubStarModalShown');
-                    const githubStarRemindDate = localStorage.getItem('githubStarRemindDate');
-                    
-                    localStorage.clear();
-                    
-                    // Восстанавливаем информацию о модальном окне GitHub после очистки
-                    if (githubStarModalShown) {
-                        localStorage.setItem('githubStarModalShown', githubStarModalShown);
-                    }
-                    if (githubStarRemindDate) {
-                        localStorage.setItem('githubStarRemindDate', githubStarRemindDate);
-                    }
-                    
+                    clearWithBackup();
                     window.location.href = "/login";
                 }, 5000);
             }
@@ -135,20 +123,7 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
                     toastShownRef.current = true;
                     toast.error("Сессия истекла. Вы будете перенаправлены на страницу авторизации.");
                     setTimeout(() => {
-                        // Сохраняем информацию о модальном окне GitHub перед очисткой
-                        const githubStarModalShown = localStorage.getItem('githubStarModalShown');
-                        const githubStarRemindDate = localStorage.getItem('githubStarRemindDate');
-                        
-                        localStorage.clear();
-                        
-                        // Восстанавливаем информацию о модальном окне GitHub после очистки
-                        if (githubStarModalShown) {
-                            localStorage.setItem('githubStarModalShown', githubStarModalShown);
-                        }
-                        if (githubStarRemindDate) {
-                            localStorage.setItem('githubStarRemindDate', githubStarRemindDate);
-                        }
-                        
+                        clearWithBackup();
                         window.location.href = "/login";
                     }, 5000);
                 }

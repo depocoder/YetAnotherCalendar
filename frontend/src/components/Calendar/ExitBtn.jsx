@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
+import { clearWithBackup } from '../../utils/localStorageBackup';
 import cross from "../../img/cross.png";
 
 const ExitBtn = () => {
@@ -9,20 +10,7 @@ const ExitBtn = () => {
     const exitApp = () => {
         toast.info("Вы вышли из системы.");
         setTimeout(() => {
-            // Сохраняем информацию о модальном окне GitHub перед очисткой
-            const githubStarModalShown = localStorage.getItem('githubStarModalShown');
-            const githubStarRemindDate = localStorage.getItem('githubStarRemindDate');
-            
-            localStorage.clear();
-            
-            // Восстанавливаем информацию о модальном окне GitHub после очистки
-            if (githubStarModalShown) {
-                localStorage.setItem('githubStarModalShown', githubStarModalShown);
-            }
-            if (githubStarRemindDate) {
-                localStorage.setItem('githubStarRemindDate', githubStarRemindDate);
-            }
-            
+            clearWithBackup();
             navigate("/login");
         }, 100); // ⏱ Даём время на показ уведомления
     };
