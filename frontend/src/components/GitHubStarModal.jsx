@@ -27,8 +27,8 @@ const GitHubStarModal = ({ isOpen, onClose }) => {
     };
 
     return (
-        <div className="github-star-modal-overlay" onClick={handleClose}>
-            <div className="github-star-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="github-star-modal-overlay">
+            <div className="github-star-modal">
                 <button className="github-star-modal-close" onClick={handleClose}>
                     ×
                 </button>
@@ -48,7 +48,26 @@ const GitHubStarModal = ({ isOpen, onClose }) => {
                             Это поможет другим студентам найти проект и мотивирует нас развивать его дальше.
                         </p>
                         
+                        <div className="github-star-button-container">
+                            <iframe
+                                src="https://ghbtns.com/github-btn.html?user=depocoder&repo=YetAnotherCalendar&type=star&count=true&size=large"
+                                frameBorder="0"
+                                scrolling="0"
+                                width="120"
+                                height="30"
+                                title="GitHub Star Button"
+                            ></iframe>
+                        </div>
 
+                        <div className="github-star-modal-contribute">
+                            <p>
+                                <strong>🐛 Нашли баг или есть идеи?</strong>
+                            </p>
+                            <p>
+                                Сообщите о проблемах через <a href="https://github.com/depocoder/YetAnotherCalendar/issues" target="_blank" rel="noopener noreferrer"><strong>GitHub Issues</strong></a> - 
+                                это поможет нам сделать календарь лучше для всех!
+                            </p>
+                        </div>
                         
                         <div className="github-star-modal-contribute">
                             <p>

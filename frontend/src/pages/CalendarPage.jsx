@@ -23,6 +23,7 @@ import DeadLine from "../components/Calendar/DeadLine";
 import DaysNumber from "../components/Calendar/DaysNumber";
 import LessonTimes from "../components/Calendar/LessonTimes";
 import GitHubStarModal from "../components/GitHubStarModal";
+import FeaturesModal from "../components/FeaturesModal";
 
 
 const CalendarPage = () => {
@@ -32,6 +33,7 @@ const CalendarPage = () => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [showGithubModal, setShowGithubModal] = useState(false);
+    const [showFeaturesModal, setShowFeaturesModal] = useState(false);
     const [mtsUrls, setMtsUrls] = useState({});
 
     const lastFetchedDate = useRef(null);
@@ -115,6 +117,9 @@ const CalendarPage = () => {
                 if (eventsResponse?.data) {
                     setEvents(eventsResponse.data);
                     
+                    // Извлекаем timestamp кэша для передачи в CacheUpdateBtn
+                    console.log('📅 Cache timestamp from API:', eventsResponse.data.cached_at);
+                    
                     // Получаем все Modeus события и загружаем их MTS ссылки
                     const modeusEvents = eventsResponse.data?.utmn?.modeus_events || [];
                     const lessonIds = modeusEvents.map(event => event.id).filter(Boolean);
@@ -162,13 +167,30 @@ const CalendarPage = () => {
                 isOpen={showGithubModal}
                 onClose={handleCloseGithubModal}
             />
+            <FeaturesModal 
+                isOpen={showFeaturesModal}
+                onClose={() => setShowFeaturesModal(false)}
+                onOpenGithubModal={() => setShowGithubModal(true)}
+            />
             <div className="wrapper">
                 <header className="header">
                     <div className="header-line">
                         <div className="shedule-export">
                             <span className="shedule">Мое расписание</span>
                             <ICSExporter date={date} />
-                            <CacheUpdateBtn date={date} onDataUpdate={handleDataUpdate} />
+                            <CacheUpdateBtn 
+                                date={date} 
+                                onDataUpdate={handleDataUpdate}
+                                cachedAt={events?.cached_at}
+                                calendarReady={!loading && !isTransitioning && events !== null}
+                            />
+                            <button 
+                                className="features-trigger-btn"
+                                onClick={() => setShowFeaturesModal(true)}
+                                title="Узнать больше о возможностях"
+                            >
+                                ✨ О проекте
+                            </button>
                         </div>
                         <ExitBtn />
                     </div>

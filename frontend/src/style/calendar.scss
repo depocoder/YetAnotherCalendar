@@ -482,7 +482,26 @@
             color: #2c2d2e;
             font-weight: 600;
         }
+        
+        a {
+            color: #1976d2;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            
+            &:hover {
+                color: #1565c0;
+                text-decoration: underline;
+            }
+        }
     }
+}
+
+.github-star-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 24px 0;
+    padding: 8px 0;
 }
 
 
@@ -492,6 +511,10 @@
     border-radius: 12px;
     padding: 20px;
     margin-top: 24px;
+    
+    &:first-of-type {
+        background: linear-gradient(135deg, #fff3e0 0%, #ffebee 100%);
+    }
     
     p {
         margin-bottom: 12px;
@@ -584,6 +607,227 @@
     }
 }
 
+// Features Modal Styles
+.features-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10001;
+    backdrop-filter: blur(3px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.features-modal {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.4s ease-out;
+    border: 1px solid #e9ecef;
+}
+
+.features-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6c757d;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+    
+    &:hover {
+        background-color: #f8f9fa;
+        color: #495057;
+        transform: scale(1.1);
+    }
+}
+
+.features-modal-content {
+    padding: 32px;
+}
+
+.features-modal-header {
+    text-align: center;
+    margin-bottom: 32px;
+    
+    h2 {
+        font-family: "Roboto", sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: #2c2d2e;
+        margin: 0 0 8px 0;
+        line-height: 1.3;
+    }
+    
+    .features-modal-subtitle {
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        color: #6c757d;
+        margin: 0;
+    }
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.feature-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: #7b61ff;
+    }
+    
+    .feature-icon {
+        font-size: 32px;
+        margin-bottom: 16px;
+    }
+    
+    h3 {
+        font-family: "Roboto", sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c2d2e;
+        margin: 0 0 12px 0;
+    }
+    
+    p {
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #495057;
+        margin: 0;
+    }
+}
+
+.features-tech-info {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    
+    h3 {
+        font-family: "Roboto", sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #1976d2;
+        margin: 0 0 12px 0;
+    }
+    
+    p {
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #495057;
+        margin: 0;
+    }
+}
+
+.features-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    
+    .about-page-btn {
+        background: linear-gradient(135deg, #7b61ff 0%, #5856d6 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 14px 28px;
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        
+        &:hover {
+            background: linear-gradient(135deg, #6750e3 0%, #4a46c7 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(123, 97, 255, 0.3);
+        }
+    }
+    
+    .github-star-trigger-btn-modal {
+        background: linear-gradient(135deg, #24292e 0%, #1a1e22 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 14px 28px;
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        
+        &:hover {
+            background: linear-gradient(135deg, #2c323a 0%, #24292e 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(36, 41, 46, 0.3);
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
+    }
+}
+
+.features-modal-footer {
+    text-align: center;
+    padding-top: 24px;
+    border-top: 1px solid #e9ecef;
+    
+    p {
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #495057;
+        margin: 0;
+        
+        strong {
+            color: #2c2d2e;
+            font-weight: 600;
+        }
+    }
+}
+
 // Адаптивные стили для мобильных устройств
 @media (max-width: 768px) {
     .github-star-modal {
@@ -606,5 +850,39 @@
     .github-star-btn {
         font-size: 14px;
         padding: 12px 20px;
+    }
+    
+    .features-modal {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .features-modal-content {
+        padding: 20px;
+    }
+    
+    .features-modal-header h2 {
+        font-size: 24px;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .feature-card {
+        padding: 20px;
+        
+        .feature-icon {
+            font-size: 28px;
+        }
+        
+        h3 {
+            font-size: 16px;
+        }
+        
+        p {
+            font-size: 13px;
+        }
     }
 }

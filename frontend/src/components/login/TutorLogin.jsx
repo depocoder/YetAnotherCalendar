@@ -27,7 +27,13 @@ const TutorLogin = ({ onSuccess }) => {
             if (error.response?.status === 401) {
                 toast.error('Invalid password');
             } else if (error.response?.status === 429) {
-                const message = error.response?.data?.detail || 'Too many failed attempts. Please try again later.';
+                const detail = error.response?.data?.detail || '';
+                // Извлекаем время из английского сообщения
+                const timeMatch = detail.match(/(\d+)\s+seconds?/);
+                const seconds = timeMatch ? timeMatch[1] : '';
+                const message = seconds 
+                    ? `Слишком много попыток. Попробуйте через ${seconds} секунд.`
+                    : 'Слишком много попыток. Попробуйте позже.';
                 toast.error(message);
             } else {
                 toast.error('Ошибка авторизации');

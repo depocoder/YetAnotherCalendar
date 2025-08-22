@@ -27,7 +27,13 @@ const LoginPage = () => {
             }
 
             if (response.status === 429) {
-                const message = response.data?.detail || 'Слишком много неудачных попыток. Попробуйте позже.';
+                const detail = response.data?.detail || '';
+                // Извлекаем время из английского сообщения
+                const timeMatch = detail.match(/(\d+)\s+seconds?/);
+                const seconds = timeMatch ? timeMatch[1] : '';
+                const message = seconds 
+                    ? `Слишком много попыток. Попробуйте через ${seconds} секунд.`
+                    : 'Слишком много неудачных попыток. Попробуйте позже.';
                 toast.error(message);
                 return { success: false, message: message };
             }
@@ -83,7 +89,13 @@ const LoginPage = () => {
             }
 
             if (modeusResponse.status === 429) {
-                const message = modeusResponse.data?.detail || 'Слишком много неудачных попыток входа в Modeus. Попробуйте позже.';
+                const detail = modeusResponse.data?.detail || '';
+                // Извлекаем время из английского сообщения
+                const timeMatch = detail.match(/(\d+)\s+seconds?/);
+                const seconds = timeMatch ? timeMatch[1] : '';
+                const message = seconds 
+                    ? `Слишком много попыток входа в Modeus. Попробуйте через ${seconds} секунд.`
+                    : 'Слишком много неудачных попыток входа в Modeus. Попробуйте позже.';
                 toast.error(message);
                 return { success: false };
             }

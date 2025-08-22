@@ -11,28 +11,47 @@ import {
 import { isTokenExpired } from '../../utils/auth';
 import InlineLoader from '../../elements/InlineLoader';
 
-const CacheUpdateBtn = ({ date, onDataUpdate }) => {
+const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false }) => {
     const [cacheUpdated, setCacheUpdated] = useState(false);
     const timeOffset = parseInt(process.env.REACT_APP_TIME_OFFSET, 10) || 6;
     const toastShownRef = useRef(false); // ✅ защита от дублирующих уведомлений
 
-    // ✅ Очистка флагов при первом монтировании, если нет кэша
+    // ✅ Очистка флагов при первом монтировании
     useEffect(() => {
-        if (!localStorage.getItem("cached_at")) {
-            localStorage.removeItem("toast_shown");
-            localStorage.removeItem("refresh_in_progress");
-        }
+        localStorage.removeItem("toast_shown");
+        localStorage.removeItem("refresh_in_progress");
     }, []);
 
-    // ✅ Проверка устаревания кэша
+    // ✅ Проверка является ли неделя текущей или будущей
+    const isCurrentOrFutureWeek = useCallback(() => {
+        if (!date?.end) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const weekEnd = new Date(date.end);
+        weekEnd.setHours(0, 0, 0, 0);
+        const isFuture = weekEnd >= today;
+        console.log(`📅 Week check: ${date.end} >= ${today.toISOString().split('T')[0]} = ${isFuture}`);
+        return isFuture;
+    }, [date]);
+
+    // ✅ Проверка устаревания кэша (теперь используя API timestamp)
     const isCacheStale = useCallback(() => {
-        const cachedAt = localStorage.getItem("cached_at");
-        if (!cachedAt) return true;
+        if (!cachedAt) {
+            console.log('📦 No cache timestamp from API, assuming fresh');
+            return false;
+        }
         const now = new Date();
         const cachedDate = new Date(cachedAt);
+        
+        console.log('🕐 Current time (now):', now.toISOString());
+        console.log('🕐 Cached time from API:', cachedAt);
+        console.log('🕐 Parsed cached date:', cachedDate.toISOString());
+        
         const diffInHours = (now - cachedDate) / (1000 * 60 * 60);
-        return diffInHours >= timeOffset;
-    }, [timeOffset]);
+        const isStale = diffInHours >= timeOffset;
+        console.log(`📦 Cache: Age ${diffInHours.toFixed(1)}h, threshold ${timeOffset}h - ${isStale ? 'STALE' : 'FRESH'}`);
+        return isStale;
+    }, [cachedAt, timeOffset]);
 
     const refreshingRef = useRef(false);
 
@@ -89,8 +108,8 @@ const CacheUpdateBtn = ({ date, onDataUpdate }) => {
             });
 
             if (refreshEventsResponse && refreshEventsResponse.data) {
+                console.log('✅ Cache refresh successful - updated data received');
                 onDataUpdate(refreshEventsResponse.data);
-                localStorage.setItem("cached_at", new Date().toISOString());
                 setCacheUpdated(true);
                 setTimeout(() => setCacheUpdated(false), 3000);
             } else {
@@ -98,8 +117,9 @@ const CacheUpdateBtn = ({ date, onDataUpdate }) => {
             }
 
         } catch (error) {
-            console.error('Ошибка при обновлении событий:', error);
+            console.error('❌ Cache refresh failed:', error);
             toast.error("Не удалось обновить кэш. Попробуйте позже.");
+            setCacheUpdated(false); // Убираем анимацию загрузки при ошибке
         } finally {
             refreshingRef.current = false;
             localStorage.setItem("refresh_in_progress", "false");
@@ -140,30 +160,71 @@ const CacheUpdateBtn = ({ date, onDataUpdate }) => {
         return () => clearInterval(intervalId);
     }, []);
 
-    // ⏱ Автоматическое обновление кэша по таймеру
+    // ⏱ Автоматическое обновление кэша (только для текущих/будущих недель)
+    const autoRefreshTimerRef = useRef(null);
+    
     useEffect(() => {
-        const intervalTime = timeOffset * 60 * 60 * 1000;
-        // Проверка просроченности кэша перед обновлением
-        const autoRefresh = () => {
+        console.log('🎯 Auto-refresh effect triggered - calendarReady:', calendarReady);
+        
+        // Очищаем предыдущий таймер при смене недели
+        if (autoRefreshTimerRef.current) {
+            console.log('🧹 Clearing previous auto-refresh timer');
+            clearTimeout(autoRefreshTimerRef.current);
+            autoRefreshTimerRef.current = null;
+        }
+        
+        if (!calendarReady) {
+            console.log('⏳ Calendar not ready yet - waiting...');
+            return;
+        }
+        
+        if (!isCurrentOrFutureWeek()) {
+            console.log('📅 Past week detected - auto-refresh disabled');
+            return;
+        }
+        
+        console.log('✅ Calendar ready + current/future week - starting 10s timer...');
+        
+        autoRefreshTimerRef.current = setTimeout(() => {
+            console.log('⏰ 10 seconds elapsed - checking cache...');
+            
             const jwtToken = getJWTTokenFromLocalStorage();
             const calendarId = getCalendarIdLocalStorage();
-            if (!jwtToken || isTokenExpired(jwtToken)) return;
-            if (!calendarId) return;
+            
+            if (!jwtToken || isTokenExpired(jwtToken)) {
+                console.log('❌ Auto-refresh skipped - invalid token');
+                return;
+            }
+            if (!calendarId) {
+                console.log('❌ Auto-refresh skipped - no calendarId');
+                return;
+            }
             if (isCacheStale()) {
+                console.log('🚀 Cache is stale - triggering auto-refresh!');
                 handleRefreshEvents();
+            } else {
+                console.log('✨ Cache is fresh - no refresh needed');
+            }
+        }, 10000); // 10 seconds
+        
+        return () => {
+            if (autoRefreshTimerRef.current) {
+                console.log('🧹 Cleaning up auto-refresh timer');
+                clearTimeout(autoRefreshTimerRef.current);
+                autoRefreshTimerRef.current = null;
             }
         };
-        autoRefresh();
-        const intervalId = setInterval(autoRefresh, intervalTime);
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, [handleRefreshEvents, timeOffset, isCacheStale]);
+    }, [calendarReady, isCurrentOrFutureWeek, isCacheStale, handleRefreshEvents]);
 
+    const isPastWeek = !isCurrentOrFutureWeek();
+    
+    console.log('🖲️ CacheUpdateBtn render - isPastWeek:', isPastWeek, 'cachedAt:', cachedAt, 'calendarReady:', calendarReady);
+    
     return (
         <button
             onClick={handleRefreshEvents}
-            className={`cache-btn ${cacheUpdated === true ? 'updated' : ''}`}
+            className={`cache-btn ${cacheUpdated === true ? 'updated' : ''} ${isPastWeek ? 'past-week' : ''}`}
+            title={isPastWeek ? 'Автообновление отключено для прошедших недель. Нажмите для ручного обновления.' : ''}
         >
             {cacheUpdated === 'loading' ? (
                 <InlineLoader />

@@ -5,6 +5,7 @@ const Login = ({ onLogin, title, name, formId }) => {
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const onClickLogin = async (e) => {
         e.preventDefault();
@@ -47,17 +48,27 @@ const Login = ({ onLogin, title, name, formId }) => {
                     required
                 />
 
-                <input
-                    className="input-email"
-                    type="password"
-                    id={`password-${formId}`}
-                    name="password"
-                    placeholder={`Пароль от ${name}`}
-                    autoComplete="current-password"
-                    aria-label={`Password ${name}`}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
+                <div className="password-input-wrapper">
+                    <input
+                        className="input-email"
+                        type={showPassword ? "text" : "password"}
+                        id={`password-${formId}`}
+                        name="password"
+                        placeholder={`Пароль от ${name}`}
+                        autoComplete="current-password"
+                        aria-label={`Password ${name}`}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <button
+                        type="button"
+                        className="password-toggle-btn"
+                        onClick={() => setShowPassword(!showPassword)}
+                        title={showPassword ? "Скрыть пароль" : "Показать пароль"}
+                    >
+                        {showPassword ? "🙈" : "👁️"}
+                    </button>
+                </div>
             </div>
 
             <button

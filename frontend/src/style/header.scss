@@ -170,18 +170,82 @@ a {
   padding: 4px 8px;
   border-radius: 6px;
   border: 1px solid #7b61ff;
-  transition: color 0.3s linear;
+  transition: all 0.3s ease;
 
   &.updated {
     background-color: #4caf50;
     border: 1px solid #4caf50;
     color: white;
   }
+  
+  &.past-week {
+    color: #999;
+    border-color: #999;
+    background-color: #f5f5f5;
+    &:hover {
+      background-color: #e0e0e0;
+      border-color: #777;
+      color: #666;
+    }
+  }
 
   &:hover {
     cursor: pointer;
     background-color: #5856d6;
     color: #fff;
+  }
+}
+
+.github-star-trigger-btn {
+  margin-left: 18px;
+  height: 28px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  color: #24292e;
+  background: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #d0d7de;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f6f8fa;
+    border-color: #d0d7de;
+    color: #24292e;
+  }
+
+  &:active {
+    background-color: #edeff2;
+    border-color: #d0d7de;
+  }
+}
+
+.features-trigger-btn {
+  margin-left: 18px;
+  height: 28px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  color: #7b61ff;
+  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #7b61ff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: linear-gradient(135deg, #7b61ff 0%, #5856d6 100%);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(123, 97, 255, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(123, 97, 255, 0.3);
   }
 }
 
@@ -286,6 +350,42 @@ a {
   width: 320px;
   height: 32px;
   border-radius: 4px;
+}
+
+.password-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 16px;
+  
+  .input-email {
+    margin-top: 0;
+  }
+  
+  .password-toggle-btn {
+    background: #7b61ff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    height: 32px;
+    min-width: 32px;
+
+    &:hover {
+      background-color: #5856d6;
+    }
+
+    &:focus {
+      outline: 2px solid #7b61ff;
+      outline-offset: 2px;
+    }
+  }
 }
 
 .login-btn-log {
