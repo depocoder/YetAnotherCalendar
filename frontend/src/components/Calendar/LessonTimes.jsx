@@ -2,6 +2,7 @@ import React, {useEffect, useState, useCallback} from 'react';
 import camera from "../../img/camera.png";
 //import {formatHours} from "../../utils/dateUtils";
 import { utcToZonedTime } from 'date-fns-tz';
+import { debug } from '../../utils/debug';
 
 export function formatDateToAMPM(date) {
   const hours = date.getHours().toString().padStart(2, '0');
@@ -146,8 +147,6 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
     const [weekDays, setWeekDays] = useState(Array.from({length: 7}, () => []));
     const [unrenderedEvents, setUnrenderedEvents] = useState([]);
 
-    // console.log('events', events)
-
     // Получаем преобразованные времена уроков
     const lessonTimesArray = lessonTimesArrayUTC;
     const populateWeekDays = useCallback((events) => {
@@ -215,7 +214,7 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
         const unrendered = allEvents.filter(event => !event.rendered);
         
         if (unrendered.length > 0) {
-            console.log(`📊 Found ${unrendered.length} events with special timing that don't fit standard time slots`);
+            debug.log(`📊 Found ${unrendered.length} events with special timing that don't fit standard time slots`);
         }
         
         setWeekDays(newWeekDays); // Сохраняем обновленный массив дней недели в состоянии

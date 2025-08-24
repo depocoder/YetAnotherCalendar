@@ -1,9 +1,10 @@
 import { useState } from "react";
 import Login from "../components/login/login";
-import { loginLms, loginModeus, loginNetology } from "../services/api";
+import { loginLms, getModeusPersonId, loginNetology } from "../services/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import '../style/login.scss';
 import { toast } from 'react-toastify';
+import { debug } from '../utils/debug';
 
 const LoginPage = () => {
     const [isNetologyLoggedIn, setIsNetologyLoggedIn] = useState(false);
@@ -47,7 +48,7 @@ const LoginPage = () => {
             return { success: false, message: "Произошла ошибка." };
 
         } catch (error) {
-            console.error("Ошибка при входе в Нетологию:", error);
+            debug.error("Ошибка при входе в Нетологию:", error);
             toast.error("Ошибка сети. Попробуйте позже.");
             return { success: false, message: "Ошибка сети." };
         }
@@ -55,10 +56,10 @@ const LoginPage = () => {
 
     const handleModeusLogin = async (email, password) => {
         try {
-            const modeusResponse = await loginModeus(email, password);
+            const modeusResponse = await getModeusPersonId(email, password);
 
             if (modeusResponse.status === 200) {
-                localStorage.setItem('jwt-token', modeusResponse.data);
+                localStorage.setItem('modeus_person_id', modeusResponse.data);
 
                 const lmsResponse = await loginLms(email, password);
 
@@ -109,7 +110,7 @@ const LoginPage = () => {
             return { success: false };
 
         } catch (error) {
-            console.error("Ошибка при входе в Modeus:", error);
+            debug.error("Ошибка при входе в Modeus:", error);
             toast.error("Ошибка сети при входе в Modeus.");
             return { success: false };
         }

@@ -4,7 +4,7 @@ import {
     bulkEvents,
     getTokenFromLocalStorage,
     getCalendarIdLocalStorage,
-    getJWTTokenFromLocalStorage,
+    getModeusPersonIdFromLocalStorage,
     getLMSTokenFromLocalStorage,
     getLMSIdFromLocalStorage,
     getMtsLinks
@@ -24,6 +24,7 @@ import DaysNumber from "../components/Calendar/DaysNumber";
 import LessonTimes from "../components/Calendar/LessonTimes";
 import GitHubStarModal from "../components/GitHubStarModal";
 import FeaturesModal from "../components/FeaturesModal";
+import { debug } from "../utils/debug";
 
 
 const CalendarPage = () => {
@@ -37,8 +38,6 @@ const CalendarPage = () => {
     const [mtsUrls, setMtsUrls] = useState({});
 
     const lastFetchedDate = useRef(null);
-
-    //console.log('[CalendarPage render]');
 
     // Проверяем, нужно ли показать модальное окно GitHub Star
     useEffect(() => {
@@ -97,7 +96,6 @@ const CalendarPage = () => {
         setIsTransitioning(true);
 
         const fetchData = async () => {
-            //console.log('[fetchCourseAndEvents called]', dateKey);
             setLoading(true);
 
             try {
@@ -110,7 +108,7 @@ const CalendarPage = () => {
                 }
 
                 if (!calendarId) {
-                    console.error('Ошибка при получении calendar id:', calendarId);
+                    debug.error('Ошибка при получении calendar id:', calendarId);
                     toast.error("Не удалось загрузить календарь. Попробуйте снова.");
                     return;
                 }
@@ -121,7 +119,7 @@ const CalendarPage = () => {
                     timeMin: date.start,
                     timeMax: date.end,
                     sessionToken: getTokenFromLocalStorage(),
-                    jwtToken: getJWTTokenFromLocalStorage(),
+                    modeusPersonId: getModeusPersonIdFromLocalStorage(),
                     lxpToken: getLMSTokenFromLocalStorage(),
                     lxpId: getLMSIdFromLocalStorage()
                 });
@@ -130,7 +128,7 @@ const CalendarPage = () => {
                     setEvents(eventsResponse.data);
                     
                     // Извлекаем timestamp кэша для передачи в CacheUpdateBtn
-                    console.log('📅 Cache timestamp from API:', eventsResponse.data.cached_at);
+                    debug.log('📅 Cache timestamp from API:', eventsResponse.data.cached_at);
                     
                     // Получаем все Modeus события и загружаем их MTS ссылки
                     const modeusEvents = eventsResponse.data?.utmn?.modeus_events || [];
@@ -143,17 +141,17 @@ const CalendarPage = () => {
                                 setMtsUrls(mtsResponse.data.links);
                             }
                         } catch (error) {
-                            console.error('Error loading MTS URLs:', error);
+                            debug.error('Error loading MTS URLs:', error);
                             // Не показываем пользователю ошибку, так как это не критично
                         }
                     }
                 } else {
                     toast.error("Не удалось загрузить события. Повторите попытку.");
-                    console.error("Пустой ответ от bulkEvents:", eventsResponse);
+                    debug.error("Пустой ответ от bulkEvents:", eventsResponse);
                 }
 
             } catch (error) {
-                console.error('Ошибка при получении данных с сервера:', error);
+                debug.error('Ошибка при получении данных с сервера:', error);
                 toast.error("Ошибка при загрузке расписания. Перезагрузите страницу или войдите заново.");
             } finally {
                 setLoading(false);
