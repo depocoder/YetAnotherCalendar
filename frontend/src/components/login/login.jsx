@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import InlineLoader from '../../elements/InlineLoader';
+import { debug } from '../../utils/debug';
 
 const Login = ({ onLogin, title, name, formId }) => {
     const [loading, setLoading] = useState(false);
@@ -14,10 +15,10 @@ const Login = ({ onLogin, title, name, formId }) => {
             const result = await onLogin(email, password);
 
             if (!result.success) {
-                console.error(result.message || "Произошла ошибка.");
+                debug.error(result.message || "Произошла ошибка.");
             }
         } catch (error) {
-            console.error("Ошибка при выполнении входа:", error);
+            debug.error("Ошибка при выполнении входа:", error);
         } finally {
             setLoading(false);
         }

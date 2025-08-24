@@ -15,7 +15,7 @@ from starlette import status
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.cache_builder import key_builder
 from .schema import (
-    ModeusCalendar,
+    ModeusCalendar, Creds, get_person_id,
     FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusEventsBody,
 )
 
@@ -195,3 +195,9 @@ async def get_day_events(jwt: str, payload: dict[str, str]) -> list[FullEvent]:
 
     calendar = ModeusCalendar.model_validate_json(resp.text)
     return calendar.serialize_modeus_response(skip_lxp=False)
+
+async def get_person_id_depends(
+    creds: Creds,
+) -> str:
+    """Authenticate with credentials in modeus and return person id."""
+    return get_person_id(await login(creds.username, creds.password))

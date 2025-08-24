@@ -22,7 +22,6 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
 
     if (!shouldRender) return null;
 
-    // console.log('event', event);
 
     // Определение источника события
     const getSourceInfo = () => {

@@ -4,13 +4,14 @@
  * @param {number} leewaySeconds - Допустимое отклонение времени в секундах для компенсации большого ping (по умолчанию 10 секунд).
  * @returns {boolean} true, если токен недействителен или истёк; false, если он ещё валиден.
  */
+import { debug } from './debug';
 export function isTokenExpired(token, leewaySeconds = 10) {
   if (!token) return true; // Нет токена — считаем просроченным
 
   try {
     const parts = token.split('.');
     if (parts.length !== 3) {
-      console.warn(
+      debug.warn(
         `Некорректный JWT: ожидалось 3 части (header.payload.signature), получено ${parts.length}`
       );
       return true;
@@ -23,7 +24,7 @@ export function isTokenExpired(token, leewaySeconds = 10) {
     // Токен считается просроченным, если его exp + погрешность меньше текущего времени
     return payload.exp * 1000 <= now - leeway;
   } catch (e) {
-    console.error("Ошибка декодирования JWT:", e);
+    debug.error("Ошибка декодирования JWT:", e);
     return true;
   }
 }

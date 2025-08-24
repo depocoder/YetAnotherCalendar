@@ -2,13 +2,15 @@
  * Utility для резервного копирования и восстановления важных данных localStorage
  * перед очисткой всего хранилища
  */
+import { debug } from './debug';
 
 // Список ключей, которые нужно сохранять при очистке localStorage
 const PERSISTENT_KEYS = [
     'githubStarModalShown',    // Флаг показа модального окна GitHub
     'githubStarRemindDate',    // Дата напоминания о GitHub звезде
     'calendarFirstVisit',       // Дата первого визита в календарь
-    'deadlinesVisible'         // Флаг видимости дедлайнов
+    'deadlinesVisible',        // Флаг видимости дедлайнов
+    'DebugEnabled'            // Флаг включения отладочных сообщений
 ];
 
 /**
@@ -25,7 +27,7 @@ export const backupPersistentData = () => {
         }
     });
     
-    console.log('💾 Backup created:', backup);
+    debug.log('💾 Backup created:', backup);
     return backup;
 };
 
@@ -35,7 +37,7 @@ export const backupPersistentData = () => {
  */
 export const restorePersistentData = (backup) => {
     if (!backup || typeof backup !== 'object') {
-        console.warn('⚠️ Invalid backup data provided');
+        debug.warn('⚠️ Invalid backup data provided');
         return;
     }
     
@@ -45,7 +47,7 @@ export const restorePersistentData = (backup) => {
         }
     });
     
-    console.log('🔄 Persistent data restored:', backup);
+    debug.log('🔄 Persistent data restored:', backup);
 };
 
 /**
@@ -56,7 +58,7 @@ export const clearWithBackup = () => {
     const backup = backupPersistentData();
     localStorage.clear();
     restorePersistentData(backup);
-    console.log('🧹 localStorage cleared with persistent data backup');
+    debug.log('🧹 localStorage cleared with persistent data backup');
 };
 
 /**
@@ -66,7 +68,7 @@ export const clearWithBackup = () => {
 export const addPersistentKey = (key) => {
     if (!PERSISTENT_KEYS.includes(key)) {
         PERSISTENT_KEYS.push(key);
-        console.log(`📝 Added persistent key: ${key}`);
+        debug.log(`📝 Added persistent key: ${key}`);
     }
 };
 

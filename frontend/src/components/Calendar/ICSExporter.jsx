@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import {
     exportICS,
     getCalendarIdLocalStorage,
-    getJWTTokenFromLocalStorage,
+    getModeusPersonIdFromLocalStorage,
     getLMSIdFromLocalStorage,
     getLMSTokenFromLocalStorage,
     getTokenFromLocalStorage
 } from "../../services/api";
 import { toast } from 'react-toastify';
 import InlineLoader from '../../elements/InlineLoader';
+import { debug } from '../../utils/debug';
 
 const ICSExporter = ({ date }) => {
     const [loading, setLoading] = useState(false);
@@ -23,13 +24,13 @@ const ICSExporter = ({ date }) => {
                 timeMin: date.start,
                 timeMax: date.end,
                 sessionToken: getTokenFromLocalStorage(),
-                jwtToken: getJWTTokenFromLocalStorage(),
+                modeusPersonId: getModeusPersonIdFromLocalStorage(),
                 lxpToken: getLMSTokenFromLocalStorage(),
                 lxpId: getLMSIdFromLocalStorage()
             });
 
             if (!icsContent.data) {
-                console.error("ICS экспорт вернул пустой файл:", icsContent); // 🔍 лог для отладки
+                debug.error("ICS экспорт вернул пустой файл:", icsContent);
                 toast.error("Файл не был сформирован. Попробуйте позже.");
                 return;
             }
@@ -45,7 +46,7 @@ const ICSExporter = ({ date }) => {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         } catch (error) {
-            console.error("Ошибка экспорта .ics:", error);
+            debug.error("Ошибка экспорта .ics:", error);
             toast.error("Не удалось экспортировать расписание. Попробуйте позже.");
         } finally {
             setLoading(false);

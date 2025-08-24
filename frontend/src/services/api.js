@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { clearWithBackup } from '../utils/localStorageBackup';
+import { debug } from '../utils/debug';
 
 // env variable
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `https://yetanothercalendar.ru`;
@@ -7,8 +10,8 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `https://yetanothercale
 export function getTokenFromLocalStorage() {
     return localStorage.getItem('token')
 }
-export function getJWTTokenFromLocalStorage() {
-    return localStorage.getItem('jwt-token')
+export function getModeusPersonIdFromLocalStorage() {
+    return localStorage.getItem('modeus_person_id')
 }
 export function getCalendarIdLocalStorage() {
     return localStorage.getItem('calendarId')
@@ -31,10 +34,10 @@ export async function loginNetology(username, password) {
         return e.response;
     }
 }
-// login Modeus
-export async function loginModeus(username, password) {
+// get Modeus person ID
+export async function getModeusPersonId(username, password) {
     try {
-        return await axios.post(`${BACKEND_URL}/api/modeus/auth/`, {username, password});
+        return await axios.post(`${BACKEND_URL}/api/modeus/person-id/`, {username, password});
     } catch (e) {
         return e.response;
     }
@@ -77,7 +80,7 @@ const apiRequest = async (endpoint, {
     timeMin,
     timeMax,
     sessionToken,
-    jwtToken,
+    modeusPersonId,
     lxpToken,
     lxpId
 }) => {
@@ -90,15 +93,30 @@ const apiRequest = async (endpoint, {
                 headers: {
                     'Content-Type': 'application/json',
                     '_netology-on-rails_session': sessionToken,
-                    'modeus-jwt-token': jwtToken,
+                    'modeus-person-id': modeusPersonId,
                     'lxp-token': lxpToken, // Добавляем заголовок для LXP
                     'lxp-id': lxpId       // Добавляем заголовок для LXP ID
                 },
             }
         );
         return response;
-    } catch (error) {
-        console.error('Ошибка при получении данных:', error.response ? error.response.data : error.message);
+    } catch (error) {        
+        // Handle 401 Unauthorized errors
+        if (error.response?.status === 401) {
+            if (!localStorage.getItem("toast_shown")) {
+                localStorage.setItem("toast_shown", "true");
+                toast.error("Сессия истекла. Вы будете перенаправлены на страницу авторизации.");
+                setTimeout(() => {
+                    clearWithBackup();
+                    window.location.href = "/login";
+                }, 5000);
+            }
+            return
+        }
+        else {
+            debug.error('Ошибка при получении данных:', error.response ? error.response.data : error.message);
+        }
+        
         throw error; // Пробрасываем ошибку, если необходимо
     }
 };
@@ -119,7 +137,7 @@ export const exportICS = (params) => {
 export async function getDayEvents(date, learningStartYear, profileName, specialtyCode) {
     try {
         const tutorToken = getTutorTokenFromLocalStorage();
-        console.log('Tutor token found:', !!tutorToken);
+        debug.log('Tutor token found:', !!tutorToken);
         
         if (!tutorToken) {
             throw new Error('Tutor token not found');
@@ -132,7 +150,7 @@ export async function getDayEvents(date, learningStartYear, profileName, special
             specialtyCode: specialtyCode || ["09.03.02"]
         };
 
-        console.log('Отправляем запрос к Modeus API:', {
+        debug.log('Отправляем запрос к Modeus API:', {
             url: `${BACKEND_URL}/api/modeus/day-events/`,
             body: requestBody,
             hasToken: !!tutorToken
@@ -145,10 +163,10 @@ export async function getDayEvents(date, learningStartYear, profileName, special
             }
         });
 
-        console.log('Получен ответ от Modeus API:', response.status, response.data);
+        debug.log('Получен ответ от Modeus API:', response.status, response.data);
         return response;
     } catch (e) {
-        console.error('Ошибка в getDayEvents:', e.response?.status, e.response?.data, e.message);
+        debug.error('Ошибка в getDayEvents:', e.response?.status, e.response?.data, e.message);
         return e.response;
     }
 }

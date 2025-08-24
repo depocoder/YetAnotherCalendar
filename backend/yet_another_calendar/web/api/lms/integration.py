@@ -13,6 +13,15 @@ from yet_another_calendar.settings import settings
 from . import schema
 from ..modeus.schema import ModeusTimeBody
 
+def raise_error(serialized_response: dict[str, Any]) -> None:
+    if serialized_response.get('errorcode') == 'invalidtoken':
+        raise HTTPException(detail='Invalid token',
+                            status_code=status.HTTP_401_UNAUTHORIZED)
+    error = serialized_response.get('error') or serialized_response.get('exception') or {} 
+    if error:
+        raise HTTPException(detail=f'{error}. Server response: {serialized_response}',
+                            status_code=status.HTTP_400_BAD_REQUEST)
+
 
 @reretry.retry(exceptions=httpx.TransportError, tries=settings.retry_tries, delay=settings.retry_delay)
 async def get_token(creds: schema.LxpCreds, timeout: int = 15) -> str:
@@ -27,10 +36,8 @@ async def get_token(creds: schema.LxpCreds, timeout: int = 15) -> str:
         response = await session.post(settings.lms_login_part, data=creds.model_dump())
         response.raise_for_status()
         serialized_response = response.json()
-        error = serialized_response.get('error') or serialized_response.get('exception')
-        if error:
-            raise HTTPException(detail=f'{error}. Server response: {serialized_response}',
-                                status_code=response.status_code)
+        if isinstance(serialized_response, dict):
+            raise_error(serialized_response)
         return serialized_response['token']
 
 
@@ -48,10 +55,7 @@ async def send_request(
         serialized_response = response.json()
         if isinstance(serialized_response, list):
             return serialized_response
-        error = serialized_response.get('error') or serialized_response.get('exception')
-        if error:
-            raise HTTPException(detail=f'{error}. Server response: {serialized_response}',
-                                status_code=status.HTTP_400_BAD_REQUEST)
+        raise_error(serialized_response)
         return serialized_response
 
 

@@ -7,6 +7,7 @@ import ExitBtn from "../components/Calendar/ExitBtn";
 import '../style/header.scss';
 import '../style/calendar.scss';
 import '../style/modeus.scss';
+import { debug } from '../utils/debug';
 
 
 
@@ -46,11 +47,11 @@ const ModeusDaySchedulePage = () => {
 
     const fetchEvents = useCallback(async () => {
         const tutorToken = getTutorTokenFromLocalStorage();
-        console.log('Проверка токена преподавателя:', !!tutorToken);
+        debug.log('Проверка токена преподавателя:', !!tutorToken);
         
         if (!tutorToken) {
             toast.error("Отсутствует токен авторизации. Войдите в систему.");
-            console.error('Токен преподавателя не найден в localStorage');
+            debug.error('Токен преподавателя не найден в localStorage');
             return;
         }
 
@@ -96,21 +97,21 @@ const ModeusDaySchedulePage = () => {
                             setLinkInputs(updatedLinks);
                         }
                     } catch (error) {
-                        console.error('Error loading MTS URLs:', error);
+                        debug.error('Error loading MTS URLs:', error);
                         // Не показываем ошибку пользователю, так как это не критично
                     }
                 }
                 
-                console.log("Загружено событий:", sortedEvents.length);
-                console.log("Тип данных events:", typeof sortedEvents, sortedEvents);
+                debug.log("Загружено событий:", sortedEvents.length);
+                debug.log("Тип данных events:", typeof sortedEvents, sortedEvents);
             } else {
                 toast.error("Не удалось загрузить события. Повторите попытку.");
-                console.error("Пустой ответ от getDayEvents:", response);
-                console.error("Тип response.data:", typeof response?.data, response?.data);
+                debug.error("Пустой ответ от getDayEvents:", response);
+                debug.error("Тип response.data:", typeof response?.data, response?.data);
                 setEvents([]); // Устанавливаем пустой массив
             }
         } catch (error) {
-            console.error('Ошибка при получении событий:', error);
+            debug.error('Ошибка при получении событий:', error);
             toast.error("Ошибка при загрузке расписания. Проверьте токен Modeus.");
             setEvents([]); // Устанавливаем пустой массив при ошибке
         } finally {
@@ -203,7 +204,7 @@ const ModeusDaySchedulePage = () => {
                     errorCount++;
                 }
             } catch (error) {
-                console.error(`Ошибка при сохранении ссылки для события ${eventId}:`, error);
+                debug.error(`Ошибка при сохранении ссылки для события ${eventId}:`, error);
                 errorCount++;
             }
         }

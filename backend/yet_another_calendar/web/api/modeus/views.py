@@ -38,6 +38,15 @@ async def auth(
     """
     return await integration.login(creds.username, creds.password)
 
+@router.post("/person-id/")
+async def get_modeus_person_id(
+    person_id: Annotated[str, Depends(integration.get_person_id_depends)],
+    _: None = Depends(rate_limited_dependency),
+) -> str:
+    """
+    Get modeus person id.
+    """
+    return person_id
 
 @router.post(
     "/day-events/",

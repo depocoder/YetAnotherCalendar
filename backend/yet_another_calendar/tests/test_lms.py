@@ -24,7 +24,7 @@ async def test_get_token_with_error() -> None:
             _ = await integration.get_token(creds)
 
     assert creds.username == "ivan@study.utmn.ru"
-    assert exc_info.value.status_code == 200
+    assert exc_info.value.status_code == 400
     assert exc_info.value.detail == "Something went wrong. Server response: {'error': 'Something went wrong'}"
 
 
@@ -131,7 +131,7 @@ async def test_auth_lms_error() -> None:
             _ = await integration.auth_lms(creds)
 
     assert creds.username == "ivan@study.utmn.ru"
-    assert exc_info.value.status_code == 200
+    assert exc_info.value.status_code == 400
     assert exc_info.value.detail == "Something went wrong. Server response: {'error': 'Something went wrong'}"
 
 
