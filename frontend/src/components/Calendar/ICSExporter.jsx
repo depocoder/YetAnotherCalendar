@@ -54,7 +54,12 @@ const ICSExporter = ({ date }) => {
     };
 
     return (
-        <button className="export-btn" onClick={downloadICSFile} disabled={loading}>
+        <button 
+            className="export-btn" 
+            onClick={downloadICSFile} 
+            disabled={loading}
+            title="ICS файл - стандартный формат календаря, который можно импортировать в Google Calendar, Outlook, Apple Calendar и другие календарные приложения для синхронизации расписания"
+        >
             {loading ? <InlineLoader /> : 'Экспорт .ics'}
         </button>
     );

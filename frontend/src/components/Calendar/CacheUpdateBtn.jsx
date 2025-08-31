@@ -165,7 +165,7 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
         <button
             onClick={handleRefreshEvents}
             className={`cache-btn ${cacheUpdated === true ? 'updated' : ''} ${isPastWeek ? 'past-week' : ''}`}
-            title={isPastWeek ? 'Автообновление отключено для прошедших недель. Нажмите для ручного обновления.' : ''}
+            title='Так как мы не храним логины и пароли, все расписание находится в кэше, а его рано или поздно надо обновлять для актуальности. Само расписание обновляется автоматически, но вы можете обновить его вручную, если вам это нужно.'
         >
             {cacheUpdated === 'loading' ? (
                 <InlineLoader />
