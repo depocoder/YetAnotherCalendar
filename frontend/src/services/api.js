@@ -82,21 +82,29 @@ const apiRequest = async (endpoint, {
     sessionToken,
     modeusPersonId,
     lxpToken,
-    lxpId
+    lxpId,
+    no_cache = true
 }) => {
     // Формируем тело запроса
+    const headers = {
+        'Content-Type': 'application/json',
+        '_netology-on-rails_session': sessionToken,
+        'modeus-person-id': modeusPersonId,
+        'lxp-token': lxpToken, // Добавляем заголовок для LXP
+        'lxp-id': lxpId       // Добавляем заголовок для LXP ID
+    };
+
+    if (no_cache) {
+        headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+        headers['Pragma'] = 'no-cache';
+        headers['Expires'] = '0';
+    }
 
     try {
         const response = await axios.get(
             `${BACKEND_URL}${endpoint}?calendar_id=${calendarId}&time_zone=${timeZone}&timeMin=${timeMin}&timeMax=${timeMax}`,
             {
-                headers: {
-                    'Content-Type': 'application/json',
-                    '_netology-on-rails_session': sessionToken,
-                    'modeus-person-id': modeusPersonId,
-                    'lxp-token': lxpToken, // Добавляем заголовок для LXP
-                    'lxp-id': lxpId       // Добавляем заголовок для LXP ID
-                },
+                headers,
             }
         );
         return response;

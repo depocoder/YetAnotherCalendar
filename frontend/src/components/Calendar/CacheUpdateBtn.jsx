@@ -79,7 +79,8 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
                 sessionToken: getTokenFromLocalStorage(),
                 modeusPersonId,
                 lxpToken: getLMSTokenFromLocalStorage(),
-                lxpId: getLMSIdFromLocalStorage()
+                lxpId: getLMSIdFromLocalStorage(),
+                no_cache: false
             });
 
             if (refreshEventsResponse && refreshEventsResponse.data) {
