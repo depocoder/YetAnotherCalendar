@@ -1,7 +1,131 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../style/about.scss';
 
 const AboutPage = () => {
+    const [commits, setCommits] = useState(null);
+    const [commitsError, setCommitsError] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const fetchCommits = async () => {
+        setIsLoading(true);
+        setCommitsError(false);
+        
+        try {
+            // Single API request to get all workflow runs for the repository
+            const response = await fetch('https://api.github.com/repos/depocoder/YetAnotherCalendar/actions/runs?branch=main&per_page=50');
+            if (!response.ok) throw new Error('Failed to fetch workflow runs');
+            
+            const workflowData = await response.json();
+            const workflowRuns = workflowData.workflow_runs || [];
+            
+            // Group workflow runs by commit SHA
+            const workflowsByCommit = {};
+            workflowRuns.forEach(run => {
+                if (!workflowsByCommit[run.head_sha]) {
+                    workflowsByCommit[run.head_sha] = run;
+                }
+            });
+            
+            // Get unique commits from workflow runs (last 5)
+            const uniqueCommits = [];
+            const seenShas = new Set();
+            
+            for (const run of workflowRuns) {
+                if (!seenShas.has(run.head_sha) && uniqueCommits.length < 5) {
+                    seenShas.add(run.head_sha);
+                    const commitMessage = run.head_commit.message;
+                    const messageLines = commitMessage.split('\n').filter(line => line.trim());
+                    
+                    uniqueCommits.push({
+                        sha: run.head_sha.substring(0, 7),
+                        fullSha: run.head_sha,
+                        title: messageLines[0] || '',
+                        description: messageLines.slice(1).join('\n').trim() || '',
+                        date: new Date(run.head_commit.timestamp),
+                        author: run.head_commit.author.name,
+                        authorEmail: run.head_commit.author.email,
+                        avatar: run.actor?.avatar_url,
+                        githubUsername: run.actor?.login,
+                        url: `https://github.com/depocoder/YetAnotherCalendar/commit/${run.head_sha}`,
+                        deploymentStatus: {
+                            state: run.conclusion || run.status,
+                            workflowName: run.name,
+                            runId: run.id,
+                            htmlUrl: run.html_url
+                        }
+                    });
+                }
+            }
+            
+            setCommits(uniqueCommits);
+        } catch (error) {
+            console.error('Failed to fetch commits:', error);
+            setCommitsError(true);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCommits();
+    }, []);
+
+    const formatCommitDate = (date) => {
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+        
+        if (diffInSeconds < 60) return 'только что';
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} мин назад`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} ч назад`;
+        if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} дн назад`;
+        
+        return date.toLocaleDateString('ru-RU', { 
+            day: 'numeric', 
+            month: 'short',
+            year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+        });
+    };
+
+    const getDeploymentStatusInfo = (deploymentStatus) => {
+        if (!deploymentStatus) {
+            return { icon: '⚪', text: 'Нет данных', className: 'unknown' };
+        }
+
+        // Handle GitHub Actions workflow status
+        if (deploymentStatus.workflowName) {
+            switch (deploymentStatus.state) {
+                case 'success':
+                    return { icon: '🚀', text: 'Развернуто', className: 'success', workflow: deploymentStatus.workflowName };
+                case 'failure':
+                    return { icon: '💥', text: 'Сбой сборки', className: 'failure', workflow: deploymentStatus.workflowName };
+                case 'cancelled':
+                    return { icon: '🛑', text: 'Отменено', className: 'cancelled', workflow: deploymentStatus.workflowName };
+                case 'in_progress':
+                    return { icon: '⚡', text: 'Выполняется', className: 'pending', workflow: deploymentStatus.workflowName };
+                case 'queued':
+                    return { icon: '⚡', text: 'В очереди', className: 'pending', workflow: deploymentStatus.workflowName };
+                case 'requested':
+                    return { icon: '⚡', text: 'Запрошено', className: 'pending', workflow: deploymentStatus.workflowName };
+                default:
+                    return { icon: '❓', text: deploymentStatus.state, className: 'unknown', workflow: deploymentStatus.workflowName };
+            }
+        }
+
+        // Handle legacy status API
+        switch (deploymentStatus.state) {
+            case 'success':
+                return { icon: '🚀', text: 'Успешно', className: 'success' };
+            case 'pending':
+                return { icon: '⚡', text: 'В процессе', className: 'pending' };
+            case 'failure':
+                return { icon: '💥', text: 'Ошибка', className: 'failure' };
+            case 'error':
+                return { icon: '💥', text: 'Сбой', className: 'error' };
+            default:
+                return { icon: '❓', text: 'Неизвестно', className: 'unknown' };
+        }
+    };
+
     return (
         <div className="about-page">
             {/* Hero Section */}
@@ -125,7 +249,7 @@ const AboutPage = () => {
                             </div>
                         </div>
                         <div className="admin-feature">
-                            <span className="admin-icon">📊</span>
+                            <span className="admin-icon">🛠️</span>
                             <div>
                                 <h4>Аналитика и мониторинг</h4>
                                 <p>Комплексное логирование, отслеживание ошибок и мониторинг производительности</p>
@@ -279,6 +403,125 @@ const AboutPage = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Latest Commits Section */}
+            {!commitsError && (
+                <section className="about-section commits-section">
+                    <div className="about-container">
+                        <h2>🔄 Последние обновления</h2>
+                        <p className="section-subtitle">
+                            Следите за актуальными изменениями в проекте
+                        </p>
+                        
+                        {commits && !isLoading ? (
+                            <div className="commits-container">
+                                {commits.map((commit, index) => {
+                                    const deploymentInfo = getDeploymentStatusInfo(commit.deploymentStatus);
+                                    return (
+                                        <div key={commit.fullSha} className={`commit-card ${index === 0 ? 'latest' : ''}`}>
+                                            <div className="commit-header">
+                                                <div className="commit-author">
+                                                    {commit.avatar && (
+                                                        <div className="commit-avatar-wrapper">
+                                                            <img 
+                                                                src={commit.avatar} 
+                                                                alt={commit.author}
+                                                                className="commit-avatar"
+                                                            />
+                                                            {index === 0 && <div className="latest-badge">Последний</div>}
+                                                        </div>
+                                                    )}
+                                                    <div className="commit-author-info">
+                                                        <div className="commit-author-name">
+                                                            {commit.githubUsername ? (
+                                                                <a 
+                                                                    href={`https://github.com/${commit.githubUsername}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="author-link"
+                                                                >
+                                                                    @{commit.githubUsername}
+                                                                </a>
+                                                            ) : (
+                                                                commit.author
+                                                            )}
+                                                        </div>
+                                                        <div className="commit-meta">
+                                                            <span className="commit-date">
+                                                                {formatCommitDate(commit.date)}
+                                                            </span>
+                                                            <span className="commit-sha">
+                                                                <a 
+                                                                    href={commit.url}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="commit-link"
+                                                                    title="Открыть коммит на GitHub"
+                                                                >
+                                                                    {commit.sha}
+                                                                </a>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {commit.deploymentStatus && (
+                                                    <div className={`deployment-status ${deploymentInfo.className}`}>
+                                                        {commit.deploymentStatus.htmlUrl ? (
+                                                            <a 
+                                                                href={commit.deploymentStatus.htmlUrl}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="status-link"
+                                                                title={deploymentInfo.workflow ? `Workflow: ${deploymentInfo.workflow}` : 'Открыть в GitHub'}
+                                                            >
+                                                                <span className="status-icon">{deploymentInfo.icon}</span>
+                                                                <span className="status-text">{deploymentInfo.text}</span>
+                                                            </a>
+                                                        ) : (
+                                                            <>
+                                                                <span className="status-icon">{deploymentInfo.icon}</span>
+                                                                <span className="status-text">{deploymentInfo.text}</span>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            <div className="commit-content">
+                                                <div className="commit-title">{commit.title}</div>
+                                                {commit.description && (
+                                                    <div className="commit-description">
+                                                        <div className="description-header">
+                                                            <span>Подробности</span>
+                                                        </div>
+                                                        <div className="description-text">{commit.description}</div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                                
+                                <div className="commits-footer">
+                                    <a 
+                                        href="https://github.com/depocoder/YetAnotherCalendar/commits/main"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="view-all-commits"
+                                    >
+                                        Посмотреть все коммиты →
+                                    </a>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="commit-loading">
+                                <div className="loading-spinner"></div>
+                                <p>Загружаем информацию о последних коммитах...</p>
+                            </div>
+                        )}
+                    </div>
+                </section>
+            )}
 
             {/* Footer */}
             <section className="about-footer">

@@ -387,6 +387,323 @@
     }
 }
 
+// Latest Commits Section
+.commits-section {
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+    
+    .section-subtitle {
+        font-family: "Roboto", sans-serif;
+        font-size: 18px;
+        color: #495057;
+        text-align: center;
+        margin: -32px auto 48px auto;
+        max-width: 600px;
+        opacity: 0.8;
+    }
+}
+
+.commits-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.commit-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(123, 97, 255, 0.08);
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: #7b61ff;
+        box-shadow: 0 4px 16px rgba(123, 97, 255, 0.15);
+    }
+
+    &.latest {
+        border: 2px solid #7b61ff;
+        background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+        box-shadow: 0 4px 16px rgba(123, 97, 255, 0.15);
+        
+        .latest-badge {
+            background: linear-gradient(135deg, #7b61ff 0%, #5856d6 100%);
+        }
+    }
+}
+
+.commit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.commit-author {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.commit-avatar-wrapper {
+    position: relative;
+}
+
+.commit-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.2s ease;
+
+    &:hover {
+        border-color: #7b61ff;
+    }
+}
+
+.latest-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #7b61ff;
+    color: white;
+    font-family: "Roboto", sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.commit-author-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.commit-author-name {
+    .author-link {
+        font-family: "Roboto", sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #7b61ff;
+        text-decoration: none;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: #5856d6;
+            text-decoration: underline;
+        }
+    }
+}
+
+.commit-meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+
+.commit-date {
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.commit-sha {
+    .commit-link {
+        font-family: "Roboto Mono", monospace;
+        font-size: 12px;
+        color: #7b61ff;
+        text-decoration: none;
+        background: #f8f9ff;
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: 1px solid #7b61ff;
+        transition: all 0.2s ease;
+        font-weight: 500;
+
+        &:hover {
+            background: #7b61ff;
+            color: white;
+            text-decoration: none;
+        }
+    }
+}
+
+.deployment-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-family: "Roboto", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+
+    .status-icon {
+        font-size: 16px;
+    }
+
+    &.success {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        
+        &:hover {
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+    }
+
+    &.pending {
+        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        color: white;
+        
+        &:hover {
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+        }
+    }
+
+    &.failure, &.error {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        
+        &:hover {
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+    }
+
+    &.cancelled {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        color: white;
+        
+        &:hover {
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+    }
+
+    &.unknown {
+        background: linear-gradient(135deg, #adb5bd 0%, #868e96 100%);
+        color: white;
+        
+        &:hover {
+            box-shadow: 0 4px 12px rgba(173, 181, 189, 0.3);
+        }
+    }
+
+    .status-link {
+        color: inherit;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+            opacity: 0.9;
+        }
+    }
+}
+
+.commit-content {
+    .commit-title {
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c2d2e;
+        line-height: 1.4;
+        margin-bottom: 12px;
+        padding: 12px 16px;
+        background: #f8f9ff;
+        border-radius: 8px;
+        border-left: 4px solid #7b61ff;
+    }
+
+    .commit-description {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        overflow: hidden;
+
+        .description-header {
+            padding: 12px 16px;
+            background: #7b61ff;
+            color: white;
+            font-family: "Roboto", sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .description-text {
+            padding: 16px;
+            font-family: "Roboto", sans-serif;
+            font-size: 14px;
+            color: #495057;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+    }
+}
+
+.commits-footer {
+    text-align: center;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e9ecef;
+
+    .view-all-commits {
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: #7b61ff;
+        text-decoration: none;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: #5856d6;
+            text-decoration: underline;
+        }
+    }
+}
+
+.commit-loading {
+    text-align: center;
+    padding: 60px 20px;
+    
+    .loading-spinner {
+        width: 32px;
+        height: 32px;
+        margin: 0 auto 16px auto;
+        border: 2px solid #e9ecef;
+        border-top: 2px solid #7b61ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    p {
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        color: #6c757d;
+        margin: 0;
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 // Contributing Options
 .contributing-options {
     display: grid;
@@ -601,6 +918,63 @@
         gap: 16px;
     }
 
+    // Commits responsive
+    .commit-card {
+        padding: 20px;
+
+        .commit-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .commit-author {
+            gap: 12px;
+        }
+
+        .commit-avatar {
+            width: 40px;
+            height: 40px;
+        }
+
+        .latest-badge {
+            font-size: 8px;
+            padding: 2px 4px;
+        }
+
+        .commit-author-name .author-link {
+            font-size: 16px;
+        }
+
+        .commit-meta {
+            gap: 12px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .deployment-status {
+            font-size: 11px;
+            padding: 4px 8px;
+        }
+
+        .commit-title {
+            font-size: 14px;
+            padding: 10px 12px;
+        }
+
+        .commit-description {
+            .description-header {
+                padding: 10px 12px;
+                font-size: 11px;
+            }
+
+            .description-text {
+                padding: 12px;
+                font-size: 13px;
+            }
+        }
+    }
+
     .about-footer {
         .footer-content {
             flex-direction: column;
@@ -646,5 +1020,76 @@
     .tech-badge {
         padding: 6px 12px;
         font-size: 10px;
+    }
+
+    // Mobile commits
+    .commits-section {
+        .section-subtitle {
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+    }
+
+    .commit-card {
+        padding: 16px;
+
+        .commit-header {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .commit-author {
+            gap: 12px;
+        }
+
+        .commit-avatar {
+            width: 36px;
+            height: 36px;
+        }
+
+        .latest-badge {
+            font-size: 7px;
+            padding: 1px 4px;
+        }
+
+        .commit-author-name .author-link {
+            font-size: 14px;
+        }
+
+        .commit-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .deployment-status {
+            font-size: 10px;
+            padding: 3px 6px;
+        }
+
+        .commit-title {
+            font-size: 13px;
+            padding: 8px 12px;
+        }
+
+        .commit-description {
+            .description-header {
+                padding: 8px 12px;
+                font-size: 10px;
+            }
+
+            .description-text {
+                padding: 12px;
+                font-size: 12px;
+            }
+        }
+    }
+
+    .commits-footer {
+        margin-top: 24px;
+        
+        .view-all-commits {
+            font-size: 13px;
+        }
     }
 }
