@@ -29,7 +29,7 @@ input:focus-within {
 
 // Контейнер для событий - всегда резервирует место
 .events-container {
-    min-height: 150px; // Резервируем место для блока событий
+    min-height: 180px; // Резервируем место для блока событий
     margin-bottom: 16px; // Добавляем отступ снизу для визуального разделения
 }
 
@@ -290,6 +290,80 @@ a {
     font-family: "Roboto", sans-serif;
     font-weight: 400;
     font-size: 12px;
+  }
+}
+
+// Modern Modeus info styling
+.modeus-info-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  padding: 2px 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .info-label {
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #7b61ff;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .info-value {
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: #2c2d2e;
+    flex: 1;
+    line-height: 1.2;
+
+    .group-name {
+      color: #7b61ff;
+      font-weight: 500;
+    }
+  }
+}
+
+// Netology teacher info styling
+.netology-info-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.netology-text-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.netology-info-row {
+  margin-bottom: 4px;
+  padding: 2px 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .netology-label {
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #00A8A8;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+
+    .netology-value {
+      font-weight: 400;
+      color: #2c2d2e;
+    }
   }
 }
 

@@ -105,16 +105,27 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
                 {/* Дополнительная информация */}
                 {event.type === 'netology' && (
                     <div className="task-event">
-                        <div className='persona_container'>
-                            <div className="avatar_path">
-                                <img
-                                    src={event?.experts?.[0]?.avatar_path}
-                                    alt={event?.experts?.[0]?.full_name || 'Преподаватель'}
-                                />
+                        <div className="netology-info-container">
+                            {event?.experts?.[0]?.avatar_path && (
+                                <div className="avatar_path">
+                                    <img
+                                        src={event?.experts?.[0]?.avatar_path}
+                                        alt={event?.experts?.[0]?.full_name || 'Преподаватель'}
+                                    />
+                                </div>
+                            )}
+                            <div className="netology-text-info">
+                                {event?.experts?.[0]?.full_name && (
+                                    <div className="netology-info-row">
+                                        <span className="netology-label">👨‍🏫 Преподаватель: <span className="netology-value">{event.experts[0].full_name}</span></span>
+                                    </div>
+                                )}
+                                {event.block_title && (
+                                    <div className="netology-info-row">
+                                        <span className="netology-label">📚 Курс: <span className="netology-value">{event.block_title}</span></span>
+                                    </div>
+                                )}
                             </div>
-                            <span className="task-event-text">
-                                Преподаватель: {event?.experts?.[0]?.full_name || 'Не указано'}
-                            </span>
                         </div>
                     </div>
                 )}
@@ -132,12 +143,18 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
                 )}
                 {event.type === 'modeus' && (
                     <div className="task-event">
-                        <span className="task-event-text">
-                            Преподаватель: {event.teacher_full_name || 'Не указано'}
-                        </span>
-                        <span className="task-event-text">
-                            Цикл: {event.cycle_realization?.name || 'Не указано'}
-                        </span>
+                        {event.teacher_full_name && (
+                            <div className="modeus-info-row">
+                                <span className="info-label">👨‍🏫 Преподаватель:</span>
+                                <span className="info-value">{event.teacher_full_name}</span>
+                            </div>
+                        )}
+                        {event.course_name && (
+                            <div className="modeus-info-row">
+                                <span className="info-label">📚 Курс:</span>
+                                <span className="info-value">{event.course_name}</span>
+                            </div>
+                        )}
                     </div>
                 )}
                 {event.source === 'utmn' && (

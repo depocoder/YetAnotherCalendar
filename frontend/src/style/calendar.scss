@@ -209,6 +209,16 @@
     margin-bottom: 4px;
 }
 
+.group-code-bottom {
+    position: absolute;
+    bottom: 4px;
+    right: 6px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    color: #7B61FF;
+}
+
 .lesson-name {
     vertical-align: top;
     font-family: "Roboto", sans-serif;
@@ -248,6 +258,7 @@
     font-family: "Roboto", sans-serif;
     font-weight: 500;
     font-size: 13px;
+    position: relative;
 
     //display: flex;
     //flex-direction: column;

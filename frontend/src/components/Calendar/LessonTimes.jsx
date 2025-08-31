@@ -63,7 +63,6 @@ const SpecialTimingEventsRow = ({ unrenderedEvents, selectedEvent, setSelectedEv
                             {event.type === "modeus" ? (
                                 <div className="company-name">
                                     <span><img src={camera} alt="camera"/> ТюмГУ </span>
-                                    <span>{event?.cycle_realization?.code}</span>
                                 </div>
                             ) : (
                                 <span className="company-name">
@@ -73,6 +72,9 @@ const SpecialTimingEventsRow = ({ unrenderedEvents, selectedEvent, setSelectedEv
                             <div className="lesson-name">{event?.course_name || event?.block_title || event?.title}</div>
                             {event.title && event.block_title && (
                                 <div className="lesson-subtitle">{event.title}</div>
+                            )}
+                            {event.type === "modeus" && event?.cycle_realization?.code && (
+                                <div className="group-code-bottom">{event.cycle_realization.code}</div>
                             )}
                         </div>
                     ))}
@@ -95,7 +97,6 @@ const EventCell = ({ lesson, selectedEvent, setSelectedEvent }) => (
                 {lesson.type === "modeus" ? (
                     <div className="company-name">
                         <span><img src={camera} alt="camera"/> ТюмГУ </span>
-                        <span>{lesson?.cycle_realization?.code}</span>
                     </div>
                 ) : (
                     <span className="company-name">
@@ -103,6 +104,9 @@ const EventCell = ({ lesson, selectedEvent, setSelectedEvent }) => (
                     </span>
                 )}
                 <div className="lesson-name">{lesson?.course_name || lesson?.block_title}</div>
+                {lesson.type === "modeus" && lesson?.cycle_realization?.code && (
+                    <div className="group-code-bottom">{lesson.cycle_realization.code}</div>
+                )}
             </div>
         ) : (
             <div className="no-lessons"></div>
