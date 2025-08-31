@@ -41,7 +41,7 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
         }
         if (event.type === 'modeus') {
             return {
-                label: 'Modeus',
+                label: 'ТюмГУ',
                 icon: arrowViolet,
                 date: event.start,
             };
