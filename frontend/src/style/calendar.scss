@@ -1,3 +1,134 @@
+// Color Variables
+$color-primary-purple: #7B61FF;
+
+.beta-badge {
+    display: none; // Hidden by default (desktop)
+    
+    @media (max-width: 768px) {
+        display: inline-block;
+        background: linear-gradient(135deg, $color-primary-purple 0%, #5856d6 100%);
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 8px;
+        margin-left: 6px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        vertical-align: middle;
+        box-shadow: 0 2px 4px rgba(123, 97, 255, 0.3);
+    }
+}
+
+// Hide mobile header actions on desktop
+.mobile-header-actions {
+    display: none;
+}
+
+// Mobile Controls Container - Outside Header
+.mobile-controls-container {
+    display: none; // Hidden on desktop
+    
+    @media (max-width: 768px) {
+        display: block;
+        width: 100%;
+        padding: 0 12px 16px 12px; // Reduced padding
+        margin-bottom: 16px;
+        
+        .mobile-header-actions {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 100%;
+            gap: 12px;
+            margin-bottom: 12px; // Add space before datepicker
+            
+            .mobile-buttons-row {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                width: fit-content;
+                max-width: 320px;
+                margin: 0 auto;
+                
+                .btn-export, 
+                .cache-update-button,
+                .export-btn,
+                .cache-btn {
+                    flex: 1;
+                    min-width: 100px;
+                    font-size: 8px !important;
+                    padding: 12px 10px !important;
+                    min-height: 48px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    border-radius: 6px;
+                    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+                    border: 1px solid #7b61ff;
+                    color: #7b61ff;
+                    font-weight: 400;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    line-height: 1.2;
+                    transition: all 0.3s ease;
+                    
+                    &:hover {
+                        background: linear-gradient(135deg, #7b61ff 0%, #5856d6 100%);
+                        color: #fff;
+                        transform: translateY(-1px);
+                        box-shadow: 0 4px 12px rgba(123, 97, 255, 0.3);
+                    }
+                }
+            }
+            
+            .features-trigger-btn,
+            .mobile-features-btn {
+                width: fit-content;
+                max-width: 320px;
+                margin: 0 auto;
+                font-size: 13px !important;
+                padding: 4px 8px !important;
+                min-height: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                border-radius: 6px;
+                background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+                border: 1px solid #7b61ff;
+                color: #7b61ff;
+                font-weight: 400;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                line-height: 1.2;
+                transition: all 0.3s ease;
+                
+                &:hover {
+                    background: linear-gradient(135deg, #7b61ff 0%, #5856d6 100%);
+                    color: #fff;
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(123, 97, 255, 0.3);
+                }
+            }
+        }
+    }
+}
+
+$color-netology-teal: #00A8A8;
+$color-university-pink: #F46386;
+$color-task-blue: #3492c5;
+$color-text-primary: #2c2d2e;
+$color-text-secondary: #495057;
+$color-text-muted: #6c757d;
+$color-background-white: #ffffff;
+$color-background-light: #f8f9fa;
+$color-border-light: #e9ecef;
+
 .calendar-page {
     padding-left: 20px;
     padding-right: 20px;
@@ -87,10 +218,10 @@
         color: #adadad;
     }
     &.now {
-      color: #7b61ff;
+      color: $color-primary-purple;
     }
     &.now-clmn {
-        border-left: 2px solid #7b61ff;
+        border-left: 2px solid $color-primary-purple;
       }
     &.next {
         color: #333333;
@@ -172,16 +303,16 @@
     font-family: "Roboto", sans-serif;
     font-weight: 400;
     font-size: 13px;
-    color: #7b61ff;
+    color: $color-primary-purple;
     background: none;
     padding: 4px 8px;
     border-radius: 6px;
-    border: 1px solid #7b61ff;
+    border: 1px solid $color-primary-purple;
     transition: color 0.3s linear;
     &:hover {
         cursor: pointer;
-        background-color: #5856d6;
-        color: #fff;
+        background-color: darken($color-primary-purple, 10%);
+        color: $color-background-white;
     }
 }
 
@@ -205,7 +336,7 @@
     font-family: "Roboto", sans-serif;
     font-weight: 500;
     font-size: 10px;
-    color: #7B61FF;
+    color: $color-primary-purple;
     margin-bottom: 4px;
 }
 
@@ -216,7 +347,7 @@
     font-family: "Roboto", sans-serif;
     font-weight: 700;
     font-size: 11px;
-    color: #7B61FF;
+    color: $color-primary-purple;
 }
 
 .lesson-name {
@@ -280,7 +411,7 @@
     margin-top: 17px;
     margin-left: 365px;
     position: absolute;
-    border-left: 2px solid #7B61FF;
+    border-left: 2px solid $color-primary-purple;
     height: 590px;
 }
 
@@ -315,7 +446,7 @@
         border-top: 2px solid #e9ecef;
         padding: 6px;
         vertical-align: top;
-        
+    
         .special-timing-event {
             margin: 4px 0;
             border-radius: 8px;
@@ -326,7 +457,7 @@
             background-color: #fff;
             
             &.TyumGU-lesson {
-                border-color: #F46386;
+                border-color: $color-university-pink;
                 
                 .event-time-badge {
                     background: linear-gradient(135deg, #F46386, #e55577);
@@ -894,6 +1025,1049 @@
         
         p {
             font-size: 13px;
+        }
+    }
+}
+
+// Event Modal Styles - Mobile Only
+.event-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: none; // Hidden by default (desktop)
+    justify-content: center;
+    align-items: center;
+    z-index: 10002;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    
+    @media (max-width: 768px) {
+        display: flex; // Only show on mobile
+    }
+    
+    &-visible {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    &-hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+.event-modal {
+    background: #ffffff;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+    border: 1px solid #e9ecef;
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.3s ease;
+    
+    &-visible {
+        transform: translateY(0) scale(1);
+    }
+    
+    &-hidden {
+        transform: translateY(20px) scale(0.95);
+    }
+}
+
+.event-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #6c757d;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+    
+    &:hover {
+        background-color: #f8f9fa;
+        color: #495057;
+        transform: scale(1.1);
+    }
+}
+
+.event-modal-content {
+    padding: 32px 28px;
+}
+
+.event-modal-header {
+    margin-bottom: 24px;
+    
+    &.netology {
+        .event-modal-source {
+            border-left: 4px solid #00A8A8;
+        }
+    }
+    
+    &.modeus {
+        .event-modal-source {
+            border-left: 4px solid #7B61FF;
+        }
+    }
+    
+    &.quiz, &.task, &.test {
+        .event-modal-source {
+            border-left: 4px solid #3492c5;
+        }
+    }
+    
+    &.utmn {
+        .event-modal-source {
+            border-left: 4px solid #F46386;
+        }
+    }
+}
+
+.event-modal-source {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    .source-label {
+        font-family: "Roboto", sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        color: #495057;
+    }
+    
+    .source-date {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: "Roboto", sans-serif;
+        font-size: 13px;
+        color: #6c757d;
+        
+        img {
+            width: 14px;
+            height: 14px;
+        }
+    }
+}
+
+.event-modal-title {
+    margin-bottom: 32px;
+    
+    h2 {
+        font-family: "Roboto", sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: #2c2d2e;
+        margin: 0;
+        line-height: 1.3;
+        padding-right: 40px;
+    }
+}
+
+.event-modal-details {
+    margin-bottom: 32px;
+}
+
+.event-detail-section {
+    &:not(:last-child) {
+        margin-bottom: 24px;
+    }
+}
+
+.expert-avatar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    
+    img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #e9ecef;
+    }
+}
+
+.event-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.event-info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    
+    .info-icon {
+        font-size: 20px;
+        min-width: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .info-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        
+        .info-label {
+            font-family: "Roboto", sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6c757d;
+        }
+        
+        .info-value {
+            font-family: "Roboto", sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2d2e;
+            line-height: 1.4;
+        }
+        
+        .info-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            width: fit-content;
+            
+            &.passed, &.completed {
+                background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+            
+            &.not-passed, &.in-progress {
+                background: linear-gradient(135deg, #f8d7da 0%, #f1b0b7 100%);
+                color: #721c24;
+                border: 1px solid #f1b0b7;
+            }
+        }
+    }
+}
+
+.event-modal-action {
+    display: flex;
+    justify-content: center;
+    
+    .event-action-btn {
+        color: $color-background-white;
+        border: none;
+        border-radius: 14px;
+        padding: 16px 32px;
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        min-width: 200px;
+        
+        // Event type specific colors
+        &.event-btn-netology {
+            background: linear-gradient(135deg, $color-netology-teal 0%, darken($color-netology-teal, 10%) 100%);
+            
+            &:hover {
+                background: linear-gradient(135deg, darken($color-netology-teal, 5%) 0%, darken($color-netology-teal, 15%) 100%);
+            }
+        }
+        
+        &.event-btn-modeus {
+            background: linear-gradient(135deg, $color-primary-purple 0%, darken($color-primary-purple, 10%) 100%);
+            
+            &:hover {
+                background: linear-gradient(135deg, darken($color-primary-purple, 5%) 0%, darken($color-primary-purple, 15%) 100%);
+            }
+        }
+        
+        &.event-btn-task {
+            background: linear-gradient(135deg, $color-task-blue 0%, darken($color-task-blue, 10%) 100%);
+            
+            &:hover {
+                background: linear-gradient(135deg, darken($color-task-blue, 5%) 0%, darken($color-task-blue, 15%) 100%);
+            }
+        }
+        
+        &.event-btn-utmn {
+            background: linear-gradient(135deg, $color-university-pink 0%, darken($color-university-pink, 10%) 100%);
+            
+            &:hover {
+                background: linear-gradient(135deg, darken($color-university-pink, 5%) 0%, darken($color-university-pink, 15%) 100%);
+            }
+        }
+        
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
+        
+        svg {
+            transition: transform 0.2s ease;
+        }
+        
+        &:hover svg {
+            transform: translateX(2px);
+        }
+    }
+}
+
+// Desktop event detail button styles (for EventsDetail component)
+.lesson-button {
+    background: var(--button-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-family: "Roboto", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        filter: brightness(0.9);
+    }
+}
+
+// Mobile Calendar View Styles
+.mobile-calendar {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 8px 60px 8px; // Reduced padding
+}
+
+.mobile-day {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease;
+    
+    &:hover {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    }
+    
+    &-today {
+        .mobile-day-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            
+            .mobile-day-name {
+                color: $color-primary-purple;
+            }
+        }
+    }
+    
+    &-past {
+        opacity: 0.7;
+        
+        .mobile-day-header {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: #ffffff;
+        }
+    }
+}
+
+.mobile-day-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .mobile-day-name {
+        font-family: "Unbounded", sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c2d2e;
+        text-align: center;
+    }
+}
+
+.mobile-day-events {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mobile-no-events {
+    text-align: center;
+    padding: 32px 16px;
+    color: #6c757d;
+    font-style: italic;
+    font-size: 14px;
+}
+
+.mobile-event {
+    background: #ffffff;
+    border: 2px solid #e9ecef;
+    border-radius: 16px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+    
+    &-modeus {
+        border-color: $color-primary-purple;
+        background: linear-gradient(135deg, rgba(123, 97, 255, 0.08) 0%, rgba(123, 97, 255, 0.04) 100%);
+        
+        &:hover {
+            border-color: #6750e3;
+            box-shadow: 0 6px 20px rgba(123, 97, 255, 0.2);
+        }
+    }
+    
+    &-netology {
+        border-color: $color-netology-teal;
+        background: linear-gradient(135deg, rgba(0, 168, 168, 0.08) 0%, rgba(0, 168, 168, 0.04) 100%);
+        
+        &:hover {
+            border-color: #008080;
+            box-shadow: 0 6px 20px rgba(0, 168, 168, 0.2);
+        }
+    }
+    
+    &-task {
+        border-color: $color-task-blue;
+        background: linear-gradient(135deg, rgba(52, 146, 197, 0.08) 0%, rgba(52, 146, 197, 0.04) 100%);
+        
+        &:hover {
+            border-color: darken($color-task-blue, 10%);
+            box-shadow: 0 6px 20px rgba(52, 146, 197, 0.2);
+        }
+    }
+    
+    &-utmn {
+        border-color: $color-university-pink;
+        background: linear-gradient(135deg, rgba(244, 99, 134, 0.08) 0%, rgba(244, 99, 134, 0.04) 100%);
+        
+        &:hover {
+            border-color: darken($color-university-pink, 10%);
+            box-shadow: 0 6px 20px rgba(244, 99, 134, 0.2);
+        }
+    }
+    
+    &-deadline {
+        border-left: 4px solid #f46386 !important;
+        
+        .mobile-event-source {
+            color: $color-university-pink !important;
+        }
+    }
+    
+    &-past {
+        opacity: 0.6;
+        
+        &:hover {
+            transform: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+    }
+}
+
+.mobile-event-time {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: "Roboto Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: #495057;
+    min-width: fit-content;
+    
+    .mobile-event-separator {
+        margin: 0 2px;
+        opacity: 0.6;
+    }
+    
+    .mobile-event-deadline-label {
+        font-weight: 600;
+        color: #ffffff;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        background: linear-gradient(135deg, $color-university-pink 0%, #e85a8b 100%);
+        padding: 3px 8px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(244, 99, 134, 0.3);
+        line-height: 1;
+    }
+}
+
+.mobile-event-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.mobile-event-source {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: $color-primary-purple;
+    
+    .mobile-event-icon {
+        width: 18px;
+        height: 18px;
+        opacity: 0.8;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+}
+
+.mobile-event-title {
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c2d2e;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.mobile-event-code {
+    font-family: "Roboto", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: $color-primary-purple;
+    background: rgba(123, 97, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 8px;
+    width: fit-content;
+}
+
+.mobile-event-deadline-time {
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: $color-university-pink;
+    background: rgba(244, 99, 134, 0.12);
+    padding: 4px 10px;
+    border-radius: 12px;
+    width: fit-content;
+    border: 1px solid rgba(244, 99, 134, 0.2);
+    margin-top: 2px;
+}
+
+.mobile-event-arrow {
+    color: #adb5bd;
+    min-width: 16px;
+    display: flex;
+    align-items: center;
+    
+    svg {
+        transition: transform 0.2s ease;
+    }
+}
+
+.mobile-event:hover .mobile-event-arrow svg {
+    transform: translateX(2px);
+}
+
+// Mobile Burger Menu Styles
+.mobile-burger-trigger {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        background: rgba(0, 0, 0, 0.05);
+        transform: scale(1.05);
+    }
+    
+    &:active {
+        transform: scale(0.95);
+    }
+    
+    .burger-icon {
+        width: 24px;
+        height: 18px;
+        position: relative;
+        transform: rotate(0deg);
+        transition: .3s ease-in-out;
+        
+        span {
+            display: block;
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: $color-text-primary;
+            border-radius: 2px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: .25s ease-in-out;
+            
+            &:nth-child(1) {
+                top: 0px;
+            }
+            
+            &:nth-child(2) {
+                top: 8px;
+            }
+            
+            &:nth-child(3) {
+                top: 16px;
+            }
+        }
+        
+        &.burger-icon-open {
+            span:nth-child(1) {
+                top: 8px;
+                transform: rotate(135deg);
+            }
+            
+            span:nth-child(2) {
+                opacity: 0;
+                left: -60px;
+            }
+            
+            span:nth-child(3) {
+                top: 8px;
+                transform: rotate(-135deg);
+            }
+        }
+    }
+}
+
+.mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.mobile-burger-menu {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 320px;
+    height: 100vh;
+    background: $color-background-white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+    transition: right 0.3s ease;
+    
+    &-open {
+        right: 0;
+    }
+}
+
+.mobile-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid $color-border-light;
+    
+    h3 {
+        margin: 0;
+        font-family: "Roboto", sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: $color-text-primary;
+    }
+    
+    .mobile-menu-close {
+        background: transparent;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: $color-text-muted;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background-color: $color-background-light;
+            color: $color-text-secondary;
+        }
+    }
+}
+
+.mobile-menu-content {
+    padding: 20px 0;
+}
+
+.mobile-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+        background-color: $color-background-light;
+    }
+    
+    &:active {
+        background-color: darken($color-background-light, 5%);
+    }
+}
+
+.mobile-menu-item-icon {
+    font-size: 24px;
+    margin-right: 16px;
+    min-width: 32px;
+    text-align: center;
+}
+
+.mobile-menu-item-content {
+    flex: 1;
+    
+    .mobile-menu-item-title {
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+        color: $color-text-primary;
+        margin-bottom: 2px;
+    }
+    
+    .mobile-menu-item-description {
+        font-family: "Roboto", sans-serif;
+        font-size: 13px;
+        color: $color-text-muted;
+    }
+}
+
+// Mobile-first responsive behavior
+@media (max-width: 1024px) {
+    .calendar-page {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    // Adjust header for tablets and smaller desktops
+    .header {
+        .header-line {
+            flex-wrap: wrap;
+            gap: 16px;
+            
+            .shedule-export {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    }
+}
+
+// Mobile specific styles
+@media (max-width: 768px) {
+    
+    // Hide desktop calendar table on mobile
+    .shedule-table {
+        display: none;
+    }
+    
+    // Show mobile calendar on mobile
+    .mobile-calendar {
+        display: flex;
+    }
+    
+    // Hide desktop event details on mobile
+    .events-container {
+        display: none;
+    }
+    
+    // Show burger menu on mobile
+    .mobile-burger-trigger {
+        display: block;
+    }
+    
+    // Adjust header for mobile
+    .header {
+        .header-line {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            
+            .shedule-export {
+                flex-direction: row;
+                align-items: center;
+                gap: 12px;
+                
+                .shedule {
+                    font-size: 20px;
+                }
+                
+                // Hide these buttons on mobile - they'll be in the burger menu
+                .cache-btn,
+                .export-btn,
+                .features-trigger-btn {
+                    display: none;
+                }
+            }
+            
+            .header-actions {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+        }
+    }
+    
+    // Event modal mobile adjustments
+    .event-modal {
+        width: 95%;
+        max-height: 85vh;
+        border-radius: 16px;
+        margin: 20px;
+    }
+    
+    .event-modal-content {
+        padding: 24px 20px;
+    }
+    
+    .event-modal-title h2 {
+        font-size: 20px;
+        padding-right: 36px;
+    }
+    
+    .event-info-row {
+        .info-icon {
+            font-size: 18px;
+            min-width: 20px;
+        }
+        
+        .info-content {
+            .info-label {
+                font-size: 13px;
+            }
+            
+            .info-value {
+                font-size: 15px;
+            }
+        }
+    }
+    
+    .event-action-btn {
+        padding: 14px 28px !important;
+        font-size: 15px !important;
+        min-width: 180px !important;
+    }
+    
+    // Improve mobile spacing
+    .calendar {
+        margin-top: 20px;
+    }
+    
+    // Make mobile events more touch-friendly
+    .mobile-event {
+        min-height: 80px;
+        padding: 18px;
+        
+        &:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+    }
+    
+    // Better mobile typography
+    .mobile-day-header {
+        .mobile-day-name {
+            font-size: 14px;
+        }
+        
+        .mobile-day-number {
+            font-size: 18px;
+        }
+    }
+    
+    // Improve mobile button interactions
+    .features-trigger-btn {
+        font-size: 14px !important;
+        padding: 8px 16px !important;
+        white-space: nowrap;
+    }
+    
+    // Mobile header actions
+    .mobile-header-actions {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        gap: 8px;
+        margin-top: 8px;
+        
+        .mobile-buttons-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+            margin: 0 auto;
+            
+            .btn-export, 
+            .cache-update-button,
+            .export-btn,
+            .cache-btn {
+                flex: 1;
+                min-width: 0;
+                font-size: 11px !important;
+                padding: 8px 4px !important;
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                border-radius: 8px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                line-height: 1.1;
+                max-width: calc(50% - 4px);
+            }
+        }
+        
+        .features-trigger-btn,
+        .mobile-features-btn {
+            width: 100%;
+            max-width: 100%;
+            font-size: 13px !important;
+            padding: 12px 8px !important;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.2;
+        }
+    }
+    
+    // Hide desktop elements on mobile
+    .shedule-export .features-trigger-btn {
+        display: none !important;
+    }
+    
+    .exit-btn {
+        display: none !important;
+    }
+}
+
+// Extra small mobile devices
+@media (max-width: 480px) {
+    .calendar-page {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    
+    
+    .mobile-day-events {
+        padding: 16px;
+    }
+    
+    .mobile-event {
+        padding: 16px 14px;
+        gap: 12px;
+        
+        .mobile-event-time {
+            font-size: 11px;
+        }
+        
+        .mobile-event-title {
+            font-size: 13px;
+        }
+    }
+    
+    .event-modal {
+        width: 98%;
+        max-height: 90vh;
+        border-radius: 12px;
+    }
+    
+    .event-modal-content {
+        padding: 20px 16px;
+    }
+    
+    .event-modal-title h2 {
+        font-size: 18px;
+        line-height: 1.2;
+    }
+    
+    .header {
+        .shedule-export {
+            .shedule {
+                font-size: 18px !important;
+            }
         }
     }
 }

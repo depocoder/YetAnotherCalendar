@@ -32,9 +32,18 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
         const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(startOfWeek.getDate() + 6); // Вс
 
-        const formatOptions = { day: "numeric", month: "long" };
-        const startFormatted = startOfWeek.toLocaleDateString("ru-RU", formatOptions);
-        const endFormatted = endOfWeek.toLocaleDateString("ru-RU", formatOptions);
+        const formatDateFull = (date) => {
+            const monthNames = [
+                'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+            ];
+            const day = date.getDate();
+            const month = monthNames[date.getMonth()];
+            return `${day} ${month}`;
+        };
+
+        const startFormatted = formatDateFull(startOfWeek);
+        const endFormatted = formatDateFull(endOfWeek);
 
         return `${startFormatted} – ${endFormatted}`;
     }, []);
@@ -51,21 +60,47 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
         const fpInstance = flatpickr(datePickerRef.current, {
             locale: Russian,
             plugins: [weekSelect({})],
+            disableMobile: true, // Prevent mobile formatting
+            allowInput: false, // Prevent user input
             onChange: function (selectedDates) {
                 if (selectedDates.length > 0) {
                     const selectedDate = selectedDates[0];
                     setSelectedDate(selectedDate);
-                    setWeekRange(calculateWeekRange(selectedDate));
+                    const customRange = calculateWeekRange(selectedDate);
+                    setWeekRange(customRange);
                     const newDates = calculateWeekDates(selectedDate);
                     setDate(newDates);
+                }
+            },
+            onReady: function() {
+                // Force our custom format immediately after flatpickr is ready
+                const initialRange = calculateWeekRange(selectedDate);
+                if (datePickerRef.current) {
+                    datePickerRef.current.value = initialRange;
+                }
+            },
+            onOpen: function() {
+                // Restore our custom format when opening
+                const currentRange = calculateWeekRange(selectedDate);
+                if (datePickerRef.current) {
+                    datePickerRef.current.value = currentRange;
+                }
+            },
+            onClose: function() {
+                // Force our custom format when closing
+                const currentRange = calculateWeekRange(selectedDate);
+                if (datePickerRef.current) {
+                    datePickerRef.current.value = currentRange;
                 }
             }
         });
 
         return () => {
-            fpInstance.destroy();
+            if (fpInstance && typeof fpInstance.destroy === 'function') {
+                fpInstance.destroy();
+            }
         };
-    }, [setDate, calculateWeekRange, calculateWeekDates]);
+    }, [setDate, calculateWeekRange, calculateWeekDates, selectedDate]);
 
     const handlePrevWeek = () => {
         setSelectedDate((prev) => {
@@ -75,6 +110,12 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
             const newDates = calculateWeekDates(newDate);
             setWeekRange(newRange);
             setDate(newDates);
+            
+            // Force update input with our custom format
+            if (datePickerRef.current) {
+                datePickerRef.current.value = newRange;
+            }
+            
             return newDate;
         });
     };
@@ -87,6 +128,12 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
             const newDates = calculateWeekDates(newDate);
             setWeekRange(newRange);
             setDate(newDates);
+            
+            // Force update input with our custom format
+            if (datePickerRef.current) {
+                datePickerRef.current.value = newRange;
+            }
+            
             return newDate;
         });
     };

@@ -14,11 +14,15 @@ import Loader from "../elements/Loader";
 import '../style/header.scss';
 import '../style/calendar.scss';
 import DatePicker from "../components/Calendar/DataPicker";
+import SimpleDatePicker from "../components/Calendar/SimpleDatePicker";
 import ExitBtn from "../components/Calendar/ExitBtn";
 import ICSExporter from "../components/Calendar/ICSExporter";
 import CacheUpdateBtn from "../components/Calendar/CacheUpdateBtn";
 import { getCurrentWeekDates } from "../utils/dateUtils";
 import EventsDetail from "../components/Calendar/EventsDetail";
+import EventModal from "../components/Calendar/EventModal";
+import MobileCalendarView from "../components/Calendar/MobileCalendarView";
+import MobileBurgerMenu from "../components/Calendar/MobileBurgerMenu";
 import DeadLine from "../components/Calendar/DeadLine";
 import DaysNumber from "../components/Calendar/DaysNumber";
 import LessonTimes from "../components/Calendar/LessonTimes";
@@ -171,6 +175,10 @@ const CalendarPage = () => {
         setShowGithubModal(false);
     };
 
+    const handleCloseEventModal = () => {
+        setSelectedEvent(null);
+    };
+
     return (
         <div className="calendar-page">
             <GitHubStarModal 
@@ -182,11 +190,17 @@ const CalendarPage = () => {
                 onClose={() => setShowFeaturesModal(false)}
                 onOpenGithubModal={() => setShowGithubModal(true)}
             />
+            <EventModal 
+                event={selectedEvent}
+                isOpen={!!selectedEvent}
+                onClose={handleCloseEventModal}
+                mtsUrls={mtsUrls}
+            />
             <div className="wrapper">
                 <header className="header">
                     <div className="header-line">
                         <div className="shedule-export">
-                            <span className="shedule">Мое расписание</span>
+                            <span className="shedule">Мое расписание <span className="beta-badge">BETA</span></span>
                             <ICSExporter date={date} />
                             <CacheUpdateBtn 
                                 date={date} 
@@ -202,7 +216,9 @@ const CalendarPage = () => {
                                 ✨ О проекте
                             </button>
                         </div>
-                        <ExitBtn />
+                        <div className="header-actions">
+                            <ExitBtn />
+                        </div>
                     </div>
 
 
@@ -212,23 +228,57 @@ const CalendarPage = () => {
                     <DatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
                 </header>
 
+                {/* Mobile Controls Container */}
+                <div className="mobile-controls-container">
+                    <div className="mobile-header-actions">
+                        <div className="mobile-buttons-row">
+                            <ICSExporter date={date} />
+                            <CacheUpdateBtn 
+                                date={date} 
+                                onDataUpdate={handleDataUpdate}
+                                cachedAt={events?.cached_at}
+                                calendarReady={!loading && !isTransitioning && events !== null}
+                            />
+                        </div>
+                        <button 
+                            className="features-trigger-btn mobile-features-btn"
+                            onClick={() => setShowFeaturesModal(true)}
+                            title="Узнать больше о возможностях"
+                        >
+                            ✨ О проекте
+                        </button>
+                    </div>
+                    <SimpleDatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
+                </div>
+
                 <div className={`calendar ${loading || isTransitioning ? 'calendar-loading' : 'calendar-loaded'}`}>
                     {loading ? (
                         <Loader />
                     ) : (
-                        <table className="shedule-table">
-                            <thead>
-                                <DaysNumber date={date} />
-                                <DeadLine date={date} events={events} setSelectedEvent={setSelectedEvent} />
-                            </thead>
-                            <tbody>
-                                <LessonTimes
-                                    events={events}
-                                    selectedEvent={selectedEvent}
-                                    setSelectedEvent={setSelectedEvent}
-                                />
-                            </tbody>
-                        </table>
+                        <>
+                            {/* Desktop Calendar Table */}
+                            <table className="shedule-table">
+                                <thead>
+                                    <DaysNumber date={date} />
+                                    <DeadLine date={date} events={events} setSelectedEvent={setSelectedEvent} />
+                                </thead>
+                                <tbody>
+                                    <LessonTimes
+                                        events={events}
+                                        selectedEvent={selectedEvent}
+                                        setSelectedEvent={setSelectedEvent}
+                                    />
+                                </tbody>
+                            </table>
+                            
+                            {/* Mobile Calendar View */}
+                            <MobileCalendarView
+                                events={events}
+                                selectedEvent={selectedEvent}
+                                setSelectedEvent={setSelectedEvent}
+                                date={date}
+                            />
+                        </>
                     )}
                 </div>
             </div>
