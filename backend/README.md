@@ -21,13 +21,15 @@ better user experience. It combines multiple educational platforms into a single
 * 🔄 **Export to ICS** - Sync with Google Calendar, Apple Calendar, and more
 * 🌍 **Timezone Support** - Automatic timezone handling (default Moscow)
 * 🔌 **Multi-Platform Integration** - Modeus + Netology + LMS unified
-* 📦 **Redis Caching** - Lightning-fast performance with smart caching
-* 🏷️ **Event Management** - Custom tagging and categorization
+* 📦 **Redis Caching** - Lightning-fast performance with smart caching (14-day retention)
+* 🏷️ **Event Management** - Custom tagging and categorization with source attribution
 * 🔍 **Advanced Search** - Powerful filtering and search capabilities
 * 🔒 **Enterprise Security** - Rate limiting, JWT tokens, and brute force protection
 * 👨‍🏫 **Admin Panel** - Secure tutor authentication with donor account system
 * 🚀 **High Performance** - Async Python with optimized database queries
-* 📊 **Monitoring Ready** - Comprehensive logging and error tracking
+* 📊 **Production Monitoring** - Rollbar error tracking with sensitive data scrubbing
+* 🔗 **MTS Link Management** - Custom webinar redirect system with Redis storage
+* 🛡️ **Security Hardening** - Comprehensive field scrubbing for all authentication tokens
 
 ## 🚀 Getting Started
 
@@ -115,6 +117,13 @@ NETOLOGY_URL="https://netology.ru"                     # 🔗 Netology base URL
 
 # Application Domain
 YET_ANOTHER_CALENDAR_APP_DOMAIN="https://yetanothercalendar.ru"  # 🌍 Your domain
+```
+
+### 🛡️ **Error Monitoring & Logging**
+```bash
+# Rollbar Integration (Production Error Tracking)
+YET_ANOTHER_CALENDAR_ROLLBAR_TOKEN=""                  # 🔍 Rollbar access token  
+YET_ANOTHER_CALENDAR_ROLLBAR_ENVIRONMENT="production"   # 🏷️ Environment (dev/staging/production)
 ```
 
 ### ⚙️ **Generate Password Hash**

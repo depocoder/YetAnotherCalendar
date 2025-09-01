@@ -13,6 +13,17 @@ import { debug } from '../../utils/debug';
 
 const ICSExporter = ({ date }) => {
     const [loading, setLoading] = useState(false);
+
+    const generateFilename = () => {
+        const startDate = new Date(date.start);
+        const year = startDate.getFullYear();
+        const month = String(startDate.getMonth() + 1).padStart(2, '0');
+        const day = String(startDate.getDate()).padStart(2, '0');
+    
+        
+        return `schedule_week-${year}-${month}-${day}.ics`;
+    };
+
     const downloadICSFile = async () => {
         const calendarId = getCalendarIdLocalStorage();
         setLoading(true);
@@ -40,7 +51,7 @@ const ICSExporter = ({ date }) => {
 
             const a = document.createElement("a");
             a.href = url;
-            a.download = "schedule.ics";
+            a.download = generateFilename();
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);

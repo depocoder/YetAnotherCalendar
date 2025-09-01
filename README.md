@@ -14,15 +14,85 @@
 This product replaces Modeus+LMS calendar & Netology calendar, for better experience and more features.
 YetAnotherCalendar provides a unified interface to manage all your educational events and deadlines in one place.
 
+## 🔥 **Recent Updates**
+
+### 🎯 **MAJOR BETA**: Mobile Frontend (Latest)
+- **📱 Mobile-First Calendar**: New responsive mobile interface with touch-optimized interactions
+- **🗓️ Enhanced Date Picker**: Improved week navigation with Russian localization and custom formatting
+- **📋 Rich Event Modals**: Detailed event information with source attribution and quick actions
+- **⚡ Smart Caching**: Visual cache status indicators and manual refresh capabilities
+
+### 🔒 **Production Ready**: Rollbar Integration  
+- **🛡️ Error Monitoring**: Production-grade error tracking with sensitive data protection
+- **🔐 Security Hardening**: Comprehensive field scrubbing for all authentication tokens and user data
+- **📊 Performance Insights**: Real-time application health monitoring and alerting
+
+### 🎨 **UI/UX Improvements**
+- **📅 Advanced Tooltips**: Contextual help text for all major features and export options
+- **🎯 Improved Styling**: Enhanced component styling with better visual hierarchy
+- **📱 Mobile Optimization**: Responsive calendar view and mobile-optimized controls
+
 ## ✨ Features
 
-- 🔒 **Privacy First**: No telemetry or tracking, We don't store passes or emails. We don't need it, **we respect your
-  data**.
-- 🔄 **Multi-platform Integration**: Modeus & LMS & Netology events API support, you won't forget any deadline.
-- 📤 **Export Options**: Export to .ics calendar format for use with your favorite calendar app.
-- ⚡ **Performance**: Cache all big requests in Redis for faster response times.
-- 🧪 **Code Quality**: All code is typed with mypy. Linted with Ruff and tested with pytest.
-- 🌍 **Timezone Support**: Seamless handling of different timezones.
+### 🔒 **Privacy & Security First**
+- **No Data Storage**: We don't store passwords, emails, or personal credentials
+- **Privacy-by-Design**: No telemetry, tracking, or analytics - we respect your data
+- **Error Monitoring**: Rollbar integration with sensitive data scrubbing for production reliability
+- **Rate Limiting**: Built-in protection against login attacks with configurable limits
+
+### 🔄 **Multi-Platform Integration**
+- **🎓 Modeus Integration**: UTMN university schedule with JWT token support and donor account system
+- **📚 LMS Integration**: Moodle-based learning management system with course modules and deadlines
+- **🌐 Netology Integration**: Professional education platform with webinars and homework tracking
+- **🔗 Unified API**: Single endpoint combining all platforms for seamless experience
+
+### 📱 **Modern User Interface**
+- **📱 Mobile-First Design**: BETA mobile interface with responsive calendar views
+- **🗓️ Advanced Date Picker**: Custom week picker with Russian localization
+- **📋 Event Details**: Rich event modals with source attribution and action buttons  
+- **⚡ Real-time Updates**: Cache refresh system with visual indicators
+- **🎨 Material Design**: Clean, modern interface with intuitive navigation
+
+### 📤 **Export & Sharing Features**
+- **📅 ICS Export**: Standard calendar format compatible with Google Calendar, Outlook, Apple Calendar
+- **🔗 MTS Links**: Custom webinar link management system for quick access
+- **⏰ Timezone Support**: Automatic timezone detection and conversion (Moscow, UTC, local)
+- **💾 Smart Caching**: Redis-powered caching with 14-day event retention
+
+### 🛠️ **Technical Excellence**
+- **🧪 Comprehensive Testing**: pytest with fixtures for all major components
+- **📝 Type Safety**: Full mypy typing coverage for better code reliability  
+- **🔍 Code Quality**: Ruff linting with strict formatting standards
+- **🐳 Container Ready**: Docker Compose setup for easy deployment
+- **⚡ High Performance**: Async FastAPI backend with Redis caching layer
+
+### 👥 **Authentication & Authorization**
+- **🔐 Tutor Authentication**: JWT-based secure access for instructors
+- **🚫 Rate Limiting**: Protection against brute force attacks on all login endpoints
+- **🍪 Session Management**: Secure cookie handling with proper expiration
+- **🔑 Token Management**: Automatic token refresh and validation
+
+## 🏗️ **Architecture**
+
+### Backend Stack
+- **🚀 FastAPI**: Modern async Python web framework with automatic API documentation  
+- **🔍 Pydantic**: Data validation and settings management with type hints
+- **🗄️ Redis**: High-performance caching and session storage
+- **🌐 HTTPX**: Async HTTP client for external API integrations
+- **🔧 Loguru**: Advanced logging with structured output and Rollbar integration
+
+### Frontend Stack  
+- **⚛️ React**: Component-based UI library with hooks and modern patterns
+- **🎨 SCSS**: Advanced CSS preprocessing for maintainable styles
+- **📅 Flatpickr**: Customizable date picker with internationalization
+- **🍞 React Toastify**: User-friendly notification system
+- **📱 Responsive Design**: Mobile-first approach with adaptive layouts
+
+### Infrastructure
+- **🐳 Docker**: Containerized deployment with multi-stage builds
+- **🔄 Docker Compose**: Development and production orchestration  
+- **⚡ Uvicorn**: ASGI server with auto-reload and performance optimization
+- **🌍 NGINX**: Reverse proxy and static file serving (production)
 
 ## 📚 Documentation
 
