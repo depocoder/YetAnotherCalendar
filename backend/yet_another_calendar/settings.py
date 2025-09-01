@@ -94,6 +94,9 @@ class Settings(BaseSettings):
 
     # Application domain for generating full URLs
     app_domain: str = env.str("YET_ANOTHER_CALENDAR_APP_DOMAIN", "https://yetanothercalendar.ru")
+    
+    rollbar_token: str = ""
+    rollbar_environment: str = "dev"
 
     @property
     def redis_url(self) -> URL:

@@ -1,11 +1,14 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+from loguru import logger
 from fastapi import FastAPI
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis.asyncio import Redis, ConnectionPool
 from starlette.requests import Request
+import rollbar
+from rollbar.contrib.fastapi import ReporterMiddleware as RollbarMiddleware
 
 from yet_another_calendar.settings import settings
 
@@ -77,3 +80,37 @@ async def get_redis_pool(
     :returns:  redis connection pool.
     """
     return request.app.state.redis_pool
+
+def init_rollbar(app: FastAPI) -> None:  # pragma: no cover
+    """
+    Initializes rollbar.
+
+    :param app: current fastapi application.
+    """
+    rollbar.init(
+        settings.rollbar_token,
+        environment=settings.rollbar_environment,
+        handler='async',
+        # Security: Scrub sensitive data from exceptions
+        scrub_fields=[
+            'password', 'secret', 'token', 'auth', 'authentication',
+            'authorization', 'key', 'api_key', 'access_token', 'refresh_token',
+            'csrf_token', 'session', 'cookie', 'pin', 'ssn', 'social_security',
+            'credit_card', 'card_number', 'cvv', 'cvc', 'account_number',
+            # Netology specific fields
+            'rails_session', '_netology-on-rails_session', 'username',
+            # LMS specific fields
+            'lxp_token', 'lxp_id', 'lxp-token', 'lxp-id',
+            # Modeus specific fields
+            'modeus_jwt_token', 'donor_token', 'modeus-jwt-token', 'donor-token',
+            'modeus_person_id', 'modeus-person-id',
+            # JWT tokens and user identifiers
+            'jwt', 'jwt_token', 'bearer_token', 'bearer',
+            'person_id', 'user_id', 'client_id', 'client_secret',
+        ],
+        locals={
+            'enabled': False,  # Don't capture local variables
+        },
+        )
+    app.add_middleware(RollbarMiddleware)
+    logger.info(f"Rollbar initialized with environment: {settings.rollbar_environment}")

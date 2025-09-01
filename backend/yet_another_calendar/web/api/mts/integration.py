@@ -1,13 +1,11 @@
-import logging
 import uuid
 
 from fastapi import HTTPException
 from redis.asyncio import ConnectionPool, Redis
 from starlette import status
+from loguru import logger
 
 from yet_another_calendar.settings import settings
-
-logger = logging.getLogger(__name__)
 
 LINK_KEY_PREFIX: str = "mtslink"
 

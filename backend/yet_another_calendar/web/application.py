@@ -1,4 +1,3 @@
-import logging
 from importlib import metadata
 from pathlib import Path
 from typing import Any
@@ -10,13 +9,14 @@ from fastapi.staticfiles import StaticFiles
 from httpx import HTTPError
 from pydantic import ValidationError
 from starlette.responses import Response
+from loguru import logger
+
 from yet_another_calendar.log import configure_logging
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.router import api_router
-from yet_another_calendar.web.lifespan import lifespan_setup
+from yet_another_calendar.web.lifespan import lifespan_setup, init_rollbar
 
 APP_ROOT = Path(__file__).parent.parent
-logger = logging.getLogger(__name__)
 
 
 async def task_group_exception_handler(request: Request, exc: ExceptionGroup[Any]) -> Response:
@@ -61,7 +61,6 @@ def get_app() -> FastAPI:
 
     :return: application.
     """
-    configure_logging()
     app = FastAPI(
         title="yet_another_calendar",
         version=metadata.version("yet_another_calendar"),
@@ -71,6 +70,12 @@ def get_app() -> FastAPI:
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,
     )
+    
+    if settings.rollbar_token:
+        init_rollbar(app)
+
+    configure_logging()
+    
     if settings.debug:
         origins = ["*"]
     else:

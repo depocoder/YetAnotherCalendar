@@ -2,8 +2,9 @@ import logging
 import sys
 
 from loguru import logger
+from rollbar.logger import RollbarHandler
 
-from yet_another_calendar.settings import settings
+from yet_another_calendar.settings import settings 
 
 
 class InterceptHandler(logging.Handler):
@@ -63,3 +64,10 @@ def configure_logging() -> None:  # pragma: no cover
         sys.stdout,
         level=settings.log_level.value,
     )
+    if settings.rollbar_token:
+        # Report ERROR and above to Rollbar
+        rollbar_handler = RollbarHandler()
+        rollbar_handler.setLevel(logging.ERROR)
+
+        # Attach Rollbar handler to the root logger
+        logger.add(rollbar_handler)

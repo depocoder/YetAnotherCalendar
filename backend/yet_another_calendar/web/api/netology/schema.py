@@ -1,19 +1,17 @@
 import datetime
-import logging
 import re
 from typing import Annotated, Any
 from urllib.parse import urljoin
 
 from fastapi import Header
 from pydantic import BaseModel, Field, computed_field, model_validator, ConfigDict
+from loguru import logger
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus.schema import ModeusTimeBody
 from yet_another_calendar.web.api.validators import OptionalUTCDate
 
 _DATE_PATTERN = r"(\d{2})\.+(\d{2})\.+(\d{2})"
-logger = logging.getLogger(__name__)
-
 
 class NetologyCreds(BaseModel):
     """Netology creds."""

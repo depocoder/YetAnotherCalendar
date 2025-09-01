@@ -1,16 +1,14 @@
 """Rate limiting utilities for authentication."""
 import json
-import logging
 import time
 from collections.abc import AsyncGenerator
 
 from fastapi import Depends, HTTPException, Request, status
 from redis.asyncio import ConnectionPool, Redis
+from loguru import logger
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.lifespan import get_redis_pool
-
-logger = logging.getLogger(__name__)
 
 
 class LoginRateLimiter:

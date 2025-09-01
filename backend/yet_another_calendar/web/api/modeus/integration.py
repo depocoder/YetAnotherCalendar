@@ -1,5 +1,4 @@
 """Modeus API implementation."""
-import logging
 import re
 from secrets import token_hex
 from typing import Any
@@ -11,6 +10,7 @@ from fastapi import HTTPException
 from fastapi_cache.decorator import cache
 from httpx import URL, AsyncClient
 from starlette import status
+from loguru import logger
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.cache_builder import key_builder
@@ -19,7 +19,6 @@ from .schema import (
     FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusEventsBody,
 )
 
-logger = logging.getLogger(__name__)
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
 
 

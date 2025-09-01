@@ -1,6 +1,5 @@
 import asyncio
 import datetime
-import logging
 from collections.abc import Iterable
 from typing import Any
 
@@ -9,6 +8,8 @@ from fastapi import HTTPException
 from fastapi_cache import FastAPICache
 from fastapi_cache.decorator import cache
 from starlette import status
+from pydantic import ValidationError
+from loguru import logger
 
 from yet_another_calendar.settings import settings
 from . import schema
@@ -20,7 +21,6 @@ from ..netology import schema as netology_schema
 from ..netology import views as netology_views
 from ...cache_builder import key_builder
 
-logger = logging.getLogger(__name__)
 
 
 def create_ics_event(title: str, starts_at: datetime.datetime, ends_at: datetime.datetime,
@@ -86,10 +86,14 @@ async def refresh_events(
     """Clear events cache."""
     cached_json = await get_cached_calendar(body, calendar_id, person_id,
                                             lms_user=lms_user, cookies=cookies, modeus_jwt_token=modeus_jwt_token)
-    cached_calendar = schema.CalendarResponse.model_validate(cached_json)
+    try:
+        cached_calendar = schema.CalendarResponse.model_validate(cached_json)
+    except ValidationError:
+        cached_calendar = None
+        logger.exception(f"Got validation error: {cached_json}")
     calendar = await get_calendar(body, calendar_id, person_id,
                                   lms_user=lms_user, cookies=cookies, modeus_jwt_token=modeus_jwt_token)
-    changed = cached_calendar.get_hash() != calendar.get_hash()
+    changed = cached_calendar.get_hash() != calendar.get_hash() if cached_calendar else True
     try:
         cache_key = key_builder(
             get_cached_calendar, args=(body, calendar_id, person_id), kwargs={},
