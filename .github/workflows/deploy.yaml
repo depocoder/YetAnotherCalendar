@@ -64,6 +64,10 @@ jobs:
                        --cache-to   type=s3,region=$S3_REGION,bucket=$BUCKET_NAME,name=calendar_frontend,access_key_id=$ACCESS_KEY,secret_access_key=$SECRET_KEY \
                        --cache-from type=s3,region=$S3_REGION,bucket=$BUCKET_NAME,name=calendar_frontend,access_key_id=$ACCESS_KEY,secret_access_key=$SECRET_KEY
 
+      - name: Delete unused images
+        run: |
+          docker image prune -a -f --filter "until=24h"
+
   deploy:
     runs-on: ubuntu-latest
     needs: [ build ]
