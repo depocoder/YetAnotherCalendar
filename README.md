@@ -14,6 +14,10 @@
 This product replaces Modeus+LMS calendar & Netology calendar, for better experience and more features.
 YetAnotherCalendar provides a unified interface to manage all your educational events and deadlines in one place.
 
+## Preview
+<img width="2016" height="930" alt="{9C731E20-4F0A-46EC-9C84-F5D204A9A1B2}" src="https://github.com/user-attachments/assets/1abd74fb-1e23-445b-9829-fc4bbdd0b23d" />
+
+
 ## ✨ Features
 
 ### 🔒 **Privacy & Security First**
