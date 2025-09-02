@@ -10,6 +10,7 @@ requires-python = ">=3.12.8,<3.13"
 dependencies = [
     "bcrypt>=4.3.0",
     "beautifulsoup4>=4.13.3",
+    "debugpy>=1.8.16",
     "environs>=14.1.1",
     "fastapi>=0.115.11",
     "fastapi-cache2>=0.2.2",

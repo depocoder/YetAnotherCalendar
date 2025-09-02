@@ -136,6 +136,50 @@ python generate_password_hash.py
 
 Copy the generated hash to your `.env` file as `YET_ANOTHER_CALENDAR_TUTOR_PASSWORD_HASH`.
 
+## 🐛 Debugging
+
+### Python Debug with VS Code
+
+The application includes debugpy integration for remote debugging during development.
+
+#### Setup & Usage
+
+1. **Start the application in debug mode**:
+   ```bash
+   # Set debug mode in .env
+   YET_ANOTHER_CALENDAR_DEBUG=True
+   
+   # Using Docker Compose (recommended)
+   docker compose up --build
+   
+2. **In VS Code**:
+   - Open the project folder containing `.vscode/launch.json`
+   - Go to Run and Debug (Ctrl+Shift+D)
+   - Select "Python debug backend" configuration
+   - Click "Start Debugging" (F5)
+
+#### Configuration Details
+
+- **Debug Port**: 5678 (automatically exposed in Docker)
+- **Path Mapping**: 
+  - Local: `${workspaceFolder}/backend` 
+  - Remote: `/app/src` (inside Docker container)
+- **Connection**: Attaches to running application (not launch mode)
+
+#### When Debug Mode is Active
+
+- Debugpy listens on `0.0.0.0:5678` inside the container
+- Port 5678 is exposed via Docker Compose
+- VS Code can attach and set breakpoints in your backend code
+- `justMyCode: true` - only debug your application code (not libraries)
+
+#### Troubleshooting
+
+- Ensure `YET_ANOTHER_CALENDAR_DEBUG=True` in your `.env` file
+- Check that port 5678 is not used by another process
+- Restart the Docker container after changing debug settings
+- Verify VS Code is using the correct launch configuration
+
 ## 📖 Documentation
 
 ### 📊 **API Documentation**

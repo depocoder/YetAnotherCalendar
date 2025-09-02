@@ -45,8 +45,9 @@ class ModuleState(BaseModel):
         if not isinstance(data, dict):
             return data
         state = data.get('state')
-        if not isinstance(state, int):
-            data['state'] = bool(state)
+        if isinstance(state, int):
+            # if state more than 1 then state is False (we don't know such state)
+            data['state'] = bool(state) if state < 1 else False
         return data
 
 class DateModule(BaseModel):
