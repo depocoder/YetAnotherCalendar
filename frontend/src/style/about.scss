@@ -704,6 +704,17 @@
     100% { transform: rotate(360deg); }
 }
 
+@keyframes subtle-pulse {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+    50% { 
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.15);
+    }
+}
+
 // Contributing Options
 .contributing-options {
     display: grid;
@@ -712,21 +723,56 @@
 }
 
 .contrib-card {
-    background: white;
-    border: 1px solid #e9ecef;
-    border-radius: 12px;
-    padding: 24px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+    border: 2px solid #e9ecef;
+    border-radius: 16px;
+    padding: 32px 24px;
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    
+    // Add a subtle "clickable" indicator
+    &::after {
+        position: absolute;
+        bottom: 8px;
+        right: 12px;
+        font-size: 12px;
+        color: #7b61ff;
+        opacity: 0.7;
+        font-weight: 500;
+        font-family: "Roboto", sans-serif;
+        transition: opacity 0.3s ease;
+    }
 
     &:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 30px rgba(123, 97, 255, 0.15);
+        transform: translateY(-8px);
+        box-shadow: 0 16px 40px rgba(123, 97, 255, 0.2);
         border-color: #7b61ff;
+        background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+
+        &::after {
+            opacity: 1;
+        }
 
         .contrib-icon {
-            transform: scale(1.1);
+            transform: scale(1.15);
+        }
+    }
+
+    // Add subtle pulse animation to make it more obvious
+    &:nth-child(2) { // The "Report Bug" card
+        animation: subtle-pulse 3s ease-in-out infinite;
+        
+        &::after {
+            content: '🐛 Кликните для помощи';
+            color: #dc3545;
         }
     }
 
@@ -1014,7 +1060,14 @@
     .admin-feature,
     .api-card,
     .contrib-card {
-        padding: 16px;
+        padding: 24px 16px;
+        min-height: 160px;
+        
+        &::after {
+            font-size: 10px;
+            bottom: 6px;
+            right: 8px;
+        }
     }
 
     .tech-badge {

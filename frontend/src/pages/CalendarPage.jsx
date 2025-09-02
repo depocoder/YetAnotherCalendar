@@ -166,7 +166,12 @@ const CalendarPage = () => {
 
             } catch (error) {
                 debug.error('Ошибка при получении данных с сервера:', error);
-                toast.error("Ошибка при загрузке расписания. Перезагрузите страницу или войдите заново.");
+                const scheduleError = "Ошибка при загрузке расписания. Мы уже работаем над решением проблемы.";
+                toast.error(
+                    <div>
+                        {scheduleError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                    </div>
+                );
             } finally {
                 setLoading(false);
                 // Небольшая задержка для завершения анимации

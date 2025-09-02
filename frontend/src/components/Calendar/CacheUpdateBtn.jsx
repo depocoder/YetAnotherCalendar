@@ -94,6 +94,13 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
         } catch (error) {
             debug.error('❌ Cache refresh failed:', error);
             setCacheUpdated(false); // Убираем анимацию загрузки при ошибке
+            
+            const cacheError = "Не удалось обновить кэш расписания.";
+            toast.error(
+                <div>
+                    {cacheError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                </div>
+            );
         } finally {
             refreshingRef.current = false;
             localStorage.setItem("refresh_in_progress", "false");

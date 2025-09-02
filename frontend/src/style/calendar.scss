@@ -949,6 +949,33 @@ $color-border-light: #e9ecef;
             transform: translateY(0);
         }
     }
+    
+    .feedback-page-btn {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 14px 28px;
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        
+        &:hover {
+            background: linear-gradient(135deg, #218838 0%, #1f9c8e 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
+    }
 }
 
 .features-modal-footer {

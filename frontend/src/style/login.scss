@@ -5,3 +5,117 @@
       font-weight: 500;
     }
 }
+
+// Privacy Information Section
+.privacy-info-section {
+    margin-top: 32px;
+    padding: 0 20px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.privacy-notice {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f1f8ff 100%);
+    border: 2px solid #2196f3;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(33, 150, 243, 0.1);
+
+    .privacy-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 16px;
+
+        .privacy-icon {
+            font-size: 28px;
+        }
+
+        h3 {
+            font-family: "Roboto", sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1976d2;
+            margin: 0;
+        }
+    }
+
+    p {
+        font-family: "Roboto", sans-serif;
+        font-size: 15px;
+        line-height: 1.5;
+        color: #1565c0;
+        margin: 0;
+    }
+
+    .privacy-link {
+        background: none;
+        border: none;
+        color: #1976d2;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: underline;
+        font-size: inherit;
+        font-family: inherit;
+        padding: 0;
+        margin: 0;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: #0d47a1;
+        }
+    }
+}
+
+// Responsive design for privacy section
+@media (max-width: 768px) {
+    .privacy-info-section {
+        margin-top: 24px;
+        padding: 0 16px;
+    }
+
+    .privacy-notice {
+        padding: 20px;
+
+        .privacy-header {
+            flex-direction: column;
+            gap: 8px;
+
+            .privacy-icon {
+                font-size: 24px;
+            }
+
+            h3 {
+                font-size: 18px;
+            }
+        }
+
+        p {
+            font-size: 14px;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .privacy-info-section {
+        margin-top: 20px;
+        padding: 0 12px;
+    }
+
+    .privacy-notice {
+        padding: 16px;
+
+        .privacy-header {
+            h3 {
+                font-size: 16px;
+            }
+        }
+
+        p {
+            font-size: 13px;
+        }
+    }
+}

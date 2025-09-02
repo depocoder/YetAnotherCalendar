@@ -90,6 +90,16 @@ const FeaturesModal = ({ isOpen, onClose, onOpenGithubModal }) => {
                         </button>
                         
                         <button 
+                            className="feedback-page-btn"
+                            onClick={() => {
+                                window.location.href = '/feedback';
+                            }}
+                            title="Обратная связь и поддержка"
+                        >
+                            🐛 Сообщить об ошибке
+                        </button>
+                        
+                        <button 
                             className="github-star-trigger-btn-modal"
                             onClick={() => {
                                 onClose();

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Login from "../components/login/login";
+import PasswordPrivacyModal from "../components/PasswordPrivacyModal";
 import { loginLms, getModeusPersonId, loginNetology } from "../services/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import '../style/login.scss';
@@ -8,6 +9,7 @@ import { debug } from '../utils/debug';
 
 const LoginPage = () => {
     const [isNetologyLoggedIn, setIsNetologyLoggedIn] = useState(false);
+    const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -40,16 +42,34 @@ const LoginPage = () => {
             }
 
             if (response.status === 400 || response.status === 422) {
-                toast.error("Были переданы неверные данные.");
+                const errorMessage = "Были переданы неверные данные.";
+                toast.error(
+                    <div>
+                        {errorMessage} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                    </div>
+                );
                 return { success: false, message: "Неверные данные." };
             }
 
-            toast.error("Произошла ошибка. Попробуйте снова.");
+            // Fallback for any other 4xx/5xx errors (except 401)
+            const errorMessage = response.status >= 500 
+                ? "Произошла ошибка сервера. Попробуйте позже."
+                : "Произошла ошибка. Попробуйте снова.";
+            toast.error(
+                <div>
+                    {errorMessage} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                </div>
+            );
             return { success: false, message: "Произошла ошибка." };
 
         } catch (error) {
             debug.error("Ошибка при входе в Нетологию:", error);
-            toast.error("Ошибка сети. Попробуйте позже.");
+            const networkError = "Ошибка сети. Попробуйте позже.";
+            toast.error(
+                <div>
+                    {networkError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                </div>
+            );
             return { success: false, message: "Ошибка сети." };
         }
     };
@@ -76,11 +96,24 @@ const LoginPage = () => {
                 }
 
                 if (lmsResponse.status === 400 || lmsResponse.status === 422) {
-                    toast.error("Неверные данные LMS. Проверьте почту.");
+                    const errorMessage = "Неверные данные LMS. Проверьте почту.";
+                    toast.error(
+                        <div>
+                            {errorMessage} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                        </div>
+                    );
                     return { success: false };
                 }
 
-                toast.error("Ошибка входа в LMS. Попробуйте снова.");
+                // Fallback for any other LMS errors (4xx/5xx except 401)
+                const lmsError = lmsResponse.status >= 500 
+                    ? "Ошибка сервера LMS. Попробуйте позже."
+                    : "Ошибка входа в LMS. Попробуйте снова.";
+                toast.error(
+                    <div>
+                        {lmsError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                    </div>
+                );
                 return { success: false };
             }
 
@@ -102,16 +135,34 @@ const LoginPage = () => {
             }
 
             if (modeusResponse.status === 400 || modeusResponse.status === 422) {
-                toast.error("Неверные данные Modeus. Проверьте почту.");
+                const errorMessage = "Неверные данные Modeus. Проверьте почту.";
+                toast.error(
+                    <div>
+                        {errorMessage} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                    </div>
+                );
                 return { success: false };
             }
 
-            toast.error("Ошибка входа в Modeus. Попробуйте снова.");
+            // Fallback for any other Modeus errors (4xx/5xx except 401)
+            const modeusError = modeusResponse.status >= 500 
+                ? "Ошибка сервера Modeus. Попробуйте позже."
+                : "Ошибка входа в Modeus. Попробуйте снова.";
+            toast.error(
+                <div>
+                    {modeusError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                </div>
+            );
             return { success: false };
 
         } catch (error) {
             debug.error("Ошибка при входе в Modeus:", error);
-            toast.error("Ошибка сети при входе в Modeus.");
+            const networkError = "Ошибка сети при входе в Modeus.";
+            toast.error(
+                <div>
+                    {networkError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                </div>
+            );
             return { success: false };
         }
     };
@@ -142,6 +193,31 @@ const LoginPage = () => {
                     formId="modeus"
                 />
             )}
+
+            {/* Privacy Information Section */}
+            <div className="privacy-info-section">
+                <div className="privacy-notice">
+                    <div className="privacy-header">
+                        <span className="privacy-icon">🔐</span>
+                        <h3>Вопросы о безопасности?</h3>
+                    </div>
+                    <p>
+                        Мы понимаем ваши опасения по поводу передачи паролей. &nbsp;
+                        <button 
+                            className="privacy-link" 
+                            onClick={() => setIsPrivacyModalOpen(true)}
+                        >
+                            Узнайте, как мы защищаем ваши данные
+                        </button>
+                    </p>
+                </div>
+            </div>
+
+            {/* Password Privacy Modal */}
+            <PasswordPrivacyModal 
+                isOpen={isPrivacyModalOpen} 
+                onClose={() => setIsPrivacyModalOpen(false)} 
+            />
         </div>
     );
 };

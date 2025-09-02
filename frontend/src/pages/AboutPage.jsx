@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import FeedbackModal from '../components/FeedbackModal';
 import '../style/about.scss';
 
 const AboutPage = () => {
     const [commits, setCommits] = useState(null);
     const [commitsError, setCommitsError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
     const fetchCommits = async () => {
         setIsLoading(true);
@@ -385,10 +387,10 @@ const AboutPage = () => {
                             <h4>Поставьте звезду</h4>
                             <p>Самый простой способ поддержать проект - поставить звезду на GitHub</p>
                         </div>
-                        <div className="contrib-card">
+                        <div className="contrib-card" onClick={() => setIsFeedbackModalOpen(true)}>
                             <span className="contrib-icon">🐛</span>
                             <h4>Сообщите об ошибке</h4>
-                            <p>Нашли баг? Создайте issue в GitHub репозитории с подробным описанием</p>
+                            <p>Нашли баг? Сообщите нам через GitHub или Telegram сообщество</p>
                         </div>
                         <div className="contrib-card">
                             <span className="contrib-icon">💡</span>
@@ -545,6 +547,12 @@ const AboutPage = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Feedback Modal */}
+            <FeedbackModal 
+                isOpen={isFeedbackModalOpen} 
+                onClose={() => setIsFeedbackModalOpen(false)} 
+            />
         </div>
     );
 };

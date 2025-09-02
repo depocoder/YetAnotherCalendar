@@ -5,6 +5,7 @@ import CalendarPage from './pages/CalendarPage';
 import ModeusDaySchedulePage from './pages/ModeusDaySchedulePage';
 import TutorLoginPage from './pages/TutorLoginPage';
 import AboutPage from './pages/AboutPage';
+import FeedbackPage from './pages/FeedbackPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PrivateRoute from "./elements/PrivateRoute";
 import TutorPrivateRoute from "./elements/TutorPrivateRoute";
@@ -42,6 +43,8 @@ const App = () => {
                 />
                 {/* About page */}
                 <Route path="/about" element={<AboutPage />} />
+                {/* Feedback page */}
+                <Route path="/feedback" element={<FeedbackPage />} />
                 {/* 404 страница */}
                 <Route path="/404" element={<NotFoundPage />} />
                 {/* Дефолтный маршрут, который перенаправляет на /login */}

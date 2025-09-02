@@ -1,0 +1,675 @@
+.feedback-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+}
+
+// Hero Section
+.feedback-hero {
+    background: linear-gradient(135deg, #7b61ff 0%, #5856d6 100%);
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .feedback-hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+
+        h1 {
+            font-family: "Unbounded", sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            letter-spacing: -1px;
+        }
+
+        .feedback-hero-subtitle {
+            font-size: 24px;
+            font-weight: 500;
+            margin: 0 0 24px 0;
+            opacity: 0.9;
+        }
+
+        .feedback-hero-description {
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 0;
+            opacity: 0.8;
+        }
+    }
+}
+
+// Common container and section styles
+.feedback-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.feedback-section {
+    padding: 80px 0;
+
+    &.alt {
+        background: #f8f9fa;
+    }
+
+    h2 {
+        font-family: "Roboto", sans-serif;
+        font-size: 36px;
+        font-weight: 700;
+        text-align: center;
+        margin: 0 0 48px 0;
+        color: #2c2d2e;
+    }
+}
+
+// Development Status Notice
+.status-notice {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffffff 100%);
+    border: 1px solid #ffeaa7;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(255, 193, 7, 0.1);
+
+    .notice-header {
+        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        color: white;
+        padding: 24px 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .notice-icon {
+            font-size: 32px;
+        }
+
+        h2 {
+            font-family: "Roboto", sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            text-align: left;
+            color: white;
+        }
+    }
+
+    .notice-content {
+        padding: 32px;
+
+        p {
+            font-family: "Roboto", sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #495057;
+            margin: 0 0 24px 0;
+
+            strong {
+                color: #7b61ff;
+                font-weight: 600;
+            }
+        }
+
+        .api-warning {
+            background: #f8f9ff;
+            border: 1px solid #7b61ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+
+            h4 {
+                font-family: "Roboto", sans-serif;
+                font-size: 18px;
+                font-weight: 600;
+                color: #7b61ff;
+                margin: 0 0 12px 0;
+            }
+
+            p {
+                font-size: 14px;
+                margin: 0;
+                color: #495057;
+            }
+        }
+    }
+}
+
+// Feedback Options Grid
+.feedback-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 32px;
+}
+
+.feedback-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+        border-color: #7b61ff;
+    }
+
+    &.primary {
+        border: 2px solid #7b61ff;
+        
+        .card-header {
+            background: linear-gradient(135deg, #7b61ff 0%, #5856d6 100%);
+        }
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        color: white;
+        padding: 24px 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .card-icon {
+            font-size: 32px;
+        }
+
+        h3 {
+            font-family: "Roboto", sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+    }
+
+    .card-content {
+        padding: 32px;
+
+        p {
+            font-family: "Roboto", sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #495057;
+            margin: 0 0 24px 0;
+        }
+
+        .card-benefits {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 24px 0;
+
+            li {
+                font-family: "Roboto", sans-serif;
+                font-size: 14px;
+                color: #495057;
+                margin-bottom: 8px;
+                padding-left: 8px;
+            }
+        }
+    }
+
+    .card-actions {
+        padding: 0 32px 32px 32px;
+    }
+}
+
+// Buttons
+.feedback-btn {
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &.primary {
+        background: linear-gradient(135deg, #7b61ff 0%, #5856d6 100%);
+        color: white;
+        
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(123, 97, 255, 0.3);
+        }
+    }
+
+    &.secondary {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+    }
+}
+
+// Privacy & Security Section
+.privacy-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 32px;
+}
+
+.privacy-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    gap: 20px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        border-color: #7b61ff;
+    }
+
+    .privacy-icon {
+        font-size: 40px;
+        color: #7b61ff;
+        flex-shrink: 0;
+    }
+
+    .privacy-content {
+        flex: 1;
+
+        h4 {
+            font-family: "Roboto", sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c2d2e;
+            margin: 0 0 12px 0;
+        }
+
+        p {
+            font-family: "Roboto", sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #495057;
+            margin: 0 0 16px 0;
+
+            strong {
+                color: #7b61ff;
+                font-weight: 600;
+            }
+        }
+
+        .code-ref {
+            font-family: "Roboto Mono", monospace;
+            font-size: 12px;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            margin-top: 12px;
+
+            code {
+                color: #7b61ff;
+                font-weight: 600;
+            }
+        }
+
+        .code-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #7b61ff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s ease;
+
+            &:hover {
+                color: #5856d6;
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+// Privacy Details (collapsible)
+.privacy-details {
+    margin-top: 16px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+
+    summary {
+        background: #f8f9fa;
+        padding: 12px 16px;
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #7b61ff;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background: #e9ecef;
+        }
+    }
+
+    .scrub-list {
+        padding: 16px;
+        background: white;
+
+        p {
+            margin: 0 0 12px 0;
+            font-size: 13px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 16px 0;
+
+            li {
+                font-size: 12px;
+                color: #495057;
+                margin-bottom: 6px;
+                padding-left: 8px;
+            }
+        }
+    }
+}
+
+// Tips & Troubleshooting
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.tip-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: #7b61ff;
+    }
+
+    h4 {
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c2d2e;
+        margin: 0 0 12px 0;
+    }
+
+    p {
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #495057;
+        margin: 0;
+    }
+}
+
+// Footer
+.feedback-footer {
+    background: linear-gradient(135deg, #2c2d2e 0%, #1a1e22 100%);
+    color: white;
+    padding: 60px 0;
+
+    .footer-actions {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+    }
+
+    .footer-btn {
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        min-width: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        &.primary {
+            background: linear-gradient(135deg, #7b61ff 0%, #5856d6 100%);
+            color: white;
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(123, 97, 255, 0.3);
+            }
+        }
+
+        &.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+            }
+        }
+    }
+
+    .footer-info {
+        text-align: center;
+
+        p {
+            font-family: "Roboto", sans-serif;
+            font-size: 16px;
+            margin: 0;
+            opacity: 0.8;
+        }
+    }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+    .feedback-hero {
+        padding: 60px 20px;
+
+        .feedback-hero-content {
+            h1 {
+                font-size: 36px;
+            }
+
+            .feedback-hero-subtitle {
+                font-size: 20px;
+            }
+
+            .feedback-hero-description {
+                font-size: 16px;
+            }
+        }
+    }
+
+    .feedback-section {
+        padding: 60px 0;
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 32px;
+        }
+    }
+
+    .feedback-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .feedback-card {
+        .card-header {
+            padding: 20px 24px;
+            flex-direction: column;
+            text-align: center;
+            gap: 12px;
+
+            .card-icon {
+                font-size: 28px;
+            }
+
+            h3 {
+                font-size: 18px;
+            }
+        }
+
+        .card-content {
+            padding: 24px;
+
+            p {
+                font-size: 14px;
+            }
+        }
+
+        .card-actions {
+            padding: 0 24px 24px 24px;
+        }
+    }
+
+    .privacy-info {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .privacy-card {
+        padding: 24px;
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+
+        .privacy-content {
+            h4 {
+                font-size: 18px;
+            }
+        }
+    }
+
+    .tips-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .tip-item {
+        padding: 20px;
+
+        h4 {
+            font-size: 14px;
+        }
+
+        p {
+            font-size: 13px;
+        }
+    }
+
+    .status-notice {
+        .notice-header {
+            padding: 20px 24px;
+            flex-direction: column;
+            text-align: center;
+            gap: 12px;
+
+            .notice-icon {
+                font-size: 28px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+        }
+
+        .notice-content {
+            padding: 24px;
+
+            .api-warning {
+                padding: 16px;
+
+                h4 {
+                    font-size: 16px;
+                }
+            }
+        }
+    }
+
+    .footer-actions {
+        flex-direction: column;
+        align-items: center;
+
+        .footer-btn {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .feedback-container {
+        padding: 0 16px;
+    }
+
+    .feedback-hero {
+        padding: 40px 16px;
+
+        .feedback-hero-content {
+            h1 {
+                font-size: 28px;
+            }
+
+            .feedback-hero-subtitle {
+                font-size: 18px;
+            }
+        }
+    }
+
+    .feedback-section {
+        padding: 40px 0;
+    }
+
+    .feedback-card,
+    .privacy-card,
+    .tip-item {
+        padding: 16px;
+    }
+
+    .status-notice {
+        .notice-header {
+            padding: 16px 20px;
+        }
+
+        .notice-content {
+            padding: 20px;
+        }
+    }
+}

@@ -58,7 +58,12 @@ const ICSExporter = ({ date }) => {
             URL.revokeObjectURL(url);
         } catch (error) {
             debug.error("Ошибка экспорта .ics:", error);
-            toast.error("Не удалось экспортировать расписание. Попробуйте позже.");
+            const exportError = "Не удалось экспортировать расписание. Попробуйте позже.";
+            toast.error(
+                <div>
+                    {exportError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                </div>
+            );
         } finally {
             setLoading(false);
         }
