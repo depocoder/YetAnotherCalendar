@@ -46,7 +46,7 @@ const PasswordPrivacyModal = ({ isOpen, onClose }) => {
                     </div>
                     
                     <div className="privacy-section">
-                        <div className="privacy-item highlight">
+                        <div className="privacy-item">
                             <span className="privacy-icon">🛡️</span>
                             <div className="privacy-text">
                                 <h3>Мы НЕ храним ваши пароли!</h3>
@@ -84,7 +84,7 @@ const PasswordPrivacyModal = ({ isOpen, onClose }) => {
                             </div>
                         </div>
 
-                        <div className="privacy-item warning">
+                        <div className="privacy-item">
                             <span className="privacy-icon">⚠️</span>
                             <div className="privacy-text">
                                 <h4>Почему нужен пароль?</h4>
@@ -98,13 +98,13 @@ const PasswordPrivacyModal = ({ isOpen, onClose }) => {
                             </div>
                         </div>
 
-                        <div className="privacy-item trust">
+                        <div className="privacy-item">
                             <span className="privacy-icon">🌍</span>
                             <div className="privacy-text">
                                 <h4>Хотите убедиться?</h4>
                                 <p>Проект полностью открытый! Вы можете:</p>
                                 <ul>
-                                    <li>📂 <a href="https://github.com/depocoder/YetAnotherCalendar" target="_blank" rel="noopener noreferrer">Изучить исходный код</a></li>
+                                    <li>🐙 <a href="https://github.com/depocoder/YetAnotherCalendar" target="_blank" rel="noopener noreferrer">Изучить исходный код</a></li>
                                     <li>🏠 Поднять проект локально у себя</li>
                                     <li>🔍 Убедиться, что мы действительно не храним пароли</li>
                                 </ul>
@@ -112,14 +112,6 @@ const PasswordPrivacyModal = ({ isOpen, onClose }) => {
                         </div>
                     </div>
 
-                    <div className="privacy-tech-info">
-                        <h3>🔧 Техническая реализация</h3>
-                        <p>
-                            Система построена на FastAPI с Redis кэшированием. Все чувствительные данные 
-                            автоматически удаляются из памяти после использования. Мониторинг ошибок 
-                            ведется через Rollbar с полным исключением персональных данных.
-                        </p>
-                    </div>
                 </div>
 
                 <div className="modal-footer">
@@ -131,18 +123,18 @@ const PasswordPrivacyModal = ({ isOpen, onClose }) => {
                             📚 О проекте
                         </button>
                         <button 
+                            className="privacy-modal-btn privacy-modal-btn--primary"
+                            onClick={onClose}
+                        >
+                            ✅ Понятно, спасибо
+                        </button>
+                        <button 
                             className="privacy-modal-btn privacy-modal-btn--github"
                             onClick={() => window.open('https://github.com/depocoder/YetAnotherCalendar', '_blank')}
                         >
-                            📂 GitHub
+                            🐙 GitHub
                         </button>
-                    </div>                    
-                    <div className="footer-info">
-                        <p>
-                            💡 <strong>Открытый исходный код:</strong> Вся безопасность проверяема. 
-                            Поднимите проект локально или изучите код для полной уверенности.
-                        </p>
-                    </div>
+                    </div>                     
                 </div>
             </div>
         </div>
