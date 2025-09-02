@@ -22,13 +22,14 @@ import { getCurrentWeekDates } from "../utils/dateUtils";
 import EventsDetail from "../components/Calendar/EventsDetail";
 import EventModal from "../components/Calendar/EventModal";
 import MobileCalendarView from "../components/Calendar/MobileCalendarView";
-import MobileBurgerMenu from "../components/Calendar/MobileBurgerMenu";
 import DeadLine from "../components/Calendar/DeadLine";
 import DaysNumber from "../components/Calendar/DaysNumber";
 import LessonTimes from "../components/Calendar/LessonTimes";
 import GitHubStarModal from "../components/GitHubStarModal";
 import FeaturesModal from "../components/FeaturesModal";
 import { debug } from "../utils/debug";
+import { useNavigate } from "react-router-dom";
+import { clearWithBackup } from "../utils/localStorageBackup";
 
 
 const CalendarPage = () => {
@@ -41,7 +42,16 @@ const CalendarPage = () => {
     const [showFeaturesModal, setShowFeaturesModal] = useState(false);
     const [mtsUrls, setMtsUrls] = useState({});
 
+    const navigate = useNavigate();
     const lastFetchedDate = useRef(null);
+
+    const handleMobileLogout = () => {
+        toast.info("Вы вышли из системы.");
+        setTimeout(() => {
+            clearWithBackup();
+            navigate("/login");
+        }, 100);
+    };
 
     // Проверяем, нужно ли показать модальное окно GitHub Star
     useEffect(() => {
@@ -246,6 +256,13 @@ const CalendarPage = () => {
                             title="Узнать больше о возможностях"
                         >
                             ✨ О проекте
+                        </button>
+                        <button 
+                            className="features-trigger-btn mobile-features-btn"
+                            onClick={handleMobileLogout}
+                            title="Выйти из системы"
+                        >
+                            🚪 Выйти
                         </button>
                     </div>
                     <SimpleDatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
