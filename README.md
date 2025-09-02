@@ -14,24 +14,6 @@
 This product replaces Modeus+LMS calendar & Netology calendar, for better experience and more features.
 YetAnotherCalendar provides a unified interface to manage all your educational events and deadlines in one place.
 
-## 🔥 **Recent Updates**
-
-### 🎯 **MAJOR BETA**: Mobile Frontend (Latest)
-- **📱 Mobile-First Calendar**: New responsive mobile interface with touch-optimized interactions
-- **🗓️ Enhanced Date Picker**: Improved week navigation with Russian localization and custom formatting
-- **📋 Rich Event Modals**: Detailed event information with source attribution and quick actions
-- **⚡ Smart Caching**: Visual cache status indicators and manual refresh capabilities
-
-### 🔒 **Production Ready**: Rollbar Integration  
-- **🛡️ Error Monitoring**: Production-grade error tracking with sensitive data protection
-- **🔐 Security Hardening**: Comprehensive field scrubbing for all authentication tokens and user data
-- **📊 Performance Insights**: Real-time application health monitoring and alerting
-
-### 🎨 **UI/UX Improvements**
-- **📅 Advanced Tooltips**: Contextual help text for all major features and export options
-- **🎯 Improved Styling**: Enhanced component styling with better visual hierarchy
-- **📱 Mobile Optimization**: Responsive calendar view and mobile-optimized controls
-
 ## ✨ Features
 
 ### 🔒 **Privacy & Security First**
@@ -146,3 +128,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📄 License
 
 This project is licensed under the GNU General Public License v3.0 - see the LICENSE file for details.
+
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=depocoder/YetAnotherCalendar&type=Date)](https://www.star-history.com/#depocoder/YetAnotherCalendar&Date)
