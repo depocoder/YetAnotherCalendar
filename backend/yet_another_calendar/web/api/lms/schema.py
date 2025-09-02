@@ -39,6 +39,15 @@ class Course(BaseModel):
 class ModuleState(BaseModel):
     state: bool
 
+    @model_validator(mode='before')
+    @classmethod
+    def state_validation(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        state = data.get('state')
+        if not isinstance(state, int):
+            data['state'] = bool(state)
+        return data
 
 class DateModule(BaseModel):
     label: str
