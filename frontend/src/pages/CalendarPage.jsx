@@ -16,6 +16,7 @@ import '../style/calendar.scss';
 import DatePicker from "../components/Calendar/DataPicker";
 import SimpleDatePicker from "../components/Calendar/SimpleDatePicker";
 import ExitBtn from "../components/Calendar/ExitBtn";
+import { exitApp } from "../utils/auth";
 import ICSExporter from "../components/Calendar/ICSExporter";
 import CacheUpdateBtn from "../components/Calendar/CacheUpdateBtn";
 import { getCurrentWeekDates } from "../utils/dateUtils";
@@ -29,7 +30,6 @@ import GitHubStarModal from "../components/GitHubStarModal";
 import FeaturesModal from "../components/FeaturesModal";
 import { debug } from "../utils/debug";
 import { useNavigate } from "react-router-dom";
-import { clearWithBackup } from "../utils/localStorageBackup";
 
 
 const CalendarPage = () => {
@@ -46,12 +46,30 @@ const CalendarPage = () => {
     const lastFetchedDate = useRef(null);
 
     const handleMobileLogout = () => {
-        toast.info("Вы вышли из системы.");
-        setTimeout(() => {
-            clearWithBackup();
-            navigate("/login");
-        }, 100);
+        exitApp(navigate);
     };
+
+    // Проверяем наличие всех необходимых токенов при загрузке страницы
+    useEffect(() => {
+        const requiredTokens = {
+            'calendarId': getCalendarIdLocalStorage(),
+            'lms-id': getLMSIdFromLocalStorage(),
+            'lms-token': getLMSTokenFromLocalStorage(),
+            'modeus_person_id': getModeusPersonIdFromLocalStorage(),
+            'token': getTokenFromLocalStorage()
+        };
+
+        const missingTokens = Object.entries(requiredTokens)
+            .filter(([, value]) => !value)
+            .map(([key]) => key);
+
+        if (missingTokens.length > 0) {
+            debug.error('Missing required tokens:', missingTokens);
+            toast.error("Отсутствуют данные авторизации. Необходимо войти заново.");
+            exitApp(navigate);
+            return;
+        }
+    }, [navigate]);
 
     // Проверяем, нужно ли показать модальное окно GitHub Star
     useEffect(() => {
@@ -166,6 +184,14 @@ const CalendarPage = () => {
 
             } catch (error) {
                 debug.error('Ошибка при получении данных с сервера:', error);
+                
+                // Проверяем на ошибки авторизации (401, 403)
+                if (error?.response?.status === 401 || error?.response?.status === 403) {
+                    toast.error("Сессия истекла. Необходимо войти заново.");
+                    exitApp(navigate);
+                    return;
+                }
+                
                 const scheduleError = "Ошибка при загрузке расписания. Мы уже работаем над решением проблемы.";
                 toast.error(
                     <div>

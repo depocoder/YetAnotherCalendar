@@ -1,22 +1,17 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
-import { clearWithBackup } from '../../utils/localStorageBackup';
+import { exitApp } from '../../utils/auth';
 import cross from "../../img/cross.png";
 
 const ExitBtn = () => {
     const navigate = useNavigate();
 
-    const exitApp = () => {
-        toast.info("Вы вышли из системы.");
-        setTimeout(() => {
-            clearWithBackup();
-            navigate("/login");
-        }, 100); // ⏱ Даём время на показ уведомления
+    const handleExit = () => {
+        exitApp(navigate);
     };
 
     return (
-        <div className="exit-btn" onClick={exitApp}>
+        <div className="exit-btn" onClick={handleExit}>
             Выйти
             <img className="exit-btn-cross" src={cross} alt="exit" />
         </div>

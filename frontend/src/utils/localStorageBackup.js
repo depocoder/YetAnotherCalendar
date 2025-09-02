@@ -10,7 +10,8 @@ const PERSISTENT_KEYS = [
     'githubStarRemindDate',    // Дата напоминания о GitHub звезде
     'calendarFirstVisit',       // Дата первого визита в календарь
     'deadlinesVisible',        // Флаг видимости дедлайнов
-    'DebugEnabled'            // Флаг включения отладочных сообщений
+    'DebugEnabled',            // Флаг включения отладочных сообщений
+    'modeusSelectedYear'      // Выбранный год в Модеус
 ];
 
 /**

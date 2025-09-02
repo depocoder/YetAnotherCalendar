@@ -42,7 +42,7 @@ const Login = ({ onLogin, title, name, formId }) => {
                     type="email"
                     id={`email-${formId}`}
                     name="email"
-                    placeholder={`Логин от ${name}`}
+                    placeholder={formId === 'modeus' ? 'stud0000209025@study.utmn.ru' : `Логин от ${name}`}
                     autoComplete="username"
                     aria-label={`Login ${name}`}
                     onChange={(e) => setEmail(e.target.value)}

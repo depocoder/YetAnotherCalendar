@@ -2,9 +2,10 @@ from importlib import metadata
 from pathlib import Path
 from typing import Any
 
+import json
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import UJSONResponse, JSONResponse
+from fastapi.responses import UJSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from httpx import HTTPError
@@ -60,14 +61,17 @@ async def request_error_exception_handler(request: Request, exc: HTTPError) -> R
         content=f"Oops! Api changed: {exc}",
     )
 
-
 async def request_validation_exception_handler(request: Request, exc: RequestValidationError) -> Response:
     logger.opt(exception=exc).error(f"Validation error: {exc}. errors: {exc.errors()}")
     
-    return JSONResponse(
-        status_code=422,
-        content={"detail": exc.errors()},
-    )
+    try:
+        errors = json.loads(json.dumps(exc.errors()))
+    except TypeError:
+        errors = str(exc.errors())
+    return UJSONResponse(
+            status_code=422,
+            content={"detail": errors},
+            )
 
 def get_app() -> FastAPI:
     """

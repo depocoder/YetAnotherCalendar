@@ -13,7 +13,16 @@ import { debug } from '../utils/debug';
 
 const ModeusDaySchedulePage = () => {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-    const [selectedYear, setSelectedYear] = useState([2024]);
+    const [selectedYear, setSelectedYear] = useState(() => {
+        try {
+            const saved = localStorage.getItem('modeusSelectedYear');
+            return saved ? JSON.parse(saved) : [2024];
+        } catch (error) {
+            debug.error('Error parsing modeusSelectedYear from localStorage:', error);
+            localStorage.removeItem('modeusSelectedYear');
+            return [2024];
+        }
+    });
     const [profileName, setProfileName] = useState(["Разработка IT-продуктов и информационных систем"]);
     const [specialtyCode, setSpecialtyCode] = useState(["09.03.02"]);
     const [events, setEvents] = useState([]);
@@ -130,6 +139,7 @@ const ModeusDaySchedulePage = () => {
     const handleYearChange = (e) => {
         const value = Array.from(e.target.selectedOptions, option => parseInt(option.value));
         setSelectedYear(value);
+        localStorage.setItem('modeusSelectedYear', JSON.stringify(value));
     };
 
     const handleProfileChange = (e) => {
