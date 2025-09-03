@@ -59,9 +59,12 @@ const CalendarPage = () => {
             'token': getTokenFromLocalStorage()
         };
 
-        const missingTokens = Object.entries(requiredTokens)
-            .filter(([, value]) => !value)
-            .map(([key]) => key);
+        const missingTokens = [];
+        for (const [key, value] of Object.entries(requiredTokens)) {
+            if (!value) {
+                missingTokens.push(key);
+            }
+        }
 
         if (missingTokens.length > 0) {
             debug.error('Missing required tokens:', missingTokens);

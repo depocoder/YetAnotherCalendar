@@ -130,6 +130,7 @@ const apiRequest = async (endpoint, {
 };
 
 export const bulkEvents = (params) => {
+    debug.log('bulkEvents', params);
     return apiRequest('/api/bulk/events/', params);
 };
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Login from "../components/login/login";
 import PasswordPrivacyModal from "../components/PasswordPrivacyModal";
-import { loginLms, getModeusPersonId, loginNetology } from "../services/api";
+import { loginLms, getModeusPersonId, loginNetology, getNetologyCourse } from "../services/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import '../style/login.scss';
 import { toast } from 'react-toastify';
@@ -18,7 +18,10 @@ const LoginPage = () => {
             const response = await loginNetology(email, password);
 
             if (response.status === 200) {
-                localStorage.setItem('token', response.data["_netology-on-rails_session"]);
+                const token = response.data["_netology-on-rails_session"];
+                localStorage.setItem('token', token);
+                const courseData = await getNetologyCourse(token);
+                localStorage.setItem('calendarId', courseData?.id);
                 setIsNetologyLoggedIn(true);
                 navigate("/login/modeus");
                 return { success: true };
@@ -77,51 +80,7 @@ const LoginPage = () => {
     const handleModeusLogin = async (email, password) => {
         try {
             const modeusResponse = await getModeusPersonId(email, password);
-
-            if (modeusResponse.status === 200) {
-                localStorage.setItem('modeus_person_id', modeusResponse.data);
-
-                const lmsResponse = await loginLms(email, password);
-
-                if (lmsResponse.status === 200) {
-                    localStorage.setItem('lms-id', lmsResponse.data.id);
-                    localStorage.setItem('lms-token', lmsResponse.data.token);
-                    navigate("/");
-                    return { success: true };
-                }
-
-                if (lmsResponse.status === 401) {
-                    toast.error("Неверный логин или пароль для LMS Нетологии.");
-                    return { success: false };
-                }
-
-                if (lmsResponse.status === 400 || lmsResponse.status === 422) {
-                    const errorMessage = "Неверные данные LMS. Проверьте почту.";
-                    toast.error(
-                        <div>
-                            {errorMessage} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
-                        </div>
-                    );
-                    return { success: false };
-                }
-
-                // Fallback for any other LMS errors (4xx/5xx except 401)
-                const lmsError = lmsResponse.status >= 500 
-                    ? "Ошибка сервера LMS. Попробуйте позже."
-                    : "Ошибка входа в LMS. Попробуйте снова.";
-                toast.error(
-                    <div>
-                        {lmsError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
-                    </div>
-                );
-                return { success: false };
-            }
-
-            if (modeusResponse.status === 401) {
-                toast.error("Неверный логин или пароль для Modeus.");
-                return { success: false };
-            }
-
+            
             if (modeusResponse.status === 429) {
                 const detail = modeusResponse.data?.detail || '';
                 // Извлекаем время из английского сообщения
@@ -134,26 +93,48 @@ const LoginPage = () => {
                 return { success: false };
             }
 
+            if (modeusResponse.status === 401) {
+                toast.error("Неверный логин или пароль для Modeus.");
+                return { success: false };
+            }
             if (modeusResponse.status === 400 || modeusResponse.status === 422) {
-                const errorMessage = "Неверные данные Modeus. Проверьте почту.";
-                toast.error(
-                    <div>
-                        {errorMessage} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
-                    </div>
-                );
+                toast.error("Неверные данные Modeus. Проверьте почту и пароль.");
+                return { success: false };
+            }
+            if (modeusResponse.status >= 400) {
+                toast.error("Произошла ошибка Modeus. Попробуйте позже.");
                 return { success: false };
             }
 
-            // Fallback for any other Modeus errors (4xx/5xx except 401)
-            const modeusError = modeusResponse.status >= 500 
-                ? "Ошибка сервера Modeus. Попробуйте позже."
-                : "Ошибка входа в Modeus. Попробуйте снова.";
+            localStorage.setItem('modeus_person_id', modeusResponse.data);
+
+            const lmsResponse = await loginLms(email, password);
+            if (lmsResponse.status === 401) {
+                toast.error("Неверный логин или пароль для LMS Нетологии.");
+                return { success: false };
+            }
+
+            if (lmsResponse.status === 400 || lmsResponse.status === 422) {
+                const errorMessage = "Неверные данные LMS. Проверьте почту.";
             toast.error(
                 <div>
-                    {modeusError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
+                    {errorMessage} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
                 </div>
             );
-            return { success: false };
+                return { success: false };
+            }
+            if (lmsResponse.status >= 400) {
+                toast.error("Произошла ошибка LMS. Попробуйте позже.");
+                return { success: false };
+            }
+
+            localStorage.setItem('lms-id', lmsResponse.data.id);
+            localStorage.setItem('lms-token', lmsResponse.data.token);
+            
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            navigate("/");
+            return { success: true };
 
         } catch (error) {
             debug.error("Ошибка при входе в Modeus:", error);
