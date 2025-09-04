@@ -193,7 +193,7 @@ async def get_day_events(jwt: str, payload: dict[str, str]) -> list[FullEvent]:
         resp.raise_for_status()
 
     calendar = ModeusCalendar.model_validate_json(resp.text)
-    return calendar.serialize_modeus_response(skip_lxp=False)
+    return calendar.serialize_modeus_response(skip_lxp=False, skip_not_netology=True)
 
 async def get_person_id_depends(
     creds: Creds,

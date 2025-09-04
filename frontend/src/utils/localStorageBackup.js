@@ -11,7 +11,8 @@ const PERSISTENT_KEYS = [
     'calendarFirstVisit',       // Дата первого визита в календарь
     'deadlinesVisible',        // Флаг видимости дедлайнов
     'DebugEnabled',            // Флаг включения отладочных сообщений
-    'modeusSelectedYear'      // Выбранный год в Модеус
+    'modeusSelectedYear',      // Выбранный год в Модеус
+    'autoGenerateMessage'      // Флаг автоматического генерации сообщения
 ];
 
 /**

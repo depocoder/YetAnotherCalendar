@@ -31,6 +31,17 @@ const ModeusDaySchedulePage = () => {
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [mtsUrls, setMtsUrls] = useState({});
     const [expandedGroups, setExpandedGroups] = useState({});
+    const [showMessageModal, setShowMessageModal] = useState(false);
+    const [generatedMessage, setGeneratedMessage] = useState('');
+    const [autoGenerateMessage, setAutoGenerateMessage] = useState(() => {
+        try {
+            const saved = localStorage.getItem('autoGenerateMessage');
+            return saved ? JSON.parse(saved) : false;
+        } catch (error) {
+            debug.error('Error parsing autoGenerateMessage from localStorage:', error);
+            return false;
+        }
+    });
 
     // Генерируем список годов (2023-2026)
     const yearOptions = [];
@@ -152,6 +163,21 @@ const ModeusDaySchedulePage = () => {
         setSpecialtyCode(value);
     };
 
+    const handleAutoGenerateChange = (e) => {
+        const isChecked = e.target.checked;
+        setAutoGenerateMessage(isChecked);
+        
+        try {
+            if (isChecked) {
+                localStorage.setItem('autoGenerateMessage', JSON.stringify(true));
+            } else {
+                localStorage.removeItem('autoGenerateMessage');
+            }
+        } catch (error) {
+            debug.error('Error saving autoGenerateMessage to localStorage:', error);
+        }
+    };
+
     const handleLinkInputChange = (eventId, value) => {
         setLinkInputs(prev => {
             const updated = { ...prev, [eventId]: value };
@@ -219,26 +245,35 @@ const ModeusDaySchedulePage = () => {
             }
         }
 
-        // Очищаем успешно сохраненные ссылки
-        if (successCount > 0) {
-            setLinkInputs(prev => {
-                const newInputs = { ...prev };
-                for (const [eventId] of linksToSave) {
-                    newInputs[eventId] = '';
-                }
-                return newInputs;
-            });
-        }
+        // Не очищаем ссылки после сохранения, чтобы пользователь мог генерировать сообщение повторно
+        // if (successCount > 0) {
+        //     setLinkInputs(prev => {
+        //         const newInputs = { ...prev };
+        //         for (const [eventId] of linksToSave) {
+        //             newInputs[eventId] = '';
+        //         }
+        //         return newInputs;
+        //     });
+        // }
 
         // Показываем результат
         if (successCount > 0 && errorCount === 0) {
             toast.success(`✅ Все ссылки сохранены! (${successCount})`);
+            
+            // Generate and show message only if auto-generate is enabled
+            if (autoGenerateMessage) {
+                const message = generateScheduleMessage(events, linkInputs);
+                setGeneratedMessage(message);
+                setShowMessageModal(true);
+            }
+            
         } else if (successCount > 0 && errorCount > 0) {
             toast.warning(`⚠️ Сохранено: ${successCount}, ошибок: ${errorCount}`);
         } else {
             toast.error(`❌ Не удалось сохранить ссылки (${errorCount} ошибок)`);
         }
     };
+
 
     const formatTime = (dateTimeString) => {
         return new Date(dateTimeString).toLocaleTimeString('ru-RU', {
@@ -253,6 +288,244 @@ const ModeusDaySchedulePage = () => {
             month: 'long',
             year: 'numeric'
         });
+    };
+
+    const formatDateForMessage = (dateString) => {
+        const date = new Date(dateString);
+        const months = [
+            'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+            'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+        ];
+        const weekdays = [
+            'воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'
+        ];
+        
+        const day = date.getDate();
+        const month = months[date.getMonth()];
+        const weekday = weekdays[date.getDay()];
+        
+        return `${day} ${month}, ${weekday}`;
+    };
+
+    const generateScheduleMessage = (eventsData, linksData) => {
+        // Input validation
+        if (!eventsData || !Array.isArray(eventsData)) {
+            return "Ошибка: нет данных о событиях";
+        }
+        
+        // Helper function to safely get event properties
+        const getEventProperty = (event, path, fallback = '') => {
+            try {
+                return path.split('.').reduce((obj, key) => obj?.[key], event) || fallback;
+            } catch {
+                return fallback;
+            }
+        };
+        
+        // Helper function to format teacher names (Фамилия Имя Отчество -> Фамилия И. О.)
+        const formatTeacherName = (fullName) => {
+            if (!fullName || typeof fullName !== 'string') return '';
+            
+            const nameParts = fullName.trim().split(/\s+/);
+            if (nameParts.length < 2) return fullName; // Return as is if less than 2 parts
+            
+            const [lastName, firstName, middleName] = nameParts;
+            let formattedName = lastName;
+            
+            if (firstName) {
+                formattedName += ` ${firstName.charAt(0).toUpperCase()}.`;
+            }
+            
+            if (middleName) {
+                formattedName += ` ${middleName.charAt(0).toUpperCase()}.`;
+            }
+            
+            return formattedName;
+        };
+        
+        // Separate LXP and regular events
+        const regularEvents = eventsData.filter(event => 
+            event?.id && !event.is_lxp
+        );
+        const lxpEvents = eventsData.filter(event => 
+            event?.id && event.is_lxp
+        );
+        
+        if (regularEvents.length === 0 && lxpEvents.length === 0) {
+            return "На выбранную дату событий не найдено.";
+        }
+        
+        // Sort events by start time
+        const sortedRegularEvents = regularEvents.sort((a, b) => 
+            new Date(a.start || 0) - new Date(b.start || 0)
+        );
+        
+        // Group by cycle_realization.id for consecutive time grouping
+        const cycleGroups = new Map();
+        for (const event of sortedRegularEvents) {
+            const cycleId = getEventProperty(event, 'cycle_realization.id') || `no-cycle-${event.id}`;
+            if (!cycleGroups.has(cycleId)) {
+                cycleGroups.set(cycleId, []);
+            }
+            cycleGroups.get(cycleId).push(event);
+        }
+        
+        const processedGroups = [];
+        
+        // Process each cycle group
+        for (const [cycleId, events] of cycleGroups.entries()) {
+            const isNoCycle = cycleId.startsWith('no-cycle-');
+            
+            if (isNoCycle || events.length === 1) {
+                // Handle individual events
+                events.forEach(event => {
+                    processedGroups.push({
+                        events: [event],
+                        isConsecutive: false,
+                        startTime: event.start
+                    });
+                });
+            } else {
+                // Group by course + type within the same cycle
+                const sortedCycleEvents = events.sort((a, b) => 
+                    new Date(a.start || 0) - new Date(b.start || 0)
+                );
+                
+                const courseTypeGroups = new Map();
+                
+                for (const event of sortedCycleEvents) {
+                    const courseName = getEventProperty(event, 'course_name', 'Неизвестная дисциплина');
+                    const typeName = getEventProperty(event, 'cycle_realization.name', 'Занятие');
+                    const courseTypeKey = `${courseName}_${typeName}`;
+                    
+                    if (!courseTypeGroups.has(courseTypeKey)) {
+                        courseTypeGroups.set(courseTypeKey, []);
+                    }
+                    courseTypeGroups.get(courseTypeKey).push(event);
+                }
+                
+                // Process each course+type group
+                for (const groupEvents of courseTypeGroups.values()) {
+                    processedGroups.push({
+                        events: groupEvents,
+                        isConsecutive: groupEvents.length > 1,
+                        startTime: groupEvents[0].start
+                    });
+                }
+            }
+        }
+        
+        // Sort all groups by start time
+        processedGroups.sort((a, b) => 
+            new Date(a.startTime || 0) - new Date(b.startTime || 0)
+        );
+        
+        // Generate message
+        let message = "Студенты, доброе утро!\nУчебные мероприятия на сегодня:\n\n ";
+        message += "**" + formatDateForMessage(selectedDate) + "**" + ": \n";
+        
+        // Process each group for message formatting
+        for (const group of processedGroups) {
+            const firstEvent = group.events[0];
+            const eventType = getEventProperty(firstEvent, 'cycle_realization.name', 'Занятие');
+            const isLecture = eventType.includes('Лекционное');
+            const icon = isLecture ? '🔷' : '🔺';
+            const disciplineName = getEventProperty(firstEvent, 'course_name', 'Неизвестная дисциплина');
+            
+            if (group.isConsecutive && group.events.length > 1) {
+                // Consecutive/grouped time slots
+                const timeSlots = group.events
+                    .map(e => formatTime(e.start || '00:00'))
+                    .join(' и ');
+                
+                const teachers = [...new Set(
+                    group.events
+                        .map(e => formatTeacherName(getEventProperty(e, 'teacher_full_name')))
+                        .filter(Boolean)
+                )];
+                
+                let line = `${icon}**${timeSlots} (мск)** — ${eventType} по дисциплине «${disciplineName}»`;
+                
+                // Show teacher names for both lectures and other events
+                if (teachers.length === 1 && teachers[0]) {
+                    line += `. Преподаватель ${teachers[0]}`;
+                } else if (teachers.length > 1) {
+                    line += `. Для групп преподавателей ${teachers.join(' и ')}`;
+                }
+                
+                message += line + '\n';
+                
+                // Add unique links
+                const uniqueLinks = [...new Set(
+                    group.events
+                        .map(e => linksData[e.id])
+                        .filter(Boolean)
+                )];
+                
+                if (uniqueLinks.length > 0) {
+                    message += uniqueLinks.join(' ') + '\n';
+                }
+                
+            } else {
+                // Individual events
+                group.events.forEach(event => {
+                    const timeStr = `**${formatTime(event.start || '00:00')} (мск)**`;
+                    const link = linksData[event.id] || '';
+                    const teacherName = formatTeacherName(getEventProperty(event, 'teacher_full_name'));
+                    
+                    let line = `${icon}${timeStr} — ${eventType} по дисциплине «${disciplineName}»`;
+                    
+                    // Show teacher name for all events (including lectures)
+                    if (teacherName) {
+                        line += `. Преподаватель ${teacherName}`;
+                    }
+                    
+                    message += line + '\n';
+                    if (link) {
+                        message += `${link}\n`;
+                    }
+                });
+            }
+        }
+        
+        // Add LXP events
+        if (lxpEvents.length > 0) {
+            message += '\nLXP:\n';
+            for (const event of lxpEvents) {
+                const eventType = event.cycle_realization?.name || 'Занятие';
+                const disciplineName = event.course_name || 'Неизвестная дисциплина';
+                message += `🔵 ${eventType} по дисциплине «${disciplineName}» на платформе LXP.\n`;
+            }
+        }
+        
+        // Add legend
+        message += '\n🔷 - обязательны для всех; \n🔺- обязательны по группам.';
+        if (lxpEvents.length > 0) {
+            message += '\n🔵 - LXP/LMS';
+        }
+        
+        return message;
+    };
+
+    const copyToClipboard = async (text) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            toast.success('Сообщение скопировано в буфер обмена!');
+        } catch (err) {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                toast.success('Сообщение скопировано в буфер обмена!');
+            } catch (fallbackErr) {
+                toast.error('Не удалось скопировать в буфер обмена');
+            }
+            document.body.removeChild(textArea);
+        }
     };
 
     // Группировка событий по cycle_realization.code
@@ -354,6 +627,17 @@ const ModeusDaySchedulePage = () => {
                                 <button onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
                                     {showAdvancedFilters ? '🔼 Основные настройки' : '⚙️ Расширенные настройки'}
                                 </button>
+                            </div>
+                            
+                            <div className="auto-generate-setting">
+                                <label className="auto-generate-checkbox">
+                                    <input
+                                        type="checkbox"
+                                        checked={autoGenerateMessage}
+                                        onChange={handleAutoGenerateChange}
+                                    />
+                                    <span>📋 Генерировать расписание автоматически</span>
+                                </label>
                             </div>
                         </div>
 
@@ -810,6 +1094,45 @@ const ModeusDaySchedulePage = () => {
                     )}
                 </div>
             </div>
+
+            {/* Message Modal */}
+            {showMessageModal && (
+                <div className="modal-overlay" onClick={() => setShowMessageModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>📋 Сгенерированное сообщение</h3>
+                            <button 
+                                className="modal-close-btn"
+                                onClick={() => setShowMessageModal(false)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <textarea
+                                value={generatedMessage}
+                                readOnly
+                                className="message-textarea"
+                                rows={15}
+                            />
+                        </div>
+                        <div className="modal-footer">
+                            <button 
+                                className="copy-btn"
+                                onClick={() => copyToClipboard(generatedMessage)}
+                            >
+                                📋 Скопировать в буфер обмена
+                            </button>
+                            <button 
+                                className="close-btn"
+                                onClick={() => setShowMessageModal(false)}
+                            >
+                                Закрыть
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

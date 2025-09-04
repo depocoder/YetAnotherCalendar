@@ -182,7 +182,7 @@ class ModeusCalendar(BaseModel):
 
     embedded: CalendarEmbedded = Field(alias="_embedded")
 
-    def serialize_modeus_response(self, skip_lxp: bool = True) -> list[FullEvent]:
+    def serialize_modeus_response(self, skip_lxp: bool = True, skip_not_netology: bool = False) -> list[FullEvent]:
         """Serialize calendar api response from modeus."""
         locations = {location.id: location for location in self.embedded.locations}
         teachers = {teacher.id: teacher for teacher in self.embedded.people}
@@ -206,6 +206,10 @@ class ModeusCalendar(BaseModel):
                 teacher_full_name = 'unknown'
             location = locations[event.id]
             if skip_lxp and location.is_lxp:
+                continue
+            is_filtered_lesson = location.custom_location != settings.netology_location_name and skip_not_netology
+            if not location.is_lxp and is_filtered_lesson:
+                #  skip not netology lessons but not lxp
                 continue
             full_events.append(FullEvent(**{
                 "teacher_full_name": teacher_full_name, "course_name": course_name,
