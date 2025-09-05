@@ -10,7 +10,10 @@ const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
     useEffect(() => {
         if (isOpen) {
             setIsAnimating(true);
-            document.body.style.overflow = 'hidden';
+            // Only block scroll on mobile (where modal is actually visible)
+            if (window.innerWidth <= 768) {
+                document.body.style.overflow = 'hidden';
+            }
         } else {
             document.body.style.overflow = '';
             const timer = setTimeout(() => setIsAnimating(false), 300);
