@@ -1,6 +1,7 @@
 # ![32x32_UPD](https://github.com/user-attachments/assets/1fbb28a8-01bf-46bc-acc7-8527a1fd60aa) YetAnotherCalendar
 
 <!-- Pytest Coverage Comment:Begin -->
+
 <!-- Pytest Coverage Comment:End -->
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/depocoder/YetAnotherCalendar)](https://github.com/depocoder/YetAnotherCalendar/stargazers)
