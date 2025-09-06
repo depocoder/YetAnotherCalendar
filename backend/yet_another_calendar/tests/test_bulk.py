@@ -5,14 +5,13 @@ from copy import deepcopy
 from icalendar.prop import vText
 from starlette.responses import StreamingResponse
 
-from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.bulk.integration import create_ics_event, export_to_ics
 from yet_another_calendar.web.api.bulk.schema import BulkResponse, CalendarResponse
 
 
-def test_create_ics_event_start_after_end() -> None:
+def test_create_ics_event_start_after_end(sample_datetime) -> None:
     start = datetime.datetime(2025, 6, 5, 16, 0)
-    end = datetime.datetime(2025, 6, 5, 15, 0)  # ends before start
+    end = sample_datetime['invalid_end']  # ends before start
     lesson_id = "lesson-002"
     title = "Invalid Event"
 
@@ -23,17 +22,17 @@ def test_create_ics_event_start_after_end() -> None:
     assert event['DTSTART'].dt > event['DTEND'].dt
 
 
-def test_create_ics_event_none_description_url() -> None:
-    start = datetime.datetime(2025, 6, 5, 14, 0)
-    end = datetime.datetime(2025, 6, 5, 15, 0)
+def test_create_ics_event_none_description_url(sample_datetime) -> None:
+    start = sample_datetime['start']
+    end = sample_datetime['end']
     event = create_ics_event("Title", start, end, "lesson-005", description=None, url=None)
     assert event['DESCRIPTION'] == vText(b'None')
     assert event['LOCATION'] == vText(b'unknown location')
 
 
-def test_create_ics_event_ok() -> None:
-    start = datetime.datetime(2025, 6, 5, 14, 0)
-    end = datetime.datetime(2025, 6, 5, 15, 0)
+def test_create_ics_event_ok(sample_datetime) -> None:
+    start = sample_datetime['start']
+    end = sample_datetime['end']
     lesson_id = "lesson-001"
     title = "Math Lecture"
     description = "Algebra and Linear Equations"
@@ -54,10 +53,8 @@ def test_create_ics_event_ok() -> None:
 
 
 @typing.no_type_check
-def test_bulk_change_tz() -> None:
-    with open(settings.test_parent_path / "fixtures/bulk_fixture.json") as f:
-        content = f.read()
-    bulk = BulkResponse.model_validate_json(content)
+def test_bulk_change_tz(bulk_fixture_content) -> None:
+    bulk = BulkResponse.model_validate_json(bulk_fixture_content)
     new_bulk = deepcopy(bulk)
     new_bulk.change_timezone('America/los_angeles')
 
@@ -66,20 +63,15 @@ def test_bulk_change_tz() -> None:
 
 
 @typing.no_type_check
-def test_calendar_response_get_hash() -> None:
-    with open(settings.test_parent_path / "fixtures/bulk_fixture.json") as f:
-        content = f.read()
-    calendar_response = CalendarResponse.model_validate_json(content)
+def test_calendar_response_get_hash(bulk_fixture_content) -> None:
+    calendar_response = CalendarResponse.model_validate_json(bulk_fixture_content)
     # assert calendar_response.get_hash() == "ea6326e66b5e1bacfaa5042b0e4421c2"
     assert len(calendar_response.get_hash()) == 32
 
 
-async def test_export_to_ics() -> None:
-    with open(settings.test_parent_path / "fixtures/bulk_fixture.json") as f:
-        content = f.read()
-
+async def test_export_to_ics(bulk_fixture_content) -> None:
     time_zone = "Europe/Moscow"
-    calendar = CalendarResponse.model_validate_json(content).change_timezone(time_zone)
+    calendar = CalendarResponse.model_validate_json(bulk_fixture_content).change_timezone(time_zone)
     isc_calendar = StreamingResponse(export_to_ics(calendar))
 
     assert isc_calendar

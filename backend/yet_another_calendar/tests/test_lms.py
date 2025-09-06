@@ -5,23 +5,20 @@ from unittest.mock import patch, AsyncMock
 import httpx
 import pytest
 from fastapi import HTTPException
-from httpx import AsyncClient, HTTPStatusError
+from httpx import HTTPStatusError
 from pydantic import ValidationError
 import copy
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.lms import integration, schema
-from . import handlers
 
 
 @pytest.mark.asyncio
-async def test_get_token_with_error() -> None:
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.bad_request_transport)
+async def test_get_token_with_error(lms_bad_client) -> None:
     creds = schema.LxpCreds(username="ivan@utmn.ru", password="12345678", service="test")
 
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        with pytest.raises(HTTPException) as exc_info:
-            _ = await integration.get_token(creds)
+    with pytest.raises(HTTPException) as exc_info:
+        _ = await integration.get_token(creds)
 
     assert creds.username == "ivan@study.utmn.ru"
     assert exc_info.value.status_code == 400
@@ -29,35 +26,29 @@ async def test_get_token_with_error() -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_token_ok() -> None:
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.transport)
+async def test_get_token_ok(lms_client) -> None:
     creds = schema.LxpCreds(username="ivan@utmn.ru", password="12345678", service="test")
 
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        token = await integration.get_token(creds)
+    token = await integration.get_token(creds)
 
     assert token == "token_12345"
 
 
 @pytest.mark.asyncio
-async def test_send_request_get_list() -> None:
+async def test_send_request_get_list(lms_client) -> None:
     mock_request_settings = {'method': 'GET', 'url': '/lms/send_request_list'}
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.transport)
 
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        response = await integration.send_request(mock_request_settings)
+    response = await integration.send_request(mock_request_settings)
 
     assert response == {"token": [1,2,3]}
 
 
 @pytest.mark.asyncio
-async def test_send_request_unknown() -> None:
+async def test_send_request_unknown(lms_bad_client) -> None:
     mock_request_settings = {'method': 'GET', 'url': '/lms/send_request_unknown'}
 
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        with pytest.raises(httpx.HTTPStatusError) as exc_info:
-            await integration.send_request(mock_request_settings)
+    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        await integration.send_request(mock_request_settings)
 
         assert exc_info.type is httpx.HTTPStatusError
         assert exc_info.value.response.status_code == 404
@@ -65,26 +56,22 @@ async def test_send_request_unknown() -> None:
 
 
 @pytest.mark.asyncio
-async def test_send_request_server_error() -> None:
+async def test_send_request_server_error(lms_bad_client) -> None:
     mock_request_settings = {'method': 'GET', 'url': '/lms/send_request_server_error'}
 
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        with pytest.raises(httpx.HTTPStatusError) as exc_info:
-            await integration.send_request(mock_request_settings)
+    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        await integration.send_request(mock_request_settings)
 
         assert exc_info.type is httpx.HTTPStatusError
         assert exc_info.value.response.status_code == 500
 
 
 @pytest.mark.asyncio
-async def test_send_request_with_json_error() -> None:
+async def test_send_request_with_json_error(lms_bad_client) -> None:
     mock_request_settings = {'method': 'GET', 'url': settings.lms_login_part}
 
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        with pytest.raises(HTTPException) as exc_info:
-            await integration.send_request(mock_request_settings)
+    with pytest.raises(HTTPException) as exc_info:
+        await integration.send_request(mock_request_settings)
 
         assert exc_info.value.status_code == 400
         assert exc_info.value.detail == "Something went wrong. Server response: {'error': 'Something went wrong'}"
@@ -92,43 +79,35 @@ async def test_send_request_with_json_error() -> None:
 
 
 @pytest.mark.asyncio
-async def test_send_request_ok() -> None:
+async def test_send_request_ok(lms_client) -> None:
     mock_request_settings = {'method': 'GET', 'url': settings.lms_login_part}
 
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.transport)
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        response_json = await integration.send_request(mock_request_settings)
+    response_json = await integration.send_request(mock_request_settings)
 
     assert response_json == {"token": "token_12345"}
 
 
 @pytest.mark.asyncio
-async def test_get_user_info_forbidden() -> None:
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        with pytest.raises(httpx.HTTPStatusError) as exc_info:
-            _ = await integration.get_user_info(token="token_123", username="azamat")
+async def test_get_user_info_forbidden(lms_bad_client) -> None:
+    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        _ = await integration.get_user_info(token="token_123", username="azamat")
 
         assert exc_info.value.response.status_code == 403
         assert exc_info.value.response.json() == {"text": "Forbidden"}
 
 
 @pytest.mark.asyncio
-async def test_get_user_info_ok() -> None:
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.transport)
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        response_json = await integration.get_user_info(token="token_123", username="azamat")
+async def test_get_user_info_ok(lms_client) -> None:
+    response_json = await integration.get_user_info(token="token_123", username="azamat")
 
-        assert response_json == [{"name": "azamat"}]
+    assert response_json == [{"name": "azamat"}]
 
 
 @pytest.mark.asyncio
-async def test_auth_lms_error() -> None:
+async def test_auth_lms_error(lms_bad_client) -> None:
     creds = schema.LxpCreds(username="ivan@utmn.ru", password="12345678", service="test")
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        with pytest.raises(HTTPException) as exc_info:
-            _ = await integration.auth_lms(creds)
+    with pytest.raises(HTTPException) as exc_info:
+        _ = await integration.auth_lms(creds)
 
     assert creds.username == "ivan@study.utmn.ru"
     assert exc_info.value.status_code == 400
@@ -136,39 +115,33 @@ async def test_auth_lms_error() -> None:
 
 
 @pytest.mark.asyncio
-async def test_auth_lms_ok() -> None:
+async def test_auth_lms_ok(lms_client) -> None:
     creds = schema.LxpCreds(username="ivan@utmn.ru", password="12345678", service="test")
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.transport)
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        with patch("yet_another_calendar.web.api.lms.integration.get_user_info",
-                   return_value=[{"id": "1"}]):
-            user = await integration.auth_lms(creds)
+    with patch("yet_another_calendar.web.api.lms.integration.get_user_info",
+               return_value=[{"id": "1"}]):
+        user = await integration.auth_lms(creds)
 
     assert user.id == 1
     assert user.token == "token_12345"
 
 
 @pytest.mark.asyncio
-async def test_get_courses_error() -> None:
+async def test_get_courses_error(lms_bad_client) -> None:
     user = schema.User(id=1, token="token_12345")
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        with pytest.raises(HTTPStatusError) as exc_info:
-            _ = await integration.get_courses(user)
+    with pytest.raises(HTTPStatusError) as exc_info:
+        _ = await integration.get_courses(user)
 
         assert exc_info.value.response.status_code == 403
         assert exc_info.value.response.json() == {"text": "Forbidden"}
 
 
 @pytest.mark.asyncio
-async def test_get_courses_ok() -> None:
+async def test_get_courses_ok(lms_bad_client) -> None:
     user = schema.User(id=1, token="token_12345")
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        with patch("yet_another_calendar.web.api.lms.integration.send_request",
-                   new_callable=AsyncMock) as mock_send:
-            mock_send.return_value = json.load(open(settings.test_parent_path / "fixtures/courses_schema_lms.json"))
-            response = await integration.get_courses(user)
+    with patch("yet_another_calendar.web.api.lms.integration.send_request",
+               new_callable=AsyncMock) as mock_send:
+        mock_send.return_value = json.load(open(settings.test_parent_path / "fixtures/courses_schema_lms.json"))
+        response = await integration.get_courses(user)
 
     assert len(response) == 5
     assert response[0].id == 1
@@ -177,28 +150,24 @@ async def test_get_courses_ok() -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_extended_courses_error() -> None:
+async def test_get_extended_courses_error(lms_bad_client) -> None:
     user = schema.User(id=1, token="token_12345")
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        with pytest.raises(HTTPStatusError) as exc_info:
-            _ = await integration.get_extended_course(user, 1)
+    with pytest.raises(HTTPStatusError) as exc_info:
+        _ = await integration.get_extended_course(user, 1)
 
         assert exc_info.value.response.status_code == 403
         assert exc_info.value.response.json() == {"text": "Forbidden"}
 
 
 @pytest.mark.asyncio
-async def test_get_extended_courses_ok() -> None:
+async def test_get_extended_courses_ok(lms_bad_client) -> None:
     user = schema.User(id=1, token="token_12345")
-    client = AsyncClient(http2=True, base_url=settings.lms_base_url, transport=handlers.bad_request_transport)
 
-    with patch("yet_another_calendar.web.api.lms.integration.AsyncClient", return_value=client):
-        with patch("yet_another_calendar.web.api.lms.integration.send_request",
-                   new_callable=AsyncMock) as mock_send:
-            mock_send.return_value = json.load(open(settings.test_parent_path /
-                                                    "fixtures/extended_courses_schema_lms.json"))
-            response = await integration.get_extended_course(user, 1)
+    with patch("yet_another_calendar.web.api.lms.integration.send_request",
+               new_callable=AsyncMock) as mock_send:
+        mock_send.return_value = json.load(open(settings.test_parent_path /
+                                                "fixtures/extended_courses_schema_lms.json"))
+        response = await integration.get_extended_course(user, 1)
 
     assert len(response) == 2
     assert response[0].id == 1

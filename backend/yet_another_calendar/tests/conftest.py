@@ -1,8 +1,9 @@
+import datetime
 from typing import Any
 from collections.abc import Callable
 from collections.abc import AsyncGenerator
 from unittest import mock
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 from fakeredis import FakeServer
@@ -13,6 +14,8 @@ from redis.asyncio import ConnectionPool
 
 from yet_another_calendar.web.application import get_app
 from yet_another_calendar.web.lifespan import get_redis_pool
+from yet_another_calendar.settings import settings
+from yet_another_calendar.tests import handlers
 
 
 def mock_cache() -> None:
@@ -88,3 +91,101 @@ def mock_request() -> Callable[[str], Mock]:
         request.client.host = client_ip
         return request
     return _create_request
+
+
+@pytest.fixture
+async def modeus_client():
+    """Fixture for Modeus client with transport handlers."""
+    async with AsyncClient(
+        http2=True,
+        base_url="https://utmn.modeus.org",
+        transport=handlers.transport,
+    ) as client:
+        with patch("yet_another_calendar.web.api.modeus.integration.AsyncClient.__aenter__", return_value=client):
+            yield client
+
+
+@pytest.fixture  
+async def modeus_bad_client():
+    """Fixture for Modeus client with bad request transport."""
+    async with AsyncClient(
+        http2=True,
+        base_url="https://utmn.modeus.org",
+        transport=handlers.bad_request_transport,
+    ) as client:
+        with patch("yet_another_calendar.web.api.modeus.integration.AsyncClient.__aenter__", return_value=client):
+            yield client
+
+
+@pytest.fixture
+async def netology_client():
+    """Fixture for Netology client with transport handlers."""
+    async with AsyncClient(
+        http2=True,
+        base_url=settings.netology_base_url,
+        transport=handlers.transport,
+    ) as client:
+        with patch("yet_another_calendar.web.api.netology.integration.AsyncClient.__aenter__", return_value=client):
+            yield client
+
+
+@pytest.fixture  
+async def netology_bad_client():
+    """Fixture for Netology client with bad request transport."""
+    async with AsyncClient(
+        http2=True,
+        base_url=settings.netology_base_url,
+        transport=handlers.bad_request_transport,
+    ) as client:
+        with patch("yet_another_calendar.web.api.netology.integration.AsyncClient.__aenter__", return_value=client):
+            yield client
+
+
+@pytest.fixture
+async def lms_client():
+    """Fixture for LMS client with transport handlers."""
+    async with AsyncClient(
+        http2=True,
+        base_url=settings.lms_base_url,
+        transport=handlers.transport,
+    ) as client:
+        with patch("yet_another_calendar.web.api.lms.integration.AsyncClient.__aenter__", return_value=client):
+            yield client
+
+
+@pytest.fixture  
+async def lms_bad_client():
+    """Fixture for LMS client with bad request transport."""
+    async with AsyncClient(
+        http2=True,
+        base_url=settings.lms_base_url,
+        transport=handlers.bad_request_transport,
+    ) as client:
+        with patch("yet_another_calendar.web.api.lms.integration.AsyncClient.__aenter__", return_value=client):
+            yield client
+
+
+# Bulk test fixtures
+@pytest.fixture
+def bulk_fixture_data():
+    """Fixture that loads the bulk test data."""
+    import json
+    with open(settings.test_parent_path / "fixtures/bulk_fixture.json") as f:
+        return json.load(f)
+
+
+@pytest.fixture
+def bulk_fixture_content():
+    """Fixture that loads the bulk test data as raw JSON string."""
+    with open(settings.test_parent_path / "fixtures/bulk_fixture.json") as f:
+        return f.read()
+
+
+@pytest.fixture
+def sample_datetime():
+    """Fixture that provides a standard datetime for testing."""
+    return {
+        'start': datetime.datetime(2025, 6, 5, 14, 0),
+        'end': datetime.datetime(2025, 6, 5, 15, 0),
+        'invalid_end': datetime.datetime(2025, 6, 5, 13, 0)  # before start
+    }

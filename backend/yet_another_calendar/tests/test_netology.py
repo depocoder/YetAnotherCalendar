@@ -1,16 +1,13 @@
 import datetime
 import json
-from unittest.mock import patch
 
 import httpx
 import pytest
 from fastapi import HTTPException
-from httpx import AsyncClient
 from pydantic import ValidationError
 from starlette import status
 
 from yet_another_calendar.settings import settings
-from yet_another_calendar.tests import handlers
 from yet_another_calendar.web.api import validators
 from yet_another_calendar.web.api.netology import integration, schema
 
@@ -19,25 +16,21 @@ mock_cookies = schema.NetologyCookies.model_validate({"_netology-on-rails_sessio
 
 
 @pytest.mark.asyncio
-async def test_send_request_unauthorized() -> None:
+async def test_send_request_unauthorized(netology_bad_client) -> None:
     mock_request_settings = {'method': 'GET', 'url': '/backend/api/user/programs/calendar/filters/not-auth'}
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        with pytest.raises(HTTPException) as exc_info:
-            await integration.send_request(mock_cookies, mock_request_settings)
+    with pytest.raises(HTTPException) as exc_info:
+        await integration.send_request(mock_cookies, mock_request_settings)
 
     assert exc_info.value.detail == "Netology error. Cookies expired."
     assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 @pytest.mark.asyncio
-async def test_send_request_unknown() -> None:
+async def test_send_request_unknown(netology_bad_client) -> None:
     mock_request_settings = {'method': 'GET', 'url': '/backend/api/unknown'}
 
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        with pytest.raises(httpx.HTTPStatusError) as exc_info:
-            await integration.send_request(mock_cookies, mock_request_settings)
+    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        await integration.send_request(mock_cookies, mock_request_settings)
 
         assert exc_info.type is httpx.HTTPStatusError
         assert exc_info.value.response.status_code == 404
@@ -45,36 +38,30 @@ async def test_send_request_unknown() -> None:
 
 
 @pytest.mark.asyncio
-async def test_send_request_server_error() -> None:
+async def test_send_request_server_error(netology_bad_client) -> None:
     mock_request_settings = {'method': 'GET', 'url': '/backend/api/server_problem'}
 
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        with pytest.raises(httpx.HTTPStatusError) as exc_info:
-            await integration.send_request(mock_cookies, mock_request_settings)
+    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        await integration.send_request(mock_cookies, mock_request_settings)
 
         assert exc_info.type is httpx.HTTPStatusError
         assert exc_info.value.response.status_code == 500
 
 
 @pytest.mark.asyncio
-async def test_send_request_ok() -> None:
+async def test_send_request_ok(netology_client) -> None:
     mock_request_settings = {'method': 'GET', 'url': '/backend/api/user/programs/calendar/filters'}
 
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        response_json = await integration.send_request(mock_cookies, mock_request_settings)
+    response_json = await integration.send_request(mock_cookies, mock_request_settings)
 
     assert response_json == {"ok": True}
 
 
 @pytest.mark.asyncio
-async def test_auth_netology_unauthorized() -> None:
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.bad_request_transport)
-    client.cookies = httpx.Cookies({"_netology-on-rails_session": "aboba"})
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        with pytest.raises(HTTPException) as exc_info:
-            await integration.auth_netology("alex", "password12345")
+async def test_auth_netology_unauthorized(netology_bad_client) -> None:
+    netology_bad_client.cookies = httpx.Cookies({"_netology-on-rails_session": "aboba"})
+    with pytest.raises(HTTPException) as exc_info:
+        await integration.auth_netology("alex", "password12345")
 
         assert exc_info.value.status_code == 401
         assert exc_info.value.detail == "Netology error. Username/password is incorrect."
@@ -82,63 +69,51 @@ async def test_auth_netology_unauthorized() -> None:
 
 
 @pytest.mark.asyncio
-async def test_auth_netology_ok() -> None:
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
-    client.cookies = httpx.Cookies({"_netology-on-rails_session": "aboba"})
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        netology_cookies = await integration.auth_netology("alex", "password12345")
-        assert netology_cookies == schema.NetologyCookies.model_validate(client.cookies)
+async def test_auth_netology_ok(netology_client) -> None:
+    netology_client.cookies = httpx.Cookies({"_netology-on-rails_session": "aboba"})
+    netology_cookies = await integration.auth_netology("alex", "password12345")
+    assert netology_cookies == schema.NetologyCookies.model_validate(netology_client.cookies)
 
 
 @pytest.mark.asyncio
-async def test_get_events_by_id_not_found() -> None:
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.bad_request_transport)
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        with pytest.raises(httpx.HTTPStatusError) as exc_info:
-            await integration.get_events_by_id(mock_cookies, 2)
+async def test_get_events_by_id_not_found(netology_bad_client) -> None:
+    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        await integration.get_events_by_id(mock_cookies, 2)
 
         assert exc_info.value.response.status_code == 404
 
 
 @pytest.mark.asyncio
-async def test_get_events_by_id_ok() -> None:
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        calendar_response = await integration.get_events_by_id(mock_cookies, 45526)
-        assert calendar_response.model_dump().get("block_title") == \
-               "Бакалавриат Разработка IT-продуктов и информационных систем"
+async def test_get_events_by_id_ok(netology_client) -> None:
+    calendar_response = await integration.get_events_by_id(mock_cookies, 45526)
+    assert calendar_response.model_dump().get("block_title") == \
+           "Бакалавриат Разработка IT-продуктов и информационных систем"
 
 
 @pytest.mark.asyncio
-async def test_get_program_ids_not_found() -> None:
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        with pytest.raises(httpx.HTTPStatusError) as exc_info:
-            await integration.get_program_ids(mock_cookies, 2)
+async def test_get_program_ids_not_found(netology_client) -> None:
+    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        await integration.get_program_ids(mock_cookies, 2)
 
         assert exc_info.value.response.status_code == 404
 
 
 @pytest.mark.asyncio
-async def test_get_program_ids_ok() -> None:
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        lessons_ids = await integration.get_program_ids(mock_cookies, 45526)
+async def test_get_program_ids_ok(netology_client) -> None:
+    lessons_ids = await integration.get_program_ids(mock_cookies, 45526)
 
-        assert lessons_ids == {57604}
+    assert lessons_ids == {57604}
 
 
 @pytest.mark.asyncio
-async def test_get_calendar_not_found() -> None:
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
+async def test_get_calendar_not_found(netology_client) -> None:
     modeus_time_body = schema.ModeusTimeBody.model_validate({
         "timeMin": "2024-09-23",
         "timeMax": "2024-09-29",
     })
 
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient", return_value=client):
-        with pytest.raises(httpx.HTTPStatusError) as exc_info:
-            await integration.get_calendar(mock_cookies, 2, modeus_time_body)
+    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        await integration.get_calendar(mock_cookies, 2, modeus_time_body)
 
         assert exc_info.value.response.status_code == 404
 
@@ -173,18 +148,16 @@ async def test_modeus_time_body() -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_calendar_ok() -> None:
-    client = AsyncClient(http2=True, base_url=settings.netology_base_url, transport=handlers.transport)
+async def test_get_calendar_ok(netology_client) -> None:
     modeus_time_body = schema.ModeusTimeBody.model_validate({
         "timeMin": "2024-09-23",
         "timeMax": "2028-09-10",
     })
 
-    with patch("yet_another_calendar.web.api.netology.integration.AsyncClient.__aenter__", return_value=client):
-        serialized_events = await integration.get_calendar(mock_cookies, 45526, modeus_time_body)
+    serialized_events = await integration.get_calendar(mock_cookies, 45526, modeus_time_body)
 
-        assert len(serialized_events.homework) == 2
-        assert len(serialized_events.webinars) == 2
+    assert len(serialized_events.homework) == 2
+    assert len(serialized_events.webinars) == 2
 
 
 
