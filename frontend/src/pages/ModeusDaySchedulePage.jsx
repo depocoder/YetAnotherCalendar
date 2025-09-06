@@ -802,6 +802,21 @@ const ModeusDaySchedulePage = () => {
                                                         <div className="info-block teacher">
                                                             <div className="label">👨‍🏫 ПРЕПОДАВАТЕЛЬ</div>
                                                             <div className="content">
+                                                                {groupEvents[0].teacher_profile?.avatar_profile && (
+                                                                    <a 
+                                                                        href={groupEvents[0].teacher_profile.profile_url} 
+                                                                        target="_blank" 
+                                                                        rel="noopener noreferrer"
+                                                                        title="Профиль преподавателя"
+                                                                    >
+                                                                        <img 
+                                                                            src={groupEvents[0].teacher_profile.avatar_profile} 
+                                                                            alt={groupEvents[0].teacher_full_name || 'Преподаватель'}
+                                                                            className="teacher-avatar"
+                                                                            onError={(e) => { e.target.style.display = 'none'; }}
+                                                                        />
+                                                                    </a>
+                                                                )}
                                                                 {groupEvents[0].teacher_full_name || 'Преподаватель не указан'}
                                                             </div>
                                                         </div>
@@ -907,6 +922,21 @@ const ModeusDaySchedulePage = () => {
                                                                 <div className="info-block teacher">
                                                                     <div className="label">👨‍🏫 ПРЕПОДАВАТЕЛЬ</div>
                                                                     <div className="content">
+                                                                        {event.teacher_profile?.avatar_profile && (
+                                                                            <a 
+                                                                                href={event.teacher_profile.profile_url} 
+                                                                                target="_blank" 
+                                                                                rel="noopener noreferrer"
+                                                                                title="Профиль преподавателя"
+                                                                            >
+                                                                                <img 
+                                                                                    src={event.teacher_profile.avatar_profile} 
+                                                                                    alt={event.teacher_full_name || 'Преподаватель'}
+                                                                                    className="teacher-avatar"
+                                                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                                                />
+                                                                            </a>
+                                                                        )}
                                                                         {event.teacher_full_name || 'Преподаватель не указан'}
                                                                     </div>
                                                                 </div>
@@ -1017,6 +1047,21 @@ const ModeusDaySchedulePage = () => {
                                                 <div className="info-block teacher">
                                                     <div className="label">👨‍🏫 ПРЕПОДАВАТЕЛЬ</div>
                                                     <div className="content">
+                                                        {event.teacher_profile?.avatar_profile && (
+                                                            <a 
+                                                                href={event.teacher_profile.profile_url} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                title="Профиль преподавателя"
+                                                            >
+                                                                <img 
+                                                                    src={event.teacher_profile.avatar_profile} 
+                                                                    alt={event.teacher_full_name || 'Преподаватель'}
+                                                                    className="teacher-avatar"
+                                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                                />
+                                                            </a>
+                                                        )}
                                                         {event.teacher_full_name || 'Преподаватель не указан'}
                                                     </div>
                                                 </div>

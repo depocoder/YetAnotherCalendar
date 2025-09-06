@@ -223,6 +223,22 @@ const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
 
                         {event.type === 'modeus' && (
                             <div className="event-detail-section">
+                                {event?.teacher_profile?.avatar_profile && (
+                                    <div className="expert-avatar">
+                                        <a 
+                                            href={event.teacher_profile.profile_url} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            title="Профиль преподавателя"
+                                        >
+                                            <img
+                                                src={event.teacher_profile.avatar_profile}
+                                                alt={event.teacher_full_name || 'Преподаватель'}
+                                                onError={(e) => { e.target.style.display = 'none'; }}
+                                            />
+                                        </a>
+                                    </div>
+                                )}
                                 <div className="event-info-list">
                                     {event.teacher_full_name && (
                                         <div className="event-info-row">

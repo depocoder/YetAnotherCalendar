@@ -143,18 +143,36 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
                 )}
                 {event.type === 'modeus' && (
                     <div className="task-event">
-                        {event.teacher_full_name && (
-                            <div className="modeus-info-row">
-                                <span className="info-label">👨‍🏫 Преподаватель:</span>
-                                <span className="info-value">{event.teacher_full_name}</span>
+                        <div className="netology-info-container">
+                            {event?.teacher_profile?.avatar_profile && (
+                                <div className="avatar_path">
+                                    <a 
+                                        href={event.teacher_profile.profile_url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        title="Профиль преподавателя"
+                                    >
+                                        <img
+                                            src={event.teacher_profile.avatar_profile}
+                                            alt={event.teacher_full_name || 'Преподаватель'}
+                                            onError={(e) => { e.target.style.display = 'none'; }}
+                                        />
+                                    </a>
+                                </div>
+                            )}
+                            <div className="netology-text-info">
+                                {event.teacher_full_name && (
+                                    <div className="netology-info-row">
+                                        <span className="netology-label">👨‍🏫 Преподаватель: <span className="netology-value">{event.teacher_full_name}</span></span>
+                                    </div>
+                                )}
+                                {event.course_name && (
+                                    <div className="netology-info-row">
+                                        <span className="netology-label">📚 Курс: <span className="netology-value">{event.course_name}</span></span>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                        {event.course_name && (
-                            <div className="modeus-info-row">
-                                <span className="info-label">📚 Курс:</span>
-                                <span className="info-value">{event.course_name}</span>
-                            </div>
-                        )}
+                        </div>
                     </div>
                 )}
                 {event.source === 'utmn' && (

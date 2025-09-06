@@ -18,6 +18,7 @@ from .schema import (
     ModeusCalendar, Creds, get_person_id,
     FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusEventsBody,
 )
+from ..utmn import integration as utmn_integration
 
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
 
@@ -150,7 +151,8 @@ async def get_events(
 
     response = await post_modeus(__jwt, body, settings.modeus_search_events_part)
     modeus_calendar = ModeusCalendar.model_validate_json(response)
-    return modeus_calendar.serialize_modeus_response()
+    teachers = await utmn_integration.get_all_teachers()
+    return modeus_calendar.serialize_modeus_response(teachers_profiles=teachers)
 
 
 async def get_people(
@@ -193,7 +195,8 @@ async def get_day_events(jwt: str, payload: dict[str, str]) -> list[FullEvent]:
         resp.raise_for_status()
 
     calendar = ModeusCalendar.model_validate_json(resp.text)
-    return calendar.serialize_modeus_response(skip_lxp=False, skip_not_netology=True)
+    teachers = await utmn_integration.get_all_teachers()
+    return calendar.serialize_modeus_response(skip_lxp=False, skip_not_netology=True, teachers_profiles=teachers)
 
 async def get_person_id_depends(
     creds: Creds,

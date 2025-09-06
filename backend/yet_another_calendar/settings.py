@@ -48,6 +48,7 @@ class Settings(BaseSettings):
     redis_cookie_key: str = "MODEUS_JWT"
     redis_jwt_time_live: int = 60 * 60 * 12  # 12 hours
     redis_events_time_live: int = 60 * 60 * 24 * 14  # 2 weeks
+    redis_utmn_teachers_time_live: int = 60 * 60 * 24 * 30  # 30 days
     redis_prefix: str = 'FastAPI-redis'
 
     retry_tries: int = 5
@@ -78,6 +79,9 @@ class Settings(BaseSettings):
     modeus_username: str = env.str("YET_ANOTHER_CALENDAR_MODEUS_USERNAME", "")
     modeus_password: str = env.str("YET_ANOTHER_CALENDAR_MODEUS_PASSWORD", "")
     
+    utmn_base_url: str = "https://www.utmn.ru"
+    utmn_get_teachers_part: str = "/o-tyumgu/sotrudniki/?PAGEN_1={page}"
+
     # Tutor authentication (password in hashed format)
     tutor_password_hash: str = env.str("YET_ANOTHER_CALENDAR_TUTOR_PASSWORD_HASH", "")
     tutor_secret_key: str = env.str("YET_ANOTHER_CALENDAR_TUTOR_SECRET_KEY")

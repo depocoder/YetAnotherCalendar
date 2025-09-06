@@ -832,11 +832,43 @@
             font-size: 16px;
             line-height: 1.3;
             flex: 1;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            display: flex;
+            align-items: center;
+            gap: 12px;
             overflow: hidden;
             word-break: break-word;
+            
+            a {
+                display: inline-block;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                border-radius: 50%;
+                width: 32px;
+                height: 32px;
+                flex-shrink: 0;
+                overflow: hidden;
+                
+                &:hover {
+                    transform: scale(1.05);
+                }
+            }
+            
+            .teacher-avatar {
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid rgba(124, 58, 237, 0.2);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                display: block;
+                
+                &:hover {
+                    transform: scale(1.1);
+                    border-color: rgba(124, 58, 237, 0.6);
+                    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
+                }
+            }
         }
     }
 
@@ -968,6 +1000,51 @@
     grid-template-columns: 1fr 1fr;
     gap: 12px;
     margin-bottom: 16px;
+}
+
+// DEBUG: Force teacher avatar styling with maximum specificity
+.modeus-event-card .info-block.teacher .content a .teacher-avatar,
+.modeus-event-card .individual-event-in-group .info-block.teacher .content a .teacher-avatar,
+.teacher-avatar {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid rgba(124, 58, 237, 0.2) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    display: block !important;
+    max-width: none !important;
+    max-height: none !important;
+    
+    &:hover {
+        transform: scale(1.1) !important;
+        border-color: rgba(124, 58, 237, 0.6) !important;
+        box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3) !important;
+    }
+}
+
+// DEBUG: Force link container styling 
+.modeus-event-card .info-block.teacher .content a,
+.modeus-event-card .individual-event-in-group .info-block.teacher .content a {
+    display: inline-block !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+    transition: all 0.3s ease !important;
+    background: transparent !important;
+    
+    &:hover {
+        transform: scale(1.05) !important;
+    }
+}
+
+// Smaller for expanded events
+.modeus-event-card .individual-event-in-group .info-block.teacher .content a {
+    width: 28px !important;
+    height: 28px !important;
 }
 
 .modeus-info-block {
@@ -1680,6 +1757,41 @@ input.has-saved-link {
 
                 .content {
                     font-size: 14px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    
+                    a {
+                        display: inline-block;
+                        transition: all 0.3s ease;
+                        cursor: pointer;
+                        border-radius: 50%;
+                        width: 28px;
+                        height: 28px;
+                        flex-shrink: 0;
+                        overflow: hidden;
+                        
+                        &:hover {
+                            transform: scale(1.05);
+                        }
+                    }
+                    
+                    .teacher-avatar {
+                        width: 100%;
+                        height: 100%;
+                        border-radius: 50%;
+                        object-fit: cover;
+                        border: 2px solid rgba(124, 58, 237, 0.2);
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                        transition: all 0.3s ease;
+                        display: block;
+                        
+                        &:hover {
+                            transform: scale(1.1);
+                            border-color: rgba(124, 58, 237, 0.6);
+                            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
+                        }
+                    }
                 }
             }
 

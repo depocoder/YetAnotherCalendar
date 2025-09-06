@@ -1226,12 +1226,30 @@ $color-border-light: #e9ecef;
     justify-content: center;
     margin-bottom: 20px;
     
+    a {
+        display: inline-block;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border-radius: 50%;
+        
+        &:hover {
+            transform: scale(1.05);
+        }
+    }
+    
     img {
         width: 80px;
         height: 80px;
         border-radius: 50%;
         object-fit: cover;
         border: 3px solid #e9ecef;
+        transition: all 0.3s ease;
+        display: block;
+        
+        &:hover {
+            border-color: rgba(124, 58, 237, 0.5);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.2);
+        }
     }
 }
 

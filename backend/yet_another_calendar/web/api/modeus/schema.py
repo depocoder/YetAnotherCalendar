@@ -11,6 +11,7 @@ from starlette import status
 
 from yet_another_calendar.web.api.validators import OptionalUTCDate
 from yet_another_calendar.settings import settings
+from yet_another_calendar.web.api.utmn import schema as utmn_schema
 
 
 class Creds(BaseModel):
@@ -170,6 +171,7 @@ class FullEvent(Event, Location):
     teacher_full_name: str
     course_name: str
     cycle_realization: CycleRealization | str
+    teacher_profile: utmn_schema.Teacher | None = Field(default=None)
 
     @computed_field  # type: ignore
     @property
@@ -179,10 +181,12 @@ class FullEvent(Event, Location):
 
 class ModeusCalendar(BaseModel):
     """Modeus calendar response."""
-
     embedded: CalendarEmbedded = Field(alias="_embedded")
 
-    def serialize_modeus_response(self, skip_lxp: bool = True, skip_not_netology: bool = False) -> list[FullEvent]:
+    def serialize_modeus_response(
+        self, skip_lxp: bool = True, skip_not_netology: bool = False,
+        teachers_profiles: dict[str, utmn_schema.Teacher] | None = None,
+    ) -> list[FullEvent]:
         """Serialize calendar api response from modeus."""
         locations = {location.id: location for location in self.embedded.locations}
         teachers = {teacher.id: teacher for teacher in self.embedded.people}
@@ -200,6 +204,7 @@ class ModeusCalendar(BaseModel):
                 teacher_event = teachers_with_events[event.id]
                 teacher = teachers[teacher_event.person.id]
                 teacher_full_name = teacher.full_name
+                teacher_profile = teachers_profiles[teacher_full_name] if teachers_profiles else None
             except KeyError:
                 cycle_realization = 'unknown'
                 course_name = 'unknown'
@@ -214,6 +219,7 @@ class ModeusCalendar(BaseModel):
             full_events.append(FullEvent(**{
                 "teacher_full_name": teacher_full_name, "course_name": course_name,
                 "cycle_realization": cycle_realization,
+                "teacher_profile": teacher_profile,
                 **event.model_dump(by_alias=True), **location.model_dump(by_alias=True),
             }))
         return full_events
