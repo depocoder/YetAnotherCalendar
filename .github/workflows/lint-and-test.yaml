@@ -49,6 +49,7 @@ jobs:
           YET_ANOTHER_CALENDAR_TUTOR_SECRET_KEY='test' uv run pytest --junitxml=../pytest.xml --cov-report=term-missing:skip-covered --cov-fail-under=80 --cov=yet_another_calendar/web yet_another_calendar/tests/* | tee ../pytest-coverage.txt
     
       - name: Pytest coverage comment
+        id: coverage
         uses: MishaKav/pytest-coverage-comment@main
         with:
           pytest-coverage-path: ./pytest-coverage.txt
