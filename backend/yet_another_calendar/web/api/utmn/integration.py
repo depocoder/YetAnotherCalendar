@@ -55,16 +55,18 @@ async def get_all_teachers_cached(timeout: int = 30, per_page: int = 5) -> dict[
     Fetch teacher information from UTMN website.
     """
     teachers = {}
-    i = 1
+    page = 1
     while True:
         tasks = []
         teachers_from_tasks = {}
         async with asyncio.TaskGroup() as tg:
-            for page in range(i, i + per_page):
-                tasks.append(tg.create_task(get_teachers_by_page(timeout, page)))
-        i += per_page
+            for i in range(page, page + per_page):
+                tasks.append(tg.create_task(get_teachers_by_page(timeout, i)))
+
+        page += per_page
         for task in tasks:
             teachers_from_tasks.update(task.result())
+        
         if len(teachers_from_tasks) == 0:
             break
         teachers.update(teachers_from_tasks)

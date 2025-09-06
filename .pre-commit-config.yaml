@@ -16,13 +16,13 @@ repos:
         name: mypy
         entry: uv --project backend run mypy
         require_serial: true
-        pass_filenames: true
+        pass_filenames: false
         language: python
         types: [ python ]
         'types_or': [ python, pyi ]
         args: [
-          "--explicit-package-bases",
           "--config-file=backend/pyproject.toml",
+          "backend/yet_another_calendar/"
         ]
         additional_dependencies: [ uv ]
 

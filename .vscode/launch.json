@@ -5,7 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python debug backend",
+            "name": "Python Debugger Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "console": "integratedTerminal",
+            "args": [
+                "backend/yet_another_calendar/tests/"
+            ],
+        },
+        {
+            "name": "Python debug backend (docker)",
             "request": "attach",
             "type": "python",
             "pathMappings": [

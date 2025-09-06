@@ -57,6 +57,11 @@ def _bad_handler(request: httpx.Request) -> httpx.Response:
         "/lms/send_request_unknown": get_httpx_response(404, {"detail": "Not Found"}),
         "/lms/send_request_server_error": get_httpx_response(500, {}),
         settings.lms_get_user_part: get_httpx_response(403, {"text": "Forbidden"}),
+        
+        # utmn - bad cases
+        settings.utmn_get_teachers_part.format(page=404): get_httpx_response(404, {"detail": "Not Found"}),
+        settings.utmn_get_teachers_part.format(page=500): get_httpx_response(500, {"detail": "Server Error"}),
+        settings.utmn_get_teachers_part.format(page=1222): get_httpx_response(404, {"detail": "Not Found"}),
     }
 
     case = response_cases.get(request.url.path)
@@ -115,5 +120,25 @@ def _handler(request: httpx.Request) -> httpx.Response:
     return case
 
 
+def _utmn_handler(request: httpx.Request) -> httpx.Response:
+    response_cases = {
+        settings.utmn_get_teachers_part.format(page=1): get_httpx_response(200, {},
+                                                                          settings.test_parent_path /
+                                                                          "fixtures/utmn_teachers_page_1.html"),
+        settings.utmn_get_teachers_part.format(page=2): get_httpx_response(200, {},
+                                                                          settings.test_parent_path /
+                                                                          "fixtures/utmn_teachers_page_2.html"),
+        settings.utmn_get_teachers_part.format(page=3): get_httpx_response(200, {},
+                                                                          settings.test_parent_path /
+                                                                          "fixtures/utmn_empty_page.html"),
+    }
+    case = response_cases.get(request.url.raw_path.decode())
+
+    if case is None:
+        return get_httpx_response(200, {}, settings.test_parent_path / "fixtures/utmn_empty_page.html")
+
+    return case
+
 transport = httpx.MockTransport(_handler)
 bad_request_transport = httpx.MockTransport(_bad_handler)
+utmn_transport = httpx.MockTransport(_utmn_handler)
