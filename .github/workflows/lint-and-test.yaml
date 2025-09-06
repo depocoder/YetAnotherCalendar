@@ -63,7 +63,7 @@ jobs:
         with:
           pytest-coverage-path: ./pytest-coverage.txt
           junitxml-path: ./pytest.xml
-          coverage-path-prefix: backend
+          coverage-path-prefix: backend/
       
       - name: Update README
         run: |
