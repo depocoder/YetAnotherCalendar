@@ -209,6 +209,7 @@ class ModeusCalendar(BaseModel):
                 cycle_realization = 'unknown'
                 course_name = 'unknown'
                 teacher_full_name = 'unknown'
+                teacher_profile = None
             location = locations[event.id]
             if skip_lxp and location.is_lxp:
                 continue
