@@ -198,18 +198,21 @@ class ModeusCalendar(BaseModel):
         for event in self.embedded.events:
             course_id = event.links.course_unit_realization.id if event.links.course_unit_realization else None
             cycle_id = event.links.cycle_realization.id if event.links.cycle_realization else None
+
+            teacher_full_name = 'unknown'
+            teacher_profile = None
+            cycle_realization: CycleRealization | str = 'unknown'
+            course_name = 'unknown'
+
             try:
-                cycle_realization = cycle_realizations[cycle_id] if cycle_id else 'unknown'
+                cycle_realization = cycle_realizations[cycle_id] if cycle_id else cycle_realization
                 course_name = courses[course_id].name if course_id else 'unknown'
                 teacher_event = teachers_with_events[event.id]
                 teacher = teachers[teacher_event.person.id]
                 teacher_full_name = teacher.full_name
                 teacher_profile = teachers_profiles[teacher_full_name] if teachers_profiles else None
             except KeyError:
-                cycle_realization = 'unknown'
-                course_name = 'unknown'
-                teacher_full_name = 'unknown'
-                teacher_profile = None
+                ...
             location = locations[event.id]
             if skip_lxp and location.is_lxp:
                 continue

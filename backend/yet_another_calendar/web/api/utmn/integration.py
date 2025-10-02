@@ -40,7 +40,7 @@ async def get_teachers_by_page(timeout: int = 30, page: int = 1) -> dict[str, sc
             continue
             
         name = name_element.text.strip()
-        avatar = "https:" + str(img_element['src'])
+        avatar = settings.utmn_base_url + str(img_element['src'])
         url = settings.utmn_base_url + str(link_element['href'])
         teachers[name] = schema.Teacher(
             avatar_profile=avatar,
