@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run pre-commit run:*)"
+    ],
+    "deny": []
+  }
+}

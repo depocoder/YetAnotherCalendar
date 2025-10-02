@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "./backend/yet_another_calendar/tests/"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+}

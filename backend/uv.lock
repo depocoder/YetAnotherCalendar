@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.12.8, <3.13"
 
 [[package]]
@@ -23,6 +23,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a3/73/199a98fc2dae33535d6b8e8e6ec01f8c1d76c9adb096c6b7d64823038cde/anyio-4.8.0.tar.gz", hash = "sha256:1d9fe889df5212298c0c0723fa20479d1b94883a2df44bd3897aa91083316f7a", size = 181126, upload-time = "2025-01-05T13:13:11.095Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/46/eb/e7f063ad1fec6b3178a3cd82d1a3c4de82cccf283fc42746168188e1cdd5/anyio-4.8.0-py3-none-any.whl", hash = "sha256:b5011f270ab5eb0abf13385f851315585cc37ef330dd88e27ec3d34d651fd47a", size = 96041, upload-time = "2025-01-05T13:13:07.985Z" },
+]
+
+[[package]]
+name = "attrs"
+version = "22.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/21/31/3f468da74c7de4fcf9b25591e682856389b3400b4b62f201e65f15ea3e07/attrs-22.2.0.tar.gz", hash = "sha256:c9227bfc2f01993c03f68db37d1d15c9690188323c067c641f1a35ca58185f99", size = 215900, upload-time = "2022-12-21T09:48:51.773Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fb/6e/6f83bf616d2becdf333a1640f1d463fef3150e2e926b7010cb0f81c95e88/attrs-22.2.0-py3-none-any.whl", hash = "sha256:29e95c7f6778868dbd49170f98f8818f78f3dc5e0e37c0b1f474e3561b240836", size = 60018, upload-time = "2022-12-21T09:48:49.401Z" },
 ]
 
 [[package]]
@@ -259,6 +268,45 @@ wheels = [
 ]
 
 [[package]]
+name = "flake8"
+version = "7.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mccabe" },
+    { name = "pycodestyle" },
+    { name = "pyflakes" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9b/af/fbfe3c4b5a657d79e5c47a2827a362f9e1b763336a52f926126aa6dc7123/flake8-7.3.0.tar.gz", hash = "sha256:fe044858146b9fc69b551a4b490d69cf960fcb78ad1edcb84e7fbb1b4a8e3872", size = 48326, upload-time = "2025-06-20T19:31:35.838Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9f/56/13ab06b4f93ca7cac71078fbe37fcea175d3216f31f85c3168a6bbd0bb9a/flake8-7.3.0-py2.py3-none-any.whl", hash = "sha256:b9696257b9ce8beb888cdbe31cf885c90d31928fe202be0889a7cdafad32f01e", size = 57922, upload-time = "2025-06-20T19:31:34.425Z" },
+]
+
+[[package]]
+name = "flake8-async"
+version = "25.7.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "libcst" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fb/11/ed62d9092005bb691c8fc93de30b730877beab113134d4a67240e21f798c/flake8_async-25.7.1.tar.gz", hash = "sha256:1f2947f2563a4c91135436046b1aaa84dfcdb801d47bc1eb28cdd5b8b42bb59c", size = 118088, upload-time = "2025-07-29T11:35:04.253Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2a/11/ece553dfecd4e9c9f64ce4402c2eb0a639d588945cf1c92168bc50ce3c5d/flake8_async-25.7.1-py3-none-any.whl", hash = "sha256:311ced052406379573dbafa4452eb9da5e4890a24668f97e0057509ac759bc9a", size = 56456, upload-time = "2025-07-29T11:35:03.285Z" },
+]
+
+[[package]]
+name = "flake8-import-conventions"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "attrs" },
+    { name = "flake8" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4b/2a/94072dab358027f3ce2a9eee278624124da50be7d252d44b418f7aea2b27/flake8_import_conventions-0.1.0.tar.gz", hash = "sha256:0710db3a77de023c9a40b4483a9a259a1fdc3d09187892799614bf0f425df779", size = 5053, upload-time = "2023-02-08T08:59:55.62Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0a/bc/7770ca645bc9739019c2d51aaa9134f974ca623e4c8474f42db6eaf608dd/flake8_import_conventions-0.1.0-py3-none-any.whl", hash = "sha256:d0a32cbdb78239a4976aef5d3ac958f25a2b6c155760060d40a8bbebe481a03b", size = 6106, upload-time = "2023-02-08T08:59:54.608Z" },
+]
+
+[[package]]
 name = "h11"
 version = "0.14.0"
 source = { registry = "https://pypi.org/simple" }
@@ -373,6 +421,25 @@ wheels = [
 ]
 
 [[package]]
+name = "libcst"
+version = "1.8.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/07/e5/1ecfb0a74ef502d2f3ddc9fad51185a1d4e57d56aae3755073574b6f8237/libcst-1.8.4.tar.gz", hash = "sha256:f0f105d32c49baf712df2be360d496de67a2375bcf4e9707e643b7efc2f9a55a", size = 884416, upload-time = "2025-09-09T19:42:39.52Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b0/81/b8cb11f2c504af1ef163af6f601739faf52a1ab8bb76b7a3e649271b553e/libcst-1.8.4-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:1d468514a21cf3444dc3f3a4b1effc6c05255c98cc79e02af394652d260139f0", size = 2201626, upload-time = "2025-09-09T19:41:18.542Z" },
+    { url = "https://files.pythonhosted.org/packages/b2/8e/871c6bcf9ed1043b7824ca7911dac0c031e4ab90c147387b8fae5a2a2db2/libcst-1.8.4-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:870a49df8575c11ea4f5319d54750f95d2d06370a263bd42d924a9cf23cf0cbe", size = 2082143, upload-time = "2025-09-09T19:41:19.956Z" },
+    { url = "https://files.pythonhosted.org/packages/23/4f/b00db484fdffba45bc1f88cbc0f0f69149602402b07752f1fecf3ba6652f/libcst-1.8.4-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:c9c775bc473225a0ad8422150fd9cf18ed2eebd7040996772937ac558f294d6c", size = 2229271, upload-time = "2025-09-09T19:41:21.334Z" },
+    { url = "https://files.pythonhosted.org/packages/9a/a7/5d5871c2e22f12569ee80e4b5ee0abe3e1e4b8c5ea2340c10e2ac7b7af97/libcst-1.8.4-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:27eeb16edb7dc0711d67e28bb8c0288e4147210aeb2434f08c16ac5db6b559e5", size = 2326063, upload-time = "2025-09-09T19:41:23.164Z" },
+    { url = "https://files.pythonhosted.org/packages/8a/7e/34904ae945d970fabe51974398982f9be4ca7a4debbf8f72bad82dc8d3a5/libcst-1.8.4-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:71e12101ef2a6e05b7610badb2bfa597379289f1408e305a8d19faacdb872f47", size = 2291055, upload-time = "2025-09-09T19:41:24.563Z" },
+    { url = "https://files.pythonhosted.org/packages/67/b1/7aba1afc815824b93acffd8207e605f4d830bcea9703cf6c2d9f282ace94/libcst-1.8.4-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:69b672c1afac5fe00d689f585ba57ac5facc4632f39b977d4b3e4711571c76e2", size = 2402980, upload-time = "2025-09-09T19:41:25.938Z" },
+    { url = "https://files.pythonhosted.org/packages/25/2b/c0303783b282c610f1ab8973d22d8805ea5376663c867b03d72b54da0ac9/libcst-1.8.4-cp312-cp312-win_amd64.whl", hash = "sha256:7832ee448fbdf18884a1f9af5fba1be6d5e98deb560514d92339fd6318aef651", size = 2110472, upload-time = "2025-09-09T19:41:27.306Z" },
+    { url = "https://files.pythonhosted.org/packages/1a/b1/4e1b62a7f824172ff9a6cd824935f3d8dddcfbc4fe63649b3de728a64495/libcst-1.8.4-cp312-cp312-win_arm64.whl", hash = "sha256:6840e4011b583e9b7a71c00e7ab4281aea7456877b3ea6ecedb68a39a000bc64", size = 1996000, upload-time = "2025-09-09T19:41:29.053Z" },
+]
+
+[[package]]
 name = "loguru"
 version = "0.7.3"
 source = { registry = "https://pypi.org/simple" }
@@ -420,6 +487,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ab/5e/5e53d26b42ab75491cda89b871dab9e97c840bf12c63ec58a1919710cd06/marshmallow-3.26.1.tar.gz", hash = "sha256:e6d8affb6cb61d39d26402096dc0aee12d5a26d490a121f118d2e81dc0719dc6", size = 221825, upload-time = "2025-02-03T15:32:25.093Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/34/75/51952c7b2d3873b44a0028b1bd26a25078c18f92f256608e8d1dc61b39fd/marshmallow-3.26.1-py3-none-any.whl", hash = "sha256:3350409f20a70a7e4e11a27661187b77cdcaeb20abca41c1454fe33636bea09c", size = 50878, upload-time = "2025-02-03T15:32:22.295Z" },
+]
+
+[[package]]
+name = "mccabe"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e7/ff/0ffefdcac38932a54d2b5eed4e0ba8a408f215002cd178ad1df0f2806ff8/mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325", size = 9658, upload-time = "2022-01-24T01:14:51.113Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/27/1a/1f68f9ba0c207934b35b86a8ca3aad8395a3d6dd7921c0686e23853ff5a9/mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e", size = 7350, upload-time = "2022-01-24T01:14:49.62Z" },
 ]
 
 [[package]]
@@ -584,6 +660,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pycodestyle"
+version = "2.14.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/11/e0/abfd2a0d2efe47670df87f3e3a0e2edda42f055053c85361f19c0e2c1ca8/pycodestyle-2.14.0.tar.gz", hash = "sha256:c4b5b517d278089ff9d0abdec919cd97262a3367449ea1c8b49b91529167b783", size = 39472, upload-time = "2025-06-20T18:49:48.75Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl", hash = "sha256:dd6bf7cb4ee77f8e016f9c8e74a35ddd9f67e1d5fd4184d86c3b98e07099f42d", size = 31594, upload-time = "2025-06-20T18:49:47.491Z" },
+]
+
+[[package]]
 name = "pydantic"
 version = "2.10.6"
 source = { registry = "https://pypi.org/simple" }
@@ -633,6 +718,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/88/82/c79424d7d8c29b994fb01d277da57b0a9b09cc03c3ff875f9bd8a86b2145/pydantic_settings-2.8.1.tar.gz", hash = "sha256:d5c663dfbe9db9d5e1c646b2e161da12f0d734d422ee56f567d0ea2cee4e8585", size = 83550, upload-time = "2025-02-27T10:10:32.338Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0b/53/a64f03044927dc47aafe029c42a5b7aabc38dfb813475e0e1bf71c4a59d0/pydantic_settings-2.8.1-py3-none-any.whl", hash = "sha256:81942d5ac3d905f7f3ee1a70df5dfb62d5569c12f51a5a647defc1c3d9ee2e9c", size = 30839, upload-time = "2025-02-27T10:10:30.711Z" },
+]
+
+[[package]]
+name = "pyflakes"
+version = "3.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/45/dc/fd034dc20b4b264b3d015808458391acbf9df40b1e54750ef175d39180b1/pyflakes-3.4.0.tar.gz", hash = "sha256:b24f96fafb7d2ab0ec5075b7350b3d2d2218eab42003821c06344973d3ea2f58", size = 64669, upload-time = "2025-06-20T18:45:27.834Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c2/2f/81d580a0fb83baeb066698975cb14a618bdbed7720678566f1b046a95fe8/pyflakes-3.4.0-py2.py3-none-any.whl", hash = "sha256:f742a7dbd0d9cb9ea41e9a24a918996e8170c799fa528688d40dd582c8265f4f", size = 63551, upload-time = "2025-06-20T18:45:26.937Z" },
 ]
 
 [[package]]
@@ -1036,6 +1130,7 @@ dependencies = [
     { name = "environs" },
     { name = "fastapi" },
     { name = "fastapi-cache2" },
+    { name = "flake8-import-conventions" },
     { name = "httpx", extra = ["http2"] },
     { name = "icalendar" },
     { name = "loguru" },
@@ -1058,6 +1153,7 @@ dependencies = [
 dev = [
     { name = "black" },
     { name = "fakeredis" },
+    { name = "flake8-async" },
     { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -1075,6 +1171,7 @@ requires-dist = [
     { name = "environs", specifier = ">=14.1.1" },
     { name = "fastapi", specifier = ">=0.115.11" },
     { name = "fastapi-cache2", specifier = ">=0.2.2" },
+    { name = "flake8-import-conventions", specifier = ">=0.1.0" },
     { name = "httpx", extras = ["http2"], specifier = "==0.27.2" },
     { name = "icalendar", specifier = ">=6.1.1" },
     { name = "loguru", specifier = ">=0.7.3" },
@@ -1097,6 +1194,7 @@ requires-dist = [
 dev = [
     { name = "black", specifier = ">=25.1.0" },
     { name = "fakeredis", specifier = ">=2.27.0" },
+    { name = "flake8-async", specifier = ">=25.7.1" },
     { name = "mypy", specifier = ">=1.15.0" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-asyncio", specifier = ">=0.25.3" },
