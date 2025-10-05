@@ -97,13 +97,6 @@ async def test_get_user_info_forbidden(lms_bad_client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_user_info_ok(lms_client) -> None:
-    response_json = await integration.get_user_info(token="token_123", username="azamat")
-
-    assert response_json == [{"name": "azamat"}]
-
-
-@pytest.mark.asyncio
 async def test_auth_lms_error(lms_bad_client) -> None:
     creds = schema.LxpCreds(username="ivan@utmn.ru", password="12345678", service="test")
     with pytest.raises(HTTPException) as exc_info:
@@ -117,9 +110,7 @@ async def test_auth_lms_error(lms_bad_client) -> None:
 @pytest.mark.asyncio
 async def test_auth_lms_ok(lms_client) -> None:
     creds = schema.LxpCreds(username="ivan@utmn.ru", password="12345678", service="test")
-    with patch("yet_another_calendar.web.api.lms.integration.get_user_info",
-               return_value=[{"id": "1"}]):
-        user = await integration.auth_lms(creds)
+    user = await integration.auth_lms(creds)
 
     assert user.id == 1
     assert user.token == "token_12345"

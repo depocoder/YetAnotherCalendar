@@ -1,3 +1,4 @@
+"""Pytest fixtures."""
 import datetime
 from typing import Any
 from collections.abc import Callable
@@ -147,7 +148,7 @@ async def lms_client():
     async with AsyncClient(
         http2=True,
         base_url=settings.lms_base_url,
-        transport=handlers.transport,
+        transport=handlers.lms_transport,
     ) as client:
         with patch("yet_another_calendar.web.api.lms.integration.AsyncClient.__aenter__", return_value=client):
             yield client

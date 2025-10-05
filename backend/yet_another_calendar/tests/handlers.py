@@ -25,6 +25,37 @@ def get_httpx_response(
 
         return httpx.Response(status_code, text=f.read(), headers=headers)
 
+netology_response_cases = {
+        "/backend/api/user/programs/calendar/filters": get_httpx_response(200, {"ok": True}),
+        "/backend/api/unauthorized": get_httpx_response(404, {"detail": "Not Found"}),
+        settings.netology_get_events_part.format(program_id=45526): get_httpx_response(200, {},
+                                                                        settings.test_parent_path /
+                                                                        'fixtures/program_45526.json'),
+        settings.netology_get_events_part.format(program_id=57604): get_httpx_response(200, {},
+                                                                        settings.test_parent_path /
+                                                                        'fixtures/program_57604.json'),
+        settings.netology_get_programs_part.format(calendar_id=45526): get_httpx_response(200, {},
+                                                                           settings.test_parent_path /
+                                                                           'fixtures/profession.json'),
+        settings.netology_get_programs_part.format(calendar_id=2): get_httpx_response(404, {}),
+
+        settings.netology_sign_in_part: get_httpx_response(201, {"ok": True}),
+    }
+
+lms_wsfunction_responses = {
+    'core_enrol_get_users_courses': get_httpx_response(200, {},
+                                                    settings.test_parent_path /
+                                                    "fixtures/lms/lms_course_info.json"),
+    'core_user_get_users_by_field': get_httpx_response(200, {},
+                                                settings.test_parent_path /
+                                                "fixtures/lms/lms_user_info.json")
+}
+
+lms_login_responses = {
+    settings.lms_login_part: get_httpx_response(200, {"token": "token_12345"}),
+    "/lms/send_request_list": get_httpx_response(200, {"token": [1,2,3]}),
+}
+
 def _bad_handler(request: httpx.Request) -> httpx.Response:
     response_cases = {
         # netology
@@ -73,52 +104,25 @@ def _bad_handler(request: httpx.Request) -> httpx.Response:
 
 
 def _handler(request: httpx.Request) -> httpx.Response:
-    response_cases = {
-        # netology
-        "/backend/api/user/programs/calendar/filters": get_httpx_response(200, {"ok": True}),
-        "/backend/api/unauthorized": get_httpx_response(404, {"detail": "Not Found"}),
-        settings.netology_get_events_part.format(program_id=45526): get_httpx_response(200, {},
-                                                                        settings.test_parent_path /
-                                                                        'fixtures/program_45526.json'),
-        settings.netology_get_events_part.format(program_id=57604): get_httpx_response(200, {},
-                                                                        settings.test_parent_path /
-                                                                        'fixtures/program_57604.json'),
-        settings.netology_get_programs_part.format(calendar_id=45526): get_httpx_response(200, {},
-                                                                           settings.test_parent_path /
-                                                                           'fixtures/profession.json'),
-        settings.netology_get_programs_part.format(calendar_id=2): get_httpx_response(404, {}),
-
-        settings.netology_sign_in_part: get_httpx_response(201, {"ok": True}),
-
-        # modeus
-        "/schedule-calendar/assets/app.config.json": get_httpx_response(200, {},
-                                                                        settings.test_parent_path /
-                                                                        "fixtures/app_config.json"),
-        "/oauth2/authorize": get_httpx_response(302, {},
-                                                headers={"Location": "https://fs.utmn.ru/adfs/ls?aboba=true"}),
-        "/form-ok": get_httpx_response(200, {},
-                                      settings.test_parent_path / "fixtures/auth_form_ok.html"),
-        "/ok": get_httpx_response(201, {"ok": True}),
-        settings.modeus_search_events_part: get_httpx_response(200, {},
-                                                               settings.test_parent_path /
-                                                               "fixtures/full_events.json"),
-        settings.modeus_search_people_part: get_httpx_response(200, {},
-                                                               settings.test_parent_path /
-                                                               "fixtures/people_search_ok.json"),
-
-        # lms
-        settings.lms_login_part: get_httpx_response(200, {"token": "token_12345"}),
-        "/lms/send_request_list": get_httpx_response(200, {"token": [1,2,3]}),
-        settings.lms_get_user_part: get_httpx_response(200, [{"name": "azamat"}]),
-    }
-
-    case = response_cases.get(request.url.path)
+    case = netology_response_cases.get(request.url.path)
 
     if case is None:
         return httpx.Response(200, json={"Azamat": 'Lox'})
 
     return case
 
+
+def _lms_handler(request: httpx.Request) -> httpx.Response:
+    wsfunction = request.url.params.get("wsfunction")
+    if wsfunction:
+        case = lms_wsfunction_responses.get(wsfunction)
+    else:
+        case = lms_login_responses.get(request.url.path)
+
+    if case is None:
+        raise ValueError(f"Can't find pattern for url {request.url}")
+
+    return case
 
 def _utmn_handler(request: httpx.Request) -> httpx.Response:
     response_cases = {
@@ -142,3 +146,4 @@ def _utmn_handler(request: httpx.Request) -> httpx.Response:
 transport = httpx.MockTransport(_handler)
 bad_request_transport = httpx.MockTransport(_bad_handler)
 utmn_transport = httpx.MockTransport(_utmn_handler)
+lms_transport = httpx.MockTransport(_lms_handler)
