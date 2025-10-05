@@ -4,4 +4,6 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
+    "ruff.configuration": "./backend/pyproject.toml",
+    "ruff.nativeServer": "on",
 }
