@@ -56,9 +56,10 @@ utmn_response_cases = {
     settings.utmn_get_teachers_part.format(page=2): get_httpx_response(
         200, {}, _fixture("fixtures/utmn_teachers_page_2.html")
     ),
-    settings.utmn_get_teachers_part.format(page=3): get_httpx_response(
+    **{settings.utmn_get_teachers_part.format(page=index): get_httpx_response(
         200, {}, _fixture("fixtures/utmn_empty_page.html")
-    ),
+    ) for index in range(3, 100)
+    }
 }
 
 netology_response_cases = {
@@ -83,6 +84,9 @@ lms_wsfunction_responses = {
     ),
     'core_user_get_users_by_field': get_httpx_response(
         200, {}, _fixture("fixtures/lms/lms_user_info.json")
+    ),
+    'core_course_get_contents': get_httpx_response(
+        200, {}, _fixture("fixtures/lms/extended_lesson.json")
     ),
 }
 
