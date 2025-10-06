@@ -1,0 +1,116 @@
+[
+    {
+        "id": 1,
+        "username": "stud0000309025",
+        "firstname": "\u0418\u0432\u0430\u043d",
+        "lastname": "\u041f\u043e\u043f\u043e\u0432",
+        "fullname": "\u041f\u043e\u043f\u043e\u0432 \u0418\u0432\u0430\u043d \u0421\u0435\u0440\u0433\u0435\u0435\u0432\u0438\u0447",
+        "email": "stud0000309025@study.utmn.ru",
+        "department": "\u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u044b\u0435 \u0441\u0438\u0441\u0442\u0435\u043c\u044b \u0438 \u0442\u0435\u0445\u043d\u043e\u043b\u043e\u0433\u0438\u0438: \u0420\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u043a\u0430 IT-\u043f\u0440\u043e\u0434\u0443\u043a\u0442\u043e\u0432 \u0438 \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u044b\u0445 \u0441\u0438\u0441\u0442\u0435\u043c",
+        "institution": "\u0428\u043a\u043e\u043b\u0430 \u043a\u043e\u043c\u043f\u044c\u044e\u0442\u0435\u0440\u043d\u044b\u0445 \u043d\u0430\u0443\u043a",
+        "idnumber": "stud0000309025",
+        "auth": "ldap",
+        "confirmed": true,
+        "lang": "ru",
+        "theme": "",
+        "timezone": "99",
+        "mailformat": 1,
+        "trackforums": 0,
+        "profileimageurlsmall": "https://lms.utmn.ru/theme/image.php/moove/core/1759229464/u/f2",
+        "profileimageurl": "https://lms.utmn.ru/theme/image.php/moove/core/1759229464/u/f1",
+        "preferences": [
+            {
+                "name": "block_myoverview_hidden_course_1734",
+                "value": "1"
+            },
+            {
+                "name": "block_myoverview_user_grouping_preference",
+                "value": "inprogress"
+            },
+            {
+                "name": "block_myoverview_user_paging_preference",
+                "value": "0"
+            },
+            {
+                "name": "core_message_migrate_data",
+                "value": "1"
+            },
+            {
+                "name": "core_user_welcome",
+                "value": "1724088175"
+            },
+            {
+                "name": "coursesectionspreferences_2359",
+                "value": "{\"contentcollapsed\":[13343]}"
+            },
+            {
+                "name": "coursesectionspreferences_2367",
+                "value": "{\"contentcollapsed\":[13416]}"
+            },
+            {
+                "name": "coursesectionspreferences_2687",
+                "value": "{\"contentcollapsed\":[]}"
+            },
+            {
+                "name": "coursesectionspreferences_5632",
+                "value": "{\"contentcollapsed\":[]}"
+            },
+            {
+                "name": "coursesectionspreferences_6899",
+                "value": "{\"contentcollapsed\":[]}"
+            },
+            {
+                "name": "coursesectionspreferences_7008",
+                "value": "{\"contentcollapsed\":[]}"
+            },
+            {
+                "name": "coursesectionspreferences_7017",
+                "value": "{\"contentcollapsed\":[]}"
+            },
+            {
+                "name": "coursesectionspreferences_7103",
+                "value": "{\"contentcollapsed\":[]}"
+            },
+            {
+                "name": "drawer-open-block",
+                "value": "1"
+            },
+            {
+                "name": "drawer-open-index",
+                "value": "0"
+            },
+            {
+                "name": "filepicker_recentlicense",
+                "value": "unknown"
+            },
+            {
+                "name": "filepicker_recentrepository",
+                "value": "4"
+            },
+            {
+                "name": "last_time_enrolments_synced",
+                "value": "1759688875"
+            },
+            {
+                "name": "login_failed_count_since_success",
+                "value": "0"
+            },
+            {
+                "name": "tool_usertours_tour_completion_time_5",
+                "value": "1727380273"
+            },
+            {
+                "name": "tool_usertours_tour_completion_time_7",
+                "value": "1724762611"
+            },
+            {
+                "name": "tool_usertours_tour_completion_time_8",
+                "value": "1724088460"
+            },
+            {
+                "name": "_lastloaded",
+                "value": 1759688889
+            }
+        ]
+    }
+]

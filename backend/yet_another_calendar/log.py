@@ -4,7 +4,7 @@ import sys
 from loguru import logger
 from rollbar.logger import RollbarHandler
 
-from yet_another_calendar.settings import settings 
+from yet_another_calendar.settings import settings
 
 
 class InterceptHandler(logging.Handler):

@@ -1,6 +1,6 @@
 [project]
 name = "yet_another_calendar"
-version = "2.0.0"
+version = "2.1.0"
 description = ""
 authors = [
     { name = "Ivan Popov", email = "ma1n.py@yandex.ru" },
@@ -14,6 +14,7 @@ dependencies = [
     "environs>=14.1.1",
     "fastapi>=0.115.11",
     "fastapi-cache2>=0.2.2",
+    "flake8-import-conventions>=0.1.0",
     "httpx[http2]==0.27.2",
     "icalendar>=6.1.1",
     "loguru>=0.7.3",
@@ -36,7 +37,8 @@ dependencies = [
 dev = [
     "black>=25.1.0",
     "fakeredis>=2.27.0",
-    "mypy>=1.15.0",
+    "flake8-async>=25.7.1",
+    "mypy>=1.18.2",
     "pytest>=8.3.5",
     "pytest-asyncio>=0.25.3",
     "pytest-cov>=6.0.0",
@@ -72,14 +74,15 @@ env = [
     "YET_ANOTHER_CALENDAR_DB_BASE=yet_another_calendar_test",
 ]
 
-[ruff]
+[tool.ruff]
 target-version = "py311"
 
 lint.select = [
     "A", # prevent using keywords that clobber python builtins
     "N", # pep8-naming
     "B", # bugbear: security warnings
-    "E", # pycodestyle
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
     "F", # pyflakes
     "ISC", # implicit string concatenation
     "UP", # alert you when better syntax is available in your python version
@@ -91,7 +94,15 @@ lint.select = [
     "COM", # flake8-logging
     "ASYNC", # flake8-async
     "ANN", # flake8-annotations
+    "C4", # flake8-comprehensions
+    "EXE", # flake8-executable
+    "FIX", # flake8-fixme
+    "ICN", # flake8-import-conventions
+    "PIE", # flake8-pie
+
     "PL", # Pylint
+    "PLE", # pylint errors
+
 ]
 lint.ignore = [
     "ANN401",
@@ -102,14 +113,14 @@ lint.ignore = [
 line-length = 119
 exclude = [
     ".venv/",
-    "yet_another_calendar/tests/*",
+    "*/tests/*",
 ]
 
-[ruff.lint.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "pep257"
 ignore-decorators = ["typing.overload"]
 
-[ruff.lint.pylint]
+[tool.ruff.lint.pylint]
 allow-magic-value-types = ["int", "str", "float", "bytes"]
 
 [fastapi-template.options]

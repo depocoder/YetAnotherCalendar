@@ -17,7 +17,7 @@ def raise_error(serialized_response: dict[str, Any]) -> None:
     if serialized_response.get('errorcode') == 'invalidtoken':
         raise HTTPException(detail='Invalid token',
                             status_code=status.HTTP_401_UNAUTHORIZED)
-    error = serialized_response.get('error') or serialized_response.get('exception') or {} 
+    error = serialized_response.get('error') or serialized_response.get('exception') or {}
     if error:
         raise HTTPException(detail=f'{error}. Server response: {serialized_response}',
                             status_code=status.HTTP_400_BAD_REQUEST)

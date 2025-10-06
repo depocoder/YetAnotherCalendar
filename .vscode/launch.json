@@ -10,14 +10,15 @@
             "request": "launch",
             "module": "pytest",
             "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/backend",
             "args": [
-                "backend/yet_another_calendar/tests/"
-            ],
+                "yet_another_calendar/tests/test_lms.py"
+            ]
         },
         {
             "name": "Python debug backend (docker)",
             "request": "attach",
-            "type": "python",
+            "type": "debugpy",
             "pathMappings": [
                 {
                     "localRoot": "${workspaceFolder}/backend",

@@ -174,10 +174,10 @@ async def get_donor_token() -> str:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Donor account credentials not configured",
         )
-    
+
     logger.info("Authenticating donor account")
     token = await login(
-        settings.modeus_username, 
+        settings.modeus_username,
         settings.modeus_password,
     )
     logger.info("Donor account authenticated successfully")

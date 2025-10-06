@@ -1,0 +1,14 @@
+{
+    "python.testing.pytestArgs": [
+        "./backend/yet_another_calendar/tests/"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+
+    "ruff.configuration": "./backend/pyproject.toml",
+    "ruff.nativeServer": "on",
+
+    "mypy.dmypyExecutable": "${workspaceFolder}/backend/.venv/bin/dmypy",
+    "mypy.mypyExecutable": "${workspaceFolder}/backend/.venv/bin/mypy",
+    "mypy.configFile": "backend/pyproject.toml",
+}

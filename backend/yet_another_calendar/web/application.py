@@ -63,7 +63,7 @@ async def request_error_exception_handler(request: Request, exc: HTTPError) -> R
 
 async def request_validation_exception_handler(request: Request, exc: RequestValidationError) -> Response:
     logger.opt(exception=exc).error(f"Validation error: {exc}. errors: {exc.errors()}")
-    
+
     try:
         errors = json.loads(json.dumps(exc.errors()))
     except TypeError:
@@ -90,12 +90,12 @@ def get_app() -> FastAPI:
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,
     )
-    
+
     if settings.rollbar_token:
         init_rollbar(app)
 
     configure_logging()
-    
+
     if settings.debug:
         origins = ["*"]
     else:

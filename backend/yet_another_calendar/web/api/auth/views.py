@@ -21,12 +21,12 @@ async def tutor_login(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Tutor authentication not configured",
         )
-    
+
     if not utils.verify_password(login_request.password, settings.tutor_password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid password",
         )
-    
+
     access_token = utils.create_access_token()
     return schema.TutorLoginResponse(access_token=access_token)

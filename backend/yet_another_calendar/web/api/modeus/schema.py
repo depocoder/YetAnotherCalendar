@@ -311,8 +311,3 @@ class DayEventsRequest(BaseModel):
             "profileName": self.profile_name,
             "specialtyCode": self.specialty_code,
         }
-
-
-class ModeusDayEventsRequest(DayEventsRequest):
-    """Backward-compatibility wrapper kept for external/tests imports."""
-    pass

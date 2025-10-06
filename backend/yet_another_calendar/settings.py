@@ -74,11 +74,11 @@ class Settings(BaseSettings):
     modeus_continue_auth_url: str = "https://auth.modeus.org/commonauth"
     modeus_search_events_part: str = "/schedule-calendar-v2/api/calendar/events/search"
     modeus_search_people_part: str = "/schedule-calendar-v2/api/people/persons/search"
-    
+
     # Donor account for tutors (no personal Modeus accounts needed)
     modeus_username: str = env.str("YET_ANOTHER_CALENDAR_MODEUS_USERNAME", "")
     modeus_password: str = env.str("YET_ANOTHER_CALENDAR_MODEUS_PASSWORD", "")
-    
+
     utmn_base_url: str = "https://www.utmn.ru"
     utmn_get_teachers_part: str = "/o-tyumgu/sotrudniki/?PAGEN_1={page}"
 
@@ -86,7 +86,7 @@ class Settings(BaseSettings):
     tutor_password_hash: str = env.str("YET_ANOTHER_CALENDAR_TUTOR_PASSWORD_HASH", "")
     tutor_secret_key: str = env.str("YET_ANOTHER_CALENDAR_TUTOR_SECRET_KEY")
     tutor_jwt_time_live: int = 60 * 60 * 24 * 30  # 1 month
-    
+
     # Rate limiting settings (applies to all login endpoints)
     login_max_attempts: int = env.int("YET_ANOTHER_CALENDAR_LOGIN_MAX_ATTEMPTS", 5)
     login_lockout_time: int = env.int("YET_ANOTHER_CALENDAR_LOGIN_LOCKOUT_TIME", 900)  # 15 minutes
@@ -99,7 +99,7 @@ class Settings(BaseSettings):
 
     # Application domain for generating full URLs
     app_domain: str = env.str("YET_ANOTHER_CALENDAR_APP_DOMAIN", "https://yetanothercalendar.ru")
-    
+
     rollbar_token: str = ""
     rollbar_environment: str = "dev"
 
