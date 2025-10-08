@@ -90,7 +90,7 @@ async def login(username: str, __password: str, timeout: int = 15) -> str:
         form = await get_auth_form(session, username, __password)
         auth_data = {}
         for input_html in form.find_all("input", type="hidden"):
-            auth_data[input_html["name"]] = input_html["value"]  # type: ignore
+            auth_data[input_html["name"]] = input_html["value"]
         response = await session.post(
             settings.modeus_continue_auth_url,
             data=auth_data,  # type: ignore

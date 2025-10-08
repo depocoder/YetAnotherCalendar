@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse, JSONResponse
 from redis.asyncio import ConnectionPool
 
+from yet_another_calendar.settings import settings
 from . import integration
 from .schema import MtsLinkBody, MtsLinkRequest, MtsLinkResponse
 from ...lifespan import get_redis_pool
@@ -39,5 +40,4 @@ async def redirect_to_mts(
         return RedirectResponse(url)
     except HTTPException:
         # Редирект на 404 страницу фронтенда вместо HTTP 404
-        from yet_another_calendar.settings import settings
         return RedirectResponse(f"{settings.app_domain}/404")
