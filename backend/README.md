@@ -1,6 +1,6 @@
 # 🗓️ YetAnotherCalendar
 
-[![Python](https://img.shields.io/badge/python-3.12.8+-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/badge/python-3.13.7+-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![Linting: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -36,7 +36,7 @@ better user experience. It combines multiple educational platforms into a single
 
 ### Prerequisites
 
-- Python 3.12.8+
+- Python 3.13.7+
 - Docker and Docker Compose (optional)
 
 ### Installation

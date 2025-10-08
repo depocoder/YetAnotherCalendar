@@ -1,4 +1,4 @@
-FROM python:3.12.8-slim-bullseye as prod
+FROM python:3.13.7-slim-trixie as prod
 
 # instal uv
 COPY --from=ghcr.io/astral-sh/uv:0.6.5 /uv /uvx /bin/

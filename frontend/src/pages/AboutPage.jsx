@@ -270,7 +270,7 @@ const AboutPage = () => {
                             <h4>Backend</h4>
                             <div className="tech-items">
                                 <div className="tech-item">
-                                    <span className="tech-badge python">Python 3.12+</span>
+                                    <span className="tech-badge python">Python 3.13.7+</span>
                                 </div>
                                 <div className="tech-item">
                                     <span className="tech-badge fastapi">FastAPI</span>
