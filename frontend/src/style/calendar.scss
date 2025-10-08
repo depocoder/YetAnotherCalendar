@@ -252,6 +252,7 @@ $color-border-light: #e9ecef;
         padding-left: 47px;
         padding-top: 7px;
         padding-bottom: 7px;
+        padding-right: 10px;
         font-family: "Roboto Mono", monospace;
         font-weight: 400;
         font-size: 12px;
@@ -279,6 +280,7 @@ $color-border-light: #e9ecef;
         padding-left: 47px;
         padding-top: 7px;
         padding-bottom: 7px;
+        padding-right: 10px;
         font-family: "Roboto Mono", monospace;
         font-weight: 400;
         font-size: 12px;
@@ -356,6 +358,10 @@ $color-border-light: #e9ecef;
     font-weight: 400;
     font-size: 13px;
     color: #2C2D2E;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 28ch;
 }
 
 .netology-lesson {
