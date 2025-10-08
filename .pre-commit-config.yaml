@@ -9,7 +9,7 @@ repos:
         require_serial: true
         language: python
         types: [ python ]
-        args: [ --config, backend/pyproject.toml, check, backend/yet_another_calendar, --fix, --exit-non-zero-on-fix ]
+        args: [ --config, ./backend/pyproject.toml, check, --force-exclude ]
         additional_dependencies: [ uv ]
 
       - id: mypy
@@ -21,7 +21,7 @@ repos:
         types: [ python ]
         'types_or': [ python, pyi ]
         args: [
-          "--config-file=backend/pyproject.toml",
+          "--config-file=./backend/pyproject.toml",
           "backend/yet_another_calendar/"
         ]
         additional_dependencies: [ uv ]
@@ -30,7 +30,7 @@ repos:
         name: pytest
         entry: uv --project backend run pytest
         require_serial: true
-        pass_filenames: true
+        pass_filenames: false
         language: python
         types: [ python ]
         'types_or': [ python, pyi ]
