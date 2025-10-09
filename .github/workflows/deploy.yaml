@@ -85,12 +85,9 @@ jobs:
           echo $IMAGE_TAG > .version
           scp -P 666 .version $SSH_USER@$SSH_HOST:~/YetAnotherCalendar/.version
 
-      - name: Update docker compose
+      - name: Update docker compose & Clear redis cache
         run: |
           ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd YetAnotherCalendar/ && git pull origin main &&
           YET_ANOTHER_CALENDAR_VERSION=$(cat .version) docker compose -f docker-compose.prod.yaml pull &&
-          YET_ANOTHER_CALENDAR_VERSION=$(cat .version) docker compose -f docker-compose.prod.yaml up -d"
-      
-      - name: Clear redis cache
-        run: docker exec -it yetanothercalendar-redis-1 bash -c 'redis-cli KEYS "FastAPI-redis:calendar:*" | xargs redis-cli DEL > /dev/null 2>&1'
-
+          YET_ANOTHER_CALENDAR_VERSION=$(cat .version) docker compose -f docker-compose.prod.yaml up -d && 
+          docker exec yetanothercalendar-redis-1 redis-cli --scan --pattern 'FastAPI-redis:calendar:*' | xargs docker exec yetanothercalendar-redis-1 redis-cli DEL > /dev/null 2>&1"
