@@ -11,7 +11,7 @@ from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus.schema import ModeusTimeBody
 from yet_another_calendar.web.api.validators import OptionalUTCDate
 
-_DATE_PATTERN = r"(\d{2})\.+(\d{2})\.+(\d{2})"
+_DATE_PATTERN = r"(?<!\d)(\d{2})\D+(\d{2})\D+(?:\d{2})?(\d{2})(?!\d)"
 
 class NetologyCreds(BaseModel):
     """Netology creds."""

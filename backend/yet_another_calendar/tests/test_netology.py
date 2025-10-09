@@ -219,6 +219,7 @@ async def test_lesson_webinar_schema() -> None:
     ("Project submission by 45.03.24", None),
     ("Submit by 00.04.24", (2024, 4, 1)),
     ("Submit by 00..04..24", (2024, 4, 1)),
+    ("Submit by 01.04.2025", (2025, 4, 1)),
 ])
 @pytest.mark.asyncio
 async def test_lesson_task_schema_validation(title: str, date: tuple[int, int, int] | None) -> None:

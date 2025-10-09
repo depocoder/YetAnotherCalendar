@@ -137,7 +137,11 @@ async def get_calendar(
 
 
 # noinspection PyTypeChecker
-@cache(expire=settings.redis_events_time_live, key_builder=key_builder)  # type i
+@cache(
+    expire=settings.redis_events_time_live,
+    key_builder=key_builder,
+    namespace="calendar",
+)  # type i
 async def get_cached_calendar(
         body: modeus_schema.ModeusTimeBody,
         calendar_id: int,
