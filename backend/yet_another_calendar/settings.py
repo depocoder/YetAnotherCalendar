@@ -50,6 +50,7 @@ class Settings(BaseSettings):
     redis_events_time_live: int = 60 * 60 * 24 * 14  # 2 weeks
     redis_utmn_teachers_time_live: int = 60 * 60 * 24 * 30  # 30 days
     redis_prefix: str = 'FastAPI-redis'
+    redis_lesson_prefix: str = "calendar"
 
     retry_tries: int = 5
     retry_delay: int = 3

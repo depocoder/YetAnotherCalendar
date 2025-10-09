@@ -101,7 +101,7 @@ async def refresh_events(
         coder = FastAPICache.get_coder()
         backend = FastAPICache.get_backend()
         await backend.set(
-            key=f"{settings.redis_prefix}:{cache_key}",
+            key=f"{settings.redis_prefix}:{settings.redis_lesson_prefix}{cache_key}",
             value=coder.encode(calendar),
             expire=settings.redis_events_time_live)
     except Exception as exception:
@@ -140,7 +140,7 @@ async def get_calendar(
 @cache(
     expire=settings.redis_events_time_live,
     key_builder=key_builder,
-    namespace="calendar",
+    namespace=settings.redis_lesson_prefix,
 )  # type i
 async def get_cached_calendar(
         body: modeus_schema.ModeusTimeBody,

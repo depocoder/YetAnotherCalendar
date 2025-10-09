@@ -11,7 +11,7 @@ from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.modeus.schema import ModeusTimeBody
 from yet_another_calendar.web.api.validators import OptionalUTCDate
 
-_DATE_PATTERN = r"(?<!\d)(\d{2})\D+(\d{2})\D+(?:\d{2})?(\d{2})(?!\d)"
+_DATE_PATTERN = re.compile(r"(?<!\d)(\d{2})[^\w]+(\d{2})[^\w]+(?:\d{2})?(\d{2})(?!\d)")
 
 class NetologyCreds(BaseModel):
     """Netology creds."""
@@ -106,7 +106,7 @@ class LessonTask(BaseLesson):
         if not isinstance(data, dict):
             return data
         title = str(data.get('title', ''))
-        match = re.search(_DATE_PATTERN, title)
+        match = _DATE_PATTERN.search(title)
         if not match:
             return data
         try:
