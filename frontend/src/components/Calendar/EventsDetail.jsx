@@ -177,15 +177,23 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
                 )}
                 {event.source === 'utmn' && (
                     <div className="task-event">
-                        <span className="task-event-text">
-                            Курс: {event.course_name || 'Не указано'}
-                        </span>
-                        <span className="task-event-text">
-                            Модуль: {event.modname || 'Не указано'}
-                        </span>
-                        <span className="task-event-text">
-                            Статус: {event.is_completed ? 'Завершено' : 'В процессе'}
-                        </span>
+                        {event.course_name && (
+                            <>
+                                <span className="task-event-text">
+                                    Курс: {event.course_name}
+                                </span>
+                                <br/>
+                            </>
+                        )}
+                        {event.modname && (
+                            <span className="task-event-text">
+                                Тип: {event.modname === 'assign' ? 'Задание' :
+                                      event.modname === 'quiz' ? 'Тест' :
+                                      event.modname === 'forum' ? 'Форум' :
+                                      event.modname === 'workshop' ? 'Семинар' :
+                                      event.modname}
+                            </span>
+                        )}
                     </div>
                 )}
 

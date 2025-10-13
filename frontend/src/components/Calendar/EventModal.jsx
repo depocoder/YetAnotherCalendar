@@ -265,29 +265,30 @@ const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
                         {(event.type === 'lms' || event.source === 'utmn') && (
                             <div className="event-detail-section">
                                 <div className="event-info-list">
-                                    <div className="event-info-row">
-                                        <span className="info-icon">📚</span>
-                                        <div className="info-content">
-                                            <span className="info-label">Курс:</span>
-                                            <span className="info-value">{event.course_name || 'Не указано'}</span>
+                                    {event.course_name && (
+                                        <div className="event-info-row">
+                                            <span className="info-icon">📚</span>
+                                            <div className="info-content">
+                                                <span className="info-label">Курс:</span>
+                                                <span className="info-value">{event.course_name}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="event-info-row">
-                                        <span className="info-icon">📖</span>
-                                        <div className="info-content">
-                                            <span className="info-label">Модуль:</span>
-                                            <span className="info-value">{event.modname || 'Не указано'}</span>
+                                    )}
+                                    {event.modname && (
+                                        <div className="event-info-row">
+                                            <span className="info-icon">📖</span>
+                                            <div className="info-content">
+                                                <span className="info-label">Тип:</span>
+                                                <span className="info-value">
+                                                    {event.modname === 'assign' ? 'Задание' :
+                                                     event.modname === 'quiz' ? 'Тест' :
+                                                     event.modname === 'forum' ? 'Форум' :
+                                                     event.modname === 'workshop' ? 'Семинар' :
+                                                     event.modname}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="event-info-row">
-                                        <span className="info-icon">✅</span>
-                                        <div className="info-content">
-                                            <span className="info-label">Статус:</span>
-                                            <span className={`info-badge ${event.is_completed ? 'completed' : 'in-progress'}`}>
-                                                {event.is_completed ? 'Завершено' : 'В процессе'}
-                                            </span>
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         )}
