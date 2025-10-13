@@ -46,6 +46,8 @@ jobs:
       - name: Run tests
         working-directory: backend
         run: |
+            YET_ANOTHER_CALENDAR_MODEUS_USERNAME='test' \
+            YET_ANOTHER_CALENDAR_MODEUS_PASSWORD='test' \
             YET_ANOTHER_CALENDAR_TUTOR_SECRET_KEY='test' \
             uv run pytest --junitxml=../pytest.xml \
               --cov-report=term-missing:skip-covered \
