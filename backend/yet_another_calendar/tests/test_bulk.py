@@ -1063,7 +1063,7 @@ def test_views_response_type_handling_logic(bulk_fixture_content):
 
 
 @pytest.mark.asyncio
-async def test_views_get_calendar_cached_response_type():
+async def test_views_get_calendar_cached_response_type(fake_redis_pool):
     """Test views get_calendar function with different response types (lines 33-40)."""
     # Mock dependencies
     body = modeus_schema.ModeusTimeBody(
@@ -1090,7 +1090,8 @@ async def test_views_get_calendar_cached_response_type():
             lms_user=lms_user,
             cookies=cookies,
             donor_token="test_token",
-            modeus_person_id="550e8400-e29b-41d4-a716-446655440000"
+            modeus_person_id="550e8400-e29b-41d4-a716-446655440000",
+            redis=fake_redis_pool
         )
 
         # Should call change_timezone and return CalendarResponse (line 38)
@@ -1108,7 +1109,8 @@ async def test_views_get_calendar_cached_response_type():
             lms_user=lms_user,
             cookies=cookies,
             donor_token="test_token",
-            modeus_person_id="550e8400-e29b-41d4-a716-446655440000"
+            modeus_person_id="550e8400-e29b-41d4-a716-446655440000",
+            redis=fake_redis_pool
         )
 
         # Should validate dict and return CalendarResponse (line 40)

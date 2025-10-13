@@ -6,13 +6,16 @@ from typing import Annotated
 from fastapi import APIRouter, Header
 from fastapi.params import Depends
 from starlette.responses import StreamingResponse
+from redis.asyncio import ConnectionPool
 
 from yet_another_calendar.settings import settings
+from yet_another_calendar.web.api.auth.utils import verify_tutor_token
 from . import integration, schema
 from ..lms import schema as lms_schema
 from ..modeus import schema as modeus_schema
 from ..modeus import integration as modeus_integration
 from ..netology import schema as netology_schema
+from ...lifespan import get_redis_pool
 
 router = APIRouter()
 
@@ -24,12 +27,14 @@ async def get_calendar(
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         donor_token: Annotated[str, Depends(modeus_integration.get_donor_token)],
         modeus_person_id: Annotated[str, Header()],
+        redis: Annotated[ConnectionPool, Depends(get_redis_pool)],
         calendar_id: int = settings.netology_default_course_id,
         time_zone: str = "Europe/Moscow",
 ) -> schema.CalendarResponse:
     """
     Get events from Netology and Modeus, cached.
     """
+    await integration.save_user_was_there(redis_pool=redis, user_id=modeus_person_id)
     cached_calendar = await integration.get_cached_calendar(
         body, calendar_id, modeus_person_id,
         cookies=cookies, lms_user=lms_user, modeus_jwt_token=donor_token,
@@ -77,3 +82,14 @@ async def export_ics(
     )
     calendar_with_timezone = calendar.change_timezone(time_zone)
     return StreamingResponse(integration.export_to_ics(calendar_with_timezone))
+
+
+@router.get("/user_metrix/")
+async def get_user_metrix(
+    redis: Annotated[ConnectionPool, Depends(get_redis_pool)],
+    _: Annotated[None, Depends(verify_tutor_token)],
+) -> int:
+    """
+    Get week users metrix
+    """
+    return await integration.count_keys_by_prefix(redis_pool=redis)

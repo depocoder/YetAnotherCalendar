@@ -213,3 +213,26 @@ export async function getMtsLinks(lessonIds) {
         return e.response;
     }
 }
+
+// Statistics API functions
+export async function getWeeklyUsersCount() {
+    try {
+        const tutorToken = getTutorTokenFromLocalStorage();
+
+        if (!tutorToken) {
+            throw new Error('Tutor token not found');
+        }
+
+        const response = await axios.get(`${BACKEND_URL}/api/bulk/user_metrix/`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tutorToken}`
+            }
+        });
+
+        return response.data;
+    } catch (e) {
+        debug.error('Error fetching weekly users count:', e);
+        return { weekly_users: 0 };
+    }
+}

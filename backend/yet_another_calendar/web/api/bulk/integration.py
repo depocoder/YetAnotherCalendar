@@ -10,6 +10,7 @@ from fastapi_cache.decorator import cache
 from starlette import status
 from pydantic import ValidationError
 from loguru import logger
+from redis.asyncio import ConnectionPool, Redis
 
 from yet_another_calendar.settings import settings
 from . import schema
@@ -21,6 +22,48 @@ from ..netology import schema as netology_schema
 from ..netology import views as netology_views
 from ...cache_builder import key_builder
 
+
+async def count_keys_by_prefix(redis_pool: ConnectionPool, prefix: str = settings.redis_week_metrix_prefix) -> int:
+    """
+    Count Redis keys matching a given prefix pattern.
+
+    Uses scan_iter which is production-safe (non-blocking).
+    Similar to CLI: redis-cli KEYS "prefix*" | wc -l
+
+    :param redis_pool: Redis connection pool
+    :param prefix: Key prefix pattern (e.g., "calendar:*", "user:*")
+    :return: Number of keys matching the prefix
+    """
+    async with Redis(connection_pool=redis_pool) as redis:
+        count = 0
+        async for _ in redis.scan_iter(match=f"{prefix}*", count=1000):
+            count += 1
+        logger.debug(f"Found {count} keys matching prefix '{prefix}'")
+        return count
+
+async def save_user_was_there(
+    redis_pool: ConnectionPool, user_id: str,
+    prefix: str = settings.redis_week_metrix_prefix) -> None:
+    """
+    Mark that a user accessed the calendar by storing their ID in Redis.
+
+    Creates a temporary key-value pair with automatic expiration to track
+    user visits. The key uses the user_id as name and stores a boolean True value.
+
+    This is useful for:
+    - Tracking unique visitors over a time period
+    - Monitoring user activity
+    - Analytics and usage statistics
+
+    The key automatically expires after redis_events_time_live (14 days by default),
+    so it acts as a sliding window for recent user activity.
+
+    :param redis_pool: Redis connection pool from get_redis_pool dependency
+    :param user_id: Unique identifier for the user (e.g., email, person_id, etc.)
+    :return: None
+    """
+    async with Redis(connection_pool=redis_pool) as redis:
+        await redis.set(name=f"{prefix}:{user_id}", value=0, ex=settings.redis_week_live)
 
 
 def create_ics_event(title: str, starts_at: datetime.datetime, ends_at: datetime.datetime,

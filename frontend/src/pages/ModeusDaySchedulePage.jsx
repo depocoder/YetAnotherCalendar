@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
-import { getDayEvents, saveLinkToEvent, getTutorTokenFromLocalStorage, getMtsLinks } from '../services/api';
+import { getDayEvents, saveLinkToEvent, getTutorTokenFromLocalStorage, getMtsLinks, getWeeklyUsersCount } from '../services/api';
 import Loader from "../elements/Loader";
 import ExitBtn from "../components/Calendar/ExitBtn";
 
@@ -42,6 +42,8 @@ const ModeusDaySchedulePage = () => {
             return false;
         }
     });
+    const [weeklyUsers, setWeeklyUsers] = useState(null);
+    const [loadingStats, setLoadingStats] = useState(false);
 
     // Генерируем список годов (2023-2026)
     const yearOptions = [];
@@ -142,6 +144,32 @@ const ModeusDaySchedulePage = () => {
     useEffect(() => {
         fetchEvents();
     }, [selectedDate, selectedYear, profileName, specialtyCode, fetchEvents]);
+
+    // Fetch weekly users count on component mount
+    useEffect(() => {
+        const fetchWeeklyUsers = async () => {
+            const tutorToken = getTutorTokenFromLocalStorage();
+            if (!tutorToken) {
+                return; // Don't fetch if no tutor token
+            }
+
+            setLoadingStats(true);
+            try {
+                const data = await getWeeklyUsersCount();
+                // Handle both formats: {weekly_users: N} or just N
+                const count = typeof data === 'number' ? data : (data.weekly_users || 0);
+                setWeeklyUsers(count);
+                debug.log('Weekly users count:', count);
+            } catch (error) {
+                debug.error('Error fetching weekly users:', error);
+                setWeeklyUsers(0);
+            } finally {
+                setLoadingStats(false);
+            }
+        };
+
+        fetchWeeklyUsers();
+    }, []); // Only run once on mount
 
     const handleDateChange = (e) => {
         setSelectedDate(e.target.value);
@@ -566,6 +594,19 @@ const ModeusDaySchedulePage = () => {
                         <div className="shedule-export">
                             <span className="modeus-page-title">Расписание Modeus на день</span>
                         </div>
+                        {weeklyUsers !== null && (
+                            <div className="weekly-users-badge">
+                                <div className="badge-content">
+                                    <span className="badge-icon">👥</span>
+                                    <div className="badge-info">
+                                        <span className="badge-label">Пользователей за неделю</span>
+                                        <span className="badge-count">
+                                            {loadingStats ? '...' : weeklyUsers.toLocaleString('ru-RU')}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <ExitBtn />
                     </div>
 
