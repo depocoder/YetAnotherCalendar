@@ -4,6 +4,7 @@ from tempfile import gettempdir
 
 from environs import Env
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
 from yarl import URL
 
 TEMP_DIR = Path(gettempdir())
@@ -48,9 +49,11 @@ class Settings(BaseSettings):
     redis_cookie_key: str = "MODEUS_JWT"
     redis_jwt_time_live: int = 60 * 60 * 12  # 12 hours
     redis_events_time_live: int = 60 * 60 * 24 * 14  # 2 weeks
+    redis_week_live: int = 60 * 60 * 24 * 7  # 1 weeks
     redis_utmn_teachers_time_live: int = 60 * 60 * 24 * 30  # 30 days
     redis_prefix: str = 'FastAPI-redis'
     redis_lesson_prefix: str = "calendar"
+    redis_week_metrix_prefix: str = "metrix"
 
     retry_tries: int = 5
     retry_delay: int = 3
@@ -129,5 +132,18 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
     )
 
+    @field_validator("modeus_username", mode="after")
+    @classmethod
+    def validate_modeus_username(cls, username: str) -> str:
+        if not(username):
+            raise ValueError("Modeus username should be set!")
+        return username
+
+    @field_validator("modeus_password", mode="after")
+    @classmethod
+    def validate_modeus_password(cls, password: str) -> str:
+        if not(password):
+            raise ValueError("Modeus password should be set!")
+        return password
 
 settings = Settings()

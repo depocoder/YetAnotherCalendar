@@ -108,10 +108,22 @@ YetAnotherCalendar provides a unified interface to manage all your educational e
 
 3. Configure your environment variables in the `.env` files
 
-4. Run the application:
+4. Set username & password for modeus donor account in `.env`
+
+```
+YET_ANOTHER_CALENDAR_MODEUS_USERNAME=""                # 👤 Modeus donor account username
+YET_ANOTHER_CALENDAR_MODEUS_PASSWORD=""                # 🔐 Modeus donor account password
+```
+
+5. Run the application & watch logs:
     ```sh
     docker compose up --build
     ```
+
+
+6. Go to http://127.0.0.1:3000
+
+
 
 ### Production Mode
 
