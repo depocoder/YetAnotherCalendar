@@ -3,12 +3,12 @@ from pathlib import Path
 from typing import Any
 
 import json
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import UJSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
-from httpx import HTTPError
+from httpx import HTTPError, ConnectTimeout, HTTPStatusError
 from pydantic import ValidationError
 from starlette.responses import Response
 from loguru import logger
@@ -23,7 +23,12 @@ APP_ROOT = Path(__file__).parent.parent
 
 
 def get_exceptions(exc: ExceptionGroup[Any]) -> list[Any]:
-    """Get exceptions from ExceptionGroup."""
+    """
+    Extracts individual exceptions from a potentially nested ExceptionGroup.
+
+    This function helps in unwrapping exceptions when multiple exceptions
+    are grouped together, allowing for more specific error handling.
+    """
     exceptions = list(exc.exceptions)
     try:
         return list(exceptions[0].exceptions)
@@ -56,6 +61,17 @@ async def validation_exception_handler(request: Request, exc: ValidationError) -
 
 async def request_error_exception_handler(request: Request, exc: HTTPError) -> Response:
     logger.opt(exception=exc).error(f"Unhandled HTTP request exception: {exc}")
+    if isinstance(exc, ConnectTimeout):
+        return Response(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content="One of sites isn't working.",
+        )
+    if isinstance(exc, HTTPStatusError):
+        return Response(
+            status_code=exc.response.status_code,
+            content=f"Unexpected exception: {exc}.",
+        )
+
     return Response(
         status_code=500,
         content=f"Oops! Api changed: {exc}",
@@ -75,11 +91,10 @@ async def request_validation_exception_handler(request: Request, exc: RequestVal
 
 def get_app() -> FastAPI:
     """
-    Get FastAPI application.
+    Creates and configures the FastAPI application.
 
-    This is the main constructor of an application.
-
-    :return: application.
+    This function initializes the FastAPI app with its settings, middleware,
+    exception handlers, and API routes.
     """
     app = FastAPI(
         title="yet_another_calendar",

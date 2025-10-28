@@ -10,11 +10,14 @@ import {
 } from "../../services/api";
 import InlineLoader from '../../elements/InlineLoader';
 import { debug } from '../../utils/debug';
+import { handleApiError } from '../../utils/errorHandler';
+import { useNavigate } from 'react-router-dom';
 
 const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false }) => {
     const [cacheUpdated, setCacheUpdated] = useState(false);
     const timeOffset = parseInt(process.env.REACT_APP_TIME_OFFSET, 10) || 6;
-    const toastShownRef = useRef(false); // ✅ защита от дублирующих уведомлений
+    const toastShownRef = useRef(false);
+    const navigate = useNavigate();
 
     // ✅ Очистка флагов при первом монтировании
     useEffect(() => {
@@ -65,6 +68,8 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
 
         if (!calendarId) {
             debug.warn("Попытка обновить кэш без calendarId. Пропущено.");
+            refreshingRef.current = false;
+            localStorage.setItem("refresh_in_progress", "false");
             return;
         }
 
@@ -93,14 +98,10 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
 
         } catch (error) {
             debug.error('❌ Cache refresh failed:', error);
-            setCacheUpdated(false); // Убираем анимацию загрузки при ошибке
+            setCacheUpdated(false); 
             
-            const cacheError = "Не удалось обновить кэш расписания.";
-            toast.error(
-                <div>
-                    {cacheError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
-                </div>
-            );
+            handleApiError(error, "Не удалось обновить кэш расписания.", navigate);
+            
         } finally {
             refreshingRef.current = false;
             localStorage.setItem("refresh_in_progress", "false");

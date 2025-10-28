@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import '../style/login.scss';
 import { toast } from 'react-toastify';
 import { debug } from '../utils/debug';
+import { handleApiError } from '../utils/errorHandler';
 
 const LoginPage = () => {
     const [isNetologyLoggedIn, setIsNetologyLoggedIn] = useState(false);
@@ -14,8 +15,9 @@ const LoginPage = () => {
     const location = useLocation();
 
     const handleNetologyLogin = async (email, password) => {
+        let response; // Define response here to be available in catch
         try {
-            const response = await loginNetology(email, password);
+            response = await loginNetology(email, password);
 
             if (response.status === 200) {
                 const token = response.data["_netology-on-rails_session"];
@@ -27,6 +29,7 @@ const LoginPage = () => {
                 return { success: true };
             }
 
+            // --- Keep specific error messages ---
             if (response.status === 401) {
                 toast.error("Неверный логин или пароль.");
                 return { success: false, message: "Неверный логин или пароль." };
@@ -43,36 +46,18 @@ const LoginPage = () => {
                 toast.error(message);
                 return { success: false, message: message };
             }
-
-            if (response.status === 400 || response.status === 422) {
-                const errorMessage = "Были переданы неверные данные.";
-                toast.error(
-                    <div>
-                        {errorMessage} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
-                    </div>
-                );
-                return { success: false, message: "Неверные данные." };
-            }
-
-            // Fallback for any other 4xx/5xx errors (except 401)
-            const errorMessage = response.status >= 500 
-                ? "Произошла ошибка сервера. Попробуйте позже."
-                : "Произошла ошибка. Попробуйте снова.";
-            toast.error(
-                <div>
-                    {errorMessage} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
-                </div>
-            );
+            
+            // --- 2. USE HANDLER FOR GENERIC API ERRORS ---
+            // Catches 400, 422, 500, 503, etc.
+            debug.error("Ошибка API Нетологии:", response);
+            handleApiError({ response: response }, "Ошибка при входе в Нетологию", navigate);
             return { success: false, message: "Произошла ошибка." };
 
         } catch (error) {
+            // --- 3. USE HANDLER FOR NETWORK/JS ERRORS ---
             debug.error("Ошибка при входе в Нетологию:", error);
-            const networkError = "Ошибка сети. Попробуйте позже.";
-            toast.error(
-                <div>
-                    {networkError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
-                </div>
-            );
+            // 'error' is a real Error object, so we pass it directly
+            handleApiError(error, "Ошибка при входе в Нетологию", navigate);
             return { success: false, message: "Ошибка сети." };
         }
     };
@@ -81,6 +66,7 @@ const LoginPage = () => {
         try {
             const modeusResponse = await getModeusPersonId(email, password);
             
+            // --- Keep specific Modeus error messages ---
             if (modeusResponse.status === 429) {
                 const detail = modeusResponse.data?.detail || '';
                 // Извлекаем время из английского сообщения
@@ -92,7 +78,6 @@ const LoginPage = () => {
                 toast.error(message);
                 return { success: false };
             }
-
             if (modeusResponse.status === 401) {
                 toast.error("Неверный логин или пароль для Modeus.");
                 return { success: false };
@@ -101,30 +86,29 @@ const LoginPage = () => {
                 toast.error("Неверные данные Modeus. Проверьте почту и пароль.");
                 return { success: false };
             }
-            if (modeusResponse.status >= 400) {
-                toast.error("Произошла ошибка Modeus. Попробуйте позже.");
+            // --- Use handler for other Modeus errors (like 500) ---
+            if (modeusResponse.status >= 400) { 
+                debug.error("Ошибка API Modeus:", modeusResponse);
+                 handleApiError({ response: modeusResponse }, "Ошибка при входе в Modeus", navigate);
                 return { success: false };
             }
 
             localStorage.setItem('modeus_person_id', modeusResponse.data);
 
+            // --- Keep specific LMS error messages ---
             const lmsResponse = await loginLms(email, password);
             if (lmsResponse.status === 401) {
                 toast.error("Неверный логин или пароль для LMS Нетологии.");
                 return { success: false };
             }
-
             if (lmsResponse.status === 400 || lmsResponse.status === 422) {
-                const errorMessage = "Неверные данные LMS. Проверьте почту.";
-            toast.error(
-                <div>
-                    {errorMessage} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
-                </div>
-            );
+                toast.error("Неверные данные LMS. Проверьте почту.");
                 return { success: false };
             }
+            // --- Use handler for other LMS errors (like 500) ---
             if (lmsResponse.status >= 400) {
-                toast.error("Произошла ошибка LMS. Попробуйте позже.");
+                debug.error("Ошибка API LMS:", lmsResponse);
+                handleApiError({ response: lmsResponse }, "Ошибка при входе в LMS", navigate);
                 return { success: false };
             }
 
@@ -137,13 +121,9 @@ const LoginPage = () => {
             return { success: true };
 
         } catch (error) {
-            debug.error("Ошибка при входе в Modeus:", error);
-            const networkError = "Ошибка сети при входе в Modeus.";
-            toast.error(
-                <div>
-                    {networkError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
-                </div>
-            );
+            // --- 3. USE HANDLER FOR NETWORK/JS ERRORS ---
+            debug.error("Ошибка при входе в Modeus/LMS:", error);
+            handleApiError(error, "Ошибка при входе в Modeus или LMS", navigate);
             return { success: false };
         }
     };

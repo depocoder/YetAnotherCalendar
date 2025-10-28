@@ -30,7 +30,7 @@ import GitHubStarModal from "../components/GitHubStarModal";
 import FeaturesModal from "../components/FeaturesModal";
 import { debug } from "../utils/debug";
 import { useNavigate } from "react-router-dom";
-
+import { handleApiError } from '../utils/errorHandler';
 
 const CalendarPage = () => {
     const [date, setDate] = useState(() => getCurrentWeekDates());
@@ -187,20 +187,15 @@ const CalendarPage = () => {
 
             } catch (error) {
                 debug.error('Ошибка при получении данных с сервера:', error);
+
+                // Сначала проверяем на 401/403, так как это требует выхода из приложения
+                // if (error?.response?.status === 401 || error?.response?.status === 403) {
+
+                // }
                 
-                // Проверяем на ошибки авторизации (401, 403)
-                if (error?.response?.status === 401 || error?.response?.status === 403) {
-                    toast.error("Сессия истекла. Необходимо войти заново.");
-                    exitApp(navigate);
-                    return;
-                }
+                // Для всех остальных ошибок используем наш новый обработчик
+                handleApiError(error, "Ошибка при загрузке расписания.", navigate);
                 
-                const scheduleError = "Ошибка при загрузке расписания. Мы уже работаем над решением проблемы.";
-                toast.error(
-                    <div>
-                        {scheduleError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
-                    </div>
-                );
             } finally {
                 setLoading(false);
                 // Небольшая задержка для завершения анимации
@@ -209,7 +204,7 @@ const CalendarPage = () => {
         };
 
         fetchData();
-    }, [date]);
+    }, [date, navigate]); // Добавляем navigate в зависимости, так как он используется в fetchData/useEffect
 
     const handleDataUpdate = (updatedEvents) => {
         setEvents(updatedEvents);

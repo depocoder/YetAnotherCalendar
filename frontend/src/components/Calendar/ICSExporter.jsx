@@ -10,9 +10,12 @@ import {
 import { toast } from 'react-toastify';
 import InlineLoader from '../../elements/InlineLoader';
 import { debug } from '../../utils/debug';
+import { handleApiError } from '../../utils/errorHandler';
+import { useNavigate } from 'react-router-dom';
 
 const ICSExporter = ({ date }) => {
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const generateFilename = () => {
         const startDate = new Date(date.start);
@@ -20,7 +23,6 @@ const ICSExporter = ({ date }) => {
         const month = String(startDate.getMonth() + 1).padStart(2, '0');
         const day = String(startDate.getDate()).padStart(2, '0');
     
-        
         return `schedule_week-${year}-${month}-${day}.ics`;
     };
 
@@ -58,12 +60,9 @@ const ICSExporter = ({ date }) => {
             URL.revokeObjectURL(url);
         } catch (error) {
             debug.error("Ошибка экспорта .ics:", error);
-            const exportError = "Не удалось экспортировать расписание. Попробуйте позже.";
-            toast.error(
-                <div>
-                    {exportError} <a href="/feedback" style={{color: '#7b61ff', textDecoration: 'underline'}}>Нужна помощь?</a>
-                </div>
-            );
+            
+            handleApiError(error, "Не удалось экспортировать .ics файл.", navigate);
+
         } finally {
             setLoading(false);
         }

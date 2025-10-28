@@ -109,23 +109,7 @@ const apiRequest = async (endpoint, {
         );
         return response;
     } catch (error) {        
-        // Handle 401 Unauthorized errors
-        if (error.response?.status === 401) {
-            if (!localStorage.getItem("toast_shown")) {
-                localStorage.setItem("toast_shown", "true");
-                toast.error("Сессия истекла. Вы будете перенаправлены на страницу авторизации.");
-                setTimeout(() => {
-                    clearWithBackup();
-                    window.location.href = "/login";
-                }, 5000);
-            }
-            return
-        }
-        else {
-            debug.error('Ошибка при получении данных:', error.response ? error.response.data : error.message);
-        }
-        
-        throw error; // Пробрасываем ошибку, если необходимо
+        throw error;
     }
 };
 
