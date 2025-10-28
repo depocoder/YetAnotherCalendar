@@ -3,7 +3,7 @@ Modeus API implemented using a controller.
 """
 from typing import Annotated
 
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, Header, BackgroundTasks
 from fastapi.params import Depends
 from starlette.responses import StreamingResponse
 from redis.asyncio import ConnectionPool
@@ -27,6 +27,7 @@ async def get_calendar(
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         donor_token: Annotated[str, Depends(modeus_integration.get_donor_token)],
         modeus_person_id: Annotated[str, Header()],
+        background_tasks: BackgroundTasks,
         redis: Annotated[ConnectionPool, Depends(get_redis_pool)],
         calendar_id: int = settings.netology_default_course_id,
         time_zone: str = "Europe/Moscow",
@@ -34,7 +35,7 @@ async def get_calendar(
     """
     Get events from Netology and Modeus, cached.
     """
-    await integration.save_user_was_there(redis_pool=redis, user_id=modeus_person_id)
+    background_tasks.add_task(integration.save_user_was_there, redis, modeus_person_id)
     cached_calendar = await integration.get_cached_calendar(
         body, calendar_id, modeus_person_id,
         cookies=cookies, lms_user=lms_user, modeus_jwt_token=donor_token,

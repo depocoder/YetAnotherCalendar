@@ -8,6 +8,7 @@ from collections.abc import Generator
 from copy import deepcopy
 from unittest.mock import patch
 
+from fastapi import BackgroundTasks
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
 from starlette.responses import StreamingResponse
@@ -1063,7 +1064,7 @@ def test_views_response_type_handling_logic(bulk_fixture_content):
 
 
 @pytest.mark.asyncio
-async def test_views_get_calendar_cached_response_type(fake_redis_pool):
+async def test_views_get_calendar_cached_response_type(fake_redis_pool, background_tasks: BackgroundTasks):
     """Test views get_calendar function with different response types (lines 33-40)."""
     # Mock dependencies
     body = modeus_schema.ModeusTimeBody(
@@ -1091,7 +1092,8 @@ async def test_views_get_calendar_cached_response_type(fake_redis_pool):
             cookies=cookies,
             donor_token="test_token",
             modeus_person_id="550e8400-e29b-41d4-a716-446655440000",
-            redis=fake_redis_pool
+            redis=fake_redis_pool,
+            background_tasks=background_tasks,
         )
 
         # Should call change_timezone and return CalendarResponse (line 38)
@@ -1110,7 +1112,8 @@ async def test_views_get_calendar_cached_response_type(fake_redis_pool):
             cookies=cookies,
             donor_token="test_token",
             modeus_person_id="550e8400-e29b-41d4-a716-446655440000",
-            redis=fake_redis_pool
+            redis=fake_redis_pool,
+            background_tasks=background_tasks,
         )
 
         # Should validate dict and return CalendarResponse (line 40)

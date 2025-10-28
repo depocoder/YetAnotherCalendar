@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch
 import pytest
 from fakeredis import FakeServer
 from fakeredis.aioredis import FakeConnection
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, BackgroundTasks
 from httpx import AsyncClient
 from redis.asyncio import ConnectionPool
 
@@ -190,3 +190,8 @@ def sample_datetime():
         'end': datetime.datetime(2025, 6, 5, 15, 0),
         'invalid_end': datetime.datetime(2025, 6, 5, 13, 0)  # before start
     }
+
+@pytest.fixture
+def background_tasks() -> BackgroundTasks:
+    """Fixture to provide a BackgroundTasks instance."""
+    return BackgroundTasks()

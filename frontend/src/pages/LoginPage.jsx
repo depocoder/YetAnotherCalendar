@@ -63,6 +63,21 @@ const LoginPage = () => {
     };
 
     const handleModeusLogin = async (email, password) => {
+        if (!email.includes("@") || email.split("@").length - 1 !== 1) {
+            toast.error("Email должен содержать один символ @.");
+            return { success: false };
+        }
+
+        let [name, mail] = email.split("@");
+        if (mail === "utmn.ru") {
+            mail = "study.utmn.ru";
+        }
+        if (mail !== "study.utmn.ru") {
+            toast.error("Email должен содержать @study.utmn.ru.");
+            return { success: false };
+        }
+        email = `${name}@${mail}`;
+
         try {
             const modeusResponse = await getModeusPersonId(email, password);
             
