@@ -9,6 +9,9 @@
 ![GitHub License](https://img.shields.io/github/license/depocoder/YetAnotherCalendar)
 ![GitHub Repo Size](https://img.shields.io/github/repo-size/depocoder/YetAnotherCalendar)
 
+## DeepWiki
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/depocoder/YetAnotherCalendar)
+
 ## 📝 Description
 
 This product replaces Modeus+LMS calendar & Netology calendar, for better experience and more features.
