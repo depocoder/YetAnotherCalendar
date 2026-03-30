@@ -36,8 +36,9 @@ class NetologyProgramId(BaseModel):
     """Netology program id."""
     id: int
     title: str
-    url_code: str = Field(alias="urlcode")
-    type: str
+    url_code: str | None = Field(default=None, alias="urlcode")
+    type: str | None = Field(default=None)
+    is_profession: bool | None = None
 
 
 class CoursesResponse(BaseModel):
@@ -46,7 +47,12 @@ class CoursesResponse(BaseModel):
 
     def get_utmn_program(self) -> NetologyProgramId | None:
         for program in self.programs:
-            if settings.netology_course_name in program.title:
+            title_lower = program.title.lower()
+            if settings.netology_course_name.lower() in title_lower:
+                if "вводный" in title_lower:
+                    continue
+                if program.is_profession is False:
+                    continue
                 return program
 
 
