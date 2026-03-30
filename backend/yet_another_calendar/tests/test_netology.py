@@ -177,6 +177,32 @@ async def test_courses_response_schema() -> None:
 
 
 @pytest.mark.asyncio
+async def test_get_utmn_program_filtering() -> None:
+    # Test data with an introductory course that should be ignored
+    user_data = {
+        "programs": [
+            {
+                "id": 45526,
+                "title": "Бакалавриат «Разработка ИТ-продуктов и информационных систем»",
+                "is_profession": True,
+            },
+            {
+                "id": 51839,
+                "title": "Вводный курс бакалавриата ТюмГУ «Разработка IT-продуктов и информационных систем»",
+                "is_profession": False,
+            }
+        ]
+    }
+
+    courses_response = schema.CoursesResponse.model_validate(user_data)
+    utmn_program = courses_response.get_utmn_program()
+
+    assert utmn_program is not None
+    assert utmn_program.id == 45526
+    assert "Вводный" not in utmn_program.title
+
+
+@pytest.mark.asyncio
 async def test_lesson_webinar_schema() -> None:
     lesson_webinar = schema.LessonWebinar.model_validate({
         "id": 242,
