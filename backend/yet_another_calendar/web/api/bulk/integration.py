@@ -66,9 +66,18 @@ async def save_user_was_there(
         await redis.set(name=f"{prefix}:{user_id}", value=0, ex=settings.redis_week_live)
 
 
+def create_ics_alarm(title: str, alarm_minutes: int) -> icalendar.Alarm:
+    """Create reminder that fires alarm_minutes before an event starts."""
+    alarm = icalendar.Alarm()
+    alarm.add('action', 'DISPLAY')
+    alarm.add('description', title)
+    alarm.add('trigger', datetime.timedelta(minutes=-alarm_minutes))
+    return alarm
+
+
 def create_ics_event(title: str, starts_at: datetime.datetime, ends_at: datetime.datetime,
                      lesson_id: Any, description: str | None = None,
-                     url: str | None = None) -> icalendar.Event:
+                     url: str | None = None, alarm_minutes: int = 0) -> icalendar.Event:
     event = icalendar.Event()
     dt_now = datetime.datetime.now()
     event.add('summary', title)
@@ -78,10 +87,12 @@ def create_ics_event(title: str, starts_at: datetime.datetime, ends_at: datetime
     event.add('dtstamp', dt_now)
     event.add('uid', lesson_id)
     event.add('DESCRIPTION', description)
+    if alarm_minutes > 0:
+        event.add_component(create_ics_alarm(title, alarm_minutes))
     return event
 
 
-def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
+def export_to_ics(calendar: schema.CalendarResponse, alarm_minutes: int = 0) -> Iterable[bytes]:
     ics_calendar = icalendar.Calendar()
     ics_calendar.add('version', '2.0')
     ics_calendar.add('prodid', 'yet_another_calendar')
@@ -92,7 +103,7 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
         event = create_ics_event(title=f"Netology: {netology_lesson.block_title}", starts_at=netology_lesson.starts_at,
                                  ends_at=netology_lesson.ends_at, lesson_id=netology_lesson.id,
                                  description=netology_lesson.title,
-                                 url=netology_lesson.webinar_url)
+                                 url=netology_lesson.webinar_url, alarm_minutes=alarm_minutes)
         ics_calendar.add_component(event)
     for netology_homework in calendar.netology.homework:
         if not netology_homework.deadline:
@@ -102,17 +113,19 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
         event = create_ics_event(title=f"Netology ДЗ: {netology_homework.block_title}", starts_at=dt_start,
                                  ends_at=dt_end, lesson_id=netology_homework.id,
                                  description=netology_homework.title,
-                                 url=netology_homework.url)
+                                 url=netology_homework.url, alarm_minutes=alarm_minutes)
         ics_calendar.add_component(event)
     for modeus_lesson in calendar.utmn.modeus_events:
         event = create_ics_event(title=f"Modeus: {modeus_lesson.course_name}", starts_at=modeus_lesson.start_time,
                                  ends_at=modeus_lesson.end_time, lesson_id=modeus_lesson.id,
-                                 description=modeus_lesson.name, url=modeus_lesson.mts_url)
+                                 description=modeus_lesson.name, url=modeus_lesson.mts_url,
+                                 alarm_minutes=alarm_minutes)
         ics_calendar.add_component(event)
     for lms_event in calendar.utmn.lms_events:
         dt_start = lms_event.dt_end - datetime.timedelta(hours=2)
         event = create_ics_event(title=f"LMS: {lms_event.course_name}", starts_at=dt_start, ends_at=lms_event.dt_end,
-                                 lesson_id=lms_event.id, description=lms_event.name, url=lms_event.url)
+                                 lesson_id=lms_event.id, description=lms_event.name, url=lms_event.url,
+                                 alarm_minutes=alarm_minutes)
         ics_calendar.add_component(event)
     yield ics_calendar.to_ical()
 

@@ -58,6 +58,9 @@ class Settings(BaseSettings):
     retry_tries: int = 5
     retry_delay: int = 3
 
+    # Reminder added to every exported .ics event. 0 disables reminders.
+    ics_default_alarm_minutes: int = env.int("ICS_DEFAULT_ALARM_MINUTES", 5)
+
     netology_default_course_id: int = env.int("NETOLOGY_DEFAULT_COURSE_ID", 45526)
     netology_course_name: str = env.str(
         "NETOLOGY_COURSE_NAME", "Разработка IT-продуктов и информационных систем",

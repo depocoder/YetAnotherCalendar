@@ -72,17 +72,21 @@ async def export_ics(
         modeus_person_id: Annotated[str, Header()],
         calendar_id: int = settings.netology_default_course_id,
         time_zone: str = "Europe/Moscow",
+        alarm_minutes: int = settings.ics_default_alarm_minutes,
 
 ) -> StreamingResponse:
     """
-    Export into .ics format
+    Export into .ics format.
+
+    Every event gets a reminder alarm_minutes before it starts. Pass
+    alarm_minutes=0 to export without reminders.
     """
     calendar = await integration.get_calendar(
         body, calendar_id, modeus_person_id,
         modeus_jwt_token=donor_token, lms_user=lms_user, cookies=cookies,
     )
     calendar_with_timezone = calendar.change_timezone(time_zone)
-    return StreamingResponse(integration.export_to_ics(calendar_with_timezone))
+    return StreamingResponse(integration.export_to_ics(calendar_with_timezone, alarm_minutes))
 
 
 @router.get("/user_metrix/")

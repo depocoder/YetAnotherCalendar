@@ -1198,3 +1198,68 @@ async def test_views_export_ics():
             # Verify change_timezone was called (line 78)
             # and export_to_ics was called (line 79)
             mock_export.assert_called_once()
+
+
+# ========================================
+# Integration Tests - event reminders
+# ========================================
+
+def test_create_ics_alarm_triggers_before_event() -> None:
+    """Test create_ics_alarm builds a DISPLAY reminder with a negative offset."""
+    alarm = integration.create_ics_alarm("Math Lecture", 5)
+
+    assert alarm['ACTION'] == 'DISPLAY'
+    assert alarm['DESCRIPTION'] == "Math Lecture"
+    assert alarm['TRIGGER'].dt == datetime.timedelta(minutes=-5)
+
+
+def test_create_ics_event_has_no_alarm_by_default(sample_datetime) -> None:
+    """Test create_ics_event stays reminder-free unless asked."""
+    event = integration.create_ics_event(
+        "Title", sample_datetime['start'], sample_datetime['end'], "lesson-010",
+    )
+
+    assert not event.walk('VALARM')
+
+
+def test_create_ics_event_adds_alarm(sample_datetime) -> None:
+    """Test create_ics_event attaches a reminder when alarm_minutes is set."""
+    event = integration.create_ics_event(
+        "Title", sample_datetime['start'], sample_datetime['end'], "lesson-011",
+        alarm_minutes=5,
+    )
+
+    alarms = event.walk('VALARM')
+    assert len(alarms) == 1
+    assert alarms[0]['TRIGGER'].dt == datetime.timedelta(minutes=-5)
+
+
+@pytest.mark.parametrize("alarm_minutes", [0, -5])
+def test_create_ics_event_ignores_non_positive_alarm(sample_datetime, alarm_minutes) -> None:
+    """Test create_ics_event skips reminders for non-positive offsets."""
+    event = integration.create_ics_event(
+        "Title", sample_datetime['start'], sample_datetime['end'], "lesson-012",
+        alarm_minutes=alarm_minutes,
+    )
+
+    assert not event.walk('VALARM')
+
+
+def test_export_to_ics_reminds_before_every_event(bulk_fixture_content) -> None:
+    """Test export_to_ics gives each exported event its own reminder."""
+    calendar = schema.CalendarResponse.model_validate_json(bulk_fixture_content)
+
+    ics_str = b"".join(integration.export_to_ics(calendar, alarm_minutes=5)).decode('utf-8')
+
+    assert ics_str.count("BEGIN:VALARM") == ics_str.count("BEGIN:VEVENT")
+    assert ics_str.count("TRIGGER:-PT5M") == ics_str.count("BEGIN:VEVENT")
+
+
+def test_export_to_ics_keeps_previous_output_without_alarms(bulk_fixture_content) -> None:
+    """Test export_to_ics without alarm_minutes still exports as before."""
+    calendar = schema.CalendarResponse.model_validate_json(bulk_fixture_content)
+
+    ics_str = b"".join(integration.export_to_ics(calendar)).decode('utf-8')
+
+    assert "BEGIN:VEVENT" in ics_str
+    assert "BEGIN:VALARM" not in ics_str
