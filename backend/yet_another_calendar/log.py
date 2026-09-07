@@ -1,10 +1,33 @@
 import logging
+import re
 import sys
+from typing import Any
 
 from loguru import logger
 from rollbar.logger import RollbarHandler
 
 from yet_another_calendar.settings import settings
+
+# Client-held secrets must never reach logs: neither the ICS subscription
+# secret from the URL path nor the vault cookie value. Even developers
+# reading production logs must not be able to open someone's calendar feed.
+_MASK_PATTERNS = (
+    # /api/subscription/{vault_id}/{secret}/... - hide the secret segment
+    (re.compile(r"(/api/subscription/[0-9a-f]{32}/)[A-Za-z0-9_\-~.%]+"), r"\1***"),
+    # Vault remember-me cookie value
+    (re.compile(r"(yac_vault=)[^;\s\"']+"), r"\1***"),
+)
+
+
+def mask_secrets(message: str) -> str:
+    """Replace client-held secrets in a log message with ***."""
+    for pattern, replacement in _MASK_PATTERNS:
+        message = pattern.sub(replacement, message)
+    return message
+
+
+def _mask_record(record: Any) -> None:
+    record["message"] = mask_secrets(record["message"])
 
 
 class InterceptHandler(logging.Handler):
@@ -60,6 +83,9 @@ def configure_logging() -> None:  # pragma: no cover
 
     # set logs output, level and format
     logger.remove()
+    # Scrub client-held secrets (subscription URLs, vault cookies) from every
+    # log line, including uvicorn access logs intercepted above.
+    logger.configure(patcher=_mask_record)
     logger.add(
         sys.stdout,
         level=settings.log_level.value,

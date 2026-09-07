@@ -1,3 +1,4 @@
+from typing import Any
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -10,6 +11,7 @@ from starlette.requests import Request
 import rollbar
 from rollbar.contrib.fastapi import ReporterMiddleware as RollbarMiddleware
 
+from yet_another_calendar.log import mask_secrets
 from yet_another_calendar.settings import settings
 
 
@@ -112,5 +114,16 @@ def init_rollbar(app: FastAPI) -> None:  # pragma: no cover
             'enabled': False,  # Don't capture local variables
         },
         )
+    # scrub_fields covers headers/params, but subscription secrets live in the
+    # URL path - mask them in every reported URL too.
+    rollbar.events.add_payload_handler(_mask_payload_urls)
     app.add_middleware(RollbarMiddleware)
     logger.info(f"Rollbar initialized with environment: {settings.rollbar_environment}")
+
+
+def _mask_payload_urls(payload: dict[str, Any], **_kwargs: object) -> dict[str, Any]:  # pragma: no cover
+    """Mask client-held secrets in URLs reported to Rollbar."""
+    request_data = payload.get('data', {}).get('request')
+    if isinstance(request_data, dict) and isinstance(request_data.get('url'), str):
+        request_data['url'] = mask_secrets(request_data['url'])
+    return payload

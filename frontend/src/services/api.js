@@ -221,7 +221,13 @@ const apiRequest = async (endpoint, {
 };
 
 export const bulkEvents = (params) => {
-    debug.log('bulkEvents', params);
+    // Не логируем params целиком: там токены сессий.
+    debug.log('bulkEvents', {
+        calendarIds: params.calendarIds,
+        timeMin: params.timeMin,
+        timeMax: params.timeMax,
+        timeZone: params.timeZone
+    });
     return apiRequest('/api/bulk/events/', params);
 };
 
