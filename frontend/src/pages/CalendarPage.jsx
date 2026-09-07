@@ -23,7 +23,7 @@ import DatePicker from "../components/Calendar/DataPicker";
 import SimpleDatePicker from "../components/Calendar/SimpleDatePicker";
 import ExitBtn from "../components/Calendar/ExitBtn";
 import { exitApp } from "../utils/auth";
-import ICSExporter from "../components/Calendar/ICSExporter";
+import CalendarExportMenu from "../components/Calendar/CalendarExportMenu";
 import CacheUpdateBtn from "../components/Calendar/CacheUpdateBtn";
 import { getCurrentWeekDates } from "../utils/dateUtils";
 import EventsDetail from "../components/Calendar/EventsDetail";
@@ -294,7 +294,10 @@ const CalendarPage = () => {
                     <div className="header-line">
                         <div className="shedule-export">
                             <span className="shedule">Мое расписание <span className="beta-badge">BETA</span></span>
-                            <ICSExporter date={date} />
+                            <CalendarExportMenu
+                                date={date}
+                                onOpenSubscription={() => setShowSubscriptionModal(true)}
+                            />
                             <CacheUpdateBtn 
                                 date={date} 
                                 onDataUpdate={handleDataUpdate}
@@ -307,13 +310,6 @@ const CalendarPage = () => {
                                 title="Выбрать, какие курсы Нетологии подгружать в расписание"
                             >
                                 📚 Мои курсы
-                            </button>
-                            <button
-                                className="features-trigger-btn"
-                                onClick={() => setShowSubscriptionModal(true)}
-                                title="Автообновляемая подписка на расписание для Google/Apple календаря"
-                            >
-                                🔗 Подписка
                             </button>
                             <button
                                 className="features-trigger-btn"
@@ -339,7 +335,10 @@ const CalendarPage = () => {
                 <div className="mobile-controls-container">
                     <div className="mobile-header-actions">
                         <div className="mobile-buttons-row">
-                            <ICSExporter date={date} />
+                            <CalendarExportMenu
+                                date={date}
+                                onOpenSubscription={() => setShowSubscriptionModal(true)}
+                            />
                             <CacheUpdateBtn 
                                 date={date} 
                                 onDataUpdate={handleDataUpdate}
@@ -353,13 +352,6 @@ const CalendarPage = () => {
                             title="Выбрать, какие курсы Нетологии подгружать в расписание"
                         >
                             📚 Мои курсы
-                        </button>
-                        <button
-                            className="features-trigger-btn mobile-features-btn"
-                            onClick={() => setShowSubscriptionModal(true)}
-                            title="Автообновляемая подписка на расписание для Google/Apple календаря"
-                        >
-                            🔗 Подписка
                         </button>
                         <button
                             className="features-trigger-btn mobile-features-btn"

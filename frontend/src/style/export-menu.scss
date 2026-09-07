@@ -1,0 +1,87 @@
+.export-menu {
+    position: relative;
+    display: inline-block;
+
+    .export-menu__caret {
+        font-size: 10px;
+        margin-left: 2px;
+    }
+
+    .export-menu__dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        z-index: 200;
+        min-width: 250px;
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        padding: 6px;
+        display: none;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    &.export-menu--open .export-menu__dropdown {
+        display: flex;
+    }
+
+    .export-menu__item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        background: none;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 10px;
+        cursor: pointer;
+        text-align: left;
+        font-family: "Roboto", sans-serif;
+        transition: background-color 0.15s ease;
+
+        &:hover:not(:disabled) {
+            background: #f6f4ff;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    .export-menu__item-icon {
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+
+    .export-menu__item-title {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .export-menu__item-hint {
+        display: block;
+        font-size: 11px;
+        color: #868e96;
+        margin-top: 1px;
+    }
+}
+
+/* В мобильной колонке кнопок меню растягивается на всю ширину ряда */
+.mobile-buttons-row .export-menu {
+    flex: 1;
+
+    .export-btn {
+        width: 100%;
+    }
+
+    .export-menu__dropdown {
+        left: 0;
+        right: 0;
+        min-width: 0;
+    }
+}
