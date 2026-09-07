@@ -4,30 +4,48 @@ import {
     forgetMe,
     getVaultStatus,
     deleteIcsSubscription,
-    getIcsSubscriptionUrlLocalStorage
+    getIcsSubscriptionUrlLocalStorage,
+    setIcsSubscriptionUrlLocalStorage
 } from '../services/api';
 
-export const exitApp = async (navigate) => {
-    // Выход стирает все серверные данные пользователя: сохраненный вход
-    // («Запомнить меня») и подписку на календарь. Сообщаем, что именно удалено.
+/**
+ * Принудительный выход (сессия истекла, битые токены): чистим только
+ * браузер. Vault и подписку НЕ трогаем — живой vault сам восстановит
+ * сессию на странице входа.
+ */
+export const exitApp = (navigate) => {
+    setTimeout(() => {
+        clearWithBackup();
+        navigate('/login');
+    }, 100);
+};
+
+/**
+ * Осознанный выход пользователя: сохраненный вход («Запомнить меня»)
+ * удаляется всегда, подписка — по выбору пользователя (deleteSubscription).
+ */
+export const logoutUser = async (navigate, { deleteSubscription = false } = {}) => {
     const subscriptionUrl = getIcsSubscriptionUrlLocalStorage();
     let hadVault = false;
     try {
         hadVault = (await getVaultStatus())?.active === true;
     } catch (e) { /* сервер недоступен — выходим молча */ }
 
-    if (subscriptionUrl) {
+    if (deleteSubscription && subscriptionUrl) {
         deleteIcsSubscription(subscriptionUrl);
     }
     if (hadVault) {
         forgetMe();
     }
 
-    if (hadVault && subscriptionUrl) {
+    const removedSubscription = deleteSubscription && subscriptionUrl;
+    if (hadVault && removedSubscription) {
         toast.info('Вы вышли. Сохраненный вход и подписка на календарь удалены с сервера.');
+    } else if (hadVault && subscriptionUrl) {
+        toast.info('Вы вышли. Сохраненный вход удален, подписка продолжит работать.');
     } else if (hadVault) {
         toast.info('Вы вышли. Сохраненный вход («Запомнить меня») удален с сервера.');
-    } else if (subscriptionUrl) {
+    } else if (removedSubscription) {
         toast.info('Вы вышли. Подписка на календарь удалена с сервера.');
     } else {
         toast.info('Вы вышли из системы.');
@@ -35,6 +53,10 @@ export const exitApp = async (navigate) => {
 
     setTimeout(() => {
         clearWithBackup();
+        // Оставленная подписка должна остаться управляемой с этого устройства
+        if (!deleteSubscription && subscriptionUrl) {
+            setIcsSubscriptionUrlLocalStorage(subscriptionUrl);
+        }
         navigate('/login');
     }, 100);
 };

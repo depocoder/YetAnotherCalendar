@@ -12,6 +12,7 @@ import {
     getModeusPersonIdFromLocalStorage,
     getLMSTokenFromLocalStorage,
     getLMSIdFromLocalStorage,
+    getIcsSubscriptionUrlLocalStorage,
     getMtsLinks
 } from '../services/api';
 import CourseSelectorModal from "../components/Calendar/CourseSelectorModal";
@@ -23,7 +24,8 @@ import '../style/calendar.scss';
 import DatePicker from "../components/Calendar/DataPicker";
 import SimpleDatePicker from "../components/Calendar/SimpleDatePicker";
 import ExitBtn from "../components/Calendar/ExitBtn";
-import { exitApp } from "../utils/auth";
+import LogoutModal from "../components/Calendar/LogoutModal";
+import { exitApp, logoutUser } from "../utils/auth";
 import CalendarExportMenu from "../components/Calendar/CalendarExportMenu";
 import SettingsMenu from "../components/Calendar/SettingsMenu";
 import CacheUpdateBtn from "../components/Calendar/CacheUpdateBtn";
@@ -56,9 +58,15 @@ const CalendarPage = () => {
 
     const navigate = useNavigate();
     const lastFetchedDate = useRef(null);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-    const handleMobileLogout = () => {
-        exitApp(navigate);
+    // Осознанный выход: если есть подписка — спрашиваем, что с ней делать
+    const handleLogoutRequest = () => {
+        if (getIcsSubscriptionUrlLocalStorage()) {
+            setShowLogoutModal(true);
+        } else {
+            logoutUser(navigate);
+        }
     };
 
     // Проверяем наличие всех необходимых токенов при загрузке страницы
@@ -291,6 +299,14 @@ const CalendarPage = () => {
                 courses={netologyCourses}
                 selectedIds={calendarIds}
             />
+            <LogoutModal
+                isOpen={showLogoutModal}
+                onClose={() => setShowLogoutModal(false)}
+                onLogout={(options) => {
+                    setShowLogoutModal(false);
+                    logoutUser(navigate, options);
+                }}
+            />
             <div className="wrapper">
                 <header className="header">
                     <div className="header-line">
@@ -312,7 +328,7 @@ const CalendarPage = () => {
                             />
                         </div>
                         <div className="header-actions">
-                            <ExitBtn />
+                            <ExitBtn onExit={handleLogoutRequest} />
                         </div>
                     </div>
 
@@ -345,7 +361,7 @@ const CalendarPage = () => {
                             />
                             <button
                                 className="features-trigger-btn mobile-features-btn"
-                                onClick={handleMobileLogout}
+                                onClick={handleLogoutRequest}
                                 title="Выйти из системы"
                             >
                                 🚪 Выйти

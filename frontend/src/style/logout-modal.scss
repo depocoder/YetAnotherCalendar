@@ -1,0 +1,92 @@
+.logout-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+}
+
+.logout-modal {
+    font-family: "Roboto", sans-serif;
+    background: #fff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 440px;
+    padding: 26px 28px 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: logoutModalIn 0.25s ease;
+
+    h2 { font-size: 19px; margin: 0 0 10px; color: #22263a; }
+
+    p, li {
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: #495057;
+        margin: 0;
+    }
+
+    ul {
+        margin: 10px 0 18px;
+        padding-left: 20px;
+
+        li { margin: 6px 0; }
+        b { color: #22263a; }
+    }
+}
+
+@keyframes logoutModalIn {
+    from { opacity: 0; transform: translateY(-14px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.logout-modal__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.logout-modal__btn {
+    width: 100%;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: filter 0.15s ease;
+
+    &--keep {
+        background: linear-gradient(135deg, #7b61ff, #5856d6);
+        color: #fff;
+        border: none;
+
+        &:hover { filter: brightness(1.06); }
+    }
+
+    &--delete {
+        background: none;
+        border: 1px solid #fa5252;
+        color: #fa5252;
+
+        &:hover { background: #fa5252; color: #fff; }
+    }
+}
+
+.logout-modal__cancel {
+    display: block;
+    margin: 12px auto 0;
+    background: none;
+    border: none;
+    color: #868e96;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+
+    &:hover { color: #495057; }
+}

@@ -281,7 +281,7 @@ const LoginPage = () => {
                     <div className="login-v2__sec"><span className="login-v2__sec-i">🔑</span><span>Пароли не сохраняются: они уходят напрямую в Нетологию и Модеус, а временные токены сессий хранятся только в вашем браузере.</span></div>
                     <div className="login-v2__sec"><span className="login-v2__sec-i">🛡</span><span>«Запомнить меня» — по желанию. Данные шифруются AES-256, ключ остается только в вашем браузере: сервер физически не может их прочитать.</span></div>
                     <div className="login-v2__sec"><span className="login-v2__sec-i">📡</span><span>Никакой телеметрии и передачи данных третьим лицам.</span></div>
-                    <div className="login-v2__sec"><span className="login-v2__sec-i">🗑</span><span>«Выйти» мгновенно стирает все сохраненное.</span></div>
+                    <div className="login-v2__sec"><span className="login-v2__sec-i">🗑</span><span>«Выйти» удаляет сохраненный вход, а подписку на календарь — по вашему выбору при выходе.</span></div>
                     <div className="login-v2__sec"><span className="login-v2__sec-i">📊</span><span>Что мы все-таки храним: анонимный хэш вашего идентификатора (7 дней, счетчик аудитории) и кэш расписания (до 14 дней). Все.</span></div>
                     <div className="login-v2__links">
                         <a href="/privacy" target="_blank" rel="noopener noreferrer">🛡 Подробнее о защите данных ↗</a>
