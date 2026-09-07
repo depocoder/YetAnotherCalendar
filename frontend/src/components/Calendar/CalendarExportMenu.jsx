@@ -102,12 +102,13 @@ const CalendarExportMenu = ({ date, onOpenSubscription }) => {
                 className="export-btn"
                 onClick={() => setOpen(prev => !prev)}
                 disabled={loading}
-                title="Разовый экспорт недели или авто-обновляемая подписка"
+                title="Экспорт во внешний календарь (Google, Apple, Outlook): разовый файл или авто-обновляемая подписка"
             >
-                {loading ? <InlineLoader /> : <>📅 В календарь <span className="export-menu__caret">▾</span></>}
+                {loading ? <InlineLoader /> : <>📤 Экспорт <span className="export-menu__caret">▾</span></>}
             </button>
             {open && <div className="export-menu__backdrop" onClick={() => setOpen(false)} />}
             <div className="export-menu__dropdown">
+                <div className="export-menu__header">Во внешний календарь</div>
                 <button className="export-menu__item" onClick={downloadICSFile} disabled={loading}>
                     <span className="export-menu__item-icon">⬇</span>
                     <span>

@@ -180,7 +180,7 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
             ) : cacheUpdated === true ? (
                 'Кэш обновлен'
             ) : (
-                'Сбросить кэш расписания'
+                'Сбросить кэш'
             )}
         </button>
     );
