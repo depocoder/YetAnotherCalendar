@@ -169,12 +169,12 @@ const SubscriptionModal = ({ isOpen, onClose, courses, selectedIds }) => {
                                 <input
                                     type="email" required placeholder="Email от Нетологии"
                                     value={netologyLogin} onChange={e => setNetologyLogin(e.target.value)}
-                                    autoComplete="username"
+                                    autoComplete="section-netology username"
                                 />
                                 <input
                                     type="password" required placeholder="Пароль от Нетологии"
                                     value={netologyPassword} onChange={e => setNetologyPassword(e.target.value)}
-                                    autoComplete="current-password"
+                                    autoComplete="section-netology current-password"
                                 />
                             </fieldset>
 
@@ -183,12 +183,12 @@ const SubscriptionModal = ({ isOpen, onClose, courses, selectedIds }) => {
                                 <input
                                     type="email" required placeholder="Email @study.utmn.ru"
                                     value={modeusLogin} onChange={e => setModeusLogin(e.target.value)}
-                                    autoComplete="username"
+                                    autoComplete="section-modeus username"
                                 />
                                 <input
                                     type="password" required placeholder="Пароль от Модеус"
                                     value={modeusPassword} onChange={e => setModeusPassword(e.target.value)}
-                                    autoComplete="current-password"
+                                    autoComplete="section-modeus current-password"
                                 />
                             </fieldset>
 
