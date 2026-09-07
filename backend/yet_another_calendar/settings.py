@@ -62,6 +62,15 @@ class Settings(BaseSettings):
     netology_course_name: str = env.str(
         "NETOLOGY_COURSE_NAME", "Разработка ИТ-продуктов и информационных систем",
     )
+    # ICS subscription by URL: credentials are stored encrypted, the key is
+    # derived from the URL secret + this server-side pepper. Feature is
+    # disabled until the pepper is configured.
+    ics_pepper: str = env.str("YET_ANOTHER_CALENDAR_ICS_PEPPER", "")
+    ics_cache_time_live: int = env.int("YET_ANOTHER_CALENDAR_ICS_CACHE_TTL", 60 * 60 * 6)
+    ics_tokens_time_live: int = env.int("YET_ANOTHER_CALENDAR_ICS_TOKENS_TTL", 60 * 60 * 20)
+    ics_weeks_past: int = env.int("YET_ANOTHER_CALENDAR_ICS_WEEKS_PAST", 1)
+    ics_weeks_future: int = env.int("YET_ANOTHER_CALENDAR_ICS_WEEKS_FUTURE", 3)
+
     netology_location_name: str = "Нетология"
     netology_url: str = env.str("NETOLOGY_URL", "https://netology.ru")
 

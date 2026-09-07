@@ -14,6 +14,7 @@ import {
     getMtsLinks
 } from '../services/api';
 import CourseSelectorModal from "../components/Calendar/CourseSelectorModal";
+import SubscriptionModal from "../components/Calendar/SubscriptionModal";
 import { toast } from 'react-toastify';
 import Loader from "../elements/Loader";
 import '../style/header.scss';
@@ -49,6 +50,7 @@ const CalendarPage = () => {
     const [calendarIds, setCalendarIds] = useState(() => getCalendarIdsLocalStorage());
     const [netologyCourses, setNetologyCourses] = useState(() => getNetologyCoursesLocalStorage());
     const [showCourseModal, setShowCourseModal] = useState(false);
+    const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
     const navigate = useNavigate();
     const lastFetchedDate = useRef(null);
@@ -59,8 +61,9 @@ const CalendarPage = () => {
 
     // Проверяем наличие всех необходимых токенов при загрузке страницы
     useEffect(() => {
+        // calendarIds здесь сознательно не проверяем: у старых пользователей
+        // их может не быть, fetchData сам подгрузит список курсов по токену.
         const requiredTokens = {
-            'calendarId': getCalendarIdsLocalStorage().length > 0 ? 'ok' : null,
             'lms-id': getLMSIdFromLocalStorage(),
             'lms-token': getLMSTokenFromLocalStorage(),
             'modeus_person_id': getModeusPersonIdFromLocalStorage(),
@@ -280,6 +283,12 @@ const CalendarPage = () => {
                 selectedIds={calendarIds}
                 onSave={handleSaveCourses}
             />
+            <SubscriptionModal
+                isOpen={showSubscriptionModal}
+                onClose={() => setShowSubscriptionModal(false)}
+                courses={netologyCourses}
+                selectedIds={calendarIds}
+            />
             <div className="wrapper">
                 <header className="header">
                     <div className="header-line">
@@ -298,6 +307,13 @@ const CalendarPage = () => {
                                 title="Выбрать, какие курсы Нетологии подгружать в расписание"
                             >
                                 📚 Мои курсы
+                            </button>
+                            <button
+                                className="features-trigger-btn"
+                                onClick={() => setShowSubscriptionModal(true)}
+                                title="Автообновляемая подписка на расписание для Google/Apple календаря"
+                            >
+                                🔗 Подписка
                             </button>
                             <button
                                 className="features-trigger-btn"
@@ -337,6 +353,13 @@ const CalendarPage = () => {
                             title="Выбрать, какие курсы Нетологии подгружать в расписание"
                         >
                             📚 Мои курсы
+                        </button>
+                        <button
+                            className="features-trigger-btn mobile-features-btn"
+                            onClick={() => setShowSubscriptionModal(true)}
+                            title="Автообновляемая подписка на расписание для Google/Apple календаря"
+                        >
+                            🔗 Подписка
                         </button>
                         <button
                             className="features-trigger-btn mobile-features-btn"

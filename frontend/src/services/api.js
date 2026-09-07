@@ -16,7 +16,10 @@ export function getModeusPersonIdFromLocalStorage() {
 export function getCalendarIdLocalStorage() {
     return localStorage.getItem('calendarId')
 }
-// Выбранные курсы Нетологии (массив id). Мигрирует со старого одиночного calendarId.
+// Выбранные курсы Нетологии (массив id).
+// Старый одиночный calendarId сознательно НЕ используется как fallback:
+// пользователи, заходившие до мультикурсов, при первом заходе получат
+// полный список курсов с автоматическим выбором всех (см. CalendarPage).
 export function getCalendarIdsLocalStorage() {
     try {
         const raw = localStorage.getItem('calendarIds');
@@ -30,8 +33,7 @@ export function getCalendarIdsLocalStorage() {
     } catch (e) {
         debug.error('Не удалось прочитать calendarIds из localStorage:', e);
     }
-    const legacyId = Number(localStorage.getItem('calendarId'));
-    return Number.isFinite(legacyId) && legacyId > 0 ? [legacyId] : [];
+    return [];
 }
 export function setCalendarIdsLocalStorage(ids) {
     const cleanIds = (ids || []).map(Number).filter(Number.isFinite);
@@ -121,6 +123,40 @@ export async function getNetologyCourses(sessionToken) {
             }
         });
         return response.data;
+    } catch (e) {
+        return e.response;
+    }
+}
+
+
+// --- ICS-подписка по URL ---
+export function getIcsSubscriptionUrlLocalStorage() {
+    return localStorage.getItem('icsSubscriptionUrl');
+}
+
+export function setIcsSubscriptionUrlLocalStorage(url) {
+    if (url) {
+        localStorage.setItem('icsSubscriptionUrl', url);
+    } else {
+        localStorage.removeItem('icsSubscriptionUrl');
+    }
+}
+
+export async function createIcsSubscription(payload) {
+    try {
+        return await axios.post(`${BACKEND_URL}/api/subscription/`, payload, {
+            headers: {'Content-Type': 'application/json'}
+        });
+    } catch (e) {
+        return e.response;
+    }
+}
+
+export async function deleteIcsSubscription(subscriptionUrl) {
+    // URL подписки: .../api/subscription/{id}/{secret}/calendar.ics
+    const deleteUrl = subscriptionUrl.replace(/\/calendar\.ics$/, '');
+    try {
+        return await axios.delete(deleteUrl);
     } catch (e) {
         return e.response;
     }
