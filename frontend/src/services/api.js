@@ -62,6 +62,17 @@ export function getNetologyCoursesLocalStorage() {
 export function setNetologyCoursesLocalStorage(courses) {
     localStorage.setItem('netologyCourses', JSON.stringify(courses || []));
 }
+
+// Дефолтный выбор курсов: все, кроме «вводных» — у них нет расписания
+// (Netology отвечает 404), выбирать их по умолчанию бессмысленно.
+// Если вдруг все курсы «вводные» — берем все, чтобы не остаться с пустым выбором.
+export function defaultCalendarIds(programs) {
+    const meaningful = (programs || []).filter(
+        program => !(program.title || '').toLowerCase().includes('вводный')
+    );
+    const chosen = meaningful.length > 0 ? meaningful : (programs || []);
+    return chosen.map(program => program.id);
+}
 export function getLMSTokenFromLocalStorage() {
     return localStorage.getItem('lms-token')
 }

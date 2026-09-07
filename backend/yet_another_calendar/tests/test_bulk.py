@@ -1026,16 +1026,19 @@ async def test_bulk_error_scenarios(
     })
     modeus_jwt_token = "invalid_jwt_token"
 
-    # Test error handling in bulk operations
-    with pytest.raises(Exception):
-        await integration.get_calendar(
-            body=body,
-            calendar_id=calendar_id,
-            person_id=person_id,
-            lms_user=lms_user,
-            cookies=cookies,
-            modeus_jwt_token=modeus_jwt_token
-        )
+    # A 404 netology calendar is skipped by design (non-profession programs
+    # answer 404 upstream): the bulk calendar builds with empty netology part
+    # instead of failing entirely.
+    result = await integration.get_calendar(
+        body=body,
+        calendar_id=calendar_id,
+        person_id=person_id,
+        lms_user=lms_user,
+        cookies=cookies,
+        modeus_jwt_token=modeus_jwt_token
+    )
+    assert result.netology.homework == []
+    assert result.netology.webinars == []
 
 
 # ========================================

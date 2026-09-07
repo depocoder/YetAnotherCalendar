@@ -6,6 +6,7 @@ from typing import Any
 import httpx
 import reretry
 from fastapi import HTTPException
+from loguru import logger
 from httpx import AsyncClient
 from starlette import status
 
@@ -112,6 +113,14 @@ async def get_program_ids(
     return schema.ProfessionResponse.model_validate(response).get_lesson_ids()
 
 
+def _is_not_found(exception: BaseException) -> bool:
+    if isinstance(exception, HTTPException):
+        return exception.status_code == status.HTTP_404_NOT_FOUND
+    if isinstance(exception, httpx.HTTPStatusError):
+        return exception.response.status_code == status.HTTP_404_NOT_FOUND
+    return False
+
+
 async def get_calendar(
         cookies: schema.NetologyCookies,
         calendar_id: int | tuple[int, ...],
@@ -121,8 +130,19 @@ async def get_calendar(
     calendar_ids = (calendar_id,) if isinstance(calendar_id, int) else calendar_id
     program_id_sets = await asyncio.gather(
         *[get_program_ids(cookies, one_calendar_id) for one_calendar_id in calendar_ids],
+        return_exceptions=True,
     )
-    program_ids: set[int] = set().union(*program_id_sets)
+    program_ids: set[int] = set()
+    for one_calendar_id, id_set in zip(calendar_ids, program_id_sets, strict=True):
+        if isinstance(id_set, BaseException):
+            # Netology lists non-profession programs (e.g. "Вводный курс") in
+            # /filters, but professions/{id}/schedule answers 404 for them.
+            # One such id must not break the whole calendar - skip it.
+            if _is_not_found(id_set):
+                logger.warning(f"Netology calendar {one_calendar_id} has no schedule (404), skipping")
+                continue
+            raise id_set
+        program_ids |= id_set
     serialized_events = defaultdict(list)
     tasks = []
     async with asyncio.TaskGroup() as tg:

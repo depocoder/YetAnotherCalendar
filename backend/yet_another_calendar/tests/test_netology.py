@@ -106,16 +106,20 @@ async def test_get_program_ids_ok(netology_client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_calendar_not_found(netology_client) -> None:
+async def test_get_calendar_not_found_is_skipped(netology_client) -> None:
+    """Non-profession calendars (e.g. 'Вводный курс') answer 404 upstream.
+
+    They must be skipped instead of breaking the whole calendar.
+    """
     modeus_time_body = schema.ModeusTimeBody.model_validate({
         "timeMin": "2024-09-23",
         "timeMax": "2024-09-29",
     })
 
-    with pytest.raises(httpx.HTTPStatusError) as exc_info:
-        await integration.get_calendar(mock_cookies, 2, modeus_time_body)
+    serialized_events = await integration.get_calendar(mock_cookies, 2, modeus_time_body)
 
-        assert exc_info.value.response.status_code == 404
+    assert serialized_events.homework == []
+    assert serialized_events.webinars == []
 
 
 @pytest.mark.asyncio
@@ -171,6 +175,20 @@ async def test_get_calendar_multiple_ids_deduplicated(netology_client) -> None:
     serialized_events = await integration.get_calendar(mock_cookies, (45526, 70685), modeus_time_body)
 
     # Both professions share the same programs, so events must not duplicate.
+    assert len(serialized_events.homework) == 2
+    assert len(serialized_events.webinars) == 2
+
+
+@pytest.mark.asyncio
+async def test_get_calendar_mixes_valid_and_404_ids(netology_client) -> None:
+    """One broken calendar id must not lose events of the valid ones."""
+    modeus_time_body = schema.ModeusTimeBody.model_validate({
+        "timeMin": "2024-09-23",
+        "timeMax": "2028-09-10",
+    })
+
+    serialized_events = await integration.get_calendar(mock_cookies, (45526, 2), modeus_time_body)
+
     assert len(serialized_events.homework) == 2
     assert len(serialized_events.webinars) == 2
 

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
     getNetologyCourse,
     getNetologyCourses,
+    defaultCalendarIds,
     bulkEvents,
     getTokenFromLocalStorage,
     getCalendarIdsLocalStorage,
@@ -155,7 +156,7 @@ const CalendarPage = () => {
                     if (programs.length > 0) {
                         setNetologyCoursesLocalStorage(programs);
                         setNetologyCourses(programs);
-                        ids = programs.map(program => program.id);
+                        ids = defaultCalendarIds(programs);
                     } else {
                         // Fallback на старое поведение (один курс)
                         const courseData = await getNetologyCourse(getTokenFromLocalStorage());

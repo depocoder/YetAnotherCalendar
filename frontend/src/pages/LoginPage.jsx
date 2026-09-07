@@ -7,6 +7,7 @@ import {
     getModeusPersonId,
     getNetologyCourse,
     getNetologyCourses,
+    defaultCalendarIds,
     setCalendarIdsLocalStorage,
     setNetologyCoursesLocalStorage,
     rememberMe,
@@ -82,7 +83,7 @@ const LoginPage = () => {
             const programs = coursesData?.programs || [];
             if (programs.length > 0) {
                 setNetologyCoursesLocalStorage(programs);
-                setCalendarIdsLocalStorage(programs.map(program => program.id));
+                setCalendarIdsLocalStorage(defaultCalendarIds(programs));
             } else {
                 const courseData = await getNetologyCourse(token);
                 if (courseData?.id) {
