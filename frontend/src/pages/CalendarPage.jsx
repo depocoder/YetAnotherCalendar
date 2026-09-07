@@ -24,6 +24,7 @@ import SimpleDatePicker from "../components/Calendar/SimpleDatePicker";
 import ExitBtn from "../components/Calendar/ExitBtn";
 import { exitApp } from "../utils/auth";
 import CalendarExportMenu from "../components/Calendar/CalendarExportMenu";
+import SettingsMenu from "../components/Calendar/SettingsMenu";
 import CacheUpdateBtn from "../components/Calendar/CacheUpdateBtn";
 import { getCurrentWeekDates } from "../utils/dateUtils";
 import EventsDetail from "../components/Calendar/EventsDetail";
@@ -304,20 +305,10 @@ const CalendarPage = () => {
                                 cachedAt={events?.cached_at}
                                 calendarReady={!loading && !isTransitioning && events !== null}
                             />
-                            <button
-                                className="features-trigger-btn"
-                                onClick={handleOpenCourseModal}
-                                title="Выбрать, какие курсы Нетологии подгружать в расписание"
-                            >
-                                📚 Мои курсы
-                            </button>
-                            <button
-                                className="features-trigger-btn"
-                                onClick={() => setShowFeaturesModal(true)}
-                                title="Узнать больше о возможностях"
-                            >
-                                ✨ О проекте
-                            </button>
+                            <SettingsMenu
+                                onOpenCourses={handleOpenCourseModal}
+                                onOpenFeatures={() => setShowFeaturesModal(true)}
+                            />
                         </div>
                         <div className="header-actions">
                             <ExitBtn />
@@ -346,27 +337,19 @@ const CalendarPage = () => {
                                 calendarReady={!loading && !isTransitioning && events !== null}
                             />
                         </div>
-                        <button
-                            className="features-trigger-btn mobile-features-btn"
-                            onClick={handleOpenCourseModal}
-                            title="Выбрать, какие курсы Нетологии подгружать в расписание"
-                        >
-                            📚 Мои курсы
-                        </button>
-                        <button
-                            className="features-trigger-btn mobile-features-btn"
-                            onClick={() => setShowFeaturesModal(true)}
-                            title="Узнать больше о возможностях"
-                        >
-                            ✨ О проекте
-                        </button>
-                        <button 
-                            className="features-trigger-btn mobile-features-btn"
-                            onClick={handleMobileLogout}
-                            title="Выйти из системы"
-                        >
-                            🚪 Выйти
-                        </button>
+                        <div className="mobile-buttons-row">
+                            <SettingsMenu
+                                onOpenCourses={handleOpenCourseModal}
+                                onOpenFeatures={() => setShowFeaturesModal(true)}
+                            />
+                            <button
+                                className="features-trigger-btn mobile-features-btn"
+                                onClick={handleMobileLogout}
+                                title="Выйти из системы"
+                            >
+                                🚪 Выйти
+                            </button>
+                        </div>
                     </div>
                     <SimpleDatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
                 </div>

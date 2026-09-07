@@ -97,6 +97,13 @@
         }
     }
 
+    /* Кнопка в одном ряду с меню (например, "Выйти") делит ширину поровну */
+    .mobile-buttons-row .mobile-features-btn {
+        flex: 1;
+        width: auto !important;
+        min-height: 48px;
+    }
+
     .export-menu .export-menu__backdrop {
         display: block;
         position: fixed;
