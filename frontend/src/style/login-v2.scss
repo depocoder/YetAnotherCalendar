@@ -112,15 +112,43 @@
         }
     }
 
+    @keyframes login-v2-shimmer {
+        0% { transform: translateX(-120%); }
+        55%, 100% { transform: translateX(340%); }
+    }
+
     &__remember {
         display: flex;
         align-items: flex-start;
         gap: 9px;
         font-size: 13px;
         color: #495057;
-        margin: 8px 0 18px;
+        margin: 8px -10px 18px;
+        padding: 8px 10px;
+        border-radius: 10px;
         line-height: 1.4;
         cursor: pointer;
+        position: relative;
+        overflow: hidden;
+
+        // Пока галочка не включена — по строке периодически пробегает
+        // мягкий фиолетовый блик, привлекая внимание к опции.
+        &--attract::after {
+            content: "";
+            position: absolute;
+            top: 0; bottom: 0; left: 0;
+            width: 38%;
+            background: linear-gradient(
+                105deg,
+                transparent 0%,
+                rgba(123, 97, 255, 0.12) 45%,
+                rgba(123, 97, 255, 0.2) 50%,
+                rgba(123, 97, 255, 0.12) 55%,
+                transparent 100%
+            );
+            animation: login-v2-shimmer 3.4s ease-in-out infinite;
+            pointer-events: none;
+        }
 
         input {
             width: 17px;
