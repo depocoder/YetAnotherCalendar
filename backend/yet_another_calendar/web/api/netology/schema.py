@@ -62,6 +62,9 @@ class NetologyProgramId(BaseModel):
     title: str
     url_code: str | None = Field(default=None, alias="urlcode")
     type: str | None = Field(default=None)
+    # Some listed programs (e.g. "Вводный курс") are not professions and
+    # have no schedule endpoint - the frontend disables those in the picker.
+    has_schedule: bool | None = None
 
 
 class CoursesResponse(BaseModel):

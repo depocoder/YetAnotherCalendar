@@ -193,6 +193,24 @@ async def test_get_calendar_mixes_valid_and_404_ids(netology_client) -> None:
     assert len(serialized_events.webinars) == 2
 
 
+@pytest.mark.asyncio
+async def test_courses_availability_probe(netology_client, monkeypatch) -> None:
+    """Courses without a schedule (404 upstream) get has_schedule=False."""
+    courses = schema.CoursesResponse.model_validate({"programs": [
+        {"id": 45526, "title": "Бакалавриат"},
+        {"id": 2, "title": "Вводный курс"},
+    ]})
+
+    async def fake_get_courses(cookies):
+        return courses
+
+    monkeypatch.setattr(integration, "get_netology_courses", fake_get_courses)
+    result = await integration.get_netology_courses_with_availability(mock_cookies)
+
+    availability = {program.id: program.has_schedule for program in result.programs}
+    assert availability == {45526: True, 2: False}
+
+
 def test_normalize_calendar_ids() -> None:
     # A single id stays an int, so cache keys of existing users don't change.
     assert schema.normalize_calendar_ids([45526]) == 45526

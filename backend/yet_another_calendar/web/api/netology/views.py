@@ -40,9 +40,9 @@ async def get_courses(
         cookies: schema.NetologyCookies = Depends(schema.get_cookies_from_headers),
 ) -> schema.CoursesResponse:
     """
-    Get netology courses
+    Get netology courses with schedule availability (has_schedule flag).
     """
-    return await integration.get_netology_courses(cookies)
+    return await integration.get_netology_courses_with_availability(cookies)
 
 @router.get('/calendar/')
 async def get_calendar(

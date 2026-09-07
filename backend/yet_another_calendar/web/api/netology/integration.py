@@ -113,6 +113,27 @@ async def get_program_ids(
     return schema.ProfessionResponse.model_validate(response).get_lesson_ids()
 
 
+async def get_netology_courses_with_availability(
+        cookies: schema.NetologyCookies,
+) -> schema.CoursesResponse:
+    """Get courses and probe which of them actually have a schedule.
+
+    Non-profession programs answer 404 on professions/{id}/schedule - they
+    are marked has_schedule=False so the frontend can disable them. Other
+    probe failures are treated as available: an upstream flake must not
+    lock a course out of the picker.
+    """
+    netology_programs = await get_netology_courses(cookies)
+    probe_results = await asyncio.gather(
+        *[get_program_ids(cookies, program.id) for program in netology_programs.programs],
+        return_exceptions=True,
+    )
+    for program, probe_result in zip(netology_programs.programs, probe_results, strict=True):
+        is_missing = isinstance(probe_result, BaseException) and _is_not_found(probe_result)
+        program.has_schedule = not is_missing
+    return netology_programs
+
+
 def _is_not_found(exception: BaseException) -> bool:
     if isinstance(exception, HTTPException):
         return exception.status_code == status.HTTP_404_NOT_FOUND

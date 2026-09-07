@@ -128,6 +128,17 @@
         border-color: #7b61ff;
         background: #f6f4ff;
     }
+
+    &--disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+        background: #fafafa;
+
+        &:hover {
+            border-color: #e9ecef;
+            box-shadow: none;
+        }
+    }
 }
 
 .course-card__check {
@@ -182,6 +193,11 @@
     padding: 2px 10px;
     font-size: 11px;
     font-weight: 600;
+
+    &--muted {
+        background: #f1f3f5;
+        color: #868e96;
+    }
 }
 
 .course-selector-footer {

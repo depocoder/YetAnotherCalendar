@@ -8,12 +8,16 @@ import '../../style/course-selector.scss';
 const CourseSelectorModal = ({ isOpen, onClose, courses, selectedIds, onSave }) => {
     const [checkedIds, setCheckedIds] = useState(selectedIds || []);
 
-    // Синхронизируем локальный выбор при каждом открытии
+    const isUnavailable = (course) => course.has_schedule === false;
+
+    // Синхронизируем локальный выбор при каждом открытии; курсы без
+    // расписания из выбора выкидываем — их события все равно недоступны.
     useEffect(() => {
         if (isOpen) {
-            setCheckedIds(selectedIds || []);
+            const unavailableIds = (courses || []).filter(isUnavailable).map(course => course.id);
+            setCheckedIds((selectedIds || []).filter(id => !unavailableIds.includes(id)));
         }
-    }, [isOpen, selectedIds]);
+    }, [isOpen, selectedIds, courses]);
 
     if (!isOpen) return null;
 
@@ -23,7 +27,9 @@ const CourseSelectorModal = ({ isOpen, onClose, courses, selectedIds, onSave }) 
         );
     };
 
-    const selectAll = () => setCheckedIds(courses.map(course => course.id));
+    const selectAll = () => setCheckedIds(
+        courses.filter(course => !isUnavailable(course)).map(course => course.id)
+    );
     const clearAll = () => setCheckedIds([]);
 
     const handleSave = () => {
@@ -55,12 +61,17 @@ const CourseSelectorModal = ({ isOpen, onClose, courses, selectedIds, onSave }) 
                         <ul className="course-list">
                             {courses.map(course => {
                                 const isChecked = checkedIds.includes(course.id);
+                                const unavailable = isUnavailable(course);
                                 return (
                                     <li key={course.id}>
-                                        <label className={`course-card ${isChecked ? 'course-card--selected' : ''}`}>
+                                        <label
+                                            className={`course-card ${isChecked ? 'course-card--selected' : ''} ${unavailable ? 'course-card--disabled' : ''}`}
+                                            title={unavailable ? 'У этого курса нет расписания в Нетологии' : undefined}
+                                        >
                                             <input
                                                 type="checkbox"
                                                 checked={isChecked}
+                                                disabled={unavailable}
                                                 onChange={() => toggleCourse(course.id)}
                                             />
                                             <span className="course-card__check" aria-hidden="true">
@@ -70,8 +81,11 @@ const CourseSelectorModal = ({ isOpen, onClose, courses, selectedIds, onSave }) 
                                                 <span className="course-card__title">{course.title?.trim()}</span>
                                                 <span className="course-card__meta">
                                                     {course.urlcode || course.url_code}
-                                                    {course.type === 'free' && (
+                                                    {course.type === 'free' && !unavailable && (
                                                         <span className="course-card__badge">Бесплатный</span>
+                                                    )}
+                                                    {unavailable && (
+                                                        <span className="course-card__badge course-card__badge--muted">Нет расписания</span>
                                                     )}
                                                 </span>
                                             </span>
