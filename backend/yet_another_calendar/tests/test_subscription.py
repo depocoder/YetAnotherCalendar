@@ -5,7 +5,9 @@ from fastapi import HTTPException
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.bulk import schema as bulk_schema
-from yet_another_calendar.web.api.subscription import integration, schema
+from yet_another_calendar.web.api.subscription import integration
+from yet_another_calendar.web.api.vault import integration as vault_integration
+from yet_another_calendar.web.api.vault import schema as vault_schema
 
 
 @pytest.fixture(autouse=True)
@@ -13,55 +15,76 @@ def _pepper(monkeypatch):
     monkeypatch.setattr(settings, "ics_pepper", "test-pepper")
 
 
-def _creds() -> schema.EncryptedCreds:
-    return schema.EncryptedCreds.model_validate({
+def _creds() -> vault_schema.EncryptedCreds:
+    return vault_schema.EncryptedCreds.model_validate({
         "netology": {"username": "user@example.com", "password": "netology-pass"},
         "lxp": {"username": "user@study.utmn.ru", "password": "lxp-pass"},
     })
 
 
-def test_encrypt_decrypt_roundtrip() -> None:
-    secret = "url-secret-value"
-    salt, nonce, ciphertext = integration.encrypt_creds(secret, _creds())
-
-    meta = schema.SubscriptionMeta(
-        secret_hash=integration._hash_secret(secret),
-        ciphertext=ciphertext, nonce=nonce, salt=salt,
+def _record_with_grants(dek: bytes, secrets: dict[str, str]) -> vault_schema.VaultRecord:
+    nonce, ciphertext = vault_integration.encrypt_creds(dek, _creds())
+    grants = {
+        grant_id: vault_integration.make_grant(secret, dek, "ics")
+        for grant_id, secret in secrets.items()
+    }
+    return vault_schema.VaultRecord(
+        creds_ciphertext=ciphertext,
+        creds_nonce=nonce,
         modeus_person_id="person-id-123",
         calendar_ids=[45526],
+        grants=grants,
     )
-    decrypted = integration.decrypt_creds(secret, meta)
-
-    assert decrypted == _creds()
-    assert "netology-pass" not in ciphertext
 
 
-def test_decrypt_with_wrong_secret_fails() -> None:
-    salt, nonce, ciphertext = integration.encrypt_creds("right-secret", _creds())
-    meta = schema.SubscriptionMeta(
-        secret_hash=integration._hash_secret("right-secret"),
-        ciphertext=ciphertext, nonce=nonce, salt=salt,
-        modeus_person_id="person-id-123",
-        calendar_ids=[45526],
-    )
+def test_envelope_roundtrip_with_two_grants() -> None:
+    """One encrypted blob must be readable through every grant secret."""
+    dek = b"\x01" * 32
+    record = _record_with_grants(dek, {"g1": "browser-secret", "g2": "url-secret"})
+
+    for secret in ("browser-secret", "url-secret"):
+        _, grant = vault_integration.find_grant(record, secret)
+        unwrapped = vault_integration.unwrap_dek(secret, grant)
+        assert unwrapped == dek
+        decrypted = vault_integration.decrypt_creds(unwrapped, record)
+        assert decrypted == _creds()
+
+    assert "netology-pass" not in record.creds_ciphertext
+
+
+def test_wrong_secret_is_rejected() -> None:
+    record = _record_with_grants(b"\x02" * 32, {"g1": "right-secret"})
 
     with pytest.raises(HTTPException) as exc_info:
-        integration.decrypt_creds("wrong-secret", meta)
+        vault_integration.find_grant(record, "wrong-secret")
     assert exc_info.value.status_code == 404
 
+    _, grant = vault_integration.find_grant(record, "right-secret")
+    with pytest.raises(HTTPException):
+        vault_integration.unwrap_dek("wrong-secret", grant)
 
-def test_decrypt_requires_same_pepper(monkeypatch) -> None:
-    salt, nonce, ciphertext = integration.encrypt_creds("secret", _creds())
-    meta = schema.SubscriptionMeta(
-        secret_hash=integration._hash_secret("secret"),
-        ciphertext=ciphertext, nonce=nonce, salt=salt,
-        modeus_person_id="person-id-123",
-        calendar_ids=[45526],
-    )
-    monkeypatch.setattr(settings, "ics_pepper", "another-pepper")
+
+def test_revoking_one_grant_keeps_the_other() -> None:
+    dek = b"\x03" * 32
+    record = _record_with_grants(dek, {"g1": "browser-secret", "g2": "url-secret"})
+
+    grant_id, _ = vault_integration.find_grant(record, "browser-secret")
+    del record.grants[grant_id]
 
     with pytest.raises(HTTPException):
-        integration.decrypt_creds("secret", meta)
+        vault_integration.find_grant(record, "browser-secret")
+    _, survivor = vault_integration.find_grant(record, "url-secret")
+    assert vault_integration.unwrap_dek("url-secret", survivor) == dek
+
+
+def test_unwrap_requires_same_pepper(monkeypatch) -> None:
+    dek = b"\x04" * 32
+    record = _record_with_grants(dek, {"g1": "secret"})
+    _, grant = vault_integration.find_grant(record, "secret")
+
+    monkeypatch.setattr(settings, "ics_pepper", "another-pepper")
+    with pytest.raises(HTTPException):
+        vault_integration.unwrap_dek("secret", grant)
 
 
 def test_build_time_bodies_windows() -> None:

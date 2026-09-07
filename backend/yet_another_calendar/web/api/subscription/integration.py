@@ -1,30 +1,15 @@
-"""ICS subscription implementation.
+"""ICS subscription implementation on top of the credentials vault.
 
-Storage model ("key in the URL"):
-
-* The server keeps only the AES-GCM ciphertext of the user's credentials.
-* The decryption key is derived (HKDF) from a random secret that lives only
-  in the subscription URL plus a server-side pepper from the environment.
-* So neither a database dump alone nor a leaked URL alone is enough to
-  recover the credentials.
-
-Tokens for upstream services are refreshed lazily: calendar clients poll the
-URL every few hours, and expired tokens are re-created from the decrypted
-credentials during the poll itself.
+A subscription is a vault grant of kind "ics": its secret lives in the
+subscription URL. Tokens for upstream services are refreshed lazily -
+calendar clients poll the URL every few hours, and expired tokens are
+re-created from the decrypted credentials during the poll itself.
 """
 import asyncio
-import base64
 import datetime
-import hashlib
-import hmac
-import secrets as secrets_module
 from typing import Any, cast
 
 import icalendar
-from cryptography.exceptions import InvalidTag
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from fastapi import HTTPException
 from loguru import logger
 from redis.asyncio import ConnectionPool, Redis
@@ -40,57 +25,11 @@ from ..modeus import integration as modeus_integration
 from ..modeus import schema as modeus_schema
 from ..netology import integration as netology_integration
 from ..netology import schema as netology_schema
+from ..vault import integration as vault_integration
+from ..vault import schema as vault_schema
 
-_META_KEY = "ics_sub:{sub_id}"
-_TOKENS_KEY = "ics_tokens:{sub_id}"
-_CACHE_KEY = "ics_cache:{sub_id}"
-_LAST_KEY = "ics_last:{sub_id}"
-
-_NOT_FOUND = HTTPException(detail="Subscription not found", status_code=status.HTTP_404_NOT_FOUND)
-
-
-def _require_pepper() -> str:
-    if not settings.ics_pepper:
-        raise HTTPException(
-            detail="ICS subscriptions are not configured on this server",
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-        )
-    return settings.ics_pepper
-
-
-def _derive_key(secret: str, salt: bytes) -> bytes:
-    """Derive the AES key from the URL secret and the server-side pepper."""
-    hkdf = HKDF(algorithm=hashes.SHA256(), length=32, salt=salt, info=b"ics-subscription")
-    return hkdf.derive(f"{secret}:{_require_pepper()}".encode())
-
-
-def _hash_secret(secret: str) -> str:
-    return hashlib.sha256(f"{secret}:{_require_pepper()}".encode()).hexdigest()
-
-
-def encrypt_creds(secret: str, creds: schema.EncryptedCreds) -> tuple[str, str, str]:
-    """Encrypt the credentials blob, returns (salt, nonce, ciphertext) in base64."""
-    salt = secrets_module.token_bytes(16)
-    nonce = secrets_module.token_bytes(12)
-    key = _derive_key(secret, salt)
-    ciphertext = AESGCM(key).encrypt(nonce, creds.model_dump_json().encode(), None)
-    return (
-        base64.b64encode(salt).decode(),
-        base64.b64encode(nonce).decode(),
-        base64.b64encode(ciphertext).decode(),
-    )
-
-
-def decrypt_creds(secret: str, meta: schema.SubscriptionMeta) -> schema.EncryptedCreds:
-    """Decrypt the credentials blob using the secret from the URL."""
-    key = _derive_key(secret, base64.b64decode(meta.salt))
-    try:
-        payload = AESGCM(key).decrypt(
-            base64.b64decode(meta.nonce), base64.b64decode(meta.ciphertext), None,
-        )
-    except InvalidTag:
-        raise _NOT_FOUND from None
-    return schema.EncryptedCreds.model_validate_json(payload)
+_CACHE_KEY = "ics_cache:{vault_id}"
+_LAST_KEY = "ics_last:{vault_id}"
 
 
 def build_time_bodies(today: datetime.date | None = None) -> list[modeus_schema.ModeusTimeBody]:
@@ -166,165 +105,126 @@ def _empty_calendar() -> icalendar.Calendar:
     return ics_calendar
 
 
-async def _load_meta(redis: Redis, sub_id: str) -> schema.SubscriptionMeta:
-    raw_meta = await redis.get(_META_KEY.format(sub_id=sub_id))
-    if not raw_meta:
-        raise _NOT_FOUND
-    return schema.SubscriptionMeta.model_validate_json(raw_meta)
-
-
-def _check_secret(meta: schema.SubscriptionMeta, secret: str) -> None:
-    if not hmac.compare_digest(meta.secret_hash, _hash_secret(secret)):
-        raise _NOT_FOUND
-
-
 async def create_subscription(
         redis_pool: ConnectionPool,
         request: schema.SubscriptionCreateRequest,
 ) -> str:
-    """Validate credentials, store them encrypted, return the subscription path."""
-    _require_pepper()
-    # Fail fast with upstream 401 before storing anything.
-    netology_cookies = await netology_integration.auth_netology(
+    """Validate credentials, store them in a fresh vault, return the URL path."""
+    vault_integration.require_pepper()
+    if request.netology is None or request.lxp is None or request.modeus_person_id is None:
+        raise HTTPException(
+            detail="Credentials are required", status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+    creds = vault_schema.EncryptedCreds(netology=request.netology, lxp=request.lxp)
+    # Fail fast with upstream 401 before storing anything. Sequential on
+    # purpose, so the error names the exact service that rejected the user.
+    await netology_integration.auth_netology(
         request.netology.username, request.netology.password,
     )
-    lms_user = await lms_integration.auth_lms(request.lxp)
+    await lms_integration.auth_lms(request.lxp)
 
-    sub_id = secrets_module.token_hex(16)
-    secret = secrets_module.token_urlsafe(32)
-    salt, nonce, ciphertext = encrypt_creds(
-        secret, schema.EncryptedCreds(netology=request.netology, lxp=request.lxp),
-    )
-    meta = schema.SubscriptionMeta(
-        secret_hash=_hash_secret(secret),
-        ciphertext=ciphertext,
-        nonce=nonce,
-        salt=salt,
+    vault_id, secret = await vault_integration.create_vault(
+        redis_pool,
+        creds,
         modeus_person_id=request.modeus_person_id,
-        calendar_ids=sorted(set(request.calendar_ids)),
+        calendar_ids=request.calendar_ids,
         time_zone=request.time_zone,
+        grant_kind="ics",
     )
-    tokens = schema.CachedTokens(
-        netology_session=netology_cookies.rails_session,
-        lms_id=lms_user.id,
-        lms_token=lms_user.token,
-    )
+    return f"/api/subscription/{vault_id}/{secret}/calendar.ics"
+
+
+async def create_subscription_from_vault(
+        redis_pool: ConnectionPool,
+        cookie_vault_id: str,
+        cookie_secret: str,
+        calendar_ids: list[int],
+        time_zone: str,
+) -> str:
+    """One-click subscription for a remembered browser: no password re-entry.
+
+    The browser grant unwraps the DEK, and a new ICS grant is attached to
+    the same vault.
+    """
     async with Redis(connection_pool=redis_pool) as redis:
-        await redis.set(_META_KEY.format(sub_id=sub_id), meta.model_dump_json())
-        await redis.set(
-            _TOKENS_KEY.format(sub_id=sub_id), tokens.model_dump_json(),
-            ex=settings.ics_tokens_time_live,
-        )
-    logger.info(f"Created ICS subscription {sub_id}")
-    return f"/api/subscription/{sub_id}/{secret}/calendar.ics"
+        record, _, dek = await vault_integration.resolve(redis, cookie_vault_id, cookie_secret)
+        if calendar_ids:
+            record.calendar_ids = sorted(set(calendar_ids))
+        if time_zone:
+            record.time_zone = time_zone
+        secret = await vault_integration.add_grant(redis, cookie_vault_id, record, dek, "ics")
+    return f"/api/subscription/{cookie_vault_id}/{secret}/calendar.ics"
 
 
-async def delete_subscription(redis_pool: ConnectionPool, sub_id: str, secret: str) -> None:
+async def delete_subscription(redis_pool: ConnectionPool, vault_id: str, secret: str) -> None:
     async with Redis(connection_pool=redis_pool) as redis:
-        meta = await _load_meta(redis, sub_id)
-        _check_secret(meta, secret)
-        await redis.delete(
-            _META_KEY.format(sub_id=sub_id),
-            _TOKENS_KEY.format(sub_id=sub_id),
-            _CACHE_KEY.format(sub_id=sub_id),
-            _LAST_KEY.format(sub_id=sub_id),
-        )
-    logger.info(f"Deleted ICS subscription {sub_id}")
+        await vault_integration.delete_grant(redis, vault_id, secret)
+        # Cached feeds die with the subscription; a remaining browser grant
+        # doesn't need them, and a new ICS grant rebuilds the cache anyway.
+        await redis.delete(_CACHE_KEY.format(vault_id=vault_id), _LAST_KEY.format(vault_id=vault_id))
+    logger.info(f"Deleted ICS subscription from vault {vault_id}")
 
 
-def _is_auth_error(exception: BaseException) -> bool:
-    if isinstance(exception, HTTPException):
-        return exception.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
-    if isinstance(exception, BaseExceptionGroup):
-        return any(_is_auth_error(sub_exception) for sub_exception in exception.exceptions)
-    return False
-
-
-async def _refresh_tokens(
-        redis: Redis, sub_id: str, secret: str, meta: schema.SubscriptionMeta,
-) -> schema.CachedTokens:
-    """Re-authenticate in upstream services using the decrypted credentials."""
-    creds = decrypt_creds(secret, meta)
-    netology_cookies = await netology_integration.auth_netology(
-        creds.netology.username, creds.netology.password,
-    )
-    lms_user = await lms_integration.auth_lms(creds.lxp)
-    tokens = schema.CachedTokens(
-        netology_session=netology_cookies.rails_session,
-        lms_id=lms_user.id,
-        lms_token=lms_user.token,
-    )
-    await redis.set(
-        _TOKENS_KEY.format(sub_id=sub_id), tokens.model_dump_json(),
-        ex=settings.ics_tokens_time_live,
-    )
-    return tokens
-
-
-async def _build_ics(meta: schema.SubscriptionMeta, tokens: schema.CachedTokens) -> bytes:
+async def _build_ics(record: vault_schema.VaultRecord, tokens: vault_schema.CachedTokens) -> bytes:
     cookies = netology_schema.NetologyCookies.model_validate(
         {"_netology-on-rails_session": tokens.netology_session},
     )
     lms_user = lms_schema.User(id=tokens.lms_id, token=tokens.lms_token)
     donor_token = cast(str, await modeus_integration.get_donor_token())
-    calendar_id = netology_schema.normalize_calendar_ids(meta.calendar_ids)
+    calendar_ids = record.calendar_ids or [settings.netology_default_course_id]
+    calendar_id = netology_schema.normalize_calendar_ids(calendar_ids)
 
     weekly_calendars = await asyncio.gather(*[
         bulk_integration.get_calendar(
-            body, calendar_id, meta.modeus_person_id,
+            body, calendar_id, record.modeus_person_id,
             lms_user=lms_user, cookies=cookies, modeus_jwt_token=donor_token,
         )
         for body in build_time_bodies()
     ])
-    merged = merge_calendars(list(weekly_calendars)).change_timezone(meta.time_zone)
+    merged = merge_calendars(list(weekly_calendars)).change_timezone(record.time_zone)
     return b"".join(bulk_integration.export_to_ics(merged))
 
 
-async def _mark_broken(redis: Redis, sub_id: str, meta: schema.SubscriptionMeta) -> bytes:
-    if not meta.broken:
-        meta.broken = True
-        await redis.set(_META_KEY.format(sub_id=sub_id), meta.model_dump_json())
-    last_ics = await redis.get(_LAST_KEY.format(sub_id=sub_id))
+async def _serve_broken(redis: Redis, vault_id: str, record: vault_schema.VaultRecord) -> bytes:
+    await vault_integration.mark_broken(redis, vault_id, record, broken=True)
+    last_ics = await redis.get(_LAST_KEY.format(vault_id=vault_id))
     return build_warning_ics(last_ics)
 
 
-async def get_subscription_ics(redis_pool: ConnectionPool, sub_id: str, secret: str) -> bytes:
+async def get_subscription_ics(redis_pool: ConnectionPool, vault_id: str, secret: str) -> bytes:
     """Serve the ICS feed, lazily refreshing upstream tokens when needed."""
     async with Redis(connection_pool=redis_pool) as redis:
-        meta = await _load_meta(redis, sub_id)
-        _check_secret(meta, secret)
+        record, _, dek = await vault_integration.resolve(redis, vault_id, secret)
 
-        cached_ics = await redis.get(_CACHE_KEY.format(sub_id=sub_id))
+        cached_ics = await redis.get(_CACHE_KEY.format(vault_id=vault_id))
         if cached_ics:
             return bytes(cached_ics)
 
-        raw_tokens = await redis.get(_TOKENS_KEY.format(sub_id=sub_id))
-        tokens = schema.CachedTokens.model_validate_json(raw_tokens) if raw_tokens else None
+        tokens = await vault_integration.get_cached_tokens(redis, vault_id)
 
         for attempt_with_fresh_tokens in (False, True):
             if tokens is None or attempt_with_fresh_tokens:
+                creds = vault_integration.decrypt_creds(dek, record)
                 try:
-                    tokens = await _refresh_tokens(redis, sub_id, secret, meta)
+                    tokens = await vault_integration.refresh_tokens(redis, vault_id, creds)
                 except HTTPException as exception:
-                    if _is_auth_error(exception):
-                        logger.warning(f"ICS subscription {sub_id} is broken: credentials rejected")
-                        return await _mark_broken(redis, sub_id, meta)
+                    if vault_integration.is_auth_error(exception):
+                        logger.warning(f"ICS subscription {vault_id} is broken: credentials rejected")
+                        return await _serve_broken(redis, vault_id, record)
                     raise
             try:
-                ics_bytes = await _build_ics(meta, tokens)
+                ics_bytes = await _build_ics(record, tokens)
             except (HTTPException, BaseExceptionGroup) as exception:
-                if _is_auth_error(exception) and not attempt_with_fresh_tokens:
+                if vault_integration.is_auth_error(exception) and not attempt_with_fresh_tokens:
                     # Cached tokens expired earlier than expected: retry once.
-                    await redis.delete(_TOKENS_KEY.format(sub_id=sub_id))
+                    await vault_integration.drop_cached_tokens(redis, vault_id)
                     continue
                 raise
-            if meta.broken:
-                meta.broken = False
-                await redis.set(_META_KEY.format(sub_id=sub_id), meta.model_dump_json())
+            await vault_integration.mark_broken(redis, vault_id, record, broken=False)
             await redis.set(
-                _CACHE_KEY.format(sub_id=sub_id), ics_bytes, ex=settings.ics_cache_time_live,
+                _CACHE_KEY.format(vault_id=vault_id), ics_bytes, ex=settings.ics_cache_time_live,
             )
-            await redis.set(_LAST_KEY.format(sub_id=sub_id), ics_bytes)
+            await redis.set(_LAST_KEY.format(vault_id=vault_id), ics_bytes)
             return ics_bytes
         raise HTTPException(  # pragma: no cover - unreachable
             detail="Can't build calendar", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

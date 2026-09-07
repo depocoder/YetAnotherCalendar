@@ -1,6 +1,6 @@
 from fastapi.routing import APIRouter
 
-from yet_another_calendar.web.api import docs, monitoring, netology, modeus, bulk, lms, mts, auth, subscription
+from yet_another_calendar.web.api import docs, monitoring, netology, modeus, bulk, lms, mts, auth, subscription, vault
 
 api_router = APIRouter()
 api_router.include_router(monitoring.router)
@@ -13,3 +13,4 @@ api_router.include_router(lms.router, prefix="/lms", tags=["lms"])
 api_router.include_router(mts.router, prefix="/mts", tags=["mts"])
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(subscription.router, prefix="/subscription", tags=["subscription"])
+api_router.include_router(vault.router, prefix="/vault", tags=["vault"])

@@ -1,8 +1,9 @@
 """ICS subscription endpoints."""
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path, Response
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Path, Response
 from redis.asyncio import ConnectionPool
+from starlette import status
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.auth.rate_limiter import rate_limited_dependency
@@ -20,14 +21,29 @@ async def create_subscription(
         request: schema.SubscriptionCreateRequest,
         redis_pool: Annotated[ConnectionPool, Depends(get_redis_pool)],
         _: Annotated[None, Depends(rate_limited_dependency)],
+        yac_vault: Annotated[str | None, Cookie()] = None,
 ) -> schema.SubscriptionCreateResponse:
     """
     Create an ICS subscription URL.
 
-    Credentials are stored encrypted; the decryption key is derived from the
-    secret embedded in the returned URL, so save it — it is shown only once.
+    With credentials in the body they are verified and stored encrypted in a
+    new vault. Without them a remember-me cookie is required: the new
+    subscription reuses the already remembered credentials. Either way the
+    decryption key is embedded in the returned URL - save it, it is shown
+    only once.
     """
-    path = await integration.create_subscription(redis_pool, request)
+    if request.has_creds:
+        path = await integration.create_subscription(redis_pool, request)
+    else:
+        if not yac_vault or "." not in yac_vault:
+            raise HTTPException(
+                detail="Provide credentials or sign in with remember me first",
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
+        vault_id, secret = yac_vault.split(".", 1)
+        path = await integration.create_subscription_from_vault(
+            redis_pool, vault_id, secret, request.calendar_ids, request.time_zone,
+        )
     return schema.SubscriptionCreateResponse(url=f"{settings.app_domain}{path}")
 
 
@@ -55,7 +71,7 @@ async def delete_subscription(
         secret: Annotated[str, _SECRET],
 ) -> dict[str, bool]:
     """
-    Delete the subscription and every stored artifact of it.
+    Delete the subscription and its stored artifacts.
     """
     await integration.delete_subscription(redis_pool, sub_id, secret)
     return {"deleted": True}

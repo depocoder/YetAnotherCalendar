@@ -70,6 +70,9 @@ class Settings(BaseSettings):
     ics_tokens_time_live: int = env.int("YET_ANOTHER_CALENDAR_ICS_TOKENS_TTL", 60 * 60 * 20)
     ics_weeks_past: int = env.int("YET_ANOTHER_CALENDAR_ICS_WEEKS_PAST", 1)
     ics_weeks_future: int = env.int("YET_ANOTHER_CALENDAR_ICS_WEEKS_FUTURE", 3)
+    # Sliding lifetime of a credentials vault (remember me / subscriptions):
+    # the countdown restarts on every use.
+    vault_time_live: int = env.int("YET_ANOTHER_CALENDAR_VAULT_TTL", 60 * 60 * 24 * 90)
 
     netology_location_name: str = "Нетология"
     netology_url: str = env.str("NETOLOGY_URL", "https://netology.ru")
