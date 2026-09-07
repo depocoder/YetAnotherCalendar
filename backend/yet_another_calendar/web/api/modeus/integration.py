@@ -102,13 +102,17 @@ async def login(username: str, __password: str, timeout: int = 15) -> str:
         # This auth request redirects to another URL, which redirects to Modeus home page,
         #  so we use HEAD in the latter one to get only target URL and extract the token
         response = await session.head(response.headers["Location"], headers=headers)
+        # Upstream can answer 200 here even when auth failed, so never reuse
+        # its status code: a 2xx error response used to reach the frontend as
+        # "success" and corrupt the stored person id.
         if response.url is None:
             raise HTTPException(detail='Modeus error. Username/password is incorrect.',
-                                status_code=response.status_code)
+                                status_code=status.HTTP_401_UNAUTHORIZED)
         token = _extract_token_from_url(response.url.fragment)
         if token is None:
             raise HTTPException(
-                detail=f"Modeus error. Can't get token. Response: {response.text}", status_code=response.status_code,
+                detail=f"Modeus error. Can't get token. Response: {response.text}",
+                status_code=status.HTTP_401_UNAUTHORIZED,
             )
         return token
 

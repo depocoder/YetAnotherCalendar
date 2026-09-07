@@ -11,7 +11,14 @@ export function getTokenFromLocalStorage() {
     return localStorage.getItem('token')
 }
 export function getModeusPersonIdFromLocalStorage() {
-    return localStorage.getItem('modeus_person_id')
+    const personId = localStorage.getItem('modeus_person_id');
+    // Самоизлечение: из-за старого бага бэкенда (ошибка со статусом 200)
+    // тут мог сохраниться "[object Object]" — считаем такое значение отсутствующим,
+    // чтобы пользователя отправило на повторный логин.
+    if (!personId || !/^[0-9a-fA-F-]{16,64}$/.test(personId)) {
+        return null;
+    }
+    return personId;
 }
 export function getCalendarIdLocalStorage() {
     return localStorage.getItem('calendarId')

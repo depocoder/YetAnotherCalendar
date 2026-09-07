@@ -128,7 +128,14 @@ const LoginPage = () => {
                 return { success: false };
             }
 
-            localStorage.setItem('modeus_person_id', modeusResponse.data);
+            const personId = modeusResponse.data;
+            // Защита от некорректного ответа: сохраняем только строку-UUID.
+            if (typeof personId !== 'string' || !/^[0-9a-fA-F-]{16,64}$/.test(personId)) {
+                debug.error("Некорректный person id от Modeus:", personId);
+                toast.error("Не удалось получить идентификатор Modeus. Попробуйте позже.");
+                return { success: false };
+            }
+            localStorage.setItem('modeus_person_id', personId);
 
             // --- Keep specific LMS error messages ---
             const lmsResponse = await loginLms(email, password);
