@@ -2,6 +2,9 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "overrides": {
+    "eslint-plugin-jest": "^28.14.0"
+  },
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.14.5",
     "@testing-library/jest-dom": "^5.17.0",
