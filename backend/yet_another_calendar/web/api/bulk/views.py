@@ -29,7 +29,9 @@ async def get_calendar(
         modeus_person_id: Annotated[str, Header()],
         background_tasks: BackgroundTasks,
         redis: Annotated[ConnectionPool, Depends(get_redis_pool)],
-        calendar_id: int = settings.netology_default_course_id,
+        calendar_id: Annotated[
+            int | tuple[int, ...], Depends(netology_schema.get_calendar_ids_from_query),
+        ] = settings.netology_default_course_id,
         time_zone: str = "Europe/Moscow",
 ) -> schema.CalendarResponse:
     """
@@ -52,7 +54,10 @@ async def refresh_calendar(
         lms_user: Annotated[lms_schema.User, Depends(lms_schema.get_user)],
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         donor_token: Annotated[str, Depends(modeus_integration.get_donor_token)],
-        modeus_person_id: Annotated[str, Header()],        calendar_id: int = settings.netology_default_course_id,
+        modeus_person_id: Annotated[str, Header()],
+        calendar_id: Annotated[
+            int | tuple[int, ...], Depends(netology_schema.get_calendar_ids_from_query),
+        ] = settings.netology_default_course_id,
         time_zone: str = "Europe/Moscow",
 ) -> schema.RefreshedCalendarResponse:
     """
@@ -70,7 +75,9 @@ async def export_ics(
         cookies: Annotated[netology_schema.NetologyCookies, Depends(netology_schema.get_cookies_from_headers)],
         donor_token: Annotated[str, Depends(modeus_integration.get_donor_token)],
         modeus_person_id: Annotated[str, Header()],
-        calendar_id: int = settings.netology_default_course_id,
+        calendar_id: Annotated[
+            int | tuple[int, ...], Depends(netology_schema.get_calendar_ids_from_query),
+        ] = settings.netology_default_course_id,
         time_zone: str = "Europe/Moscow",
 
 ) -> StreamingResponse:

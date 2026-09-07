@@ -120,7 +120,7 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
 async def refresh_events(
         body: modeus_schema.ModeusTimeBody,
         lms_user: lms_schema.User,
-        calendar_id: int,
+        calendar_id: int | tuple[int, ...],
         cookies: netology_schema.NetologyCookies,
         timezone: str,
         modeus_jwt_token: str,
@@ -157,7 +157,7 @@ async def refresh_events(
 
 async def get_calendar(
         body: modeus_schema.ModeusTimeBody,
-        calendar_id: int,
+        calendar_id: int | tuple[int, ...],
         person_id: str,
         lms_user: lms_schema.User,
         cookies: netology_schema.NetologyCookies,
@@ -187,7 +187,7 @@ async def get_calendar(
 )  # type i
 async def get_cached_calendar(
         body: modeus_schema.ModeusTimeBody,
-        calendar_id: int,
+        calendar_id: int | tuple[int, ...],
         person_id: str,
         *,
         lms_user: lms_schema.User,

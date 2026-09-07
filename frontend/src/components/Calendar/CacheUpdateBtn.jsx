@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
-    getCalendarIdLocalStorage,
+    getCalendarIdsLocalStorage,
     getTokenFromLocalStorage,
     refreshBulkEvents,
     getModeusPersonIdFromLocalStorage,
@@ -63,11 +63,11 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
         if (localStorage.getItem("refresh_in_progress") === "true" || refreshingRef.current) return;
         localStorage.setItem("refresh_in_progress", "true");
         refreshingRef.current = true;
-        const calendarId = getCalendarIdLocalStorage();
+        const calendarIds = getCalendarIdsLocalStorage();
 
 
-        if (!calendarId) {
-            debug.warn("Попытка обновить кэш без calendarId. Пропущено.");
+        if (calendarIds.length === 0) {
+            debug.warn("Попытка обновить кэш без выбранных курсов. Пропущено.");
             refreshingRef.current = false;
             localStorage.setItem("refresh_in_progress", "false");
             return;
@@ -77,7 +77,7 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
 
         try {
             const refreshEventsResponse = await refreshBulkEvents({
-                calendarId: getCalendarIdLocalStorage(),
+                calendarIds,
                 timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 timeMin: date.start,
                 timeMax: date.end,
@@ -138,14 +138,14 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
             debug.log('⏰ 10 seconds elapsed - checking cache...');
             
             const modeusPersonId = getModeusPersonIdFromLocalStorage();
-            const calendarId = getCalendarIdLocalStorage();
-            
+            const calendarIds = getCalendarIdsLocalStorage();
+
             if (!modeusPersonId) {
                 debug.log('❌ Auto-refresh skipped - no person ID');
                 return;
             }
-            if (!calendarId) {
-                debug.log('❌ Auto-refresh skipped - no calendarId');
+            if (calendarIds.length === 0) {
+                debug.log('❌ Auto-refresh skipped - no calendarIds');
                 return;
             }
             if (isCacheStale()) {

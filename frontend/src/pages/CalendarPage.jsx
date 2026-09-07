@@ -1,14 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
     getNetologyCourse,
+    getNetologyCourses,
     bulkEvents,
     getTokenFromLocalStorage,
-    getCalendarIdLocalStorage,
+    getCalendarIdsLocalStorage,
+    setCalendarIdsLocalStorage,
+    getNetologyCoursesLocalStorage,
+    setNetologyCoursesLocalStorage,
     getModeusPersonIdFromLocalStorage,
     getLMSTokenFromLocalStorage,
     getLMSIdFromLocalStorage,
     getMtsLinks
 } from '../services/api';
+import CourseSelectorModal from "../components/Calendar/CourseSelectorModal";
 import { toast } from 'react-toastify';
 import Loader from "../elements/Loader";
 import '../style/header.scss';
@@ -41,6 +46,9 @@ const CalendarPage = () => {
     const [showGithubModal, setShowGithubModal] = useState(false);
     const [showFeaturesModal, setShowFeaturesModal] = useState(false);
     const [mtsUrls, setMtsUrls] = useState({});
+    const [calendarIds, setCalendarIds] = useState(() => getCalendarIdsLocalStorage());
+    const [netologyCourses, setNetologyCourses] = useState(() => getNetologyCoursesLocalStorage());
+    const [showCourseModal, setShowCourseModal] = useState(false);
 
     const navigate = useNavigate();
     const lastFetchedDate = useRef(null);
@@ -52,7 +60,7 @@ const CalendarPage = () => {
     // Проверяем наличие всех необходимых токенов при загрузке страницы
     useEffect(() => {
         const requiredTokens = {
-            'calendarId': getCalendarIdLocalStorage(),
+            'calendarId': getCalendarIdsLocalStorage().length > 0 ? 'ok' : null,
             'lms-id': getLMSIdFromLocalStorage(),
             'lms-token': getLMSTokenFromLocalStorage(),
             'modeus_person_id': getModeusPersonIdFromLocalStorage(),
@@ -120,7 +128,7 @@ const CalendarPage = () => {
     }, []);
 
     useEffect(() => {
-        const dateKey = `${date.start}_${date.end}`;
+        const dateKey = `${date.start}_${date.end}_${[...calendarIds].sort().join(',')}`;
         if (lastFetchedDate.current === dateKey) return;
         lastFetchedDate.current = dateKey;
 
@@ -134,22 +142,33 @@ const CalendarPage = () => {
             setLoading(true);
 
             try {
-                let calendarId = getCalendarIdLocalStorage();
+                let ids = calendarIds;
 
-                if (!calendarId) {
-                    const courseData = await getNetologyCourse(getTokenFromLocalStorage());
-                    calendarId = courseData?.id;
-                    localStorage.setItem('calendarId', calendarId);
+                // Если выбранных курсов нет — подгружаем список и берем все по умолчанию
+                if (!ids || ids.length === 0) {
+                    const coursesData = await getNetologyCourses(getTokenFromLocalStorage());
+                    const programs = coursesData?.programs || [];
+                    if (programs.length > 0) {
+                        setNetologyCoursesLocalStorage(programs);
+                        setNetologyCourses(programs);
+                        ids = programs.map(program => program.id);
+                    } else {
+                        // Fallback на старое поведение (один курс)
+                        const courseData = await getNetologyCourse(getTokenFromLocalStorage());
+                        ids = courseData?.id ? [courseData.id] : [];
+                    }
+                    setCalendarIdsLocalStorage(ids);
+                    setCalendarIds(ids);
                 }
 
-                if (!calendarId) {
-                    debug.error('Ошибка при получении calendar id:', calendarId);
+                if (!ids || ids.length === 0) {
+                    debug.error('Ошибка при получении calendar ids:', ids);
                     toast.error("Не удалось загрузить календарь. Попробуйте снова.");
                     return;
                 }
 
                 const eventsResponse = await bulkEvents({
-                    calendarId,
+                    calendarIds: ids,
                     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                     timeMin: date.start,
                     timeMax: date.end,
@@ -204,7 +223,26 @@ const CalendarPage = () => {
         };
 
         fetchData();
-    }, [date, navigate]); // Добавляем navigate в зависимости, так как он используется в fetchData/useEffect
+    }, [date, navigate, calendarIds]); // Перезапрашиваем события при смене недели или набора курсов
+
+    // Открытие модалки выбора курсов (при необходимости подгружаем их список)
+    const handleOpenCourseModal = async () => {
+        if (netologyCourses.length === 0) {
+            const coursesData = await getNetologyCourses(getTokenFromLocalStorage());
+            const programs = coursesData?.programs || [];
+            if (programs.length > 0) {
+                setNetologyCoursesLocalStorage(programs);
+                setNetologyCourses(programs);
+            }
+        }
+        setShowCourseModal(true);
+    };
+
+    // Сохранение нового набора курсов: обновляем localStorage и перезапрашиваем события
+    const handleSaveCourses = (ids) => {
+        setCalendarIdsLocalStorage(ids);
+        setCalendarIds(ids);
+    };
 
     const handleDataUpdate = (updatedEvents) => {
         setEvents(updatedEvents);
@@ -229,11 +267,18 @@ const CalendarPage = () => {
                 onClose={() => setShowFeaturesModal(false)}
                 onOpenGithubModal={() => setShowGithubModal(true)}
             />
-            <EventModal 
+            <EventModal
                 event={selectedEvent}
                 isOpen={!!selectedEvent}
                 onClose={handleCloseEventModal}
                 mtsUrls={mtsUrls}
+            />
+            <CourseSelectorModal
+                isOpen={showCourseModal}
+                onClose={() => setShowCourseModal(false)}
+                courses={netologyCourses}
+                selectedIds={calendarIds}
+                onSave={handleSaveCourses}
             />
             <div className="wrapper">
                 <header className="header">
@@ -247,7 +292,14 @@ const CalendarPage = () => {
                                 cachedAt={events?.cached_at}
                                 calendarReady={!loading && !isTransitioning && events !== null}
                             />
-                            <button 
+                            <button
+                                className="features-trigger-btn"
+                                onClick={handleOpenCourseModal}
+                                title="Выбрать, какие курсы Нетологии подгружать в расписание"
+                            >
+                                📚 Мои курсы
+                            </button>
+                            <button
                                 className="features-trigger-btn"
                                 onClick={() => setShowFeaturesModal(true)}
                                 title="Узнать больше о возможностях"
@@ -279,7 +331,14 @@ const CalendarPage = () => {
                                 calendarReady={!loading && !isTransitioning && events !== null}
                             />
                         </div>
-                        <button 
+                        <button
+                            className="features-trigger-btn mobile-features-btn"
+                            onClick={handleOpenCourseModal}
+                            title="Выбрать, какие курсы Нетологии подгружать в расписание"
+                        >
+                            📚 Мои курсы
+                        </button>
+                        <button
                             className="features-trigger-btn mobile-features-btn"
                             onClick={() => setShowFeaturesModal(true)}
                             title="Узнать больше о возможностях"

@@ -114,18 +114,30 @@ async def get_program_ids(
 
 async def get_calendar(
         cookies: schema.NetologyCookies,
-        calendar_id: int,
+        calendar_id: int | tuple[int, ...],
         body: ModeusTimeBody,
 ) -> schema.SerializedEvents:
-    """Get extended calendar."""
-    program_ids = await get_program_ids(cookies, calendar_id)
+    """Get extended calendar for one or more professions."""
+    calendar_ids = (calendar_id,) if isinstance(calendar_id, int) else calendar_id
+    program_id_sets = await asyncio.gather(
+        *[get_program_ids(cookies, one_calendar_id) for one_calendar_id in calendar_ids],
+    )
+    program_ids: set[int] = set().union(*program_id_sets)
     serialized_events = defaultdict(list)
     tasks = []
     async with asyncio.TaskGroup() as tg:
         for program_id in program_ids:
             tasks.append(tg.create_task(get_events_by_id(cookies, program_id=program_id)))
+    seen_homework_ids: set[int] = set()
+    seen_webinar_ids: set[int] = set()
     for task in tasks:
         homework_events, webinars_events = task.result().get_serialized_lessons(body)
-        serialized_events['homework'].extend(homework_events)
-        serialized_events['webinars'].extend(webinars_events)
+        for homework in homework_events:
+            if homework.id not in seen_homework_ids:
+                seen_homework_ids.add(homework.id)
+                serialized_events['homework'].append(homework)
+        for webinar in webinars_events:
+            if webinar.id not in seen_webinar_ids:
+                seen_webinar_ids.add(webinar.id)
+                serialized_events['webinars'].append(webinar)
     return schema.SerializedEvents.model_validate(serialized_events)

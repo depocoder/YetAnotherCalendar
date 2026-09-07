@@ -1,7 +1,15 @@
 import { useState } from "react";
 import Login from "../components/login/login";
 import PasswordPrivacyModal from "../components/PasswordPrivacyModal";
-import { loginLms, getModeusPersonId, loginNetology, getNetologyCourse } from "../services/api";
+import {
+    loginLms,
+    getModeusPersonId,
+    loginNetology,
+    getNetologyCourse,
+    getNetologyCourses,
+    setCalendarIdsLocalStorage,
+    setNetologyCoursesLocalStorage
+} from "../services/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import '../style/login.scss';
 import { toast } from 'react-toastify';
@@ -22,8 +30,20 @@ const LoginPage = () => {
             if (response.status === 200) {
                 const token = response.data["_netology-on-rails_session"];
                 localStorage.setItem('token', token);
-                const courseData = await getNetologyCourse(token);
-                localStorage.setItem('calendarId', courseData?.id);
+
+                // Загружаем все курсы пользователя: по умолчанию подгружаем каждый из них
+                const coursesData = await getNetologyCourses(token);
+                const programs = coursesData?.programs || [];
+                if (programs.length > 0) {
+                    setNetologyCoursesLocalStorage(programs);
+                    setCalendarIdsLocalStorage(programs.map(program => program.id));
+                } else {
+                    // Fallback на старое поведение (один курс, отфильтрованный по имени)
+                    const courseData = await getNetologyCourse(token);
+                    if (courseData?.id) {
+                        setCalendarIdsLocalStorage([courseData.id]);
+                    }
+                }
                 setIsNetologyLoggedIn(true);
                 navigate("/login/modeus");
                 return { success: true };

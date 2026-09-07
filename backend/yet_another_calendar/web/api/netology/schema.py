@@ -3,7 +3,9 @@ import re
 from typing import Annotated, Any
 from urllib.parse import urljoin
 
-from fastapi import Header
+from collections.abc import Iterable
+
+from fastapi import Header, Query
 from pydantic import BaseModel, Field, computed_field, model_validator, ConfigDict
 from loguru import logger
 
@@ -30,6 +32,28 @@ async def get_cookies_from_headers(
     return NetologyCookies.model_validate({
         "_netology-on-rails_session": rails_session,
     })
+
+
+def normalize_calendar_ids(calendar_ids: Iterable[int]) -> int | tuple[int, ...]:
+    """Normalize calendar ids to a canonical cache-friendly value.
+
+    A single id stays a plain int, so cache keys for existing
+    single-course users don't change. Multiple ids become a sorted
+    unique tuple, so the key doesn't depend on the order of query params.
+    """
+    unique_ids = sorted(set(calendar_ids))
+    if len(unique_ids) == 1:
+        return unique_ids[0]
+    return tuple(unique_ids)
+
+
+async def get_calendar_ids_from_query(
+        calendar_id: Annotated[list[int] | None, Query()] = None,
+) -> int | tuple[int, ...]:
+    """Parse one or more repeated calendar_id query params."""
+    if not calendar_id:
+        return settings.netology_default_course_id
+    return normalize_calendar_ids(calendar_id)
 
 
 class NetologyProgramId(BaseModel):

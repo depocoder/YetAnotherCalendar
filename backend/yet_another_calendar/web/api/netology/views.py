@@ -5,7 +5,6 @@ Netology API implemented using a controller.
 from fastapi import APIRouter, Depends
 
 import yet_another_calendar.web.api.modeus.schema
-from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.auth.rate_limiter import rate_limited_dependency
 from . import integration, schema
 
@@ -48,10 +47,10 @@ async def get_courses(
 @router.get('/calendar/')
 async def get_calendar(
         body: schema.ModeusTimeBody = Depends(yet_another_calendar.web.api.modeus.schema.get_time_from_query),
-        calendar_id: int = settings.netology_default_course_id,
+        calendar_id: int | tuple[int, ...] = Depends(schema.get_calendar_ids_from_query),
         cookies: schema.NetologyCookies = Depends(schema.get_cookies_from_headers),
 ) -> schema.SerializedEvents:
     """
-    Get Netology Calendar by time.
+    Get Netology Calendar by time. Supports repeated calendar_id params for multiple courses.
     """
     return await integration.get_calendar(cookies=cookies, calendar_id=calendar_id, body=body)

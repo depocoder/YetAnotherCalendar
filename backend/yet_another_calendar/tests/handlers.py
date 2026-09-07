@@ -75,6 +75,9 @@ netology_response_cases = {
         200, {}, _fixture("fixtures/profession.json")
     ),
     settings.netology_get_programs_part.format(calendar_id=2): get_httpx_response(404, {}),
+    settings.netology_get_programs_part.format(calendar_id=70685): get_httpx_response(
+        200, {}, _fixture("fixtures/profession.json")
+    ),
     settings.netology_sign_in_part: get_httpx_response(201, {"ok": True}),
 }
 

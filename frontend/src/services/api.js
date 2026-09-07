@@ -16,6 +16,43 @@ export function getModeusPersonIdFromLocalStorage() {
 export function getCalendarIdLocalStorage() {
     return localStorage.getItem('calendarId')
 }
+// Выбранные курсы Нетологии (массив id). Мигрирует со старого одиночного calendarId.
+export function getCalendarIdsLocalStorage() {
+    try {
+        const raw = localStorage.getItem('calendarIds');
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+                const ids = parsed.map(Number).filter(Number.isFinite);
+                if (ids.length > 0) return ids;
+            }
+        }
+    } catch (e) {
+        debug.error('Не удалось прочитать calendarIds из localStorage:', e);
+    }
+    const legacyId = Number(localStorage.getItem('calendarId'));
+    return Number.isFinite(legacyId) && legacyId > 0 ? [legacyId] : [];
+}
+export function setCalendarIdsLocalStorage(ids) {
+    const cleanIds = (ids || []).map(Number).filter(Number.isFinite);
+    localStorage.setItem('calendarIds', JSON.stringify(cleanIds));
+    // Поддерживаем старый ключ для обратной совместимости.
+    if (cleanIds.length > 0) {
+        localStorage.setItem('calendarId', cleanIds[0]);
+    }
+}
+// Список всех доступных курсов Нетологии (для выбора в модалке).
+export function getNetologyCoursesLocalStorage() {
+    try {
+        const parsed = JSON.parse(localStorage.getItem('netologyCourses'));
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+        return [];
+    }
+}
+export function setNetologyCoursesLocalStorage(courses) {
+    localStorage.setItem('netologyCourses', JSON.stringify(courses || []));
+}
 export function getLMSTokenFromLocalStorage() {
     return localStorage.getItem('lms-token')
 }
@@ -74,8 +111,25 @@ export async function getNetologyCourse(sessionToken) {
 }
 
 
+// Список всех курсов пользователя в Нетологии
+export async function getNetologyCourses(sessionToken) {
+    try {
+        const response = await axios.get(`${BACKEND_URL}/api/netology/courses/`, {
+            headers: {
+                "_netology-on-rails_session": sessionToken,
+                "Content-Type": "application/json"
+            }
+        });
+        return response.data;
+    } catch (e) {
+        return e.response;
+    }
+}
+
+
 const apiRequest = async (endpoint, {
     calendarId,
+    calendarIds,
     timeZone,
     timeMin,
     timeMax,
@@ -100,15 +154,25 @@ const apiRequest = async (endpoint, {
         headers['Expires'] = '0';
     }
 
+    // Один и тот же параметр calendar_id повторяется для каждого выбранного курса
+    const params = new URLSearchParams();
+    const ids = Array.isArray(calendarIds) && calendarIds.length > 0
+        ? calendarIds
+        : (calendarId ? [calendarId] : []);
+    ids.forEach(id => params.append('calendar_id', id));
+    params.append('time_zone', timeZone);
+    params.append('timeMin', timeMin);
+    params.append('timeMax', timeMax);
+
     try {
         const response = await axios.get(
-            `${BACKEND_URL}${endpoint}?calendar_id=${calendarId}&time_zone=${timeZone}&timeMin=${timeMin}&timeMax=${timeMax}`,
+            `${BACKEND_URL}${endpoint}?${params.toString()}`,
             {
                 headers,
             }
         );
         return response;
-    } catch (error) {        
+    } catch (error) {
         throw error;
     }
 };

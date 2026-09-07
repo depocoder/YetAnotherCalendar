@@ -162,6 +162,29 @@ async def test_get_calendar_ok(netology_client) -> None:
 
 
 @pytest.mark.asyncio
+async def test_get_calendar_multiple_ids_deduplicated(netology_client) -> None:
+    modeus_time_body = schema.ModeusTimeBody.model_validate({
+        "timeMin": "2024-09-23",
+        "timeMax": "2028-09-10",
+    })
+
+    serialized_events = await integration.get_calendar(mock_cookies, (45526, 70685), modeus_time_body)
+
+    # Both professions share the same programs, so events must not duplicate.
+    assert len(serialized_events.homework) == 2
+    assert len(serialized_events.webinars) == 2
+
+
+def test_normalize_calendar_ids() -> None:
+    # A single id stays an int, so cache keys of existing users don't change.
+    assert schema.normalize_calendar_ids([45526]) == 45526
+    assert schema.normalize_calendar_ids([45526, 45526]) == 45526
+    # Multiple ids are order-independent and deduplicated.
+    assert schema.normalize_calendar_ids([70685, 45526]) == (45526, 70685)
+    assert schema.normalize_calendar_ids([45526, 70685, 45526]) == (45526, 70685)
+
+
+@pytest.mark.asyncio
 async def test_courses_response_schema() -> None:
     with open(settings.test_parent_path / "fixtures/course_response_schema.json") as f:
         programs_json = json.load(f)

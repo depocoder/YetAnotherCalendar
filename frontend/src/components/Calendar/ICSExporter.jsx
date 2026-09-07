@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     exportICS,
-    getCalendarIdLocalStorage,
+    getCalendarIdsLocalStorage,
     getModeusPersonIdFromLocalStorage,
     getLMSIdFromLocalStorage,
     getLMSTokenFromLocalStorage,
@@ -27,12 +27,12 @@ const ICSExporter = ({ date }) => {
     };
 
     const downloadICSFile = async () => {
-        const calendarId = getCalendarIdLocalStorage();
+        const calendarIds = getCalendarIdsLocalStorage();
         setLoading(true);
 
         try {
             const icsContent = await exportICS({
-                calendarId,
+                calendarIds,
                 timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 timeMin: date.start,
                 timeMax: date.end,
