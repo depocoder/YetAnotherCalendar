@@ -5,6 +5,7 @@ import CalendarPage from './pages/CalendarPage';
 import ModeusDaySchedulePage from './pages/ModeusDaySchedulePage';
 import TutorLoginPage from './pages/TutorLoginPage';
 import AboutPage from './pages/AboutPage';
+import PrivacyPage from './pages/PrivacyPage';
 import FeedbackPage from './pages/FeedbackPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PrivateRoute from "./elements/PrivateRoute";
@@ -43,6 +44,8 @@ const App = () => {
                 />
                 {/* About page */}
                 <Route path="/about" element={<AboutPage />} />
+                {/* Подробно о защите данных */}
+                <Route path="/privacy" element={<PrivacyPage />} />
                 {/* Feedback page */}
                 <Route path="/feedback" element={<FeedbackPage />} />
                 {/* 404 страница */}

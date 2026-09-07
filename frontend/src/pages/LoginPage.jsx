@@ -1,226 +1,284 @@
-import { useState } from "react";
-import Login from "../components/login/login";
-import PasswordPrivacyModal from "../components/PasswordPrivacyModal";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
+    loginNetology,
     loginLms,
     getModeusPersonId,
-    loginNetology,
     getNetologyCourse,
     getNetologyCourses,
     setCalendarIdsLocalStorage,
-    setNetologyCoursesLocalStorage
-} from "../services/api";
-import { useLocation, useNavigate } from "react-router-dom";
-import '../style/login.scss';
-import { toast } from 'react-toastify';
+    setNetologyCoursesLocalStorage,
+    rememberMe,
+    getVaultStatus,
+    refreshVaultSession,
+    applyVaultSession
+} from '../services/api';
+import Logo from '../components/Logo';
+import InlineLoader from '../elements/InlineLoader';
 import { debug } from '../utils/debug';
 import { handleApiError } from '../utils/errorHandler';
+import '../style/login-v2.scss';
 
+const GITHUB_URL = 'https://github.com/depocoder/YetAnotherCalendar';
+const PERSON_ID_RE = /^[0-9a-fA-F-]{16,64}$/;
+
+/**
+ * Вход: один экран, шаговый мастер (1 — Нетология, 2 — Модеус/LMS).
+ * Сервисы проверяются по очереди, ошибка подсвечивает конкретный шаг.
+ * «Запомнить меня» сохраняет креды в зашифрованный vault после успеха
+ * обоих шагов (ключ — в httpOnly-cookie браузера).
+ */
 const LoginPage = () => {
-    const [isNetologyLoggedIn, setIsNetologyLoggedIn] = useState(false);
-    const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
     const navigate = useNavigate();
-    const location = useLocation();
+    const [step, setStep] = useState(1);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [remember, setRemember] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [restoring, setRestoring] = useState(true);
+    // Креды Нетологии держим в памяти до конца второго шага — для vault.
+    const [netologyCreds, setNetologyCreds] = useState(null);
 
-    const handleNetologyLogin = async (email, password) => {
-        let response; // Define response here to be available in catch
-        try {
-            response = await loginNetology(email, password);
-
-            if (response.status === 200) {
-                const token = response.data["_netology-on-rails_session"];
-                localStorage.setItem('token', token);
-
-                // Загружаем все курсы пользователя: по умолчанию подгружаем каждый из них
-                const coursesData = await getNetologyCourses(token);
-                const programs = coursesData?.programs || [];
-                if (programs.length > 0) {
-                    setNetologyCoursesLocalStorage(programs);
-                    setCalendarIdsLocalStorage(programs.map(program => program.id));
-                } else {
-                    // Fallback на старое поведение (один курс, отфильтрованный по имени)
-                    const courseData = await getNetologyCourse(token);
-                    if (courseData?.id) {
-                        setCalendarIdsLocalStorage([courseData.id]);
-                    }
+    // Если браузер «запомнен» — восстанавливаем сессию без паролей.
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const vault = await getVaultStatus();
+                if (!cancelled && vault?.active && !vault.broken) {
+                    const session = await refreshVaultSession();
+                    if (cancelled) return;
+                    applyVaultSession(session);
+                    toast.success('С возвращением! Вход выполнен автоматически.');
+                    navigate('/');
+                    return;
                 }
-                setIsNetologyLoggedIn(true);
-                navigate("/login/modeus");
-                return { success: true };
+            } catch (e) {
+                debug.log('Автовход через vault не удался:', e?.response?.status);
+            }
+            if (!cancelled) setRestoring(false);
+        })();
+        return () => { cancelled = true; };
+    }, [navigate]);
+
+    const handleNetologyStep = async () => {
+        const response = await loginNetology(email, password);
+        if (response?.status === 200) {
+            const token = response.data['_netology-on-rails_session'];
+            localStorage.setItem('token', token);
+
+            // Все курсы пользователя: по умолчанию подгружаем каждый
+            const coursesData = await getNetologyCourses(token);
+            const programs = coursesData?.programs || [];
+            if (programs.length > 0) {
+                setNetologyCoursesLocalStorage(programs);
+                setCalendarIdsLocalStorage(programs.map(program => program.id));
+            } else {
+                const courseData = await getNetologyCourse(token);
+                if (courseData?.id) {
+                    setCalendarIdsLocalStorage([courseData.id]);
+                }
             }
 
-            // --- Keep specific error messages ---
-            if (response.status === 401) {
-                toast.error("Неверный логин или пароль.");
-                return { success: false, message: "Неверный логин или пароль." };
-            }
-
-            if (response.status === 429) {
-                const detail = response.data?.detail || '';
-                // Извлекаем время из английского сообщения
-                const timeMatch = detail.match(/(\d+)\s+seconds?/);
-                const seconds = timeMatch ? timeMatch[1] : '';
-                const message = seconds 
-                    ? `Слишком много попыток. Попробуйте через ${seconds} секунд.`
-                    : 'Слишком много неудачных попыток. Попробуйте позже.';
-                toast.error(message);
-                return { success: false, message: message };
-            }
-            
-            // --- 2. USE HANDLER FOR GENERIC API ERRORS ---
-            // Catches 400, 422, 500, 503, etc.
-            debug.error("Ошибка API Нетологии:", response);
-            handleApiError({ response: response }, "Ошибка при входе в Нетологию", navigate);
-            return { success: false, message: "Произошла ошибка." };
-
-        } catch (error) {
-            // --- 3. USE HANDLER FOR NETWORK/JS ERRORS ---
-            debug.error("Ошибка при входе в Нетологию:", error);
-            // 'error' is a real Error object, so we pass it directly
-            handleApiError(error, "Ошибка при входе в Нетологию", navigate);
-            return { success: false, message: "Ошибка сети." };
+            setNetologyCreds({ username: email, password });
+            setEmail('');
+            setPassword('');
+            setStep(2);
+            return;
         }
+        if (response?.status === 401) {
+            toast.error('Нетология: неверный логин или пароль.');
+            return;
+        }
+        if (response?.status === 429) {
+            toast.error('Слишком много попыток. Попробуйте позже.');
+            return;
+        }
+        debug.error('Ошибка API Нетологии:', response);
+        handleApiError({ response }, 'Ошибка при входе в Нетологию', navigate);
     };
 
-    const handleModeusLogin = async (email, password) => {
-        if (!email.includes("@") || email.split("@").length - 1 !== 1) {
-            toast.error("Email должен содержать один символ @.");
-            return { success: false };
+    const handleModeusStep = async () => {
+        if (!email.includes('@') || email.split('@').length - 1 !== 1) {
+            toast.error('Email должен содержать один символ @.');
+            return;
+        }
+        let [name, mail] = email.split('@');
+        if (mail === 'utmn.ru') {
+            mail = 'study.utmn.ru';
+        }
+        if (mail !== 'study.utmn.ru') {
+            toast.error('Email должен содержать @study.utmn.ru.');
+            return;
+        }
+        const modeusEmail = `${name}@${mail}`;
+
+        const modeusResponse = await getModeusPersonId(modeusEmail, password);
+        if (modeusResponse?.status === 429) {
+            toast.error('Модеус: слишком много попыток. Попробуйте позже.');
+            return;
+        }
+        if (modeusResponse?.status === 401) {
+            toast.error('Модеус: неверный логин или пароль.');
+            return;
+        }
+        if (!modeusResponse || modeusResponse.status >= 400) {
+            debug.error('Ошибка API Modeus:', modeusResponse);
+            handleApiError({ response: modeusResponse }, 'Ошибка при входе в Модеус', navigate);
+            return;
         }
 
-        let [name, mail] = email.split("@");
-        if (mail === "utmn.ru") {
-            mail = "study.utmn.ru";
+        const personId = modeusResponse.data;
+        if (typeof personId !== 'string' || !PERSON_ID_RE.test(personId)) {
+            debug.error('Некорректный person id от Modeus:', personId);
+            toast.error('Не удалось получить идентификатор Модеус. Попробуйте позже.');
+            return;
         }
-        if (mail !== "study.utmn.ru") {
-            toast.error("Email должен содержать @study.utmn.ru.");
-            return { success: false };
-        }
-        email = `${name}@${mail}`;
+        localStorage.setItem('modeus_person_id', personId);
 
+        const lmsResponse = await loginLms(modeusEmail, password);
+        if (lmsResponse?.status === 401) {
+            toast.error('LMS: неверный логин или пароль.');
+            return;
+        }
+        if (!lmsResponse || lmsResponse.status >= 400) {
+            debug.error('Ошибка API LMS:', lmsResponse);
+            handleApiError({ response: lmsResponse }, 'Ошибка при входе в LMS', navigate);
+            return;
+        }
+        localStorage.setItem('lms-id', lmsResponse.data.id);
+        localStorage.setItem('lms-token', lmsResponse.data.token);
+
+        // Оба сервиса подтвердили креды — при желании запоминаем их в vault
+        if (remember && netologyCreds) {
+            const calendarIds = JSON.parse(localStorage.getItem('calendarIds') || '[]');
+            const vaultResponse = await rememberMe({
+                netology: netologyCreds,
+                lxp: { username: modeusEmail, password, service: 'test' },
+                modeus_person_id: personId,
+                calendar_ids: calendarIds,
+                time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            });
+            if (vaultResponse?.status !== 200) {
+                debug.error('Не удалось включить «Запомнить меня»:', vaultResponse?.status);
+                // Вход при этом успешен — не блокируем пользователя.
+            }
+        }
+        setNetologyCreds(null);
+        navigate('/');
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if (loading) return;
+        setLoading(true);
         try {
-            const modeusResponse = await getModeusPersonId(email, password);
-            
-            // --- Keep specific Modeus error messages ---
-            if (modeusResponse.status === 429) {
-                const detail = modeusResponse.data?.detail || '';
-                // Извлекаем время из английского сообщения
-                const timeMatch = detail.match(/(\d+)\s+seconds?/);
-                const seconds = timeMatch ? timeMatch[1] : '';
-                const message = seconds 
-                    ? `Слишком много попыток входа в Modeus. Попробуйте через ${seconds} секунд.`
-                    : 'Слишком много неудачных попыток входа в Modeus. Попробуйте позже.';
-                toast.error(message);
-                return { success: false };
+            if (step === 1) {
+                await handleNetologyStep();
+            } else {
+                await handleModeusStep();
             }
-            if (modeusResponse.status === 401) {
-                toast.error("Неверный логин или пароль для Modeus.");
-                return { success: false };
-            }
-            if (modeusResponse.status === 400 || modeusResponse.status === 422) {
-                toast.error("Неверные данные Modeus. Проверьте почту и пароль.");
-                return { success: false };
-            }
-            // --- Use handler for other Modeus errors (like 500) ---
-            if (modeusResponse.status >= 400) { 
-                debug.error("Ошибка API Modeus:", modeusResponse);
-                 handleApiError({ response: modeusResponse }, "Ошибка при входе в Modeus", navigate);
-                return { success: false };
-            }
-
-            const personId = modeusResponse.data;
-            // Защита от некорректного ответа: сохраняем только строку-UUID.
-            if (typeof personId !== 'string' || !/^[0-9a-fA-F-]{16,64}$/.test(personId)) {
-                debug.error("Некорректный person id от Modeus:", personId);
-                toast.error("Не удалось получить идентификатор Modeus. Попробуйте позже.");
-                return { success: false };
-            }
-            localStorage.setItem('modeus_person_id', personId);
-
-            // --- Keep specific LMS error messages ---
-            const lmsResponse = await loginLms(email, password);
-            if (lmsResponse.status === 401) {
-                toast.error("Неверный логин или пароль для LMS Нетологии.");
-                return { success: false };
-            }
-            if (lmsResponse.status === 400 || lmsResponse.status === 422) {
-                toast.error("Неверные данные LMS. Проверьте почту.");
-                return { success: false };
-            }
-            // --- Use handler for other LMS errors (like 500) ---
-            if (lmsResponse.status >= 400) {
-                debug.error("Ошибка API LMS:", lmsResponse);
-                handleApiError({ response: lmsResponse }, "Ошибка при входе в LMS", navigate);
-                return { success: false };
-            }
-
-            localStorage.setItem('lms-id', lmsResponse.data.id);
-            localStorage.setItem('lms-token', lmsResponse.data.token);
-            
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            navigate("/");
-            return { success: true };
-
         } catch (error) {
-            // --- 3. USE HANDLER FOR NETWORK/JS ERRORS ---
-            debug.error("Ошибка при входе в Modeus/LMS:", error);
-            handleApiError(error, "Ошибка при входе в Modeus или LMS", navigate);
-            return { success: false };
+            debug.error('Ошибка при входе:', error);
+            handleApiError(error, 'Ошибка при входе', navigate);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const isNetologyRoute = location.pathname === "/login";
-    const isModeusRoute = location.pathname === "/login/modeus";
-
-    return (
-        <div className="login-container">
-            <h2 className="login-container__title shedule-login">Мое расписание</h2>
-
-            {isNetologyRoute && (
-                <Login
-                    key="netology"
-                    onLogin={handleNetologyLogin}
-                    title="Введите логин и пароль от Нетологии, чтобы увидеть свое расписание"
-                    name="Нетологии"
-                    formId="netology"
-                />
-            )}
-
-            {isModeusRoute && isNetologyLoggedIn && (
-                <Login
-                    key="modeus"
-                    onLogin={handleModeusLogin}
-                    title="Введите логин и пароль от Модеус, чтобы увидеть lms в своем расписании"
-                    name="Модеус"
-                    formId="modeus"
-                />
-            )}
-
-            {/* Privacy Information Section */}
-            <div className="privacy-info-section">
-                <div className="privacy-notice">
-                    <div className="privacy-header">
-                        <span className="privacy-icon">🔐</span>
-                        <h3>Вопросы о безопасности?</h3>
-                    </div>
-                    <p>
-                        Мы понимаем ваши опасения по поводу передачи паролей. &nbsp;
-                        <button 
-                            className="privacy-link" 
-                            onClick={() => setIsPrivacyModalOpen(true)}
-                        >
-                            Узнайте, как мы защищаем ваши данные
-                        </button>
-                    </p>
+    if (restoring) {
+        return (
+            <div className="login-v2 login-v2--restoring">
+                <div className="login-v2__restore">
+                    <Logo size={40} />
+                    <p>Проверяем сохраненную сессию…</p>
                 </div>
             </div>
+        );
+    }
 
-            {/* Password Privacy Modal */}
-            <PasswordPrivacyModal 
-                isOpen={isPrivacyModalOpen} 
-                onClose={() => setIsPrivacyModalOpen(false)} 
-            />
+    const isNetologyStep = step === 1;
+
+    return (
+        <div className="login-v2">
+            <div className="login-v2__shell">
+                <div className="login-v2__left">
+                    <div className="login-v2__logo">
+                        <Logo size={26} />
+                        <b>YetAnotherCalendar</b>
+                    </div>
+                    <h1>Мое расписание</h1>
+                    <p className="login-v2__sub">Нетология, Модеус и LMS — в одном календаре</p>
+
+                    <div className="login-v2__steps">
+                        <div className={`login-v2__step ${isNetologyStep ? '' : 'login-v2__step--done'}`}>
+                            <span className="login-v2__step-n">{isNetologyStep ? '1' : '✓'}</span>Нетология
+                        </div>
+                        <div className="login-v2__line"><i style={{ width: isNetologyStep ? '45%' : '100%' }} /></div>
+                        <div className={`login-v2__step ${isNetologyStep ? 'login-v2__step--next' : ''}`}>
+                            <span className="login-v2__step-n">2</span>Модеус
+                        </div>
+                    </div>
+
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            type="email" required autoFocus
+                            placeholder={isNetologyStep ? 'Email от Нетологии' : 'Email @study.utmn.ru'}
+                            value={email} onChange={e => setEmail(e.target.value)}
+                            autoComplete="username"
+                        />
+                        <input
+                            type="password" required
+                            placeholder="Пароль"
+                            value={password} onChange={e => setPassword(e.target.value)}
+                            autoComplete="current-password"
+                        />
+                        {isNetologyStep && (
+                            <label className="login-v2__remember">
+                                <input
+                                    type="checkbox" checked={remember}
+                                    onChange={e => setRemember(e.target.checked)}
+                                />
+                                <span>
+                                    Запомнить меня на этом устройстве
+                                    <small>вход без паролей до 90 дней, данные зашифрованы</small>
+                                </span>
+                            </label>
+                        )}
+                        <button className="login-v2__btn" type="submit" disabled={loading}>
+                            {loading ? <InlineLoader /> : (isNetologyStep ? 'Далее →' : 'Войти')}
+                        </button>
+                    </form>
+                    <p className="login-v2__hint">
+                        {isNetologyStep
+                            ? 'Следующий шаг — вход в Модеус. Если пароль не подойдет, скажем об этом сразу.'
+                            : 'Введите логин и пароль от Модеус, чтобы увидеть пары и дедлайны LMS.'}
+                    </p>
+                </div>
+
+                <div className="login-v2__right">
+                    <div className="login-v2__week">
+                        <div className="login-v2__day"><b>Пн</b></div>
+                        <div className="login-v2__day login-v2__day--busy"><b>Вт</b><span /></div>
+                        <div className="login-v2__day"><b>Ср</b></div>
+                        <div className="login-v2__day login-v2__day--busy"><b>Чт</b><span /></div>
+                        <div className="login-v2__day login-v2__day--busy"><b>Пт</b><span /><span /></div>
+                        <div className="login-v2__day"><b>Сб</b></div>
+                        <div className="login-v2__day"><b>Вс</b></div>
+                    </div>
+                    <h2>🔐 Как мы защищаем ваши данные</h2>
+                    <div className="login-v2__sec"><span className="login-v2__sec-i">🔑</span><span>Пароли не сохраняются: они уходят напрямую в Нетологию и Модеус, у нас остаются только временные токены сессий.</span></div>
+                    <div className="login-v2__sec"><span className="login-v2__sec-i">🛡</span><span>«Запомнить меня» — по желанию. Данные шифруются AES-256, ключ остается только в вашем браузере: сервер физически не может их прочитать.</span></div>
+                    <div className="login-v2__sec"><span className="login-v2__sec-i">📡</span><span>Никакой телеметрии и передачи данных третьим лицам.</span></div>
+                    <div className="login-v2__sec"><span className="login-v2__sec-i">🗑</span><span>«Выйти» мгновенно стирает все сохраненное.</span></div>
+                    <div className="login-v2__sec"><span className="login-v2__sec-i">📊</span><span>Что мы все-таки храним: анонимный хэш вашего идентификатора (7 дней, счетчик аудитории) и кэш расписания (до 14 дней). Все.</span></div>
+                    <div className="login-v2__links">
+                        <a href="/privacy" target="_blank" rel="noopener noreferrer">🛡 Подробнее о защите данных ↗</a>
+                        <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">⭐ GitHub ↗</a>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

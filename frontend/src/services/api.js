@@ -136,6 +136,85 @@ export async function getNetologyCourses(sessionToken) {
 }
 
 
+// --- Vault: «Запомнить меня» (httpOnly-cookie, креды зашифрованы на сервере) ---
+export async function rememberMe(payload) {
+    try {
+        return await axios.post(`${BACKEND_URL}/api/vault/`, payload, {withCredentials: true});
+    } catch (e) {
+        return e.response;
+    }
+}
+
+export async function getVaultStatus() {
+    try {
+        const response = await axios.get(`${BACKEND_URL}/api/vault/`, {withCredentials: true});
+        return response.data;
+    } catch (e) {
+        return {active: false};
+    }
+}
+
+export async function refreshVaultSession() {
+    // Бросает при неуспехе — вызывающий решает, что делать с 401.
+    const response = await axios.post(`${BACKEND_URL}/api/vault/refresh`, null, {withCredentials: true});
+    return response.data;
+}
+
+export async function forgetMe() {
+    try {
+        return await axios.delete(`${BACKEND_URL}/api/vault/`, {withCredentials: true});
+    } catch (e) {
+        return e.response;
+    }
+}
+
+// Кладем свежие токены из vault в localStorage (формат ответа /api/vault/refresh)
+export function applyVaultSession(session) {
+    localStorage.setItem('token', session.netology_session);
+    localStorage.setItem('lms-id', session.lms_id);
+    localStorage.setItem('lms-token', session.lms_token);
+    localStorage.setItem('modeus_person_id', session.modeus_person_id);
+    if (Array.isArray(session.calendar_ids) && session.calendar_ids.length > 0) {
+        setCalendarIdsLocalStorage(session.calendar_ids);
+    }
+}
+
+// Автопродление: на 401/403 от bulk-запросов пробуем один раз обновить
+// сессию через vault и повторить исходный запрос.
+let vaultRefreshInFlight = null;
+axios.interceptors.response.use(
+    response => response,
+    async (error) => {
+        const status = error?.response?.status;
+        const url = error?.config?.url || '';
+        const isBulk = url.includes('/api/bulk/');
+        if ((status === 401 || status === 403) && isBulk && !error.config.__vaultRetried) {
+            try {
+                if (!vaultRefreshInFlight) {
+                    vaultRefreshInFlight = refreshVaultSession().finally(() => {
+                        vaultRefreshInFlight = null;
+                    });
+                }
+                const session = await vaultRefreshInFlight;
+                applyVaultSession(session);
+                const retryConfig = {...error.config, __vaultRetried: true};
+                retryConfig.headers = {
+                    ...retryConfig.headers,
+                    '_netology-on-rails_session': session.netology_session,
+                    'lxp-token': session.lms_token,
+                    'lxp-id': session.lms_id,
+                    'modeus-person-id': session.modeus_person_id
+                };
+                debug.log('🔁 Сессия продлена через vault, повторяем запрос');
+                return axios.request(retryConfig);
+            } catch (refreshError) {
+                debug.log('Vault недоступен или отвязан — обычный выход на логин');
+            }
+        }
+        throw error;
+    }
+);
+
 // --- ICS-подписка по URL ---
 export function getIcsSubscriptionUrlLocalStorage() {
     return localStorage.getItem('icsSubscriptionUrl');

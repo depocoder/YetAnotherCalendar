@@ -111,11 +111,17 @@ def get_app() -> FastAPI:
 
     configure_logging()
 
+    # Wildcard is forbidden for credentialed requests (vault cookie), and an
+    # origin with a trailing slash never matches the Origin header - so both
+    # lists are explicit.
     if settings.debug:
-        origins = ["*"]
+        origins = [
+            'http://localhost:3000',
+            'http://127.0.0.1:3000',
+        ]
     else:
         origins = [
-            'https://yetanothercalendar.ru/',
+            'https://yetanothercalendar.ru',
         ]
     app.add_middleware(
         CORSMiddleware,
