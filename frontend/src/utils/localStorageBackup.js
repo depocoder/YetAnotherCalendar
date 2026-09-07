@@ -12,7 +12,8 @@ const PERSISTENT_KEYS = [
     'deadlinesVisible',        // Флаг видимости дедлайнов
     'DebugEnabled',            // Флаг включения отладочных сообщений
     'modeusSelectedYear',      // Выбранный год в Модеус
-    'autoGenerateMessage'      // Флаг автоматического генерации сообщения
+    'autoGenerateMessage',     // Флаг автоматического генерации сообщения
+    'rememberMeChoice'         // Пользователь однажды включил «Запомнить меня»
 ];
 
 /**

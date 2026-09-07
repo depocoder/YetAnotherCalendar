@@ -34,7 +34,16 @@ const LoginPage = () => {
     const [step, setStep] = useState(1);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [remember, setRemember] = useState(true);
+    // Выключено по умолчанию (opt-in), но однажды включенное запоминается:
+    // выбор переживает выход из аккаунта (persistent-ключ localStorage).
+    const [remember, setRemember] = useState(
+        () => localStorage.getItem('rememberMeChoice') === 'true',
+    );
+
+    const handleRememberChange = (checked) => {
+        setRemember(checked);
+        localStorage.setItem('rememberMeChoice', String(checked));
+    };
     const [loading, setLoading] = useState(false);
     const [restoring, setRestoring] = useState(true);
     // Креды Нетологии держим в памяти до конца второго шага — для vault.
@@ -235,10 +244,10 @@ const LoginPage = () => {
                             autoComplete="current-password"
                         />
                         {isNetologyStep && (
-                            <label className="login-v2__remember">
+                            <label className={`login-v2__remember ${remember ? '' : 'login-v2__remember--attract'}`}>
                                 <input
                                     type="checkbox" checked={remember}
-                                    onChange={e => setRemember(e.target.checked)}
+                                    onChange={e => handleRememberChange(e.target.checked)}
                                 />
                                 <span>
                                     Запомнить меня на этом устройстве
