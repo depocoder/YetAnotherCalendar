@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import hashlib
 from collections.abc import Iterable
 from typing import Any
 
@@ -55,15 +56,19 @@ async def save_user_was_there(
     - Monitoring user activity
     - Analytics and usage statistics
 
-    The key automatically expires after redis_events_time_live (14 days by default),
+    The key automatically expires after redis_week_live (7 days by default),
     so it acts as a sliding window for recent user activity.
+
+    Privacy: only a one-way SHA-256 hash of the identifier is stored - the
+    counter needs uniqueness, not the identity itself.
 
     :param redis_pool: Redis connection pool from get_redis_pool dependency
     :param user_id: Unique identifier for the user (e.g., email, person_id, etc.)
     :return: None
     """
+    user_hash = hashlib.sha256(user_id.encode()).hexdigest()
     async with Redis(connection_pool=redis_pool) as redis:
-        await redis.set(name=f"{prefix}:{user_id}", value=0, ex=settings.redis_week_live)
+        await redis.set(name=f"{prefix}:{user_hash}", value=0, ex=settings.redis_week_live)
 
 
 def create_ics_event(title: str, starts_at: datetime.datetime, ends_at: datetime.datetime,
