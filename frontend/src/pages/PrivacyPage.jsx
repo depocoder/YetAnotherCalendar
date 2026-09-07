@@ -16,10 +16,13 @@ const GITHUB_URL = 'https://github.com/depocoder/YetAnotherCalendar';
  * Живой блок управления своими данными: статус «Запомнить меня» и подписки
  * с кнопками удаления прямо здесь.
  */
+const SUBSCRIPTION_URL_RE = /\/api\/subscription\/[0-9a-f]{32}\/[A-Za-z0-9_-]{20,64}/;
+
 const MyDataCard = () => {
     const [vault, setVault] = useState(null);
     const [subscriptionUrl, setSubscriptionUrl] = useState(() => getIcsSubscriptionUrlLocalStorage());
     const [busy, setBusy] = useState(false);
+    const [manualUrl, setManualUrl] = useState('');
 
     useEffect(() => {
         getVaultStatus().then(setVault);
@@ -46,6 +49,27 @@ const MyDataCard = () => {
         }
     };
 
+    // Удаление по вставленной ссылке — для подписок с других устройств:
+    // URL всегда можно скопировать из настроек Google/Яндекс календаря.
+    const handleDeleteByUrl = async () => {
+        if (!SUBSCRIPTION_URL_RE.test(manualUrl)) {
+            toast.error('Это не похоже на ссылку подписки YetAnotherCalendar.');
+            return;
+        }
+        setBusy(true);
+        const response = await deleteIcsSubscription(manualUrl.trim());
+        setBusy(false);
+        if (response?.status === 200) {
+            setManualUrl('');
+            toast.info('Подписка и её данные удалены с сервера.');
+        } else if (response?.status === 404) {
+            setManualUrl('');
+            toast.info('Такой подписки уже нет — удалять нечего.');
+        } else {
+            toast.error('Не удалось удалить подписку. Попробуйте позже.');
+        }
+    };
+
     return (
         <div className="privacy-page__card privacy-page__card--live">
             <h2>🧭 Ваши данные на этом устройстве</h2>
@@ -65,6 +89,20 @@ const MyDataCard = () => {
                 {subscriptionUrl && (
                     <button onClick={handleDeleteSubscription} disabled={busy}>Удалить подписку</button>
                 )}
+            </div>
+            <div className="privacy-page__manual-delete">
+                <span>Подписка с другого устройства? Вставьте её ссылку (она есть в настройках вашего Google/Яндекс календаря):</span>
+                <div className="privacy-page__manual-delete-row">
+                    <input
+                        type="url"
+                        placeholder="https://yetanothercalendar.ru/api/subscription/…/calendar.ics"
+                        value={manualUrl}
+                        onChange={e => setManualUrl(e.target.value)}
+                    />
+                    <button onClick={handleDeleteByUrl} disabled={busy || !manualUrl.trim()}>
+                        Удалить
+                    </button>
+                </div>
             </div>
             <p className="privacy-page__data-note">
                 Кнопки удаляют данные с сервера безвозвратно. «Выйти» на странице
