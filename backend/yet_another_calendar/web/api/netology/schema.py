@@ -68,10 +68,20 @@ class CoursesResponse(BaseModel):
     """Program id."""
     programs: list[NetologyProgramId]
 
+    @staticmethod
+    def _unify_it_spelling(text: str) -> str:
+        """Netology titles mix Latin 'IT' and Cyrillic 'ИТ' — unify for matching.
+
+        Both compared strings get the same replacement, so matching works
+        regardless of which spelling the title or the setting uses.
+        """
+        return text.lower().replace("ит", "it")
+
     def get_utmn_program(self) -> NetologyProgramId | None:
+        course_name = self._unify_it_spelling(settings.netology_course_name)
         for program in self.programs:
             title_lower = program.title.lower()
-            if settings.netology_course_name.lower() in title_lower:
+            if course_name in self._unify_it_spelling(title_lower):
                 if "вводный" in title_lower:
                     continue
                 return program

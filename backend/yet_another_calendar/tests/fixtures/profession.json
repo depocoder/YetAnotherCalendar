@@ -1,5 +1,5 @@
 {
-    "name": "Бакалавриат Разработка IT-продуктов и информационных систем",
+    "name": "Бакалавриат Разработка ИТ-продуктов и информационных систем",
     "starts_on": "2024-09-01",
     "finishes_on": "2028-08-31",
     "coordinator": {
@@ -45,7 +45,7 @@
                 "parent_profession": {
                     "id": 45526,
                     "urlcode": "bhebdps-2",
-                    "title": "Бакалавриат Разработка IT-продуктов и информационных систем",
+                    "title": "Бакалавриат Разработка ИТ-продуктов и информационных систем",
                     "landing_url": "/programs/razrabotka-it-produktov-i-informacionnyh-sistem",
                     "start_date": "2025-09-01",
                     "finish_date": "2029-07-30",

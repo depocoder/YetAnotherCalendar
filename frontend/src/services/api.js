@@ -203,7 +203,7 @@ export async function getDayEvents(date, learningStartYear, profileName, special
         const requestBody = {
             date: date,
             learningStartYear: learningStartYear || [2024],
-            profileName: profileName || ["Разработка IT-продуктов и информационных систем"],
+            profileName: profileName || ["Разработка ИТ-продуктов и информационных систем"],
             specialtyCode: specialtyCode || ["09.03.02"]
         };
 

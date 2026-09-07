@@ -60,7 +60,7 @@ class Settings(BaseSettings):
 
     netology_default_course_id: int = env.int("NETOLOGY_DEFAULT_COURSE_ID", 45526)
     netology_course_name: str = env.str(
-        "NETOLOGY_COURSE_NAME", "Разработка IT-продуктов и информационных систем",
+        "NETOLOGY_COURSE_NAME", "Разработка ИТ-продуктов и информационных систем",
     )
     netology_location_name: str = "Нетология"
     netology_url: str = env.str("NETOLOGY_URL", "https://netology.ru")

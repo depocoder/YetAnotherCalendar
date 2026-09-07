@@ -87,7 +87,7 @@ async def test_get_events_by_id_not_found(netology_bad_client) -> None:
 async def test_get_events_by_id_ok(netology_client) -> None:
     calendar_response = await integration.get_events_by_id(mock_cookies, 45526)
     assert calendar_response.model_dump().get("block_title") == \
-           "Бакалавриат Разработка IT-продуктов и информационных систем"
+           "Бакалавриат Разработка ИТ-продуктов и информационных систем"
 
 
 @pytest.mark.asyncio
@@ -207,12 +207,10 @@ async def test_get_utmn_program_filtering() -> None:
             {
                 "id": 45526,
                 "title": "Бакалавриат «Разработка ИТ-продуктов и информационных систем»",
-                "is_profession": True,
             },
             {
                 "id": 51839,
-                "title": "Вводный курс бакалавриата ТюмГУ «Разработка IT-продуктов и информационных систем»",
-                "is_profession": False,
+                "title": "Вводный курс бакалавриата ТюмГУ «Разработка ИТ-продуктов и информационных систем»",
             }
         ]
     }

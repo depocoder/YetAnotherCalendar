@@ -265,7 +265,7 @@ def test_day_events_request_defaults() -> None:
         learningStartYear=[2024],
     )
 
-    assert request.profile_name == ["Разработка IT-продуктов и информационных систем"]
+    assert request.profile_name == ["Разработка ИТ-продуктов и информационных систем"]
     assert request.specialty_code == ["09.03.02"]
 
 

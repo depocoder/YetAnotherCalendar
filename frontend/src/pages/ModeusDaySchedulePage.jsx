@@ -23,7 +23,7 @@ const ModeusDaySchedulePage = () => {
             return [2024];
         }
     });
-    const [profileName, setProfileName] = useState(["Разработка IT-продуктов и информационных систем"]);
+    const [profileName, setProfileName] = useState(["Разработка ИТ-продуктов и информационных систем"]);
     const [specialtyCode, setSpecialtyCode] = useState(["09.03.02"]);
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -53,7 +53,7 @@ const ModeusDaySchedulePage = () => {
 
     // Опции для профилей (можно расширить)
     const profileOptions = [
-        "Разработка IT-продуктов и информационных систем",
+        "Разработка ИТ-продуктов и информационных систем",
         "Информационные системы и технологии",
         "Программная инженерия",
         "Компьютерная безопасность"
