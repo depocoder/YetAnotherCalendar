@@ -30,8 +30,11 @@ const SubscriptionModal = ({ isOpen, onClose, courses, selectedIds }) => {
 
     const selectedCourses = (courses || []).filter(course => (selectedIds || []).includes(course.id));
 
-    const handleCreate = async (event) => {
-        event.preventDefault();
+    const handleCreate = async () => {
+        if (!netologyLogin || !netologyPassword || !modeusLogin || !modeusPassword) {
+            toast.error('Заполните логины и пароли обоих сервисов.');
+            return;
+        }
         if (!selectedIds || selectedIds.length === 0) {
             toast.error('Сначала выберите курсы в «Мои курсы».');
             return;
@@ -136,7 +139,7 @@ const SubscriptionModal = ({ isOpen, onClose, courses, selectedIds }) => {
                             </button>
                         </>
                     ) : (
-                        <form onSubmit={handleCreate}>
+                        <div>
                             <div className="subscription-policy">
                                 <span className="subscription-policy-icon">🔐</span>
                                 <p>
@@ -164,38 +167,47 @@ const SubscriptionModal = ({ isOpen, onClose, courses, selectedIds }) => {
                                 </div>
                             )}
 
-                            <fieldset className="subscription-fieldset">
-                                <legend>Нетология</legend>
-                                <input
-                                    type="email" required placeholder="Email от Нетологии"
-                                    value={netologyLogin} onChange={e => setNetologyLogin(e.target.value)}
-                                    autoComplete="section-netology username"
-                                />
-                                <input
-                                    type="password" required placeholder="Пароль от Нетологии"
-                                    value={netologyPassword} onChange={e => setNetologyPassword(e.target.value)}
-                                    autoComplete="section-netology current-password"
-                                />
-                            </fieldset>
+                            {/* Отдельные формы: браузер подбирает сохраненную пару
+                                логин/пароль для каждой формы независимо. */}
+                            <form onSubmit={e => e.preventDefault()}>
+                                <fieldset className="subscription-fieldset">
+                                    <legend>Нетология</legend>
+                                    <input
+                                        type="email" required placeholder="Email от Нетологии"
+                                        value={netologyLogin} onChange={e => setNetologyLogin(e.target.value)}
+                                        autoComplete="username"
+                                    />
+                                    <input
+                                        type="password" required placeholder="Пароль от Нетологии"
+                                        value={netologyPassword} onChange={e => setNetologyPassword(e.target.value)}
+                                        autoComplete="current-password"
+                                    />
+                                </fieldset>
+                            </form>
 
-                            <fieldset className="subscription-fieldset">
-                                <legend>Модеус / LMS</legend>
-                                <input
-                                    type="email" required placeholder="Email @study.utmn.ru"
-                                    value={modeusLogin} onChange={e => setModeusLogin(e.target.value)}
-                                    autoComplete="section-modeus username"
-                                />
-                                <input
-                                    type="password" required placeholder="Пароль от Модеус"
-                                    value={modeusPassword} onChange={e => setModeusPassword(e.target.value)}
-                                    autoComplete="section-modeus current-password"
-                                />
-                            </fieldset>
+                            <form onSubmit={e => e.preventDefault()}>
+                                <fieldset className="subscription-fieldset">
+                                    <legend>Модеус / LMS</legend>
+                                    <input
+                                        type="email" required placeholder="Email @study.utmn.ru"
+                                        value={modeusLogin} onChange={e => setModeusLogin(e.target.value)}
+                                        autoComplete="username"
+                                    />
+                                    <input
+                                        type="password" required placeholder="Пароль от Модеус"
+                                        value={modeusPassword} onChange={e => setModeusPassword(e.target.value)}
+                                        autoComplete="current-password"
+                                    />
+                                </fieldset>
+                            </form>
 
-                            <button className="subscription-create-btn" type="submit" disabled={loading}>
+                            <button
+                                className="subscription-create-btn" type="button"
+                                onClick={handleCreate} disabled={loading}
+                            >
                                 {loading ? <InlineLoader /> : 'Создать ссылку подписки'}
                             </button>
-                        </form>
+                        </div>
                     )}
                 </div>
             </div>
