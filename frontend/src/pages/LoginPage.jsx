@@ -268,7 +268,7 @@ const LoginPage = () => {
                         <div className="login-v2__day"><b>Вс</b></div>
                     </div>
                     <h2>🔐 Как мы защищаем ваши данные</h2>
-                    <div className="login-v2__sec"><span className="login-v2__sec-i">🔑</span><span>Пароли не сохраняются: они уходят напрямую в Нетологию и Модеус, у нас остаются только временные токены сессий.</span></div>
+                    <div className="login-v2__sec"><span className="login-v2__sec-i">🔑</span><span>Пароли не сохраняются: они уходят напрямую в Нетологию и Модеус, а временные токены сессий хранятся только в вашем браузере.</span></div>
                     <div className="login-v2__sec"><span className="login-v2__sec-i">🛡</span><span>«Запомнить меня» — по желанию. Данные шифруются AES-256, ключ остается только в вашем браузере: сервер физически не может их прочитать.</span></div>
                     <div className="login-v2__sec"><span className="login-v2__sec-i">📡</span><span>Никакой телеметрии и передачи данных третьим лицам.</span></div>
                     <div className="login-v2__sec"><span className="login-v2__sec-i">🗑</span><span>«Выйти» мгновенно стирает все сохраненное.</span></div>
