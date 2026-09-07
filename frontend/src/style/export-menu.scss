@@ -71,17 +71,53 @@
     }
 }
 
-/* В мобильной колонке кнопок меню растягивается на всю ширину ряда */
-.mobile-buttons-row .export-menu {
-    flex: 1;
+.export-menu__backdrop {
+    display: none;
+}
 
-    .export-btn {
-        width: 100%;
+/* В мобильной колонке кнопка растягивается, а меню открывается
+   нижним листом поверх всего — иначе его режет overflow: hidden
+   контейнера и ширина кнопки. */
+@media (max-width: 768px) {
+    .mobile-buttons-row .export-menu {
+        flex: 1;
+
+        .export-btn {
+            width: 100%;
+        }
     }
 
-    .export-menu__dropdown {
-        left: 0;
-        right: 0;
+    .export-menu .export-menu__backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        z-index: 1050;
+    }
+
+    .export-menu .export-menu__dropdown {
+        position: fixed;
+        top: auto;
+        left: 12px;
+        right: 12px;
+        bottom: 16px;
         min-width: 0;
+        padding: 10px;
+        border-radius: 14px;
+        box-shadow: 0 -6px 30px rgba(0, 0, 0, 0.25);
+        z-index: 1100;
+
+        .export-menu__item {
+            padding: 13px 12px;
+        }
+
+        .export-menu__item-title {
+            font-size: 15px;
+            white-space: nowrap;
+        }
+
+        .export-menu__item-hint {
+            font-size: 12px;
+        }
     }
 }

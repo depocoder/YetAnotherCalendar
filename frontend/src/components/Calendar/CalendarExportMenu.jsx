@@ -106,6 +106,7 @@ const CalendarExportMenu = ({ date, onOpenSubscription }) => {
             >
                 {loading ? <InlineLoader /> : <>📅 В календарь <span className="export-menu__caret">▾</span></>}
             </button>
+            {open && <div className="export-menu__backdrop" onClick={() => setOpen(false)} />}
             <div className="export-menu__dropdown">
                 <button className="export-menu__item" onClick={downloadICSFile} disabled={loading}>
                     <span className="export-menu__item-icon">⬇</span>
