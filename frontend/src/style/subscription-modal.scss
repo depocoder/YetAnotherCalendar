@@ -87,6 +87,37 @@
     overflow-y: auto;
 }
 
+.subscription-vault-offer {
+    margin-bottom: 18px;
+
+    p {
+        margin: 0 0 12px;
+        font-size: 13px;
+        line-height: 1.55;
+        color: #43395f;
+        background: #efeaff;
+        border: 1px solid #d5ccff;
+        border-radius: 10px;
+        padding: 12px 14px;
+    }
+}
+
+.subscription-vault-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0 2px;
+    font-size: 12px;
+    color: #a5a1bd;
+
+    &::before, &::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #e9ecef;
+    }
+}
+
 .subscription-policy {
     display: flex;
     gap: 12px;

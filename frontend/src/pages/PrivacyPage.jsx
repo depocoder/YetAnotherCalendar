@@ -1,13 +1,79 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import Logo from '../components/Logo';
+import {
+    getVaultStatus,
+    forgetMe,
+    getIcsSubscriptionUrlLocalStorage,
+    setIcsSubscriptionUrlLocalStorage,
+    deleteIcsSubscription
+} from '../services/api';
 import '../style/privacy.scss';
 
 const GITHUB_URL = 'https://github.com/depocoder/YetAnotherCalendar';
 
 /**
- * Подробное описание того, как устроена защита пользовательских данных.
- * Открывается со страницы логина в новой вкладке.
+ * Живой блок управления своими данными: статус «Запомнить меня» и подписки
+ * с кнопками удаления прямо здесь.
  */
+const MyDataCard = () => {
+    const [vault, setVault] = useState(null);
+    const [subscriptionUrl, setSubscriptionUrl] = useState(() => getIcsSubscriptionUrlLocalStorage());
+    const [busy, setBusy] = useState(false);
+
+    useEffect(() => {
+        getVaultStatus().then(setVault);
+    }, []);
+
+    const handleForget = async () => {
+        setBusy(true);
+        await forgetMe();
+        setVault({ active: false });
+        setBusy(false);
+        toast.info('Сохраненные данные удалены с сервера.');
+    };
+
+    const handleDeleteSubscription = async () => {
+        setBusy(true);
+        const response = await deleteIcsSubscription(subscriptionUrl);
+        setBusy(false);
+        if (response?.status === 200 || response?.status === 404) {
+            setIcsSubscriptionUrlLocalStorage(null);
+            setSubscriptionUrl(null);
+            toast.info('Подписка и её данные удалены с сервера.');
+        } else {
+            toast.error('Не удалось удалить подписку. Попробуйте позже.');
+        }
+    };
+
+    return (
+        <div className="privacy-page__card privacy-page__card--live">
+            <h2>🧭 Ваши данные на этом устройстве</h2>
+            <div className="privacy-page__data-row">
+                <span>
+                    «Запомнить меня»:{' '}
+                    {vault === null ? '…' : vault.active
+                        ? (vault.broken ? '⚠️ сохранено, но пароль изменился' : '✅ включено')
+                        : '⬜ не включено'}
+                </span>
+                {vault?.active && (
+                    <button onClick={handleForget} disabled={busy}>Забыть меня</button>
+                )}
+            </div>
+            <div className="privacy-page__data-row">
+                <span>Подписка на календарь: {subscriptionUrl ? '✅ создана' : '⬜ не создана'}</span>
+                {subscriptionUrl && (
+                    <button onClick={handleDeleteSubscription} disabled={busy}>Удалить подписку</button>
+                )}
+            </div>
+            <p className="privacy-page__data-note">
+                Кнопки удаляют данные с сервера безвозвратно. То же самое делает
+                «Выйти» на странице календаря.
+            </p>
+        </div>
+    );
+};
+
 const PrivacyPage = () => (
     <div className="privacy-page">
         <div className="privacy-page__hero">
@@ -90,13 +156,15 @@ const PrivacyPage = () => (
                 </p>
             </div>
 
+            <MyDataCard />
+
             <div className="privacy-page__card">
                 <h2>🗑 Как все удалить</h2>
                 <p>
-                    Кнопка <b>«Выйти»</b> удаляет зашифрованные данные и все связанные с
-                    ними ключи безвозвратно, удаление подписки стирает ее данные с сервера.
+                    Кнопки в блоке выше и кнопка <b>«Выйти»</b> в календаре удаляют
+                    зашифрованные данные и все связанные с ними ключи безвозвратно.
                     Остальное (кэш, токены, хэш счетчика) истекает само по расписанию из
-                    таблицы выше.
+                    таблицы выше — никаких действий не требуется.
                 </p>
             </div>
 

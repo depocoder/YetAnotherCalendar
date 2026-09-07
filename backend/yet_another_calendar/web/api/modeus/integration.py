@@ -1,4 +1,5 @@
 """Modeus API implementation."""
+import asyncio
 import re
 from secrets import token_hex
 from typing import Any
@@ -71,8 +72,28 @@ async def get_auth_form(session: AsyncClient, username: str, password: str) -> T
     return form
 
 
-@reretry.retry(exceptions=httpx.TransportError, tries=settings.retry_tries, delay=settings.retry_delay)
 async def login(username: str, __password: str, timeout: int = 15) -> str:
+    """
+    Log in Modeus, retrying transient token-extraction failures.
+
+    Wrong credentials are detected earlier (errorText on the auth form), so
+    a missing token in the final redirect is an upstream flake: users used
+    to need a second manual attempt with the very same credentials.
+    """
+    attempts = 3
+    for attempt in range(1, attempts + 1):
+        try:
+            return await _login_attempt(username, __password, timeout)
+        except HTTPException as exception:
+            if "Can't get token" not in str(exception.detail) or attempt == attempts:
+                raise
+            logger.warning(f"Modeus auth transient failure, retrying ({attempt}/{attempts})")
+            await asyncio.sleep(1)
+    raise AssertionError("unreachable")  # pragma: no cover
+
+
+@reretry.retry(exceptions=httpx.TransportError, tries=settings.retry_tries, delay=settings.retry_delay)
+async def _login_attempt(username: str, __password: str, timeout: int = 15) -> str:
     """
     Log in Modeus.
 

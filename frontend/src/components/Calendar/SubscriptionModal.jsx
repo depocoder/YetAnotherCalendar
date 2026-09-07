@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
     createIcsSubscription,
     deleteIcsSubscription,
     getIcsSubscriptionUrlLocalStorage,
     setIcsSubscriptionUrlLocalStorage,
-    getModeusPersonIdFromLocalStorage
+    getModeusPersonIdFromLocalStorage,
+    getVaultStatus
 } from '../../services/api';
 import InlineLoader from '../../elements/InlineLoader';
 import { debug } from '../../utils/debug';
@@ -25,13 +26,20 @@ const SubscriptionModal = ({ isOpen, onClose, courses, selectedIds }) => {
     const [loading, setLoading] = useState(false);
     const [subscriptionUrl, setSubscriptionUrl] = useState(() => getIcsSubscriptionUrlLocalStorage());
     const [copied, setCopied] = useState(false);
+    const [vaultActive, setVaultActive] = useState(false);
+
+    // Если браузер «запомнен» — подписку можно создать без паролей.
+    useEffect(() => {
+        if (!isOpen) return;
+        getVaultStatus().then(vault => setVaultActive(Boolean(vault?.active && !vault.broken)));
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
     const selectedCourses = (courses || []).filter(course => (selectedIds || []).includes(course.id));
 
-    const handleCreate = async () => {
-        if (!netologyLogin || !netologyPassword || !modeusLogin || !modeusPassword) {
+    const handleCreate = async (useVault = false) => {
+        if (!useVault && (!netologyLogin || !netologyPassword || !modeusLogin || !modeusPassword)) {
             toast.error('Заполните логины и пароли обоих сервисов.');
             return;
         }
@@ -41,13 +49,16 @@ const SubscriptionModal = ({ isOpen, onClose, courses, selectedIds }) => {
         }
         setLoading(true);
         try {
-            const response = await createIcsSubscription({
-                netology: { username: netologyLogin, password: netologyPassword },
-                lxp: { username: modeusLogin, password: modeusPassword, service: 'test' },
-                modeus_person_id: getModeusPersonIdFromLocalStorage(),
+            const payload = {
                 calendar_ids: selectedIds,
                 time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone
-            });
+            };
+            if (!useVault) {
+                payload.netology = { username: netologyLogin, password: netologyPassword };
+                payload.lxp = { username: modeusLogin, password: modeusPassword, service: 'test' };
+                payload.modeus_person_id = getModeusPersonIdFromLocalStorage();
+            }
+            const response = await createIcsSubscription(payload);
 
             if (response?.status === 200 && response.data?.url) {
                 setSubscriptionUrl(response.data.url);
@@ -140,6 +151,21 @@ const SubscriptionModal = ({ isOpen, onClose, courses, selectedIds }) => {
                         </>
                     ) : (
                         <div>
+                            {vaultActive && (
+                                <div className="subscription-vault-offer">
+                                    <p>
+                                        ⚡ Вы включили «Запомнить меня» — подписку можно создать
+                                        по сохраненным данным, без повторного ввода паролей.
+                                    </p>
+                                    <button
+                                        className="subscription-create-btn" type="button"
+                                        onClick={() => handleCreate(true)} disabled={loading}
+                                    >
+                                        {loading ? <InlineLoader /> : 'Создать подписку в один клик'}
+                                    </button>
+                                    <div className="subscription-vault-divider">или введите данные вручную</div>
+                                </div>
+                            )}
                             <div className="subscription-policy">
                                 <span className="subscription-policy-icon">🔐</span>
                                 <p>
@@ -203,7 +229,7 @@ const SubscriptionModal = ({ isOpen, onClose, courses, selectedIds }) => {
 
                             <button
                                 className="subscription-create-btn" type="button"
-                                onClick={handleCreate} disabled={loading}
+                                onClick={() => handleCreate(false)} disabled={loading}
                             >
                                 {loading ? <InlineLoader /> : 'Создать ссылку подписки'}
                             </button>

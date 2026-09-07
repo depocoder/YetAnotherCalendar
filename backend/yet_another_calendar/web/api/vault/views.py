@@ -92,17 +92,23 @@ async def vault_status(
 async def refresh_session(
         redis_pool: Annotated[ConnectionPool, Depends(get_redis_pool)],
         yac_vault: Annotated[str | None, Cookie()] = None,
+        force: bool = False,
 ) -> schema.RefreshedSession:
     """
     Re-authenticate in upstream services using the remembered credentials.
 
+    Cached tokens are returned when available; pass force=true to drop the
+    cache and re-authenticate - the frontend does this when a request just
+    failed with the tokens it had, so a dead-but-cached token can't loop.
     Returns fresh tokens for the frontend to store. 401 means the grant is
     gone or the remembered password no longer works.
     """
     vault_id, secret = _parse_cookie(yac_vault)
     async with Redis(connection_pool=redis_pool) as redis:
         record, _, dek = await integration.resolve(redis, vault_id, secret)
-        tokens = await integration.get_cached_tokens(redis, vault_id)
+        if force:
+            await integration.drop_cached_tokens(redis, vault_id)
+        tokens = None if force else await integration.get_cached_tokens(redis, vault_id)
         if tokens is None:
             creds = integration.decrypt_creds(dek, record)
             try:

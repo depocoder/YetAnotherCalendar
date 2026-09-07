@@ -154,9 +154,15 @@ export async function getVaultStatus() {
     }
 }
 
-export async function refreshVaultSession() {
+export async function refreshVaultSession(force = false) {
     // Бросает при неуспехе — вызывающий решает, что делать с 401.
-    const response = await axios.post(`${BACKEND_URL}/api/vault/refresh`, null, {withCredentials: true});
+    // force=true сбрасывает серверный кэш токенов: используется, когда токены
+    // только что не сработали, чтобы не получить обратно те же мертвые.
+    const response = await axios.post(
+        `${BACKEND_URL}/api/vault/refresh${force ? '?force=true' : ''}`,
+        null,
+        {withCredentials: true}
+    );
     return response.data;
 }
 
@@ -191,7 +197,8 @@ axios.interceptors.response.use(
         if ((status === 401 || status === 403) && isBulk && !error.config.__vaultRetried) {
             try {
                 if (!vaultRefreshInFlight) {
-                    vaultRefreshInFlight = refreshVaultSession().finally(() => {
+                    // Токены только что не сработали — форсируем реаутентификацию.
+                    vaultRefreshInFlight = refreshVaultSession(true).finally(() => {
                         vaultRefreshInFlight = null;
                     });
                 }
@@ -230,8 +237,11 @@ export function setIcsSubscriptionUrlLocalStorage(url) {
 
 export async function createIcsSubscription(payload) {
     try {
+        // withCredentials: при «Запомнить меня» подписка создается по vault-cookie
+        // вообще без паролей в payload.
         return await axios.post(`${BACKEND_URL}/api/subscription/`, payload, {
-            headers: {'Content-Type': 'application/json'}
+            headers: {'Content-Type': 'application/json'},
+            withCredentials: true
         });
     } catch (e) {
         return e.response;
