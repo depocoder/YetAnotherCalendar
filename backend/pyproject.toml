@@ -19,7 +19,7 @@ dependencies = [
     "httpx[http2]==0.27.2",
     "icalendar>=6.1.1",
     "loguru>=0.7.3",
-    "lxml>=5.3.1",
+    "lxml>=6.1.0",
     "pre-commit>=4.2.0",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.8.1",
