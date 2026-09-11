@@ -82,7 +82,12 @@ def create_ics_event(title: str, starts_at: datetime.datetime, ends_at: datetime
     event.add('dtend', ends_at)
     event.add('dtstamp', dt_now)
     event.add('uid', lesson_id)
-    event.add('DESCRIPTION', description)
+    # Not every calendar client makes LOCATION clickable - put the link
+    # into the description too, where it always is.
+    full_description = f"{description}\n{url}" if description and url else (description or url)
+    event.add('DESCRIPTION', full_description)
+    if url:
+        event.add('URL', url)
     return event
 
 
@@ -90,6 +95,10 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
     ics_calendar = icalendar.Calendar()
     ics_calendar.add('version', '2.0')
     ics_calendar.add('prodid', 'yet_another_calendar')
+    # Hints for subscribed clients to re-poll often: webinar links appear in
+    # Netology shortly before the event, so freshness matters.
+    ics_calendar.add('X-PUBLISHED-TTL', 'PT1H')
+    ics_calendar['REFRESH-INTERVAL;VALUE=DURATION'] = 'PT1H'
 
     for netology_lesson in calendar.netology.webinars:
         if not netology_lesson.starts_at or not netology_lesson.ends_at:

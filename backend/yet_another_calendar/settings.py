@@ -66,7 +66,9 @@ class Settings(BaseSettings):
     # derived from the URL secret + this server-side pepper. Feature is
     # disabled until the pepper is configured.
     ics_pepper: str = env.str("YET_ANOTHER_CALENDAR_ICS_PEPPER", "")
-    ics_cache_time_live: int = env.int("YET_ANOTHER_CALENDAR_ICS_CACHE_TTL", 60 * 60 * 6)
+    # 1 hour: webinar links appear in Netology shortly before the event,
+    # a longer cache made subscribed calendars miss them.
+    ics_cache_time_live: int = env.int("YET_ANOTHER_CALENDAR_ICS_CACHE_TTL", 60 * 60)
     ics_tokens_time_live: int = env.int("YET_ANOTHER_CALENDAR_ICS_TOKENS_TTL", 60 * 60 * 20)
     ics_weeks_past: int = env.int("YET_ANOTHER_CALENDAR_ICS_WEEKS_PAST", 1)
     ics_weeks_future: int = env.int("YET_ANOTHER_CALENDAR_ICS_WEEKS_FUTURE", 3)

@@ -211,6 +211,18 @@ async def test_courses_availability_probe(netology_client, monkeypatch) -> None:
     assert availability == {45526: True, 2: False}
 
 
+def test_profession_modules_without_program_are_skipped() -> None:
+    """Netology lists upsell/family modules without a nested "program"."""
+    response = schema.ProfessionResponse.model_validate({
+        "profession_modules": [
+            {"id": 1, "position": 1, "program": {"id": 70693, "name": "5 семестр"}},
+            {"id": 152670, "position": 12, "program_family": {"program_family_id": 7036}},
+        ],
+    })
+
+    assert response.get_lesson_ids() == {70693}
+
+
 def test_normalize_calendar_ids() -> None:
     # A single id stays an int, so cache keys of existing users don't change.
     assert schema.normalize_calendar_ids([45526]) == 45526

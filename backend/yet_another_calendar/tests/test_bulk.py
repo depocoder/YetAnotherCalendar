@@ -295,7 +295,10 @@ def test_create_ics_event_ok(sample_datetime) -> None:
     assert event['DTSTART'].dt == start
     assert event['DTEND'].dt == end
     assert event['UID'] == lesson_id
-    assert event['DESCRIPTION'] == description
+    # The link is duplicated into the description: not every client makes
+    # LOCATION clickable.
+    assert event['DESCRIPTION'] == f"{description}\n{url}"
+    assert event['URL'] == url
     # dtstamp should be close to now (within 5 seconds)
     dtstamp = event['DTSTAMP'].dt
     now_aware = datetime.datetime.now(dtstamp.tzinfo)
@@ -341,7 +344,7 @@ def test_create_ics_event_comprehensive(sample_datetime):
     )
 
     assert str(event1['SUMMARY']) == "Complete Event"
-    assert str(event1['DESCRIPTION']) == "Full description"
+    assert str(event1['DESCRIPTION']) == "Full description\nhttps://example.com/lesson"
     assert str(event1['LOCATION']) == "https://example.com/lesson"
     assert event1['DTSTART'].dt == start
     assert event1['DTEND'].dt == end
@@ -452,7 +455,7 @@ def test_create_ics_event_bulk_operations(sample_datetime, bulk_fixture_data):
         assert event['DTSTART'].dt == expected["starts_at"]
         assert event['DTEND'].dt == expected["ends_at"]
         assert str(event['UID']) == expected["lesson_id"]
-        assert str(event['DESCRIPTION']) == expected["description"]
+        assert str(event['DESCRIPTION']) == f"{expected['description']}\n{expected['url']}"
         assert str(event['LOCATION']) == expected["url"]
 
 

@@ -230,7 +230,9 @@ class DetailedProgram(BaseModel):
 
 
 class Program(BaseModel):
-    detailed_program: DetailedProgram = Field(alias='program')
+    # Netology lists some profession modules without a nested "program"
+    # (e.g. upsell/family blocks) - they carry no schedule and are skipped.
+    detailed_program: DetailedProgram | None = Field(default=None, alias='program')
 
 
 class ProfessionResponse(BaseModel):
@@ -240,7 +242,8 @@ class ProfessionResponse(BaseModel):
     def get_lesson_ids(self) -> set[int]:
         program_ids = set()
         for program in self.profession_modules:
-            program_ids.add(program.detailed_program.id)
+            if program.detailed_program is not None:
+                program_ids.add(program.detailed_program.id)
         return program_ids
 
 
