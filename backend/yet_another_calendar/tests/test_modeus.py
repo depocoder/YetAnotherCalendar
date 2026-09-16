@@ -5,10 +5,13 @@ from unittest.mock import patch, AsyncMock, MagicMock
 import httpx
 import pytest
 from fastapi import HTTPException
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
 from httpx import HTTPStatusError
 from pydantic import ValidationError
 
 from yet_another_calendar.settings import settings
+from yet_another_calendar.web.api.auth import utils as auth_utils
 from yet_another_calendar.web.api.modeus import integration, schema
 
 
@@ -265,7 +268,7 @@ def test_day_events_request_defaults() -> None:
         learningStartYear=[2024],
     )
 
-    assert request.profile_name == ["Разработка ИТ-продуктов и информационных систем"]
+    assert request.profile_name == ["Разработка IT-продуктов и информационных систем"]
     assert request.specialty_code == ["09.03.02"]
 
 
@@ -289,6 +292,175 @@ def test_day_events_request_to_search_payload() -> None:
     assert payload["learningStartYear"] == [2024]
     assert payload["profileName"] == ["Custom Profile"]
     assert payload["specialtyCode"] == ["Custom Code"]
+    # Modeus pages results by 10 unless told otherwise, which silently
+    # dropped events of a day with several cohorts.
+    assert payload["size"] == settings.modeus_search_page_size
+
+
+LATIN_PROFILE = "Разработка IT-продуктов и информационных систем"
+CYRILLIC_PROFILE = "Разработка ИТ-продуктов и информационных систем"
+
+
+@pytest.mark.parametrize("name, same_as", [
+    (CYRILLIC_PROFILE, LATIN_PROFILE),
+    ("Разработка ИT-продуктов и информационных систем", LATIN_PROFILE),  # mixed scripts
+    ("разработка it-продуктов и информационных систем", LATIN_PROFILE),
+    ("Разработка IT продуктов и информационных систем", LATIN_PROFILE),
+    ("  Разработка «IT-продуктов» и информационных систем ", LATIN_PROFILE),
+    ("Рaзрaбoткa IT-продуктов и информационных систем", LATIN_PROFILE),  # Latin look-alikes
+])
+def test_normalize_profile_name_unifies_spellings(name: str, same_as: str) -> None:
+    assert schema.normalize_profile_name(name) == schema.normalize_profile_name(same_as)
+
+
+def test_normalize_profile_name_keeps_different_profiles_apart() -> None:
+    assert schema.normalize_profile_name("Web-разработка и технологии интеллектуальных систем") != (
+        schema.normalize_profile_name(LATIN_PROFILE)
+    )
+
+
+@pytest.fixture
+def in_memory_cache() -> typing.Generator[None, None, None]:
+    """The profile list is cached, and the cache decorator needs a backend."""
+    InMemoryBackend._store.clear()  # class-wide store, would leak between tests
+    FastAPICache.init(InMemoryBackend())
+    yield
+    FastAPICache.reset()
+
+
+@pytest.mark.asyncio
+async def test_get_profiles(modeus_client, in_memory_cache) -> None:
+    with patch("yet_another_calendar.web.api.modeus.integration.get_donor_token",
+               new=AsyncMock(return_value="a.b.c")):
+        profiles = await integration.get_profiles()
+        assert await integration.get_profiles() == profiles  # served from the cache, still typed
+
+    assert [profile.name for profile in profiles] == [
+        "IT-юрист", "Web-разработка и технологии интеллектуальных систем", LATIN_PROFILE,
+    ]
+    assert profiles[2].specialty_code == "09.03.02"
+    assert profiles[2].id == "afb8dead-8b93-4232-877e-7ed92fe332bb"
+
+
+@pytest.mark.asyncio
+async def test_get_profiles_collects_all_pages(in_memory_cache) -> None:
+    pages = [
+        '{"_embedded": {"profiles": [{"id": "afb8dead-8b93-4232-877e-7ed92fe332bb", "name": "A"}]},'
+        ' "page": {"size": 1, "totalElements": 2, "totalPages": 2, "number": 0}}',
+        # Not every real profile id is a UUID.
+        '{"_embedded": {"profiles": [{"id": "212e1512-60f3-4163-88d6-6b55091fdqqq", "name": "B"}]},'
+        ' "page": {"size": 1, "totalElements": 2, "totalPages": 2, "number": 1}}',
+    ]
+    post_modeus = AsyncMock(side_effect=pages)
+    with (
+        patch("yet_another_calendar.web.api.modeus.integration.get_donor_token", new=AsyncMock(return_value="a.b.c")),
+        patch("yet_another_calendar.web.api.modeus.integration.post_modeus", new=post_modeus),
+    ):
+        profiles = await integration.get_profiles()
+
+    assert [profile.name for profile in profiles] == ["A", "B"]
+    assert [call.args[1].page for call in post_modeus.call_args_list] == [0, 1]
+
+
+@pytest.mark.asyncio
+async def test_get_profiles_nothing_found(in_memory_cache) -> None:
+    # Modeus drops _embedded entirely when nothing matched.
+    with (
+        patch("yet_another_calendar.web.api.modeus.integration.get_donor_token", new=AsyncMock(return_value="a.b.c")),
+        patch("yet_another_calendar.web.api.modeus.integration.post_modeus",
+              new=AsyncMock(return_value='{"page": {"size": 500, "totalElements": 0, "totalPages": 0, "number": 0}}')),
+    ):
+        assert await integration.get_profiles() == []
+
+
+def _profiles(*names: str) -> list[schema.Profile]:
+    return [schema.Profile(id=str(index), name=name) for index, name in enumerate(names)]
+
+
+@pytest.mark.asyncio
+async def test_resolve_profile_names_uses_modeus_spelling() -> None:
+    """The Cyrillic 'ИТ' rename on our side must still find the Latin 'IT' profile in Modeus."""
+    with patch("yet_another_calendar.web.api.modeus.integration.get_profiles",
+               new=AsyncMock(return_value=_profiles("IT-юрист", LATIN_PROFILE))):
+        resolved = await integration.resolve_profile_names([CYRILLIC_PROFILE])
+
+    assert resolved == [LATIN_PROFILE]
+
+
+@pytest.mark.asyncio
+async def test_resolve_profile_names_keeps_every_spelling_modeus_has() -> None:
+    """After a rename old cohorts may stay on the old profile: search both (Modeus ORs them)."""
+    with patch("yet_another_calendar.web.api.modeus.integration.get_profiles",
+               new=AsyncMock(return_value=_profiles(LATIN_PROFILE, CYRILLIC_PROFILE))):
+        resolved = await integration.resolve_profile_names([CYRILLIC_PROFILE, LATIN_PROFILE])
+
+    assert resolved == [LATIN_PROFILE, CYRILLIC_PROFILE]
+
+
+@pytest.mark.asyncio
+async def test_resolve_profile_names_passes_unknown_names_through() -> None:
+    with patch("yet_another_calendar.web.api.modeus.integration.get_profiles",
+               new=AsyncMock(return_value=_profiles(LATIN_PROFILE))):
+        resolved = await integration.resolve_profile_names(["Программная инженерия", CYRILLIC_PROFILE])
+
+    assert resolved == ["Программная инженерия", LATIN_PROFILE]
+
+
+@pytest.mark.asyncio
+async def test_resolve_profile_names_survives_modeus_failure() -> None:
+    with patch("yet_another_calendar.web.api.modeus.integration.get_profiles",
+               new=AsyncMock(side_effect=httpx.ConnectError("boom"))):
+        resolved = await integration.resolve_profile_names([CYRILLIC_PROFILE])
+
+    assert resolved == [CYRILLIC_PROFILE]
+
+
+@pytest.mark.asyncio
+async def test_day_events_endpoint_searches_with_modeus_spelling(fastapi_app, client) -> None:
+    fastapi_app.dependency_overrides[integration.get_donor_token] = lambda: "a.b.c"
+    get_day_events = AsyncMock(return_value=[])
+    with (
+        patch("yet_another_calendar.web.api.modeus.integration.get_profiles",
+              new=AsyncMock(return_value=_profiles(LATIN_PROFILE))),
+        patch("yet_another_calendar.web.api.modeus.integration.get_day_events", new=get_day_events),
+    ):
+        response = await client.post(
+            "/api/modeus/day-events/",
+            json={"date": "2026-09-16", "learningStartYear": [2024], "profileName": [CYRILLIC_PROFILE]},
+            headers={"Authorization": f"Bearer {auth_utils.create_access_token()}"},
+        )
+
+    assert response.status_code == 200, response.text
+    assert response.json() == []
+    payload = get_day_events.call_args.args[1]
+    assert payload["profileName"] == [LATIN_PROFILE]
+    assert payload["size"] == settings.modeus_search_page_size
+
+
+@pytest.mark.asyncio
+async def test_profiles_endpoint(client) -> None:
+    with patch("yet_another_calendar.web.api.modeus.integration.get_profiles",
+               new=AsyncMock(return_value=[
+                   schema.Profile(id="1", name="Web-разработка", specialtyId="09.03.02"),
+                   schema.Profile(id="2", name="IT-юрист", specialtyId="40.04.01"),
+               ])):
+        response = await client.get(
+            "/api/modeus/profiles/",
+            headers={"Authorization": f"Bearer {auth_utils.create_access_token()}"},
+        )
+
+    assert response.status_code == 200, response.text
+    assert response.json() == [
+        {"id": "2", "name": "IT-юрист", "specialtyId": "40.04.01"},
+        {"id": "1", "name": "Web-разработка", "specialtyId": "09.03.02"},
+    ]
+
+
+@pytest.mark.asyncio
+async def test_profiles_endpoint_requires_tutor(client) -> None:
+    response = await client.get("/api/modeus/profiles/")
+
+    assert response.status_code == 403
 
 
 @pytest.mark.asyncio

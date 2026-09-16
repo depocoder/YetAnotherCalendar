@@ -93,6 +93,57 @@ class FullModeusPersonSearch(BaseModel):
     page: int = Field(default=0)
 
 
+class Page(BaseModel):
+    """Paging info Modeus attaches to search responses."""
+    size: int
+    total_elements: int = Field(alias="totalElements")
+    total_pages: int = Field(alias="totalPages")
+    number: int
+
+
+class ProfilesSearchBody(BaseModel):
+    """Modeus curriculum profiles search body (name is a substring filter)."""
+    name: list[str] = Field(default=[])
+    sort: str = Field(default="+name")
+    size: int = Field(default=settings.modeus_search_page_size)
+    page: int = Field(default=0)
+
+
+class Profile(BaseModel):
+    """Curriculum profile (профиль подготовки) as Modeus spells it."""
+    id: str  # looks like a UUID, but a few real ones are not ("...fdqqq")
+    name: str
+    specialty_code: str | None = Field(alias="specialtyId", default=None)
+
+
+class ProfilesEmbedded(BaseModel):
+    profiles: list[Profile] = Field(default=[])
+
+
+class ProfilesSearchResponse(BaseModel):
+    """Modeus profiles search response (no _embedded at all when nothing matched)."""
+    embedded: ProfilesEmbedded = Field(alias="_embedded", default_factory=ProfilesEmbedded)
+    page: Page | None = None
+
+
+# Latin letters folded into the Cyrillic ones they get confused with: the
+# look-alikes (Latin a, c, o, ... typed inside a Russian word) plus i, so
+# that "IT" and "ИТ" compare equal.
+_LATIN_TO_CYRILLIC = str.maketrans("abcehikmoptxy", "авсеникмортху")
+
+
+def normalize_profile_name(name: str) -> str:
+    """Matching key for a profile name.
+
+    Modeus and Netology keep renaming the programme between Latin "IT" and
+    Cyrillic "ИТ", while the events search wants the exact current spelling.
+    Comparing names by this key (case, punctuation, spacing and mixed
+    scripts ignored) resolves either spelling to the real Modeus profile.
+    """
+    folded = name.casefold().translate(_LATIN_TO_CYRILLIC)
+    return "".join(char for char in folded if char.isalnum())
+
+
 class Location(BaseModel):
     id: uuid.UUID = Field(alias="eventId")
     custom_location: str | None = Field(alias="customLocation", default=None)
@@ -182,6 +233,7 @@ class FullEvent(Event, Location):
 class ModeusCalendar(BaseModel):
     """Modeus calendar response."""
     embedded: CalendarEmbedded = Field(alias="_embedded")
+    page: Page | None = None
 
     def serialize_modeus_response(
         self, skip_lxp: bool = True, skip_not_netology: bool = False,
@@ -293,10 +345,13 @@ async def get_time_from_query(
 class DayEventsRequest(BaseModel):
     date: datetime.date
     learning_start_year: list[int] = Field(alias="learningStartYear", examples=[[2024]])
+    # Spelled as Modeus does today (Latin "IT", unlike the Netology course);
+    # names are resolved against the live profile list anyway, see
+    # integration.resolve_profile_names.
     profile_name: list[str] = Field(
         alias="profileName",
-        examples=[["Разработка ИТ-продуктов и информационных систем"]],
-        default=["Разработка ИТ-продуктов и информационных систем"],
+        examples=[["Разработка IT-продуктов и информационных систем"]],
+        default=["Разработка IT-продуктов и информационных систем"],
     )
     specialty_code: list[str] = Field(alias="specialtyCode", examples=[["09.03.02"]], default=["09.03.02"])
 
@@ -310,4 +365,5 @@ class DayEventsRequest(BaseModel):
             "learningStartYear": self.learning_start_year,
             "profileName": self.profile_name,
             "specialtyCode": self.specialty_code,
+            "size": settings.modeus_search_page_size,
         }

@@ -59,6 +59,22 @@ async def day_events(
         _: Annotated[None, Depends(verify_tutor_token)],
         donor_token: Annotated[str, Depends(integration.get_donor_token)],
 ) -> list[schema.FullEvent]:
-    events = await integration.get_day_events(donor_token, body.to_search_payload())
+    payload = body.to_search_payload()
+    payload["profileName"] = await integration.resolve_profile_names(body.profile_name)
+    events = await integration.get_day_events(donor_token, payload)
     assert isinstance(events, list), "Expected list[FullEvent], got unexpected type"
     return events
+
+
+@router.get(
+    "/profiles/",
+    summary="Curriculum profiles known to Modeus (requires tutor authentication)",
+    response_description="Profiles spelled exactly as Modeus does right now",
+)
+async def profiles(
+        _: Annotated[None, Depends(verify_tutor_token)],
+) -> list[schema.Profile]:
+    """
+    Get curriculum profiles from Modeus, to pick the day events filter from.
+    """
+    return sorted(await integration.get_profiles(), key=lambda profile: profile.name)

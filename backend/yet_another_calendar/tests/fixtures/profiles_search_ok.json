@@ -1,0 +1,25 @@
+{
+  "_embedded": {
+    "profiles": [
+      {
+        "name": "IT-юрист",
+        "specialtyId": "40.04.01",
+        "_links": {"self": {"href": "/c9658a8e-b7ae-4ba3-96ff-6b06a37689e6"}},
+        "id": "c9658a8e-b7ae-4ba3-96ff-6b06a37689e6"
+      },
+      {
+        "name": "Web-разработка и технологии интеллектуальных систем",
+        "specialtyId": "09.03.02",
+        "_links": {"self": {"href": "/518c7ffb-33d5-4c58-95b1-b8b5487d5b91"}},
+        "id": "518c7ffb-33d5-4c58-95b1-b8b5487d5b91"
+      },
+      {
+        "name": "Разработка IT-продуктов и информационных систем",
+        "specialtyId": "09.03.02",
+        "_links": {"self": {"href": "/afb8dead-8b93-4232-877e-7ed92fe332bb"}},
+        "id": "afb8dead-8b93-4232-877e-7ed92fe332bb"
+      }
+    ]
+  },
+  "page": {"size": 500, "totalElements": 3, "totalPages": 1, "number": 0}
+}

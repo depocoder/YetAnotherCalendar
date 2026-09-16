@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup, Tag
 from fastapi import HTTPException
 from fastapi_cache.decorator import cache
 from httpx import URL, AsyncClient
+from pydantic import TypeAdapter
 from starlette import status
 from loguru import logger
 
@@ -18,6 +19,7 @@ from yet_another_calendar.web.cache_builder import key_builder
 from .schema import (
     ModeusCalendar, Creds, get_person_id,
     FullEvent, FullModeusPersonSearch, SearchPeople, ExtendedPerson, ModeusEventsBody,
+    Profile, ProfilesSearchBody, ProfilesSearchResponse, normalize_profile_name,
 )
 from ..utmn import integration as utmn_integration
 
@@ -209,7 +211,58 @@ async def get_donor_token() -> str:
     return token
 
 
-async def get_day_events(jwt: str, payload: dict[str, str]) -> list[FullEvent]:
+@cache(expire=settings.redis_modeus_profiles_time_live, key_builder=key_builder)  # 1 day
+async def get_profiles_cached() -> list[dict[str, Any]]:
+    """Fetch every curriculum profile Modeus knows, page by page."""
+    profiles: list[dict[str, Any]] = []
+    page = 0
+    while True:
+        body = ProfilesSearchBody(page=page)
+        response = await post_modeus(await get_donor_token(), body, settings.modeus_search_profiles_part)
+        search = ProfilesSearchResponse.model_validate_json(response)
+        profiles.extend(profile.model_dump(mode="json", by_alias=True) for profile in search.embedded.profiles)
+        page += 1
+        if search.page is None or page >= search.page.total_pages:
+            return profiles
+
+
+async def get_profiles() -> list[Profile]:
+    """Curriculum profiles as Modeus spells them right now."""
+    adapter = TypeAdapter(list[Profile])
+    return adapter.validate_python(await get_profiles_cached())
+
+
+async def resolve_profile_names(names: list[str]) -> list[str]:
+    """Map requested profile names onto the spelling Modeus uses today.
+
+    The events search filters by the exact profile name, so a rename such
+    as "IT" -> "ИТ" (or back) silently empties the schedule. Names are
+    matched by normalize_profile_name and every profile behind the key is
+    kept (Modeus ORs the names, and a rename may leave old cohorts on the
+    old profile). Unknown names are passed on as given, and the whole step
+    is best effort: a Modeus hiccup here must not break the search itself.
+    """
+    try:
+        profiles = await get_profiles()
+    except Exception:
+        logger.exception("Can't load Modeus profiles, searching with the names as given")
+        return names
+    names_by_key: dict[str, list[str]] = {}
+    for profile in profiles:
+        names_by_key.setdefault(normalize_profile_name(profile.name), []).append(profile.name)
+    resolved: list[str] = []
+    for name in names:
+        found = names_by_key.get(normalize_profile_name(name))
+        if not found:
+            logger.warning(f"Modeus knows no profile like {name!r}, searching as is")
+            found = [name]
+        elif found != [name]:
+            logger.info(f"Modeus profile {name!r} resolved to {found}")
+        resolved.extend(found)
+    return list(dict.fromkeys(resolved))
+
+
+async def get_day_events(jwt: str, payload: dict[str, Any]) -> list[FullEvent]:
     headers = {
         "Authorization": f"Bearer {jwt}",
         "Accept": "application/json",
@@ -220,6 +273,11 @@ async def get_day_events(jwt: str, payload: dict[str, str]) -> list[FullEvent]:
         resp.raise_for_status()
 
     calendar = ModeusCalendar.model_validate_json(resp.text)
+    if calendar.page and calendar.page.total_elements > len(calendar.embedded.events):
+        logger.warning(
+            f"Modeus returned {len(calendar.embedded.events)} of {calendar.page.total_elements} events "
+            f"for {payload}, raise modeus_search_page_size",
+        )
     teachers = await utmn_integration.get_all_teachers()
     return calendar.serialize_modeus_response(skip_lxp=False, skip_not_netology=True, teachers_profiles=teachers)
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
-import { getDayEvents, saveLinkToEvent, getTutorTokenFromLocalStorage, getMtsLinks, getWeeklyUsersCount } from '../services/api';
+import { getDayEvents, getModeusProfiles, saveLinkToEvent, getTutorTokenFromLocalStorage, getMtsLinks, getWeeklyUsersCount } from '../services/api';
 import Loader from "../elements/Loader";
 import ExitBtn from "../components/Calendar/ExitBtn";
 
@@ -23,8 +23,9 @@ const ModeusDaySchedulePage = () => {
             return [2024];
         }
     });
-    const [profileName, setProfileName] = useState(["Разработка ИТ-продуктов и информационных систем"]);
+    const [profileName, setProfileName] = useState(["Разработка IT-продуктов и информационных систем"]);
     const [specialtyCode, setSpecialtyCode] = useState(["09.03.02"]);
+    const [modeusProfiles, setModeusProfiles] = useState([]);
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(false);
     const [linkInputs, setLinkInputs] = useState({});
@@ -51,13 +52,17 @@ const ModeusDaySchedulePage = () => {
         yearOptions.push(year);
     }
 
-    // Опции для профилей (можно расширить)
-    const profileOptions = [
-        "Разработка ИТ-продуктов и информационных систем",
-        "Информационные системы и технологии",
-        "Программная инженерия",
-        "Компьютерная безопасность"
-    ];
+    // Опции для профилей — из Modeus, по выбранным специальностям. Выбранное
+    // остаётся в списке, даже если Modeus его переименовал: бэкенд найдёт
+    // профиль и по старому написанию, а новое имя появится рядом.
+    const profileOptions = modeusProfiles
+        .filter(profile => specialtyCode.length === 0 || specialtyCode.includes(profile.specialtyId))
+        .map(profile => profile.name);
+    profileName.forEach(name => {
+        if (!profileOptions.includes(name)) {
+            profileOptions.push(name);
+        }
+    });
 
     // Опции для специальностей (можно расширить)
     const specialtyOptions = [
@@ -86,10 +91,9 @@ const ModeusDaySchedulePage = () => {
                 specialtyCode
             );
 
-            if (response?.data) {
-                // Убеждаемся, что данные - это массив и сортируем по времени
-                const eventsData = Array.isArray(response.data) ? response.data : [];
-                const sortedEvents = eventsData.sort((a, b) => {
+            if (response?.status === 200 && Array.isArray(response.data)) {
+                // Сортируем по времени
+                const sortedEvents = [...response.data].sort((a, b) => {
                     if (!a.start || !b.start) return 0;
                     return new Date(a.start) - new Date(b.start);
                 });
@@ -127,9 +131,12 @@ const ModeusDaySchedulePage = () => {
                 debug.log("Загружено событий:", sortedEvents.length);
                 debug.log("Тип данных events:", typeof sortedEvents, sortedEvents);
             } else {
-                toast.error("Не удалось загрузить события. Повторите попытку.");
-                debug.error("Пустой ответ от getDayEvents:", response);
-                debug.error("Тип response.data:", typeof response?.data, response?.data);
+                // Ошибка бэкенда раньше выглядела как пустое расписание — показываем её
+                const detail = response?.data?.detail;
+                toast.error(typeof detail === 'string'
+                    ? `Не удалось загрузить события: ${detail}`
+                    : "Не удалось загрузить события. Повторите попытку.");
+                debug.error("Ошибка ответа getDayEvents:", response?.status, response?.data);
                 setEvents([]); // Устанавливаем пустой массив
             }
         } catch (error) {
@@ -144,6 +151,17 @@ const ModeusDaySchedulePage = () => {
     useEffect(() => {
         fetchEvents();
     }, [selectedDate, selectedYear, profileName, specialtyCode, fetchEvents]);
+
+    // Load the profile list from Modeus once on mount
+    useEffect(() => {
+        if (!getTutorTokenFromLocalStorage()) {
+            return;
+        }
+        getModeusProfiles().then(profiles => {
+            setModeusProfiles(profiles);
+            debug.log('Загружено профилей Modeus:', profiles.length);
+        });
+    }, []);
 
     // Fetch weekly users count on component mount
     useEffect(() => {

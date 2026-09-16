@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     redis_events_time_live: int = 60 * 60 * 24 * 14  # 2 weeks
     redis_week_live: int = 60 * 60 * 24 * 7  # 1 weeks
     redis_utmn_teachers_time_live: int = 60 * 60 * 24 * 30  # 30 days
+    redis_modeus_profiles_time_live: int = 60 * 60 * 24  # 1 day
     redis_prefix: str = 'FastAPI-redis'
     redis_lesson_prefix: str = "calendar"
     redis_week_metrix_prefix: str = "metrix"
@@ -92,6 +93,10 @@ class Settings(BaseSettings):
     modeus_continue_auth_url: str = "https://auth.modeus.org/commonauth"
     modeus_search_events_part: str = "/schedule-calendar-v2/api/calendar/events/search"
     modeus_search_people_part: str = "/schedule-calendar-v2/api/people/persons/search"
+    modeus_search_profiles_part: str = "/schedule-calendar-v2/api/curriculum/profiles/search"
+    # Modeus pages search results, 10 per page unless asked otherwise: a day
+    # of several cohorts has more events than that, so ask for one big page.
+    modeus_search_page_size: int = 500
 
     # Donor account for tutors (no personal Modeus accounts needed)
     modeus_username: str = env.str("YET_ANOTHER_CALENDAR_MODEUS_USERNAME", "")

@@ -47,6 +47,9 @@ modeus_response_cases = {
     settings.modeus_search_people_part: get_httpx_response(
         200, {}, _fixture("fixtures/people_search_ok.json")
     ),
+    settings.modeus_search_profiles_part: get_httpx_response(
+        200, {}, _fixture("fixtures/profiles_search_ok.json")
+    ),
 }
 
 utmn_response_cases = {

@@ -350,7 +350,7 @@ export async function getDayEvents(date, learningStartYear, profileName, special
         const requestBody = {
             date: date,
             learningStartYear: learningStartYear || [2024],
-            profileName: profileName || ["Разработка ИТ-продуктов и информационных систем"],
+            profileName: profileName || ["Разработка IT-продуктов и информационных систем"],
             specialtyCode: specialtyCode || ["09.03.02"]
         };
 
@@ -372,6 +372,29 @@ export async function getDayEvents(date, learningStartYear, profileName, special
     } catch (e) {
         debug.error('Ошибка в getDayEvents:', e.response?.status, e.response?.data, e.message);
         return e.response;
+    }
+}
+
+// Профили подготовки так, как их сейчас называет Modeus: поиск событий
+// требует точного имени, а его уже переименовывали (IT ↔ ИТ).
+export async function getModeusProfiles() {
+    try {
+        const tutorToken = getTutorTokenFromLocalStorage();
+
+        if (!tutorToken) {
+            throw new Error('Tutor token not found');
+        }
+
+        const response = await axios.get(`${BACKEND_URL}/api/modeus/profiles/`, {
+            headers: {
+                'Authorization': `Bearer ${tutorToken}`
+            }
+        });
+
+        return Array.isArray(response.data) ? response.data : [];
+    } catch (e) {
+        debug.error('Error fetching Modeus profiles:', e.response?.status, e.response?.data, e.message);
+        return [];
     }
 }
 
