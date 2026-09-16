@@ -1,6 +1,6 @@
 import datetime
 import hashlib
-from typing import Literal, Self
+from typing import Self
 
 import pytz
 from pydantic import BaseModel, Field
@@ -10,8 +10,7 @@ from starlette.exceptions import HTTPException
 from ..modeus import schema as modeus_schema
 from ..lms import schema as lms_schema
 from ..netology import schema as netology_schema
-
-ServiceName = Literal["netology", "modeus", "lms"]
+from ..upstream_health import ServiceName
 
 
 def now_dt_utc() -> datetime.datetime:

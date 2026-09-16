@@ -48,6 +48,7 @@ YetAnotherCalendar provides a unified interface to manage all your educational e
 - **⏰ Timezone Support**: Automatic timezone detection and conversion (Moscow, UTC, local)
 - **💾 Smart Caching**: Redis-powered caching with 14-day event retention
 - **🛟 Graceful Degradation**: If Modeus, LMS or Netology is down, the calendar still loads - the failed service's part is served from cache and the UI shows which service is unavailable
+- **🟢 Service Health Indicator**: Live status of Modeus, LMS and Netology in the header, built from anonymous success/failure counters of the last 15 minutes, hour and day (`/api/health/services/`)
 
 ### 🛠️ **Technical Excellence**
 - **🧪 Comprehensive Testing**: pytest with fixtures for all major components

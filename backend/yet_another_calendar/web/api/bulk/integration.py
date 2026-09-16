@@ -1,7 +1,8 @@
 import asyncio
 import datetime
 import hashlib
-from collections.abc import Iterable
+import time
+from collections.abc import Awaitable, Iterable
 from typing import Any
 
 import httpx
@@ -16,6 +17,7 @@ from redis.asyncio import ConnectionPool, Redis
 from yet_another_calendar.log import mask_secrets
 from yet_another_calendar.settings import settings
 from . import schema
+from .. import upstream_health
 from ..errors import is_auth_error, leaf_exceptions
 from ..lms import schema as lms_schema
 from ..lms import views as lms_views
@@ -199,6 +201,16 @@ def _fallback_part(
     return _service_part(fallback, service), failure
 
 
+async def _timed(call: Awaitable[Any]) -> tuple[Any, int]:
+    """Await an upstream call: (result or the exception it raised, elapsed ms)."""
+    started = time.perf_counter()
+    try:
+        result: Any = await call
+    except Exception as exception:  # classified by the caller
+        result = exception
+    return result, round((time.perf_counter() - started) * 1000)
+
+
 async def get_calendar(
         body: modeus_schema.ModeusTimeBody,
         calendar_id: int | tuple[int, ...],
@@ -214,28 +226,36 @@ async def get_calendar(
     on them. Any other failure of one service must not hide the other two,
     so its part comes from ``fallback`` (the cached calendar) or stays empty,
     and the failure is reported in ``failures`` for the frontend to show.
+    Every outcome is counted in the anonymous upstream health statistics.
     """
     full_body = modeus_schema.ModeusEventsBody.model_validate(
         {**body.create_dump_date(), 'attendeePersonId': [person_id]},
     )
     results = await asyncio.gather(
-        netology_views.get_calendar(body, calendar_id, cookies),
-        modeus_views.get_calendar(full_body, modeus_jwt_token, person_id),
-        lms_views.get_events(lms_user, full_body),
-        return_exceptions=True,
+        _timed(netology_views.get_calendar(body, calendar_id, cookies)),
+        _timed(modeus_views.get_calendar(full_body, modeus_jwt_token, person_id)),
+        _timed(lms_views.get_events(lms_user, full_body)),
     )
     parts: dict[schema.ServiceName, Any] = {}
     failures: list[schema.ServiceFailure] = []
-    for service, result in zip(_SERVICES, results, strict=True):
-        if not isinstance(result, BaseException):
+    outcomes: list[upstream_health.Outcome] = []
+    auth_error: Exception | None = None
+    for service, (result, latency_ms) in zip(_SERVICES, results, strict=True):
+        if not isinstance(result, Exception):
             parts[service] = result
+            outcomes.append(upstream_health.Outcome(service, "ok", latency_ms))
             continue
-        if not isinstance(result, Exception) or is_auth_error(result):
-            raise result
+        outcomes.append(upstream_health.Outcome(service, upstream_health.classify(result), latency_ms))
+        if is_auth_error(result):
+            auth_error = auth_error or result
+            continue
         parts[service], failure = _fallback_part(service, result, fallback)
         failures.append(failure)
         served = "cached" if failure.from_cache else "empty"
         logger.opt(exception=result).warning(f"{service} failed, serving {served} data: {failure.error}")
+    await upstream_health.record(outcomes)
+    if auth_error is not None:
+        raise auth_error
     return schema.CalendarResponse.model_validate({
         "netology": parts["netology"],
         "utmn": {"modeus_events": parts["modeus"], "lms_events": parts["lms"]},

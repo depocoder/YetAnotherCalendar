@@ -1,0 +1,440 @@
+// Индикатор жизни сервисов (Нетология / Модеус / LMS) в шапке календаря.
+// Точка в пилюле — общий статус; при ховере (на мобильных — по тапу)
+// раскрывается карточка со статистикой по каждому сервису.
+
+$health-ok: #22c55e;
+$health-degraded: #f59e0b;
+$health-down: #ef4444;
+$health-unknown: #adb5bd;
+$health-accent: #7b61ff;
+$health-text: #212529;
+$health-muted: #868e96;
+$health-border: #e9ecef;
+
+@mixin health-dot($color) {
+    background: $color;
+    box-shadow: 0 0 0 3px rgba($color, 0.18), 0 0 12px rgba($color, 0.55);
+
+    &::after {
+        background: $color;
+    }
+}
+
+.service-health {
+    position: relative;
+    display: inline-flex;
+    margin-left: 18px;
+    font-family: "Roboto", sans-serif;
+
+    &__pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        height: 28px;
+        padding: 0 12px 0 11px;
+        border-radius: 999px;
+        border: 1px solid $health-border;
+        background: linear-gradient(135deg, #fbfbff 0%, #ffffff 100%);
+        color: #495057;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+        &:hover,
+        &:focus-visible {
+            border-color: $health-accent;
+            box-shadow: 0 0 0 3px rgba($health-accent, 0.12);
+            outline: none;
+        }
+    }
+
+    &__dot {
+        position: relative;
+        flex-shrink: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: $health-unknown;
+        box-shadow: 0 0 0 3px rgba($health-unknown, 0.18);
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+
+        // Расходящееся кольцо для «сбоит» и «недоступен»
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        &--small {
+            width: 8px;
+            height: 8px;
+            box-shadow: none !important;
+
+            &::after {
+                display: none;
+            }
+        }
+    }
+
+    &--ok &__dot {
+        @include health-dot($health-ok);
+    }
+
+    &--degraded &__dot {
+        @include health-dot($health-degraded);
+
+        &::after {
+            animation: service-health-pulse 1.8s ease-out infinite;
+        }
+    }
+
+    &--down &__dot {
+        @include health-dot($health-down);
+
+        &::after {
+            animation: service-health-pulse 1.1s ease-out infinite;
+        }
+    }
+
+    &--degraded &__pill {
+        border-color: rgba($health-degraded, 0.45);
+    }
+
+    &--down &__pill {
+        border-color: rgba($health-down, 0.5);
+        color: #7f1d1d;
+    }
+
+    &__backdrop {
+        display: none;
+    }
+
+    // --- карточка со статистикой ---------------------------------------
+    &__popover {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        z-index: 200;
+        width: 340px;
+        padding: 12px 14px 10px;
+        background: #ffffff;
+        border: 1px solid $health-border;
+        border-radius: 14px;
+        box-shadow: 0 12px 34px rgba(0, 0, 0, 0.14);
+        text-align: left;
+        cursor: default;
+        display: none;
+        user-select: text;
+
+        // Невидимый мостик между пилюлей и карточкой, чтобы ховер не рвался
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: -9px;
+            height: 9px;
+        }
+    }
+
+    &--open &__popover {
+        display: block;
+        animation: service-health-in 0.16s ease-out;
+    }
+
+    &__header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    &__title {
+        font-size: 13px;
+        font-weight: 600;
+        color: $health-text;
+    }
+
+    &__updated {
+        font-size: 11px;
+        color: $health-muted;
+        white-space: nowrap;
+    }
+
+    &__rows {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__row {
+        padding: 9px 0;
+        border-top: 1px solid #f1f3f5;
+
+        &:first-child {
+            border-top: none;
+            padding-top: 2px;
+        }
+    }
+
+    &__row-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 7px;
+    }
+
+    &__row--ok &__dot--small {
+        background: $health-ok;
+    }
+
+    &__row--degraded &__dot--small {
+        background: $health-degraded;
+    }
+
+    &__row--down &__dot--small {
+        background: $health-down;
+    }
+
+    &__name {
+        font-size: 13px;
+        font-weight: 600;
+        color: $health-text;
+    }
+
+    &__state {
+        margin-left: auto;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        color: $health-muted;
+    }
+
+    &__row--ok &__state {
+        color: #15803d;
+    }
+
+    &__row--degraded &__state {
+        color: #b45309;
+    }
+
+    &__row--down &__state {
+        color: #b91c1c;
+    }
+
+    // Полоса «успешные / ошибки» за последний час
+    &__bar {
+        height: 5px;
+        border-radius: 999px;
+        background: rgba($health-down, 0.22);
+        overflow: hidden;
+        margin-bottom: 7px;
+
+        &--empty {
+            background: #f1f3f5;
+        }
+    }
+
+    &__bar-ok {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, $health-ok 0%, #4ade80 100%);
+        transition: width 0.4s ease;
+    }
+
+    &__row--degraded &__bar-ok {
+        background: linear-gradient(90deg, $health-ok 0%, $health-degraded 100%);
+    }
+
+    &__stats {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        margin: 0;
+    }
+
+    &__stat {
+        display: flex;
+        gap: 8px;
+        font-size: 12px;
+        line-height: 1.4;
+        color: #495057;
+
+        dt {
+            flex-shrink: 0;
+            width: 58px;
+            color: $health-muted;
+        }
+
+        dd {
+            margin: 0;
+        }
+    }
+
+    &__ok {
+        font-weight: 600;
+        color: #15803d;
+    }
+
+    &__bad {
+        font-weight: 600;
+        color: #b91c1c;
+    }
+
+    &__latency,
+    &__muted {
+        color: $health-muted;
+    }
+
+    &__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 7px;
+    }
+
+    &__chip {
+        font-size: 11px;
+        line-height: 1;
+        padding: 4px 7px;
+        border-radius: 999px;
+        background: rgba($health-down, 0.08);
+        border: 1px solid rgba($health-down, 0.25);
+        color: #991b1b;
+
+        b {
+            font-weight: 600;
+        }
+    }
+
+    &__note {
+        margin-top: 6px;
+        font-size: 11px;
+        color: $health-muted;
+    }
+
+    &__empty {
+        padding: 12px 0;
+        font-size: 12px;
+        color: $health-muted;
+        text-align: center;
+    }
+
+    &__footer {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #f1f3f5;
+        font-size: 11px;
+        line-height: 1.4;
+        color: $health-muted;
+    }
+}
+
+@keyframes service-health-pulse {
+    0% {
+        transform: scale(0.7);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(2.4);
+        opacity: 0;
+    }
+}
+
+@keyframes service-health-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .service-health__dot::after {
+        animation: none !important;
+    }
+
+    .service-health--open .service-health__popover {
+        animation: none;
+    }
+}
+
+// На мобильных пилюля сжимается до точки рядом с заголовком, а карточка
+// открывается нижним листом поверх всего — как остальные меню шапки.
+@media (max-width: 768px) {
+    // Заголовок с бейджем BETA занимает всю строку, и точка уезжала под
+    // него. Кнопка выхода на мобильных скрыта, так что правый край свободен.
+    // Без transform: у попапа position: fixed, трансформ сломал бы его.
+    .calendar-page .header .header-line {
+        position: relative;
+    }
+
+    .service-health {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        align-items: center;
+        margin-left: 0;
+
+        &__pill {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            justify-content: center;
+            gap: 0;
+        }
+
+        &__text {
+            display: none;
+        }
+
+        &__backdrop {
+            display: block;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 1050;
+        }
+
+        &__popover {
+            position: fixed;
+            top: auto;
+            left: 12px;
+            right: 12px;
+            bottom: 16px;
+            width: auto;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 14px 16px 12px;
+            border-radius: 16px;
+            box-shadow: 0 -6px 30px rgba(0, 0, 0, 0.25);
+            z-index: 1100;
+
+            &::before {
+                display: none;
+            }
+        }
+
+        &__stat {
+            font-size: 13px;
+
+            dt {
+                width: 64px;
+            }
+        }
+    }
+}

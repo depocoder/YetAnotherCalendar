@@ -30,6 +30,7 @@ import CalendarExportMenu from "../components/Calendar/CalendarExportMenu";
 import SettingsMenu from "../components/Calendar/SettingsMenu";
 import CacheUpdateBtn from "../components/Calendar/CacheUpdateBtn";
 import ServiceStatusBanner from "../components/Calendar/ServiceStatusBanner";
+import ServiceHealthIndicator from "../components/Calendar/ServiceHealthIndicator";
 import { getCurrentWeekDates } from "../utils/dateUtils";
 import EventsDetail from "../components/Calendar/EventsDetail";
 import EventModal from "../components/Calendar/EventModal";
@@ -343,6 +344,7 @@ const CalendarPage = () => {
                                 onOpenCourses={handleOpenCourseModal}
                                 onOpenFeatures={() => setShowFeaturesModal(true)}
                             />
+                            <ServiceHealthIndicator refreshKey={events?.cached_at} />
                         </div>
                         <div className="header-actions">
                             <ExitBtn onExit={handleLogoutRequest} />

@@ -432,6 +432,14 @@ export async function getMtsLinks(lessonIds) {
     }
 }
 
+// Состояние сервисов (Нетология / Модеус / LMS): анонимные счетчики
+// успешных и неудачных обращений за 15 минут, час и сутки.
+// Бросает при ошибке — индикатор сам решает, что показать.
+export async function getServicesHealth() {
+    const response = await axios.get(`${BACKEND_URL}/api/health/services/`);
+    return response.data;
+}
+
 // Statistics API functions
 export async function getWeeklyUsersCount() {
     try {

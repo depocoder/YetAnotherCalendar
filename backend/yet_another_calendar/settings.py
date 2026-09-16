@@ -58,6 +58,10 @@ class Settings(BaseSettings):
     # A calendar built while an upstream was down is retried this often:
     # the cached copy keeps serving the parts that are still down.
     redis_degraded_retry_time: int = 60 * 5  # 5 minutes
+    # Anonymous upstream health counters (5-minute buckets) and how long
+    # the aggregated summary served to every open calendar is cached.
+    health_bucket_time_live: int = 60 * 60 * 25  # 25 hours: a full day window plus the current bucket
+    health_summary_time_live: int = 30
 
     retry_tries: int = 5
     retry_delay: int = 3

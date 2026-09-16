@@ -13,6 +13,7 @@ from rollbar.contrib.fastapi import ReporterMiddleware as RollbarMiddleware
 
 from yet_another_calendar.log import mask_secrets
 from yet_another_calendar.settings import settings
+from yet_another_calendar.web.api import upstream_health
 
 
 def init_redis(app: FastAPI) -> None:  # pragma: no cover
@@ -49,6 +50,7 @@ async def lifespan_setup(
     :return: function that actually performs actions.
     """
     init_redis(app)
+    upstream_health.init(app.state.redis_pool)
     redis = await Redis(
         host=settings.redis_host,
         port=settings.redis_port,
