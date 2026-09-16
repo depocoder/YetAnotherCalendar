@@ -47,6 +47,7 @@ YetAnotherCalendar provides a unified interface to manage all your educational e
 - **🔗 MTS Links**: Custom webinar link management system for quick access
 - **⏰ Timezone Support**: Automatic timezone detection and conversion (Moscow, UTC, local)
 - **💾 Smart Caching**: Redis-powered caching with 14-day event retention
+- **🛟 Graceful Degradation**: If Modeus, LMS or Netology is down, the calendar still loads - the failed service's part is served from cache and the UI shows which service is unavailable
 
 ### 🛠️ **Technical Excellence**
 - **🧪 Comprehensive Testing**: pytest with fixtures for all major components

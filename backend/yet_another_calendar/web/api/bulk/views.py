@@ -35,17 +35,17 @@ async def get_calendar(
         time_zone: str = "Europe/Moscow",
 ) -> schema.CalendarResponse:
     """
-    Get events from Netology and Modeus, cached.
+    Get events from Netology, Modeus and LMS, cached.
+
+    A service that is down does not fail the request: its part comes from
+    the cache (or stays empty) and the service is listed in `failures`.
     """
     background_tasks.add_task(integration.save_user_was_there, redis, modeus_person_id)
-    cached_calendar = await integration.get_cached_calendar(
+    calendar = await integration.get_cached_calendar(
         body, calendar_id, modeus_person_id,
         cookies=cookies, lms_user=lms_user, modeus_jwt_token=donor_token,
     )
-    if isinstance(cached_calendar, schema.CalendarResponse):
-        return cached_calendar.change_timezone(time_zone)
-    # else cached
-    return schema.CalendarResponse.model_validate(cached_calendar).change_timezone(time_zone)
+    return calendar.change_timezone(time_zone)
 
 
 @router.get("/refresh_events/")
@@ -84,9 +84,10 @@ async def export_ics(
     """
     Export into .ics format
     """
+    fallback = await integration.load_cached_calendar(body, calendar_id, modeus_person_id)
     calendar = await integration.get_calendar(
         body, calendar_id, modeus_person_id,
-        modeus_jwt_token=donor_token, lms_user=lms_user, cookies=cookies,
+        modeus_jwt_token=donor_token, lms_user=lms_user, cookies=cookies, fallback=fallback,
     )
     calendar_with_timezone = calendar.change_timezone(time_zone)
     return StreamingResponse(integration.export_to_ics(calendar_with_timezone))

@@ -1,6 +1,6 @@
 import datetime
 import hashlib
-from typing import Self
+from typing import Literal, Self
 
 import pytz
 from pydantic import BaseModel, Field
@@ -11,12 +11,28 @@ from ..modeus import schema as modeus_schema
 from ..lms import schema as lms_schema
 from ..netology import schema as netology_schema
 
+ServiceName = Literal["netology", "modeus", "lms"]
+
+
 def now_dt_utc() -> datetime.datetime:
     return datetime.datetime.now(tz=datetime.UTC)
+
 
 class UtmnResponse(BaseModel):
     modeus_events: list[modeus_schema.FullEvent]
     lms_events: list[lms_schema.ModuleResponse]
+
+
+class ServiceFailure(BaseModel):
+    """One upstream service that failed while this calendar was built."""
+    service: ServiceName
+    error: str
+    # True when the service's part of the calendar is stale data from an
+    # earlier successful fetch, False when there was nothing to fall back on
+    # and the part is empty.
+    from_cache: bool = False
+    # When that stale data was actually fetched from the service.
+    cached_at: datetime.datetime | None = None
 
 
 class BulkResponse(BaseModel):
@@ -49,8 +65,12 @@ class BulkResponse(BaseModel):
 
 class CalendarResponse(BulkResponse):
     cached_at: datetime.datetime = Field(default_factory=now_dt_utc, alias="cached_at")
+    # Upstream services that were down when this calendar was built. The
+    # frontend warns the user instead of silently showing an incomplete week.
+    failures: list[ServiceFailure] = Field(default_factory=list)
 
     def get_hash(self) -> str:
+        # BulkResponse ignores cached_at and failures: only the events count.
         dump = BulkResponse(**self.model_dump(by_alias=True)).model_dump_json(by_alias=True)
         return hashlib.md5(dump.encode()).hexdigest()
 

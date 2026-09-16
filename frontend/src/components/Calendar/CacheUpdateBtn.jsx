@@ -13,9 +13,14 @@ import { debug } from '../../utils/debug';
 import { handleApiError } from '../../utils/errorHandler';
 import { useNavigate } from 'react-router-dom';
 
-const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false }) => {
+// Если бэкенд собрал неделю без одного из сервисов, кэш считаем устаревшим
+// уже через несколько минут: сервис мог подняться, и его данные надо подтянуть.
+const DEGRADED_CACHE_MINUTES = 5;
+
+const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, failures, refreshRef, calendarReady = false }) => {
     const [cacheUpdated, setCacheUpdated] = useState(false);
     const timeOffset = parseInt(process.env.REACT_APP_TIME_OFFSET, 10) || 6;
+    const hasFailures = Array.isArray(failures) && failures.length > 0;
     const toastShownRef = useRef(false);
     const navigate = useNavigate();
 
@@ -51,10 +56,11 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
         debug.log('🕐 Parsed cached date:', cachedDate.toISOString());
         
         const diffInHours = (now - cachedDate) / (1000 * 60 * 60);
-        const isStale = diffInHours >= timeOffset;
-        debug.log(`📦 Cache: Age ${diffInHours.toFixed(1)}h, threshold ${timeOffset}h - ${isStale ? 'STALE' : 'FRESH'}`);
+        const thresholdHours = hasFailures ? DEGRADED_CACHE_MINUTES / 60 : timeOffset;
+        const isStale = diffInHours >= thresholdHours;
+        debug.log(`📦 Cache: Age ${diffInHours.toFixed(2)}h, threshold ${thresholdHours}h${hasFailures ? ' (degraded)' : ''} - ${isStale ? 'STALE' : 'FRESH'}`);
         return isStale;
-    }, [cachedAt, timeOffset]);
+    }, [cachedAt, timeOffset, hasFailures]);
 
     const refreshingRef = useRef(false);
 
@@ -107,6 +113,17 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, calendarReady = false })
             localStorage.setItem("refresh_in_progress", "false");
         }
     }, [date, onDataUpdate]);
+
+    // Даем странице (баннеру о недоступных сервисах) вызывать обновление
+    useEffect(() => {
+        if (!refreshRef) return undefined;
+        refreshRef.current = handleRefreshEvents;
+        return () => {
+            if (refreshRef.current === handleRefreshEvents) {
+                refreshRef.current = null;
+            }
+        };
+    }, [refreshRef, handleRefreshEvents]);
 
 
     // ⏱ Автоматическое обновление кэша (только для текущих/будущих недель)

@@ -29,6 +29,7 @@ import { exitApp, logoutUser } from "../utils/auth";
 import CalendarExportMenu from "../components/Calendar/CalendarExportMenu";
 import SettingsMenu from "../components/Calendar/SettingsMenu";
 import CacheUpdateBtn from "../components/Calendar/CacheUpdateBtn";
+import ServiceStatusBanner from "../components/Calendar/ServiceStatusBanner";
 import { getCurrentWeekDates } from "../utils/dateUtils";
 import EventsDetail from "../components/Calendar/EventsDetail";
 import EventModal from "../components/Calendar/EventModal";
@@ -59,6 +60,20 @@ const CalendarPage = () => {
     const navigate = useNavigate();
     const lastFetchedDate = useRef(null);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+    // Сброс кэша живет в CacheUpdateBtn; баннер о недоступных сервисах
+    // дергает его через ref, чтобы не дублировать логику обновления.
+    const refreshRef = useRef(null);
+    const [retryingServices, setRetryingServices] = useState(false);
+    const handleRetryServices = async () => {
+        if (!refreshRef.current || retryingServices) return;
+        setRetryingServices(true);
+        try {
+            await refreshRef.current();
+        } finally {
+            setRetryingServices(false);
+        }
+    };
 
     // Осознанный выход: если есть подписка — спрашиваем, что с ней делать
     const handleLogoutRequest = () => {
@@ -320,6 +335,8 @@ const CalendarPage = () => {
                                 date={date} 
                                 onDataUpdate={handleDataUpdate}
                                 cachedAt={events?.cached_at}
+                                failures={events?.failures}
+                                refreshRef={refreshRef}
                                 calendarReady={!loading && !isTransitioning && events !== null}
                             />
                             <SettingsMenu
@@ -351,6 +368,8 @@ const CalendarPage = () => {
                                 date={date} 
                                 onDataUpdate={handleDataUpdate}
                                 cachedAt={events?.cached_at}
+                                failures={events?.failures}
+                                refreshRef={refreshRef}
                                 calendarReady={!loading && !isTransitioning && events !== null}
                             />
                         </div>
@@ -370,6 +389,14 @@ const CalendarPage = () => {
                     </div>
                     <SimpleDatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
                 </div>
+
+                {!loading && (
+                    <ServiceStatusBanner
+                        failures={events?.failures}
+                        onRetry={handleRetryServices}
+                        retrying={retryingServices}
+                    />
+                )}
 
                 <div className={`calendar ${loading || isTransitioning ? 'calendar-loading' : 'calendar-loaded'}`}>
                     {loading ? (

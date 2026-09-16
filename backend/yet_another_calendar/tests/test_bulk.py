@@ -1105,12 +1105,14 @@ async def test_views_get_calendar_cached_response_type(fake_redis_pool, backgrou
         # Should call change_timezone and return CalendarResponse (line 38)
         assert isinstance(result, schema.CalendarResponse)
 
-    # Test case 2: get_cached_calendar returns dict (cached data)
+    # Test case 2: failures reported by the integration reach the response
+    degraded = schema.CalendarResponse.model_validate({
+        "netology": {"homework": [], "webinars": []},
+        "utmn": {"modeus_events": [], "lms_events": []},
+        "failures": [{"service": "lms", "error": "maintenance"}],
+    })
     with patch('yet_another_calendar.web.api.bulk.integration.get_cached_calendar') as mock_cached:
-        mock_cached.return_value = {
-            "netology": {"homework": [], "webinars": []},
-            "utmn": {"modeus_events": [], "lms_events": []}
-        }
+        mock_cached.return_value = degraded
 
         result = await views.get_calendar(
             body=body,
@@ -1122,9 +1124,7 @@ async def test_views_get_calendar_cached_response_type(fake_redis_pool, backgrou
             background_tasks=background_tasks,
         )
 
-        # Should validate dict and return CalendarResponse (line 40)
-        assert isinstance(result, schema.CalendarResponse)
-
+        assert [failure.service for failure in result.failures] == ["lms"]
 
 @pytest.mark.asyncio
 async def test_views_refresh_calendar():

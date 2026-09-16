@@ -19,6 +19,7 @@ from yet_another_calendar.settings import settings
 from . import schema
 from ..bulk import integration as bulk_integration
 from ..bulk import schema as bulk_schema
+from ..errors import is_auth_error
 from ..lms import integration as lms_integration
 from ..lms import schema as lms_schema
 from ..modeus import integration as modeus_integration
@@ -181,6 +182,16 @@ async def _build_ics(record: vault_schema.VaultRecord, tokens: vault_schema.Cach
         )
         for body in build_time_bodies()
     ])
+    # A subscribed calendar must never lose events silently: a feed built
+    # without a service that is down would delete its events on the client.
+    failed_services = sorted({
+        failure.service for calendar in weekly_calendars for failure in calendar.failures
+    })
+    if failed_services:
+        raise HTTPException(
+            detail=f"Upstream unavailable: {', '.join(failed_services)}",
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
     merged = merge_calendars(list(weekly_calendars)).change_timezone(record.time_zone)
     return b"".join(bulk_integration.export_to_ics(merged))
 
@@ -189,6 +200,23 @@ async def _serve_broken(redis: Redis, vault_id: str, record: vault_schema.VaultR
     await vault_integration.mark_broken(redis, vault_id, record, broken=True)
     last_ics = await redis.get(_LAST_KEY.format(vault_id=vault_id))
     return build_warning_ics(last_ics)
+
+
+async def _serve_last_good(redis: Redis, vault_id: str, exception: BaseException) -> bytes:
+    """Upstream outage: keep serving the last good feed instead of failing the poll.
+
+    Calendar clients drop a subscription that keeps failing, and events
+    would vanish from the user's calendar; stale data is the lesser evil.
+    The stale feed is cached only briefly so the next poll retries upstream.
+    """
+    last_ics = await redis.get(_LAST_KEY.format(vault_id=vault_id))
+    if not last_ics:
+        raise exception
+    logger.opt(exception=exception).warning(
+        f"ICS subscription {vault_id}: upstream failed, serving the last good feed",
+    )
+    await redis.set(_CACHE_KEY.format(vault_id=vault_id), last_ics, ex=settings.redis_degraded_retry_time)
+    return bytes(last_ics)
 
 
 async def get_subscription_ics(redis_pool: ConnectionPool, vault_id: str, secret: str) -> bytes:
@@ -207,19 +235,21 @@ async def get_subscription_ics(redis_pool: ConnectionPool, vault_id: str, secret
                 creds = vault_integration.decrypt_creds(dek, record)
                 try:
                     tokens = await vault_integration.refresh_tokens(redis, vault_id, creds)
-                except HTTPException as exception:
-                    if vault_integration.is_auth_error(exception):
+                except Exception as exception:
+                    if is_auth_error(exception):
                         logger.warning(f"ICS subscription {vault_id} is broken: credentials rejected")
                         return await _serve_broken(redis, vault_id, record)
-                    raise
+                    return await _serve_last_good(redis, vault_id, exception)
             try:
                 ics_bytes = await _build_ics(record, tokens)
-            except (HTTPException, BaseExceptionGroup) as exception:
-                if vault_integration.is_auth_error(exception) and not attempt_with_fresh_tokens:
-                    # Cached tokens expired earlier than expected: retry once.
-                    await vault_integration.drop_cached_tokens(redis, vault_id)
-                    continue
-                raise
+            except Exception as exception:
+                if not is_auth_error(exception):
+                    return await _serve_last_good(redis, vault_id, exception)
+                if attempt_with_fresh_tokens:
+                    raise
+                # Cached tokens expired earlier than expected: retry once.
+                await vault_integration.drop_cached_tokens(redis, vault_id)
+                continue
             await vault_integration.mark_broken(redis, vault_id, record, broken=False)
             await redis.set(
                 _CACHE_KEY.format(vault_id=vault_id), ics_bytes, ex=settings.ics_cache_time_live,

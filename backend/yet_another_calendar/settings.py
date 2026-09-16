@@ -55,6 +55,9 @@ class Settings(BaseSettings):
     redis_prefix: str = 'FastAPI-redis'
     redis_lesson_prefix: str = "calendar"
     redis_week_metrix_prefix: str = "metrix"
+    # A calendar built while an upstream was down is retried this often:
+    # the cached copy keeps serving the parts that are still down.
+    redis_degraded_retry_time: int = 60 * 5  # 5 minutes
 
     retry_tries: int = 5
     retry_delay: int = 3

@@ -2122,3 +2122,83 @@ $color-border-light: #e9ecef;
         }
     }
 }
+
+// Баннер о недоступных сервисах (Нетология / Модеус / LMS): бэкенд собрал
+// неделю без одного из них и отдал его часть из кэша или пустой.
+.service-status-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 0 0 16px;
+    padding: 12px 16px;
+    border: 1px solid #f5c542;
+    border-left-width: 4px;
+    border-radius: 8px;
+    background: #fff8e1;
+    color: #5f4b00;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: left;
+
+    .service-status-icon {
+        font-size: 20px;
+        line-height: 1;
+    }
+
+    .service-status-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .service-status-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .service-status-list {
+        margin: 0 0 6px;
+        padding-left: 18px;
+        list-style: disc;
+
+        li {
+            margin: 2px 0;
+        }
+    }
+
+    .service-status-hint {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    .service-status-retry {
+        flex-shrink: 0;
+        align-self: center;
+        padding: 8px 14px;
+        border-radius: 6px;
+        border: 1px solid $color-primary-purple;
+        background: #fff;
+        color: $color-primary-purple;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+            background: $color-primary-purple;
+            color: #fff;
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: default;
+        }
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        margin: 0 12px 16px;
+
+        .service-status-retry {
+            align-self: stretch;
+        }
+    }
+}

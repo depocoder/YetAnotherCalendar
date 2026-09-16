@@ -8,6 +8,7 @@ from starlette import status
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.auth.rate_limiter import rate_limited_dependency
 from . import integration, schema
+from ..errors import is_auth_error
 from ...lifespan import get_redis_pool
 
 router = APIRouter()
@@ -114,7 +115,7 @@ async def refresh_session(
             try:
                 tokens = await integration.refresh_tokens(redis, vault_id, creds)
             except HTTPException as exception:
-                if integration.is_auth_error(exception):
+                if is_auth_error(exception):
                     await integration.mark_broken(redis, vault_id, record, broken=True)
                 raise
         if record.broken:

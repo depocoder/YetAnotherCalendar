@@ -231,10 +231,3 @@ async def get_cached_tokens(redis: Redis, vault_id: str) -> schema.CachedTokens 
 async def drop_cached_tokens(redis: Redis, vault_id: str) -> None:
     await redis.delete(TOKENS_KEY.format(vault_id=vault_id))
 
-
-def is_auth_error(exception: BaseException) -> bool:
-    if isinstance(exception, HTTPException):
-        return exception.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
-    if isinstance(exception, BaseExceptionGroup):
-        return any(is_auth_error(sub_exception) for sub_exception in exception.exceptions)
-    return False
