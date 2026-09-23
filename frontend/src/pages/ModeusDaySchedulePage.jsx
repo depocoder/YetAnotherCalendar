@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
-import { getDayEvents, getModeusProfiles, saveLinkToEvent, getTutorTokenFromLocalStorage, getMtsLinks, getWeeklyUsersCount } from '../services/api';
+import { getDayEvents, getModeusProfiles, saveLinkToEvent, getTutorTokenFromLocalStorage, getMtsLinks, getWeeklyUsersCount, getLinkRedirectMetrics } from '../services/api';
 import Loader from "../elements/Loader";
 import ExitBtn from "../components/Calendar/ExitBtn";
 
@@ -10,6 +10,8 @@ import '../style/modeus.scss';
 import { debug } from '../utils/debug';
 
 
+// Числа в бейджах статистики: 1 234 вместо 1234.
+const formatCount = (value) => (value ?? 0).toLocaleString('ru-RU');
 
 const ModeusDaySchedulePage = () => {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -44,6 +46,8 @@ const ModeusDaySchedulePage = () => {
         }
     });
     const [weeklyUsers, setWeeklyUsers] = useState(null);
+    const [redirects, setRedirects] = useState(null);
+    const [showRedirectCourses, setShowRedirectCourses] = useState(false);
     const [loadingStats, setLoadingStats] = useState(false);
 
     // Генерируем список годов (2023-2026)
@@ -163,9 +167,9 @@ const ModeusDaySchedulePage = () => {
         });
     }, []);
 
-    // Fetch weekly users count on component mount
+    // Fetch anonymous usage stats on component mount
     useEffect(() => {
-        const fetchWeeklyUsers = async () => {
+        const fetchStats = async () => {
             const tutorToken = getTutorTokenFromLocalStorage();
             if (!tutorToken) {
                 return; // Don't fetch if no tutor token
@@ -173,20 +177,24 @@ const ModeusDaySchedulePage = () => {
 
             setLoadingStats(true);
             try {
-                const data = await getWeeklyUsersCount();
+                const [users, linkMetrics] = await Promise.all([
+                    getWeeklyUsersCount(),
+                    getLinkRedirectMetrics()
+                ]);
                 // Handle both formats: {weekly_users: N} or just N
-                const count = typeof data === 'number' ? data : (data.weekly_users || 0);
+                const count = typeof users === 'number' ? users : (users.weekly_users || 0);
                 setWeeklyUsers(count);
-                debug.log('Weekly users count:', count);
+                setRedirects(linkMetrics);
+                debug.log('Weekly users count:', count, 'link redirects:', linkMetrics);
             } catch (error) {
-                debug.error('Error fetching weekly users:', error);
+                debug.error('Error fetching stats:', error);
                 setWeeklyUsers(0);
             } finally {
                 setLoadingStats(false);
             }
         };
 
-        fetchWeeklyUsers();
+        fetchStats();
     }, []); // Only run once on mount
 
     const handleDateChange = (e) => {
@@ -279,7 +287,10 @@ const ModeusDaySchedulePage = () => {
 
         for (const [eventId, url] of linksToSave) {
             try {
-                const response = await saveLinkToEvent(eventId, url);
+                // Курс уходит вместе со ссылкой: по нему потом считается
+                // разбивка переходов, сам редирект знает только id занятия.
+                const course = events.find(e => e.id === eventId)?.course_name;
+                const response = await saveLinkToEvent(eventId, url, course);
                 if (response?.status === 200) {
                     successCount++;
                 } else {
@@ -612,19 +623,62 @@ const ModeusDaySchedulePage = () => {
                         <div className="shedule-export">
                             <span className="modeus-page-title">Расписание Modeus на день</span>
                         </div>
-                        {weeklyUsers !== null && (
-                            <div className="weekly-users-badge">
-                                <div className="badge-content">
-                                    <span className="badge-icon">👥</span>
-                                    <div className="badge-info">
-                                        <span className="badge-label">Пользователей за неделю</span>
-                                        <span className="badge-count">
-                                            {loadingStats ? '...' : weeklyUsers.toLocaleString('ru-RU')}
-                                        </span>
+                        <div className="header-stats">
+                            {weeklyUsers !== null && (
+                                <div className="stats-badge">
+                                    <div className="badge-content">
+                                        <span className="badge-icon">👥</span>
+                                        <div className="badge-info">
+                                            <span className="badge-label">Пользователей за неделю</span>
+                                            <span className="badge-count">
+                                                {loadingStats ? '...' : weeklyUsers.toLocaleString('ru-RU')}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                            {redirects !== null && (
+                                <div className="stats-badge redirects-badge">
+                                    <button
+                                        type="button"
+                                        className="badge-content"
+                                        onClick={() => setShowRedirectCourses(!showRedirectCourses)}
+                                        title="Переходы по ссылкам на занятия. Анонимно: считаются переходы, а не люди"
+                                    >
+                                        <span className="badge-icon">🔗</span>
+                                        <div className="badge-info">
+                                            <span className="badge-label">Переходов по ссылкам</span>
+                                            <span className="badge-count">
+                                                {loadingStats ? '...' : (
+                                                    <>
+                                                        {formatCount(redirects.week?.redirects)}
+                                                        <span className="badge-period"> за неделю</span>
+                                                        <span className="badge-separator">·</span>
+                                                        {formatCount(redirects.month?.redirects)}
+                                                        <span className="badge-period"> за месяц</span>
+                                                    </>
+                                                )}
+                                            </span>
+                                        </div>
+                                    </button>
+                                    {showRedirectCourses && (
+                                        <div className="badge-courses">
+                                            <span className="badge-courses-title">По курсам за месяц</span>
+                                            {Object.entries(redirects.month?.courses || {}).length === 0 ? (
+                                                <span className="badge-courses-empty">Пока нет переходов</span>
+                                            ) : (
+                                                Object.entries(redirects.month.courses).map(([course, count]) => (
+                                                    <div className="badge-course" key={course}>
+                                                        <span className="badge-course-name">{course}</span>
+                                                        <span className="badge-course-count">{formatCount(count)}</span>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                         <ExitBtn />
                     </div>
 

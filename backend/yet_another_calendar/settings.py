@@ -55,6 +55,10 @@ class Settings(BaseSettings):
     redis_prefix: str = 'FastAPI-redis'
     redis_lesson_prefix: str = "calendar"
     redis_week_metrix_prefix: str = "metrix"
+    # Anonymous counter of follow-throughs of the links tutors leave on the
+    # lessons: one number per UTC day, nothing about who followed them.
+    redis_redirect_metrix_prefix: str = "redirect_metrix"
+    redis_redirect_metrix_live: int = 60 * 60 * 24 * 31  # 31 days: the reported month plus the current day
     # A calendar built while an upstream was down is retried this often:
     # the cached copy keeps serving the parts that are still down.
     redis_degraded_retry_time: int = 60 * 5  # 5 minutes

@@ -1,3 +1,4 @@
+import datetime
 import uuid
 
 import pytest
@@ -6,6 +7,7 @@ from redis.asyncio import ConnectionPool, Redis
 from starlette import status
 
 from yet_another_calendar.settings import settings
+from yet_another_calendar.web.api.auth import utils as auth_utils
 from yet_another_calendar.web.api.mts import integration
 
 
@@ -249,3 +251,121 @@ class TestMtsViews:
         assert response.status_code == status.HTTP_200_OK
         response_data = response.json()
         assert response_data["links"] == {}
+
+
+@pytest.mark.asyncio
+class TestMtsRedirectMetrics:
+    """Anonymous counters of how often the saved links were followed."""
+
+    async def test_count_redirect_counts_total_and_course(self, fake_redis_pool: ConnectionPool) -> None:
+        """A follow-through lands in the day bucket, under the total and its course."""
+        lesson_id = uuid.uuid4()
+        await integration.save_link(fake_redis_pool, lesson_id, "https://webinar.test/room", "Программирование")
+
+        await integration.count_redirect(fake_redis_pool, lesson_id)
+        await integration.count_redirect(fake_redis_pool, lesson_id)
+
+        key = integration._redirect_key(datetime.datetime.now(tz=datetime.UTC).date())
+        async with Redis(connection_pool=fake_redis_pool) as redis:
+            bucket = integration._decode_bucket(await redis.hgetall(key))
+            ttl = await redis.ttl(key)
+
+        assert bucket == {"total": 2, "course:Программирование": 2}
+        assert 0 < ttl <= settings.redis_redirect_metrix_live
+
+    async def test_count_redirect_without_course(self, fake_redis_pool: ConnectionPool) -> None:
+        """A link saved before the course was sent still counts towards the total."""
+        lesson_id = uuid.uuid4()
+        await integration.save_link(fake_redis_pool, lesson_id, "https://webinar.test/room")
+
+        await integration.count_redirect(fake_redis_pool, lesson_id)
+
+        key = integration._redirect_key(datetime.datetime.now(tz=datetime.UTC).date())
+        async with Redis(connection_pool=fake_redis_pool) as redis:
+            bucket = integration._decode_bucket(await redis.hgetall(key))
+
+        assert bucket == {"total": 1}
+
+    async def test_count_redirects_splits_week_and_month(self, fake_redis_pool: ConnectionPool) -> None:
+        """Days fall into the week, the month, or out of both."""
+        now = datetime.datetime(2026, 9, 23, 12, 0, tzinfo=datetime.UTC)
+        lesson_id = uuid.uuid4()
+        await integration.save_link(fake_redis_pool, lesson_id, "https://webinar.test/room", "Математика")
+        for days_ago in (0, 3, 10, 40):
+            await integration.count_redirect(fake_redis_pool, lesson_id, now - datetime.timedelta(days=days_ago))
+
+        metrics = await integration.count_redirects(fake_redis_pool, now)
+
+        # Today and three days ago; the 10-day-old one only makes the month,
+        # the 40-day-old one is outside both windows.
+        assert metrics.week.redirects == 2
+        assert metrics.week.courses == {"Математика": 2}
+        assert metrics.month.redirects == 3
+        assert metrics.month.courses == {"Математика": 3}
+
+    async def test_count_redirects_orders_courses_by_size(self, fake_redis_pool: ConnectionPool) -> None:
+        """The breakdown puts the most followed course first."""
+        quiet, popular = uuid.uuid4(), uuid.uuid4()
+        await integration.save_link(fake_redis_pool, quiet, "https://webinar.test/quiet", "Философия")
+        await integration.save_link(fake_redis_pool, popular, "https://webinar.test/popular", "Программирование")
+        await integration.count_redirect(fake_redis_pool, quiet)
+        for _ in range(3):
+            await integration.count_redirect(fake_redis_pool, popular)
+
+        metrics = await integration.count_redirects(fake_redis_pool)
+
+        assert list(metrics.week.courses) == ["Программирование", "Философия"]
+        assert metrics.week.courses == {"Программирование": 3, "Философия": 1}
+
+    async def test_count_redirects_empty(self, fake_redis_pool: ConnectionPool) -> None:
+        """Nothing followed yet reads as zero, not as an error."""
+        metrics = await integration.count_redirects(fake_redis_pool)
+
+        assert metrics.week.redirects == 0
+        assert metrics.month.courses == {}
+
+    async def test_redirect_endpoint_counts_follow_through(
+            self, client: AsyncClient, fake_redis_pool: ConnectionPool,
+    ) -> None:
+        """Following a link is counted, with the course it was saved with."""
+        lesson_id = uuid.uuid4()
+        payload = {"lessonId": str(lesson_id), "url": "https://webinar.test/room", "course": "Базы данных"}
+        assert (await client.post("/api/mts/link", json=payload)).status_code == status.HTTP_200_OK
+
+        response = await client.get(f"/api/mts/{lesson_id}", follow_redirects=False)
+
+        assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
+        metrics = await integration.count_redirects(fake_redis_pool)
+        assert metrics.week.redirects == 1
+        assert metrics.week.courses == {"Базы данных": 1}
+
+    async def test_missing_link_is_not_counted(self, client: AsyncClient, fake_redis_pool: ConnectionPool) -> None:
+        """A dead link sends the visitor to the 404 page and counts as nothing."""
+        response = await client.get(f"/api/mts/{uuid.uuid4()}", follow_redirects=False)
+
+        assert response.headers["location"].endswith("/404")
+        metrics = await integration.count_redirects(fake_redis_pool)
+        assert metrics.month.redirects == 0
+
+    async def test_metrics_endpoint(self, client: AsyncClient, fake_redis_pool: ConnectionPool) -> None:
+        """The tutor panel gets both windows and the breakdown by course."""
+        lesson_id = uuid.uuid4()
+        await integration.save_link(fake_redis_pool, lesson_id, "https://webinar.test/room", "Базы данных")
+        await integration.count_redirect(fake_redis_pool, lesson_id)
+
+        response = await client.get(
+            "/api/mts/metrics/",
+            headers={"Authorization": f"Bearer {auth_utils.create_access_token()}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "week": {"redirects": 1, "courses": {"Базы данных": 1}},
+            "month": {"redirects": 1, "courses": {"Базы данных": 1}},
+        }
+
+    async def test_metrics_endpoint_requires_tutor(self, client: AsyncClient) -> None:
+        """Without the admin token the metrics stay closed."""
+        response = await client.get("/api/mts/metrics/")
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN

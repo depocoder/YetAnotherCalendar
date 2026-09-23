@@ -399,11 +399,14 @@ export async function getModeusProfiles() {
 }
 
 // MTS API functions
-export async function saveLinkToEvent(lessonId, url) {
+// course — название курса занятия. Нужно только для анонимной статистики
+// переходов по ссылкам: по нему считается разбивка по курсам.
+export async function saveLinkToEvent(lessonId, url, course) {
     try {
         const requestBody = {
             lessonId: lessonId,
-            url: url
+            url: url,
+            ...(course ? { course } : {})
         };
 
         return await axios.post(`${BACKEND_URL}/api/mts/link`, requestBody, {
@@ -460,5 +463,31 @@ export async function getWeeklyUsersCount() {
     } catch (e) {
         debug.error('Error fetching weekly users count:', e);
         return { weekly_users: 0 };
+    }
+}
+
+// Анонимная статистика переходов по ссылкам, которые преподаватели оставляют
+// к занятиям: сколько раз по ним перешли за неделю и за месяц, с разбивкой по
+// курсам. Считаются переходы, а не люди — в Redis лежат только счетчики.
+export async function getLinkRedirectMetrics() {
+    const emptyWindow = { redirects: 0, courses: {} };
+    try {
+        const tutorToken = getTutorTokenFromLocalStorage();
+
+        if (!tutorToken) {
+            throw new Error('Tutor token not found');
+        }
+
+        const response = await axios.get(`${BACKEND_URL}/api/mts/metrics/`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tutorToken}`
+            }
+        });
+
+        return response.data;
+    } catch (e) {
+        debug.error('Error fetching link redirect metrics:', e);
+        return { week: emptyWindow, month: emptyWindow };
     }
 }
