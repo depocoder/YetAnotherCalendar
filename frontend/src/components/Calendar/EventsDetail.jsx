@@ -199,10 +199,13 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
 
                 {/* Кнопка перехода к уроку в правом нижнем углу */}
                 {(() => {
-                    // Определяем URL для кнопки
+                    // Определяем URL для кнопки.
+                    // У Modeus ведем через наш редирект (mts_url): он считает
+                    // переходы и перекидывает на тот же вебинар. mtsUrls нужен
+                    // только чтобы понять, оставил ли преподаватель ссылку.
                     let eventUrl = null;
                     if (event.type === 'modeus') {
-                        eventUrl = mtsUrls[event.id];
+                        eventUrl = mtsUrls[event.id] ? (event.mts_url || mtsUrls[event.id]) : null;
                     } else {
                         eventUrl = event.url || event.video_url || event.webinar_url;
                     }

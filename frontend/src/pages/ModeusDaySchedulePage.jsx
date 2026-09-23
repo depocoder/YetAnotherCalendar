@@ -378,7 +378,14 @@ const ModeusDaySchedulePage = () => {
                 return fallback;
             }
         };
-        
+
+        // В сообщение уходит наша ссылка-редирект, а не прямая: только по ней
+        // считаются переходы. Сообщение генерируется после успешного
+        // сохранения, так что ссылка уже лежит в Redis.
+        const linkFor = (event) => (
+            linksData[event.id] ? (event.mts_url || linksData[event.id]) : ''
+        );
+
         // Helper function to format teacher names (Фамилия Имя Отчество -> Фамилия И. О.)
         const formatTeacherName = (fullName) => {
             if (!fullName || typeof fullName !== 'string') return '';
@@ -512,13 +519,19 @@ const ModeusDaySchedulePage = () => {
                 
                 message += line + '\n';
                 
-                // Add unique links
-                const uniqueLinks = [...new Set(
-                    group.events
-                        .map(e => linksData[e.id])
-                        .filter(Boolean)
-                )];
-                
+                // Add unique links. Дедуплицируем по прямой ссылке: у группы
+                // она одна на всех, а редирект у каждого занятия свой.
+                const seenLinks = new Set();
+                const uniqueLinks = [];
+                for (const groupEvent of group.events) {
+                    const savedLink = linksData[groupEvent.id];
+                    if (!savedLink || seenLinks.has(savedLink)) {
+                        continue;
+                    }
+                    seenLinks.add(savedLink);
+                    uniqueLinks.push(linkFor(groupEvent));
+                }
+
                 if (uniqueLinks.length > 0) {
                     message += uniqueLinks.join(' ') + '\n';
                 }
@@ -527,7 +540,7 @@ const ModeusDaySchedulePage = () => {
                 // Individual events
                 group.events.forEach(event => {
                     const timeStr = `**${formatTime(event.start || '00:00')} (мск)**`;
-                    const link = linksData[event.id] || '';
+                    const link = linkFor(event);
                     const teacherName = formatTeacherName(getEventProperty(event, 'teacher_full_name'));
                     
                     let line = `${icon}${timeStr} — ${eventType} по дисциплине «${disciplineName}»`;
