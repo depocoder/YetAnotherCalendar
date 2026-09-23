@@ -28,20 +28,6 @@
     50% { transform: scale(1.02); }
 }
 
-@keyframes shimmer {
-    0% { 
-        background-position: -200px 0;
-        opacity: 0.5;
-    }
-    50% {
-        opacity: 1;
-    }
-    100% { 
-        background-position: calc(200px + 100%) 0;
-        opacity: 0.5;
-    }
-}
-
 @keyframes float {
     0%, 100% { transform: translateY(0px) rotate(0deg); }
     25% { transform: translateY(-5px) rotate(1deg); }
@@ -279,24 +265,12 @@
             font-weight: 900;
             letter-spacing: -1px;
             line-height: 1.1;
-            color: white;
-            text-shadow: 
-                0 4px 8px rgba(0, 0, 0, 0.4),
-                0 2px 4px rgba(0, 0, 0, 0.3),
-                0 1px 2px rgba(0, 0, 0, 0.2);
-            
-            // Градиент только для текста, исключая эмодзи
+
+            // Четкий темный текст без градиента и мерцания
+            color: #1a202c;
+
             .gradient-text {
-                background: linear-gradient(135deg, 
-                    #667eea 0%, 
-                    #764ba2 30%, 
-                    #f093fb 60%, 
-                    #f5576c 100%
-                );
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-                animation: shimmer 3s ease-in-out infinite alternate;
+                color: #1a202c;
             }
         }
 
@@ -304,13 +278,8 @@
             margin: 0;
             font-size: 16px;
             font-weight: 500;
-            color: rgba(255, 255, 255, 0.95);
-            text-shadow: 
-                0 2px 4px rgba(0, 0, 0, 0.6),
-                0 1px 2px rgba(0, 0, 0, 0.8),
-                0 0 1px rgba(0, 0, 0, 0.9);
+            color: rgba(45, 55, 72, 0.9);
             letter-spacing: 0.3px;
-            opacity: 0.95;
         }
     }
 
@@ -355,10 +324,7 @@
         cursor: pointer;
         font-size: 15px;
         font-weight: 600;
-        color: white;
-        text-shadow: 
-            0 2px 4px rgba(0, 0, 0, 0.6),
-            0 1px 2px rgba(0, 0, 0, 0.8);
+        color: rgba(45, 55, 72, 0.9);
         transition: all 0.2s ease;
         
         input[type="checkbox"] {
@@ -375,7 +341,7 @@
         }
         
         &:hover {
-            color: #f0f0f0;
+            color: #1a202c;
             transform: translateY(-1px);
         }
     }
@@ -1311,13 +1277,9 @@
     label {
         display: block;
         margin-bottom: 8px;
-        color: white;
+        color: #2d3748;
         font-size: 14px;
         font-weight: 600;
-        text-shadow: 
-            0 2px 4px rgba(0, 0, 0, 0.6),
-            0 1px 2px rgba(0, 0, 0, 0.8),
-            0 0 1px rgba(0, 0, 0, 0.9);
         text-align: center;
     }
 
@@ -1406,15 +1368,11 @@
         border-radius: 12px;
         background: rgba(255, 255, 255, 0.15);
         backdrop-filter: blur(10px);
-        color: white;
+        color: #2d3748;
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
-        text-shadow: 
-            0 2px 4px rgba(0, 0, 0, 0.6),
-            0 1px 2px rgba(0, 0, 0, 0.8),
-            0 0 1px rgba(0, 0, 0, 0.9);
 
         &:hover {
             background: rgba(255, 255, 255, 0.25);
@@ -1431,6 +1389,7 @@
         &.primary {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             border: none;
+            color: white;
             box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
 
             &:hover {
