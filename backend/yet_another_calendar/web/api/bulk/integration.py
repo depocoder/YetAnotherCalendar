@@ -29,6 +29,8 @@ from ...cache_builder import key_builder
 
 # Order matches the gather() in get_calendar.
 _SERVICES: tuple[schema.ServiceName, ...] = ("netology", "modeus", "lms")
+# Marks a finished piece of homework in an exported calendar.
+DONE_MARK = "✅"
 _ERROR_TEXT_LIMIT = 300
 # Most specific first: TimeoutException is a TransportError.
 _GENERIC_REASONS: tuple[tuple[type[BaseException], str], ...] = (
@@ -127,7 +129,12 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
             continue
         dt_end = netology_homework.deadline + datetime.timedelta(hours=18)
         dt_start = dt_end - datetime.timedelta(hours=2)
-        event = create_ics_event(title=f"Netology ДЗ: {netology_homework.block_title}", starts_at=dt_start,
+        # Netology knows whether the homework is done - say so in the title,
+        # where a glance at the calendar answers it and no tick means "not
+        # yet". The event keeps its UID, so a subscribed client picks the
+        # tick up on its next refresh. LMS has no such flag to show.
+        done = f"{DONE_MARK} " if netology_homework.passed else ""
+        event = create_ics_event(title=f"{done}Netology ДЗ: {netology_homework.block_title}", starts_at=dt_start,
                                  ends_at=dt_end, lesson_id=netology_homework.id,
                                  description=netology_homework.title,
                                  url=netology_homework.url)

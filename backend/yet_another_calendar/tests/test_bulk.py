@@ -8,6 +8,7 @@ from collections.abc import Generator
 from copy import deepcopy
 from unittest.mock import patch
 
+import icalendar
 from fastapi import BackgroundTasks
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
@@ -539,6 +540,23 @@ def test_export_to_ics_complete_coverage(bulk_fixture_content):
         ics_data3 = b"".join(integration.export_to_ics(calendar_with_lms))
         ics_str3 = ics_data3.decode('utf-8')
         assert "BEGIN:VCALENDAR" in ics_str3
+
+
+def test_export_to_ics_marks_done_netology_homework(bulk_fixture_content):
+    """Finished Netology homework carries a tick in the title, unfinished stays plain."""
+    calendar_data = json.loads(bulk_fixture_content)
+    homework = calendar_data["netology"]["homework"]
+    assert len(homework) >= 2, "fixture needs two pieces of homework to compare"
+    homework[0]["passed"] = True
+    homework[1]["passed"] = False
+    calendar = schema.CalendarResponse.model_validate(calendar_data)
+
+    exported = icalendar.Calendar.from_ical(b"".join(integration.export_to_ics(calendar)))
+    summaries = {str(event["UID"]): str(event["SUMMARY"]) for event in exported.walk("VEVENT")}
+
+    done, pending = calendar.netology.homework[0], calendar.netology.homework[1]
+    assert summaries[str(done.id)] == f"✅ Netology ДЗ: {done.block_title}"
+    assert summaries[str(pending.id)] == f"Netology ДЗ: {pending.block_title}"
 
 
 @pytest.mark.asyncio
