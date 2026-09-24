@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatDateToAMPM } from './LessonTimes';
 import camera from "../../img/camera.png";
+import { getLmsStatus, isTaskDone } from "../../utils/lmsStatus";
 
 const MobileCalendarView = ({ 
     events, 
@@ -126,7 +127,8 @@ const MobileCalendarView = ({
                 title: event.name || event.title, // Add both name and title for consistency
                 name: event.name || event.title,   // Ensure name is also available
                 isDeadline: true,
-                source: 'utmn'
+                source: 'utmn',
+                lmsStatus: getLmsStatus(event),
             });
         });
 
@@ -212,12 +214,14 @@ const MobileCalendarView = ({
                                         ['quiz', 'task', 'test', 'homework'].includes(event.type) ? 'mobile-event-task' :
                                         event.type === 'lms' || event.source === 'utmn' ? 'mobile-event-utmn' :
                                         'mobile-event-netology'
-                                    } ${event.endTime < new Date() ? 'mobile-event-past' : ''} ${event.isDeadline ? 'mobile-event-deadline' : ''}`}
+                                    } ${event.endTime < new Date() ? 'mobile-event-past' : ''} ${event.isDeadline ? 'mobile-event-deadline' : ''} ${event.isDeadline && isTaskDone(event) ? 'mobile-event-done' : ''}`}
                                     onClick={() => handleEventClick(event)}
                                 >
                                     <div className="mobile-event-time">
                                         {event.isDeadline ? (
-                                            <span className="mobile-event-deadline-label">Дедлайн</span>
+                                            <span className="mobile-event-deadline-label">
+                                                {isTaskDone(event) ? 'Выполнено' : 'Дедлайн'}
+                                            </span>
                                         ) : (
                                             <>
                                                 <span className="mobile-event-start">
@@ -249,6 +253,12 @@ const MobileCalendarView = ({
                                             {event?.course_name || event?.block_title || event?.title || event?.name}
                                         </div>
                                         
+                                        {event.type === 'lms' && event.lmsStatus && (
+                                            <div className="mobile-event-code">
+                                                {event.lmsStatus.done ? '✅' : '❌'} {event.lmsStatus.label}
+                                            </div>
+                                        )}
+
                                         {event.type === 'modeus' && event?.cycle_realization?.code && (
                                             <div className="mobile-event-code">
                                                 {event.cycle_realization.code}

@@ -559,6 +559,27 @@ def test_export_to_ics_marks_done_netology_homework(bulk_fixture_content):
     assert summaries[str(pending.id)] == f"Netology ДЗ: {pending.block_title}"
 
 
+def test_export_to_ics_marks_done_lms_events(bulk_fixture_content):
+    """Completed LMS activities carry the same tick as finished Netology homework."""
+    calendar_data = json.loads(bulk_fixture_content)
+    event = {
+        'name': 'Дифзачет', 'course_name': 'ОИБ', 'url': 'https://lms.utmn.ru/mod/quiz/view.php?id=1',
+        'dt_start': '2026-09-14T04:00:00Z', 'dt_end': '2026-09-14T19:30:00Z',
+        'uservisible': True, 'modname': 'quiz',
+    }
+    calendar_data['utmn']['lms_events'] = [
+        {**event, 'id': 1, 'is_completed': True, 'completion_status': 'complete'},
+        {**event, 'id': 2, 'is_completed': False, 'completion_status': 'incomplete'},
+    ]
+    calendar = schema.CalendarResponse.model_validate(calendar_data)
+
+    exported = icalendar.Calendar.from_ical(b"".join(integration.export_to_ics(calendar)))
+    summaries = {str(event["UID"]): str(event["SUMMARY"]) for event in exported.walk("VEVENT")}
+
+    assert summaries["1"] == "✅ LMS: ОИБ"
+    assert summaries["2"] == "LMS: ОИБ"
+
+
 @pytest.mark.asyncio
 async def test_export_to_ics_bulk_calendar(bulk_fixture_content, sample_datetime):
     """Test bulk ICS export using bulk fixture content."""

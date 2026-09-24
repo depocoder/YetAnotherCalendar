@@ -3,6 +3,7 @@ import arrowGreen from "../../img/ArrowGreen.svg";
 import arrowPink from "../../img/ArrowPink.svg";
 import arrowViolet from "../../img/ArrowViolet.svg";
 import { formatDate } from "../../utils/dateUtils";
+import { getLmsStatus, LMS_REQUIREMENT_MARKS } from "../../utils/lmsStatus";
 
 const EventsDetail = ({ event, mtsUrls = {} }) => {
     const [isVisible, setIsVisible] = useState(false);
@@ -62,6 +63,7 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
 
     // Проверяем, что event существует перед вызовом getSourceInfo
     const sourceInfo = event ? getSourceInfo() : null;
+    const lmsStatus = getLmsStatus(event);
 
     // Функция для получения цвета кнопки в зависимости от типа события
     const getEventButtonColor = () => {
@@ -194,6 +196,22 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
                                       event.modname}
                             </span>
                         )}
+                        {lmsStatus && (
+                            <>
+                                <br/>
+                                <span className="task-event-text">
+                                    Статус: {lmsStatus.label} {lmsStatus.done ? '✅' : '❌'}
+                                </span>
+                            </>
+                        )}
+                        {event.completion_requirements?.map((requirement) => (
+                            <React.Fragment key={requirement.description}>
+                                <br/>
+                                <span className="task-event-text">
+                                    {LMS_REQUIREMENT_MARKS[requirement.status] || '⏳'} {requirement.description}
+                                </span>
+                            </React.Fragment>
+                        ))}
                     </div>
                 )}
 

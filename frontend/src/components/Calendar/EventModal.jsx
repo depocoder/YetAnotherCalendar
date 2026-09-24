@@ -3,6 +3,7 @@ import arrowGreen from "../../img/ArrowGreen.svg";
 import arrowPink from "../../img/ArrowPink.svg";
 import arrowViolet from "../../img/ArrowViolet.svg";
 import { formatDate } from "../../utils/dateUtils";
+import { getLmsStatus, LMS_REQUIREMENT_MARKS } from "../../utils/lmsStatus";
 
 const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
     const [isAnimating, setIsAnimating] = useState(false);
@@ -111,6 +112,7 @@ const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
     };
 
     const sourceInfo = getSourceInfo();
+    const lmsStatus = getLmsStatus(event);
     const buttonClass = getEventButtonClass();
 
     // Определяем URL для кнопки.
@@ -289,6 +291,39 @@ const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
                                                      event.modname === 'workshop' ? 'Семинар' :
                                                      event.modname}
                                                 </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {lmsStatus && (
+                                        <div className="event-info-row">
+                                            <span className="info-icon">✅</span>
+                                            <div className="info-content">
+                                                <span className="info-label">Статус:</span>
+                                                <span className={`info-badge ${lmsStatus.className}`}>
+                                                    {lmsStatus.label}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {event.completion_requirements?.length > 0 && (
+                                        <div className="event-info-row">
+                                            <span className="info-icon">📋</span>
+                                            <div className="info-content">
+                                                <span className="info-label">Условия выполнения:</span>
+                                                {event.completion_requirements.map((requirement) => (
+                                                    <span key={requirement.description} className="info-value">
+                                                        {LMS_REQUIREMENT_MARKS[requirement.status] || '⏳'} {requirement.description}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {lmsStatus?.done && event.completed_at && (
+                                        <div className="event-info-row">
+                                            <span className="info-icon">🕒</span>
+                                            <div className="info-content">
+                                                <span className="info-label">Засчитано в LMS:</span>
+                                                <span className="info-value">{formatDate(event.completed_at)}</span>
                                             </div>
                                         </div>
                                     )}

@@ -132,7 +132,7 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
         # Netology knows whether the homework is done - say so in the title,
         # where a glance at the calendar answers it and no tick means "not
         # yet". The event keeps its UID, so a subscribed client picks the
-        # tick up on its next refresh. LMS has no such flag to show.
+        # tick up on its next refresh.
         done = f"{DONE_MARK} " if netology_homework.passed else ""
         event = create_ics_event(title=f"{done}Netology ДЗ: {netology_homework.block_title}", starts_at=dt_start,
                                  ends_at=dt_end, lesson_id=netology_homework.id,
@@ -146,8 +146,11 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
         ics_calendar.add_component(event)
     for lms_event in calendar.utmn.lms_events:
         dt_start = lms_event.dt_end - datetime.timedelta(hours=2)
-        event = create_ics_event(title=f"LMS: {lms_event.course_name}", starts_at=dt_start, ends_at=lms_event.dt_end,
-                                 lesson_id=lms_event.id, description=lms_event.name, url=lms_event.url)
+        # LMS reports activity completion the same way, so tick it too.
+        done = f"{DONE_MARK} " if lms_event.is_completed else ""
+        event = create_ics_event(title=f"{done}LMS: {lms_event.course_name}", starts_at=dt_start,
+                                 ends_at=lms_event.dt_end, lesson_id=lms_event.id,
+                                 description=lms_event.name, url=lms_event.url)
         ics_calendar.add_component(event)
     yield ics_calendar.to_ical()
 

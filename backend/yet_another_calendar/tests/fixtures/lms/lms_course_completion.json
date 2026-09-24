@@ -1,0 +1,106 @@
+[
+  {
+    "id": 57718,
+    "name": "Итоговая аттестация",
+    "modules": [
+      {
+        "id": 159022,
+        "url": "https://lms.utmn.ru/mod/quiz/view.php?id=159022",
+        "name": "Дифзачет (экзамен)",
+        "uservisible": true,
+        "modname": "quiz",
+        "completion": 2,
+        "dates": [
+          {"label": "Открыто с:", "timestamp": 1789351200, "dataid": "timeopen"},
+          {"label": "Закрыто c:", "timestamp": 1789407000, "dataid": "timeclose"}
+        ],
+        "completiondata": {
+          "state": 1,
+          "timecompleted": 1782754077,
+          "overrideby": null,
+          "valueused": false,
+          "hascompletion": true,
+          "isautomatic": true,
+          "istrackeduser": true,
+          "uservisible": true,
+          "details": [
+            {"rulename": "completionusegrade", "rulevalue": {"status": 1, "description": "Получить оценку"}}
+          ],
+          "isoverallcomplete": true
+        }
+      },
+      {
+        "id": 166429,
+        "url": "https://lms.utmn.ru/mod/quiz/view.php?id=166429",
+        "name": "Призовые баллы",
+        "uservisible": true,
+        "modname": "quiz",
+        "completion": 2,
+        "dates": [
+          {"label": "Открыто с:", "timestamp": 1789351200, "dataid": "timeopen"},
+          {"label": "Закрыто c:", "timestamp": 1789407000, "dataid": "timeclose"}
+        ],
+        "completiondata": {
+          "state": 0,
+          "timecompleted": 0,
+          "hascompletion": true,
+          "isautomatic": true,
+          "details": [
+            {"rulename": "completionview", "rulevalue": {"status": 1, "description": "Просмотреть"}},
+            {"rulename": "completionusegrade", "rulevalue": {"status": 0, "description": "Получить оценку"}}
+          ]
+        }
+      },
+      {
+        "id": 159042,
+        "url": "https://lms.utmn.ru/mod/quiz/view.php?id=159042",
+        "name": "Тест по Блоку 2",
+        "uservisible": true,
+        "modname": "quiz",
+        "completion": 2,
+        "dates": [
+          {"label": "Открыто с:", "timestamp": 1789351200, "dataid": "timeopen"},
+          {"label": "Закрыто c:", "timestamp": 1789407000, "dataid": "timeclose"}
+        ],
+        "completiondata": {
+          "state": 2,
+          "timecompleted": 1782754077,
+          "details": [
+            {"rulename": "completionpassgrade", "rulevalue": {"status": 2, "description": "Получить проходную оценку"}}
+          ]
+        }
+      },
+      {
+        "id": 159043,
+        "url": "https://lms.utmn.ru/mod/quiz/view.php?id=159043",
+        "name": "Тест по Блоку 3",
+        "uservisible": true,
+        "modname": "quiz",
+        "completion": 2,
+        "dates": [
+          {"label": "Открыто с:", "timestamp": 1789351200, "dataid": "timeopen"},
+          {"label": "Закрыто c:", "timestamp": 1789407000, "dataid": "timeclose"}
+        ],
+        "completiondata": {
+          "state": 3,
+          "timecompleted": 1782754077,
+          "details": [
+            {"rulename": "completionpassgrade", "rulevalue": {"status": 3, "description": "Получить проходную оценку"}}
+          ]
+        }
+      },
+      {
+        "id": 159050,
+        "url": "https://lms.utmn.ru/mod/assign/view.php?id=159050",
+        "name": "Эссе без отслеживания",
+        "uservisible": true,
+        "modname": "assign",
+        "completion": 0,
+        "dates": [
+          {"label": "Открыто с:", "timestamp": 1789351200, "dataid": "allowsubmissionsfromdate"},
+          {"label": "Срок сдачи:", "timestamp": 1789407000, "dataid": "duedate"}
+        ]
+      }
+    ]
+  }
+]

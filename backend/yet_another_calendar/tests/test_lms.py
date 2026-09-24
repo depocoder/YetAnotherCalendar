@@ -6,11 +6,12 @@ import httpx
 import pytest
 from fastapi import HTTPException
 from httpx import HTTPStatusError
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 import copy
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.lms import integration, schema
+from yet_another_calendar.web.api.modeus.schema import ModeusTimeBody
 
 
 @pytest.mark.asyncio
@@ -266,3 +267,76 @@ def test_is_suitable_time(deadline: datetime.datetime,
                           expected: bool) -> None:
     result = schema.ExtendedCourse.is_suitable_time(deadline, time_min, time_max)
     assert result is expected
+
+
+def test_filtered_modules_report_moodle_completion() -> None:
+    """Moodle's completion state reaches the calendar the way the course page shows it."""
+    courses = TypeAdapter(list[schema.ExtendedCourse]).validate_python(
+        json.load(open(settings.test_parent_path / "fixtures/lms/lms_course_completion.json", encoding="utf-8")))
+    body = ModeusTimeBody.model_validate({"timeMin": "2026-09-14T00:00:00Z", "timeMax": "2026-09-20T00:00:00Z"})
+
+    modules = {module.id: module for module in courses[0].get_filtered_modules(body, "ОИБ")}
+
+    graded = modules[159022]
+    assert graded.is_completed is True
+    assert graded.completion_status == schema.CompletionStatus.COMPLETE
+    assert graded.completed_at == datetime.datetime.fromtimestamp(1782754077, tz=datetime.UTC)
+    assert graded.completion_requirements == [
+        schema.CompletionRequirement(description="Получить оценку", status=schema.CompletionStatus.COMPLETE),
+    ]
+
+    pending = modules[166429]
+    assert pending.is_completed is False
+    assert pending.completion_status == schema.CompletionStatus.INCOMPLETE
+    assert pending.completed_at is None
+    assert [requirement.status for requirement in pending.completion_requirements] == [
+        schema.CompletionStatus.COMPLETE, schema.CompletionStatus.INCOMPLETE,
+    ]
+
+    assert modules[159042].is_completed is True
+    assert modules[159042].completion_status == schema.CompletionStatus.COMPLETE_PASS
+    assert modules[159043].is_completed is False
+    assert modules[159043].completion_status == schema.CompletionStatus.COMPLETE_FAIL
+
+    assert modules[159022].completion_is_manual is False
+
+    untracked = modules[159050]
+    assert untracked.is_completed is False
+    assert untracked.completion_status is None
+    assert untracked.completion_requirements == []
+
+
+@pytest.mark.parametrize(
+    "state, expected",
+    [
+        (0, schema.CompletionStatus.INCOMPLETE),
+        (1, schema.CompletionStatus.COMPLETE),
+        (2, schema.CompletionStatus.COMPLETE_PASS),
+        (3, schema.CompletionStatus.COMPLETE_FAIL),
+        (7, schema.CompletionStatus.INCOMPLETE),
+        (True, schema.CompletionStatus.COMPLETE),
+        (False, schema.CompletionStatus.INCOMPLETE),
+        ("complete_pass", schema.CompletionStatus.COMPLETE_PASS),
+    ],
+)
+def test_module_state_status(state: int | bool | str, expected: schema.CompletionStatus) -> None:
+    assert schema.ModuleState.model_validate({"state": state}).status == expected
+
+
+def test_module_response_survives_json_round_trip() -> None:
+    """A cached calendar is dumped to JSON and read back - completion must not get lost on the way."""
+    module = schema.ModuleResponse.model_validate({
+        "id": 1, "name": "Тест", "uservisible": True, "modname": "quiz", "course_name": "ОИБ",
+        "dt_start": "2026-09-14T04:00:00Z", "dt_end": "2026-09-14T19:30:00Z", "is_completed": True,
+        "completion_status": "complete", "completed_at": "2026-06-29T19:27:57Z",
+        "completion_requirements": [{"description": "Получить оценку", "status": "complete"}],
+    })
+    assert schema.ModuleResponse.model_validate_json(module.model_dump_json(by_alias=True)) == module
+
+
+def test_manual_completion_is_flagged() -> None:
+    """A hand-ticked activity is reported as such - the tick is the student's word, not Moodle's check."""
+    state = schema.ModuleState.model_validate({"state": 1, "timecompleted": 1782754077, "isautomatic": False,
+                                                "details": []})
+    assert state.is_automatic is False
+    assert state.is_completed is True

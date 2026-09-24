@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { format, startOfDay } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
+import { isTaskDone } from '../../utils/lmsStatus';
 
 const DeadlineCell = ({ deadlines, setSelectedEvent }) => (
     <td className="vertical-deadline">
@@ -9,10 +10,11 @@ const DeadlineCell = ({ deadlines, setSelectedEvent }) => (
                 deadlines.map((deadline, dlIndex) => (
                     <div
                         key={dlIndex}
-                        className={`deadline-info ${deadline.source}${deadline.isPast ? ' past' : ''}`}
+                        className={`deadline-info ${deadline.source}${deadline.isPast ? ' past' : ''}${deadline.isDone ? ' done' : ''}`}
                         onClick={() => setSelectedEvent(deadline)}
                     >
                         <span className="source-tag">
+                            {deadline.isDone && '✅ '}
                             {deadline.source === 'netology' ? 'Нетология' : 'ТюмГу'}
                         </span>
                     </div>
@@ -65,11 +67,13 @@ const DeadLine = ({ date, events, setSelectedEvent }) => {
                     deadlines[dayKey] = [];
                 }
 
-                deadlines[dayKey].push({
+                const deadline = {
                     ...event,
                     source: type,
                     isPast: deadlineDate < now,
-                });
+                };
+                deadline.isDone = isTaskDone(deadline);
+                deadlines[dayKey].push(deadline);
             });
         };
 

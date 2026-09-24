@@ -1,4 +1,5 @@
 import datetime
+from enum import StrEnum
 from typing import Any, Annotated
 
 from fastapi import Header
@@ -36,19 +37,74 @@ class Course(BaseModel):
     hidden: bool | None = Field(default=None)
 
 
+class CompletionStatus(StrEnum):
+    INCOMPLETE = "incomplete"
+    COMPLETE = "complete"
+    COMPLETE_PASS = "complete_pass"
+    COMPLETE_FAIL = "complete_fail"
+
+
+# Moodle's COMPLETION_* constants, as `completiondata.state` and
+# `details[].rulevalue.status` report them.
+_MOODLE_STATES = {
+    0: CompletionStatus.INCOMPLETE,
+    1: CompletionStatus.COMPLETE,
+    2: CompletionStatus.COMPLETE_PASS,
+    3: CompletionStatus.COMPLETE_FAIL,
+}
+_DONE_STATES = (CompletionStatus.COMPLETE, CompletionStatus.COMPLETE_PASS)
+
+
+def to_completion_status(state: Any) -> Any:
+    """Turn Moodle's numeric state into a status; anything else goes to pydantic as is."""
+    if isinstance(state, bool):
+        return CompletionStatus.COMPLETE if state else CompletionStatus.INCOMPLETE
+    if isinstance(state, int):
+        return _MOODLE_STATES.get(state, CompletionStatus.INCOMPLETE)
+    return state
+
+
+class CompletionRequirement(BaseModel):
+    """One condition from the "Выполнено: Получить оценку" badges on an activity."""
+    description: str
+    status: CompletionStatus
+
+    @model_validator(mode='before')
+    @classmethod
+    def rule_validation(cls, data: Any) -> Any:
+        if not isinstance(data, dict) or 'rulevalue' not in data:
+            return data
+        rule = data['rulevalue'] or {}
+        return {
+            'description': rule.get('description') or data.get('rulename', ''),
+            'status': to_completion_status(rule.get('status')),
+        }
+
+
 class ModuleState(BaseModel):
-    state: bool
+    status: CompletionStatus = Field(alias="state")
+    completed_at: datetime.datetime | None = Field(alias="timecompleted", default=None)
+    requirements: list[CompletionRequirement] = Field(alias="details", default_factory=list)
+    # False when the student ticks the activity off by hand: then the state
+    # says what they ticked, not what they did.
+    is_automatic: bool = Field(alias="isautomatic", default=True)
 
     @model_validator(mode='before')
     @classmethod
     def state_validation(cls, data: Any) -> Any:
         if not isinstance(data, dict):
             return data
-        state = data.get('state')
-        if isinstance(state, int):
-            # if state more than 1 then state is False (we don't know such state)
-            data['state'] = bool(state) if state < 1 else False
+        data = {**data, 'state': to_completion_status(data.get('state'))}
+        timecompleted = data.get('timecompleted')
+        if isinstance(timecompleted, int):
+            # Moodle sends 0 until the activity is completed.
+            data['timecompleted'] = (datetime.datetime.fromtimestamp(timecompleted, tz=datetime.UTC)
+                                     if timecompleted else None)
         return data
+
+    @property
+    def is_completed(self) -> bool:
+        return self.status in _DONE_STATES
 
 class DateModule(BaseModel):
     label: str
@@ -84,6 +140,11 @@ class ModuleResponse(BaseModule):
     dt_start: datetime.datetime
     dt_end: datetime.datetime
     is_completed: bool
+    # None when the teacher did not turn completion tracking on for the activity.
+    completion_status: CompletionStatus | None = None
+    completed_at: datetime.datetime | None = None
+    completion_requirements: list[CompletionRequirement] = Field(default_factory=list)
+    completion_is_manual: bool = False
     course_name: str
 
 
@@ -112,13 +173,14 @@ class ExtendedCourse(BaseModel):
             else:
                 continue
             if self.is_suitable_time(dt_end, body.time_min, body.time_max) and module.user_visible:
-                completion_state = module.completion_state
-                state = False
-                if completion_state:
-                    state = completion_state.state
+                completion = module.completion_state
                 filtered_modules.append(ModuleResponse(
-                    **module.model_dump(by_alias=True),
-                    is_completed=state,
+                    **module.model_dump(by_alias=True, exclude={"completion_state"}),
+                    is_completed=completion.is_completed if completion else False,
+                    completion_status=completion.status if completion else None,
+                    completed_at=completion.completed_at if completion else None,
+                    completion_requirements=completion.requirements if completion else [],
+                    completion_is_manual=not completion.is_automatic if completion else False,
                     dt_end=dt_end, dt_start=dt_start,
                     course_name=course_name,
 
