@@ -122,7 +122,9 @@ $color-primary-purple: #7B61FF;
 $color-netology-teal: #00A8A8;
 $color-university-pink: #F46386;
 $color-task-blue: #3492c5;
-$color-done-green: #28a745;
+$color-done-green: #afcb8a;
+// Светлый зеленый - белый текст на нем не читается.
+$color-done-text: #3f5a26;
 $color-text-primary: #2c2d2e;
 $color-text-secondary: #495057;
 $color-text-muted: #6c757d;
@@ -176,10 +178,11 @@ $color-border-light: #e9ecef;
         }
         // Выполненное задание видно сразу, не открывая событие.
         &.done {
+            color: $color-done-text;
             border-color: $color-done-green;
             background: $color-done-green;
             &:hover {
-                color: $color-done-green;
+                color: $color-done-text;
                 background-color: #fff;
                 border-color: $color-done-green;
             }
@@ -1584,13 +1587,14 @@ $color-border-light: #e9ecef;
     &-done {
         border-color: $color-done-green;
         border-left-color: $color-done-green !important;
-        background: linear-gradient(135deg, rgba(40, 167, 69, 0.12) 0%, rgba(40, 167, 69, 0.05) 100%);
+        background: linear-gradient(135deg, rgba(175, 203, 138, 0.3) 0%, rgba(175, 203, 138, 0.12) 100%);
 
         .mobile-event-source {
-            color: $color-done-green !important;
+            color: $color-done-text !important;
         }
 
         .mobile-event-time .mobile-event-deadline-label {
+            color: $color-done-text;
             background: $color-done-green;
             box-shadow: none;
         }
