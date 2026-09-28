@@ -1,11 +1,13 @@
-// Отметки прошедшей пары Модеуса на ее плитке (LessonMarks): посещение и оценки.
-// Цвета те же, что у выполненной домашки (зеленый) и статусов в «Моих оценках».
+// Отметки прошедшей пары Модеуса: посещение и оценки на плитке (LessonMarks)
+// и в карточке пары (LessonGrade). Цвета те же, что у выполненной домашки
+// (зеленый) и статусов в «Моих оценках».
 
 $marks-purple: #7B61FF;
 $marks-present-bg: #afcb8a;
 $marks-present-text: #3f5a26;
 $marks-absent-bg: #ffb3b3;
 $marks-absent-text: #a61e1e;
+$marks-muted: #6c757d;
 
 .lesson-marks {
     display: inline-flex;
@@ -70,6 +72,15 @@ $marks-absent-text: #a61e1e;
         }
     }
 
+    // Название оценки (в карточке): приглушенное, длинное обрезается.
+    &__name {
+        font-weight: 500;
+        color: #5b5675;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 26ch;
+    }
+
     // В сетке недели — в нижнем углу плитки, на одной линии с кодом группы.
     &--corner {
         position: absolute;
@@ -77,23 +88,26 @@ $marks-absent-text: #a61e1e;
         bottom: 4px;
     }
 
-    // В строке «Особое время» и на мобильной плитке — отдельной строкой под названием.
+    // В строке «Особое время» — отдельной строкой под названием.
     .special-timing-event & {
         margin-top: 6px;
     }
 
-    // Мобильный список: места больше — подписи видны, значки чуть крупнее.
-    &--mobile {
+    // Мобильный список и карточка пары: места больше — подписи видны, значки чуть крупнее.
+    &--labelled {
         align-self: flex-start;
         gap: 6px;
         font-size: 11px;
         line-height: 18px;
+        white-space: normal;
+        flex-wrap: wrap;
 
         .lesson-marks__attendance,
         .lesson-marks__grade {
             height: 18px;
             border-radius: 8px;
             padding: 0 8px;
+            white-space: nowrap;
         }
 
         .lesson-marks__attendance {
@@ -116,5 +130,89 @@ $marks-absent-text: #a61e1e;
             width: 11px;
             height: 11px;
         }
+    }
+}
+
+// Строка «посещаемость и оценки» в карточке пары (LessonGrade).
+.lesson-grade {
+    // Панель под расписанием: строка среди «Преподаватель» и «Курс».
+    &--detail {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        text-align: left;
+    }
+
+    // Карточка-модалка: пилюли под подписью строки, чуть крупнее — под ее шрифты.
+    &__row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+
+        .lesson-marks--labelled {
+            font-size: 12px;
+            line-height: 20px;
+
+            .lesson-marks__attendance,
+            .lesson-marks__grade {
+                height: 20px;
+            }
+
+            svg,
+            .lesson-marks__grade svg {
+                width: 12px;
+                height: 12px;
+            }
+        }
+    }
+
+    &__hint {
+        font-family: "Roboto", sans-serif;
+        font-size: 12px;
+        line-height: 1.4;
+        color: $marks-muted;
+    }
+
+    // «Перечитать из Модеуса»: маленькая круглая стрелка, крутится, пока ждем.
+    &__refresh {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        padding: 0;
+        border: none;
+        border-radius: 6px;
+        background: none;
+        color: rgba($marks-purple, 0.75);
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease;
+
+        svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        &:hover:not(:disabled) {
+            background: rgba($marks-purple, 0.12);
+            color: $marks-purple;
+        }
+
+        &:disabled {
+            cursor: default;
+        }
+
+        &--busy svg {
+            animation: lesson-grade-spin 0.9s linear infinite;
+        }
+    }
+}
+
+@keyframes lesson-grade-spin {
+    to {
+        transform: rotate(360deg);
     }
 }

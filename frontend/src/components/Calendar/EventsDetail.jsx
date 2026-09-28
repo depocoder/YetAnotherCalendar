@@ -86,10 +86,20 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
 
     const buttonColor = event ? getEventButtonColor() : '#7B61FF';
 
+    // URL кнопки «Перейти». У Modeus ведем через наш редирект (mts_url): он
+    // считает переходы и перекидывает на тот же вебинар. mtsUrls нужен только
+    // чтобы понять, оставил ли преподаватель ссылку.
+    let eventUrl = null;
+    if (event.type === 'modeus') {
+        eventUrl = mtsUrls[event.id] ? (event.mts_url || mtsUrls[event.id]) : null;
+    } else {
+        eventUrl = event.url || event.video_url || event.webinar_url;
+    }
+
     return (
         <div className={`rectangle ${isVisible ? 'rectangle-visible' : 'rectangle-hidden'}`}>
             {event && sourceInfo && (
-                <div className={`rectangle-info ${event.type || event.source}`}>
+                <div className={`rectangle-info ${event.type || event.source} ${eventUrl ? 'has-link' : ''}`}>
                     {/* Отображение источника события */}
                     <div className="source">
                         {sourceInfo.label}
@@ -215,39 +225,22 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
                     </div>
                 )}
 
-                {/* Кнопка перехода к уроку в правом нижнем углу */}
-                {(() => {
-                    // Определяем URL для кнопки.
-                    // У Modeus ведем через наш редирект (mts_url): он считает
-                    // переходы и перекидывает на тот же вебинар. mtsUrls нужен
-                    // только чтобы понять, оставил ли преподаватель ссылку.
-                    let eventUrl = null;
-                    if (event.type === 'modeus') {
-                        eventUrl = mtsUrls[event.id] ? (event.mts_url || mtsUrls[event.id]) : null;
-                    } else {
-                        eventUrl = event.url || event.video_url || event.webinar_url;
-                    }
-                    
-                    // Показываем кнопку только если есть URL
-                    if (eventUrl) {
-                        return (
-                            <div className="lesson-button-container">
-                                <a 
-                                    href={eventUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="lesson-button"
-                                    style={{
-                                        '--button-color': buttonColor
-                                    }}
-                                >
-                                    Перейти ➜
-                                </a>
-                            </div>
-                        );
-                    }
-                    return null;
-                })()}
+                {/* Кнопка перехода к уроку в правом нижнем углу — только если есть URL */}
+                {eventUrl && (
+                    <div className="lesson-button-container">
+                        <a
+                            href={eventUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="lesson-button"
+                            style={{
+                                '--button-color': buttonColor
+                            }}
+                        >
+                            Перейти ➜
+                        </a>
+                    </div>
+                )}
                 </div>
             )}
         </div>

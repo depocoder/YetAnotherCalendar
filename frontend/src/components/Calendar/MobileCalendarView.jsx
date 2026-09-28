@@ -265,7 +265,7 @@ const MobileCalendarView = ({
                                                 {event.cycle_realization.code}
                                             </div>
                                         )}
-                                        <LessonMarks event={event} className="lesson-marks--mobile" />
+                                        <LessonMarks event={event} className="lesson-marks--labelled" />
                                         
                                     </div>
                                     

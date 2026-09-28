@@ -255,7 +255,7 @@ const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
                                             </div>
                                         </div>
                                     )}
-                                    <LessonGrade event={event} />
+                                    <LessonGrade event={event} variant="modal" />
                                 </div>
                             </div>
                         )}

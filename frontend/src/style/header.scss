@@ -343,6 +343,11 @@ a {
   min-width: 0;
 }
 
+// Кнопка «Перейти» висит в правом нижнем углу карточки — строки под нее не заходят.
+.rectangle-info.has-link .netology-text-info {
+  padding-right: 120px;
+}
+
 .netology-info-row {
   margin-bottom: 4px;
   padding: 2px 0;

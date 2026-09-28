@@ -27,11 +27,54 @@ const ATTENDANCE_MARK = {
     ABSENT: { Icon: CrossIcon, label: 'Не был', text: 'Не был на паре', modifier: 'absent' },
 };
 
+// Только то, что Модеус знает наверняка: неотмеченное посещение — не отметка.
+export const hasMarks = (lesson) => Boolean(ATTENDANCE_MARK[lesson?.attendance]) || lesson?.results?.length > 0;
+
+// Текст для подсказки и aria-label: «Был на паре · Работа на учебной встрече: 1».
+export const describeMarks = (lesson) => [
+    ATTENDANCE_MARK[lesson?.attendance]?.text,
+    ...(lesson?.results || []).map((result) => `${result.name}: ${formatGradeValue(result.value)}`),
+].filter(Boolean).join(' · ');
+
 /**
- * Отметки прошедшей пары Модеуса прямо на ее плитке: посещение (галочка/крестик)
- * и оценки за пару (звездочка с баллами). Только то, что Модеус знает наверняка:
- * без отметки о посещении значка нет, без оценки нет и баллов. Данные — из общего
- * кэша оценок (только с «Запомнить меня»), без них плитка остается как была.
+ * Пилюли отметок: кружок посещения (галочка/крестик) и звездочка с баллами.
+ * withNames — по пилюле на каждую оценку с ее названием (карточка пары);
+ * без него баллы идут через точку в одной пилюле (плитка в сетке).
+ * children встают в ту же строку после пилюль (кнопка «перечитать» в карточке).
+ */
+export const MarkPills = ({ lesson, withNames = false, className = '', children = null, ...props }) => {
+    const attendance = ATTENDANCE_MARK[lesson?.attendance];
+    const results = lesson?.results || [];
+    if (!attendance && results.length === 0) return null;
+
+    return (
+        <span className={`lesson-marks ${className}`} {...props}>
+            {attendance && (
+                <span className={`lesson-marks__attendance lesson-marks__attendance--${attendance.modifier}`}>
+                    <attendance.Icon />
+                    <span className="lesson-marks__label">{attendance.label}</span>
+                </span>
+            )}
+            {withNames ? results.map((result, index) => (
+                <span className="lesson-marks__grade" key={index} title={result.name}>
+                    <StarIcon />
+                    <span className="lesson-marks__name">{result.name}</span>
+                    {formatGradeValue(result.value)}
+                </span>
+            )) : results.length > 0 && (
+                <span className="lesson-marks__grade">
+                    <StarIcon />
+                    {results.map((result) => formatGradeValue(result.value)).join(' · ')}
+                </span>
+            )}
+            {children}
+        </span>
+    );
+};
+
+/**
+ * Отметки прошедшей пары Модеуса прямо на ее плитке. Данные — из общего кэша
+ * оценок (только с «Запомнить меня»), без них плитка остается как была.
  * Полный текст — в подсказке и aria-label; на мобильной плитке подписи видны сразу.
  */
 const LessonMarks = ({ event, className = '' }) => {
@@ -56,32 +99,10 @@ const LessonMarks = ({ event, className = '' }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPast, event?.id, event?.start]);
 
-    if (!isPast || !lesson) return null;
-    const attendance = ATTENDANCE_MARK[lesson.attendance];
-    const grades = lesson.results || [];
-    if (!attendance && grades.length === 0) return null;
+    if (!isPast || !hasMarks(lesson)) return null;
+    const description = describeMarks(lesson);
 
-    const description = [
-        attendance?.text,
-        ...grades.map((result) => `${result.name}: ${formatGradeValue(result.value)}`),
-    ].filter(Boolean).join(' · ');
-
-    return (
-        <span className={`lesson-marks ${className}`} role="img" aria-label={description} title={description}>
-            {attendance && (
-                <span className={`lesson-marks__attendance lesson-marks__attendance--${attendance.modifier}`}>
-                    <attendance.Icon />
-                    <span className="lesson-marks__label">{attendance.label}</span>
-                </span>
-            )}
-            {grades.length > 0 && (
-                <span className="lesson-marks__grade">
-                    <StarIcon />
-                    {grades.map((result) => formatGradeValue(result.value)).join(' · ')}
-                </span>
-            )}
-        </span>
-    );
+    return <MarkPills lesson={lesson} className={className} role="img" aria-label={description} title={description} />;
 };
 
 export default LessonMarks;

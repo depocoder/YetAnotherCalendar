@@ -1,21 +1,30 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getLessonGrades } from '../../services/modeusGrades';
-import { ATTENDANCE, formatGradeValue } from '../../utils/grades';
-import '../../style/grades-modal.scss';
+import { MarkPills, describeMarks, hasMarks } from './LessonMarks';
+import '../../style/lesson-marks.scss';
 
-const ATTENDANCE_ROW = {
-    PRESENT: '✅ Был на паре',
-    ABSENT: '❌ Не был на паре',
+const RefreshIcon = () => (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M23 4v6h-6M20.5 15a9 9 0 1 1-2.1-9.4L23 10" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);
+
+// Почему оценок нет, хотя пара прошла: одной строкой, без лишних слов.
+const HINT = {
+    'no-vault': 'Оценки за пару видны только со включенным «Запомнить меня» при входе.',
+    rejected: 'Модеус не принял сохраненный пароль — войдите заново с «Запомнить меня», чтобы видеть оценки.',
 };
 
 /**
- * Посещаемость и оценки за пару Модеуса в ее карточке.
+ * Посещаемость и оценки за пару Модеуса в ее карточке: те же пилюли, что на
+ * плитке, плюс кнопка «перечитать» — оценку могли поставить после загрузки.
  *
- * Только для прошедших пар: у будущих отметок еще нет. Данные — из общего
- * кэша «Моих оценок» (их тянем фоном после загрузки календаря), «обновить»
- * перечитывает их из Модеуса. Если Модеус не ответил — блок просто не виден.
+ * Только для прошедших пар и только если Модеус что-то отметил: неизвестное —
+ * не отметка, карточка без нее остается как была. Данные — из общего кэша
+ * «Моих оценок». Если Модеус не ответил — блока просто нет.
+ * variant: 'detail' — строка в панели под расписанием, 'modal' — строка карточки-модалки.
  */
-const LessonGrade = ({ event }) => {
+const LessonGrade = ({ event, variant = 'detail' }) => {
     const [state, setState] = useState({ status: 'loading' });
     // Карточка могла переключиться на другую пару, пока грузилась прежняя.
     const currentEventId = useRef(event?.id);
@@ -39,65 +48,49 @@ const LessonGrade = ({ event }) => {
         if (isPast) load(false);
     }, [isPast, load]);
 
-    if (!isPast || state.status === 'error' || state.status === 'unknown-period') return null;
+    if (!isPast) return null;
 
-    if (state.status === 'no-vault') {
-        return (
-            <div className="lesson-grade lesson-grade--hint">
-                🎓 Включите «Запомнить меня» при входе, чтобы видеть здесь посещаемость и оценки за пару.
-            </div>
-        );
-    }
-    if (state.status === 'rejected') {
-        return (
-            <div className="lesson-grade lesson-grade--hint">
-                🎓 Модеус не принял сохраненный пароль — войдите заново с «Запомнить меня», чтобы видеть оценки.
-            </div>
-        );
-    }
-
+    const hint = HINT[state.status];
     const loading = state.status === 'loading';
-    const lesson = state.lesson;
-    const attendance = lesson?.attendance;
+    // Пока грузится впервые — ничего: кэш обычно уже теплый, строка появится сразу.
+    if (!hint && !hasMarks(state.lesson)) return null;
 
-    return (
-        <div className="lesson-grade">
-            <div className="lesson-grade__head">
-                <span className="lesson-grade__title">🎓 Посещаемость и оценки</span>
-                <button
-                    className="lesson-grade__refresh"
-                    onClick={() => load(true)}
-                    disabled={loading}
-                    title="Перечитать из Модеуса"
-                >
-                    {loading ? '…' : '↻ обновить'}
-                </button>
-            </div>
-            {loading && !('lesson' in state) ? (
-                <span className="lesson-grade__muted">Загружаем из Модеуса…</span>
-            ) : (
-                <>
-                    <span className={`grades-attendance lesson-grade__attendance ${attendance ? ATTENDANCE[attendance]?.className || '' : ''}`}>
-                        {attendance
-                            ? ATTENDANCE_ROW[attendance] || `Отметка: ${attendance.toLowerCase()}`
-                            : 'Посещаемость не отмечена'}
-                    </span>
-                    {lesson?.results?.length > 0 ? (
-                        <div className="lesson-grade__results">
-                            {lesson.results.map((result, index) => (
-                                <span className="grades-chip grades-chip--small" key={index} title={result.name}>
-                                    <span className="grades-chip__name">{result.name}</span>
-                                    <strong>{formatGradeValue(result.value)}</strong>
-                                </span>
-                            ))}
-                        </div>
-                    ) : (
-                        <span className="lesson-grade__muted">Оценок за пару нет</span>
-                    )}
-                </>
-            )}
-        </div>
+    const body = hint ? (
+        <span className="lesson-grade__hint">{hint}</span>
+    ) : (
+        // Кнопка — внутри строки пилюль, чтобы при переносе не оставаться одна на строке.
+        <MarkPills
+            lesson={state.lesson}
+            withNames
+            className="lesson-marks--labelled"
+            role="group"
+            aria-label={describeMarks(state.lesson)}
+        >
+            <button
+                type="button"
+                className={`lesson-grade__refresh ${loading ? 'lesson-grade__refresh--busy' : ''}`}
+                onClick={() => load(true)}
+                disabled={loading}
+                title="Перечитать из Модеуса"
+                aria-label="Перечитать из Модеуса"
+            >
+                <RefreshIcon />
+            </button>
+        </MarkPills>
     );
+
+    if (variant === 'modal') {
+        return (
+            <div className="event-info-row lesson-grade lesson-grade--modal">
+                <span className="info-icon">🎓</span>
+                <div className="info-content">
+                    <span className="info-label">Посещаемость и оценки:</span>
+                    <span className="lesson-grade__row">{body}</span>
+                </div>
+            </div>
+        );
+    }
+    return <div className="lesson-grade lesson-grade--detail">{body}</div>;
 };
 
 export default LessonGrade;
