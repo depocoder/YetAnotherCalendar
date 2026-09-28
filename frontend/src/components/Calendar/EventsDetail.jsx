@@ -12,15 +12,19 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
     const [shouldRender, setShouldRender] = useState(false);
 
     useEffect(() => {
+        // Таймер прежнего события сбрасываем: иначе закрыть и быстро открыть
+        // карточку — и запоздалое «убрать из DOM» спрячет уже открытую.
+        let timer;
         if (event) {
             setShouldRender(true);
             // Небольшая задержка для плавной анимации появления
-            setTimeout(() => setIsVisible(true), 10);
+            timer = setTimeout(() => setIsVisible(true), 10);
         } else {
             setIsVisible(false);
             // Ждем завершения анимации перед удалением из DOM
-            setTimeout(() => setShouldRender(false), 300);
+            timer = setTimeout(() => setShouldRender(false), 300);
         }
+        return () => clearTimeout(timer);
     }, [event]);
 
     if (!shouldRender) return null;
@@ -89,10 +93,12 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
     // URL кнопки «Перейти». У Modeus ведем через наш редирект (mts_url): он
     // считает переходы и перекидывает на тот же вебинар. mtsUrls нужен только
     // чтобы понять, оставил ли преподаватель ссылку.
+    // Повторный клик по той же паре снимает выбор: event уже null, а панель
+    // еще доигрывает анимацию закрытия — тогда кнопки нет.
     let eventUrl = null;
-    if (event.type === 'modeus') {
+    if (event?.type === 'modeus') {
         eventUrl = mtsUrls[event.id] ? (event.mts_url || mtsUrls[event.id]) : null;
-    } else {
+    } else if (event) {
         eventUrl = event.url || event.video_url || event.webinar_url;
     }
 

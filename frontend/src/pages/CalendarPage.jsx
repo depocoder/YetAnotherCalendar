@@ -45,6 +45,7 @@ import { debug } from "../utils/debug";
 import { useNavigate } from "react-router-dom";
 import { handleApiError } from '../utils/errorHandler';
 import { prefetchModeusGrades } from '../services/modeusGrades';
+import ErrorBoundary from '../elements/ErrorBoundary';
 
 const CalendarPage = () => {
     const [date, setDate] = useState(() => getCurrentWeekDates());
@@ -319,12 +320,15 @@ const CalendarPage = () => {
                 onClose={() => setShowFeaturesModal(false)}
                 onOpenGithubModal={() => setShowGithubModal(true)}
             />
-            <EventModal
-                event={selectedEvent}
-                isOpen={!!selectedEvent}
-                onClose={handleCloseEventModal}
-                mtsUrls={mtsUrls}
-            />
+            {/* Сломанная карточка пары не должна снимать весь календарь */}
+            <ErrorBoundary resetKey={selectedEvent}>
+                <EventModal
+                    event={selectedEvent}
+                    isOpen={!!selectedEvent}
+                    onClose={handleCloseEventModal}
+                    mtsUrls={mtsUrls}
+                />
+            </ErrorBoundary>
             <CourseSelectorModal
                 isOpen={showCourseModal}
                 onClose={() => setShowCourseModal(false)}
@@ -381,7 +385,9 @@ const CalendarPage = () => {
 
 
                     <div className="events-container">
-                        <EventsDetail event={selectedEvent} mtsUrls={mtsUrls} />
+                        <ErrorBoundary resetKey={selectedEvent}>
+                            <EventsDetail event={selectedEvent} mtsUrls={mtsUrls} />
+                        </ErrorBoundary>
                     </div>
                     <DatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
                 </header>

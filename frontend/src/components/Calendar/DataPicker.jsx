@@ -60,6 +60,9 @@ const DatePicker = ({ setDate, initialDate, disableButtons }) => {
         const fpInstance = flatpickr(datePickerRef.current, {
             locale: Russian,
             plugins: [weekSelect({})],
+            // Без defaultDate flatpickr парсит value поля — подпись «13 апреля – 19 апреля»,
+            // не понимает ее и открывается на сегодняшнем месяце без выбранной недели.
+            defaultDate: selectedDate,
             disableMobile: true, // Prevent mobile formatting
             allowInput: false, // Prevent user input
             onChange: function (selectedDates) {
