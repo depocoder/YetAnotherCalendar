@@ -1,6 +1,6 @@
 """Tests for UTMN API implementation."""
 import pytest
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 from httpx import AsyncClient, HTTPStatusError
 from typing import Any
 from collections.abc import Generator
@@ -115,3 +115,42 @@ def test_teacher_schema_validation():
     assert teacher.profile_url == teacher_data["profile_url"]
 
 
+
+
+@pytest.fixture(autouse=True)
+def _no_teachers_backoff(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(integration, "_teachers_failed_at", None)
+
+
+@pytest.mark.asyncio
+async def test_teachers_parse_the_new_markup(monkeypatch: pytest.MonkeyPatch) -> None:
+    """utmn.ru moved the name from <h4> into <b>: the link inside is read either way."""
+    import httpx
+
+    page = (settings.test_parent_path / "fixtures/utmn_teachers_page_new_markup.html").read_text(encoding="utf-8")
+    transport = httpx.MockTransport(lambda request: httpx.Response(200, text=page))
+    async with AsyncClient(base_url=settings.utmn_base_url, transport=transport) as client:
+        with patch("yet_another_calendar.web.api.utmn.integration.AsyncClient.__aenter__", return_value=client):
+            teachers = await integration.get_teachers_by_page(page=1)
+
+    assert teachers["Иванов Иван Иванович"] == schema.Teacher(
+        avatar_profile="https://www.utmn.ru/upload/employees_nova/i.i.ivanov.jpg",
+        profile_url="https://www.utmn.ru/o-tyumgu/sotrudniki/i.i.ivanov/",
+    )
+    assert set(teachers) == {"Иванов Иван Иванович", "Петрова Полина Петровна"}
+
+
+@pytest.mark.asyncio
+async def test_nothing_parsed_is_an_error_not_a_cached_result() -> None:
+    """An empty list means the markup changed: caching it hid the avatars for a month."""
+    with patch.object(integration, "get_teachers_by_page", new=AsyncMock(return_value={})):
+        with pytest.raises(RuntimeError):
+            await integration.get_all_teachers_cached(timeout=30, per_page=2)
+
+
+@pytest.mark.asyncio
+async def test_a_failure_is_not_retried_on_every_request() -> None:
+    with patch.object(integration, "get_all_teachers_cached", side_effect=RuntimeError("markup")) as cached:
+        assert await integration.get_all_teachers() == {}
+        assert await integration.get_all_teachers() == {}
+    cached.assert_called_once()
