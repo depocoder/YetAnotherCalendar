@@ -137,8 +137,15 @@ async def _attendance_rates(client: ModeusClient, student_id: str) -> list[schem
     return [schema.PeriodAttendanceRate.model_validate(rate) for rate in rates]
 
 
-async def get_grades(token: str, period_id: str | None = None) -> schema.GradesResponse:
-    """Grades of one semester (the current one unless asked) plus the list of semesters."""
+async def _skipped() -> None:
+    return None
+
+
+async def get_grades(token: str, period_id: str | None = None, *, summary: bool = True) -> schema.GradesResponse:
+    """Grades of one semester (the current one unless asked) plus the list of semesters.
+
+    summary=False skips the GPA ratings and semester attendance: lesson marks do without them.
+    """
     person_id = get_person_id(token)
     async with modeus_session(token) as session:
         client = ModeusClient(session)
@@ -165,8 +172,9 @@ async def get_grades(token: str, period_id: str | None = None) -> schema.GradesR
             return schema.GradesResponse(periods=periods)
 
         ratings, rates, table_raw = await asyncio.gather(
-            _optional(_ratings(client, student_id, [item.id for item in card.periods]), "ratings"),
-            _optional(_attendance_rates(client, student_id), "attendance rates"),
+            _optional(_ratings(client, student_id, [item.id for item in card.periods]), "ratings")
+            if summary else _skipped(),
+            _optional(_attendance_rates(client, student_id), "attendance rates") if summary else _skipped(),
             client.request("POST", settings.modeus_results_primary_part, json={
                 "personId": person_id,
                 "withMidcheckModulesIncluded": False,
@@ -258,3 +266,54 @@ async def get_netology_grades(cookies: netology_schema.NetologyCookies) -> schem
         for program_id, program_homework in zip(program_ids, homework, strict=True) if program_homework is not None
     }
     return schema.NetologyGradesResponse.build(calendar, homework_by_program, actual)
+
+
+def _lessons_by_event(grades: schema.GradesResponse) -> dict[str, schema.LessonGrades]:
+    return {
+        lesson.event_id: lesson
+        for course in grades.courses for lesson in course.lessons if lesson.event_id
+    }
+
+
+async def lesson_marks(
+        token: str, starts: dict[str, datetime.datetime],
+) -> dict[str, schema.LessonGrades]:
+    """Attendance and grades of past calendar events, by Modeus event id.
+
+    ``starts`` maps event ids to their start. Only the semesters those
+    events fall in are read, without the GPA summary.
+    """
+    now = datetime.datetime.now(tz=datetime.UTC)
+    past_days = {start.astimezone(_MODEUS_TIME_ZONE).date() for start in starts.values() if start < now}
+    if not past_days:
+        return {}
+    current = await get_grades(token, summary=False)
+    marks = _lessons_by_event(current)
+    for period in current.periods:
+        if period.id == current.period_id:
+            continue
+        if any(period.start_date <= day <= period.end_date for day in past_days):
+            marks |= _lessons_by_event(await get_grades(token, period.id, summary=False))
+    return {event_id: marks[event_id] for event_id in starts if event_id in marks}
+
+
+async def vault_lesson_marks(
+        get_token: Callable[[bool], Awaitable[str]], starts: dict[str, datetime.datetime],
+) -> dict[str, schema.LessonGrades]:
+    """lesson_marks for an exported calendar: best effort, never fails the export.
+
+    The calendar is complete without the marks, so any trouble - no Modeus,
+    a rejected password - only leaves them out.
+    """
+    try:
+        token = await get_token(False)
+        try:
+            return await lesson_marks(token, starts)
+        except HTTPException as exception:
+            if exception.status_code != status.HTTP_401_UNAUTHORIZED:
+                raise
+        # Modeus rejected a cached token: one fresh login.
+        return await lesson_marks(await get_token(True), starts)
+    except Exception:
+        logger.opt(exception=True).warning("Can't read Modeus lesson marks, exporting the calendar without them")
+        return {}

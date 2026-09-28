@@ -1,4 +1,5 @@
 """Grades endpoint: served to remembered users only."""
+import datetime
 from typing import Annotated
 
 import httpx
@@ -15,6 +16,34 @@ from ..vault.views import parse_cookie
 from ...lifespan import get_redis_pool
 
 router = APIRouter()
+
+
+async def remembered_lesson_marks(
+        redis_pool: ConnectionPool | None,
+        yac_vault: str | None,
+        person_id: str,
+        starts: dict[str, datetime.datetime],
+) -> dict[str, schema.LessonGrades]:
+    """Lesson marks for an exported calendar of a remembered browser.
+
+    Empty without "remember me", with a stale cookie, or when the remembered
+    account is not the person whose calendar is exported.
+    """
+    if not yac_vault or redis_pool is None or not starts:
+        return {}
+    try:
+        vault_id, secret = parse_cookie(yac_vault)
+        async with Redis(connection_pool=redis_pool) as redis:
+            record, _, dek = await vault_integration.resolve(redis, vault_id, secret)
+            if record.modeus_person_id != person_id:
+                return {}
+
+            async def get_token(force: bool) -> str:
+                return await vault_integration.get_modeus_token(redis, vault_id, record, dek, force=force)
+
+            return await integration.vault_lesson_marks(get_token, starts)
+    except HTTPException:
+        return {}
 
 
 @router.get("/")

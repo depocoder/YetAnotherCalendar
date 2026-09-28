@@ -76,8 +76,10 @@ async def test_outage_serves_last_good_feed(stored_vault: ConnectionPool) -> Non
 
     assert ics_bytes == LAST_GOOD
     async with Redis(connection_pool=stored_vault) as redis:
-        # Cached only briefly, so the next poll retries upstream.
-        assert await redis.get(integration._CACHE_KEY.format(vault_id=VAULT_ID)) == LAST_GOOD
+        # Cached only briefly, so the next poll retries upstream - and encrypted, like every stored feed.
+        stored = await redis.get(integration._CACHE_KEY.format(vault_id=VAULT_ID))
+        assert b"VCALENDAR" not in stored
+        assert integration._unseal(b"\x05" * 32, stored) == LAST_GOOD
         assert 0 < await redis.ttl(integration._CACHE_KEY.format(vault_id=VAULT_ID)) <= settings.redis_degraded_retry_time
         record = await vault_integration.load_record(redis, VAULT_ID)
         assert record.broken is False

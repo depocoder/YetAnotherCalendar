@@ -303,7 +303,8 @@ const apiRequest = async (endpoint, {
     modeusPersonId,
     lxpToken,
     lxpId,
-    no_cache = true
+    no_cache = true,
+    withCredentials = false
 }) => {
     // Формируем тело запроса
     const headers = {
@@ -335,6 +336,7 @@ const apiRequest = async (endpoint, {
             `${BACKEND_URL}${endpoint}?${params.toString()}`,
             {
                 headers,
+                withCredentials,
             }
         );
         return response;
@@ -359,7 +361,8 @@ export const refreshBulkEvents = (params) => {
 };
 
 export const exportICS = (params) => {
-    return apiRequest('/api/bulk/export_ics/', params);
+    // withCredentials: у «запомненного» браузера в .ics попадут посещаемость и оценки пар
+    return apiRequest('/api/bulk/export_ics/', {...params, withCredentials: true});
 };
 
 // Modeus API functions

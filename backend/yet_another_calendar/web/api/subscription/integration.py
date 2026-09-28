@@ -6,10 +6,15 @@ calendar clients poll the URL every few hours, and expired tokens are
 re-created from the decrypted credentials during the poll itself.
 """
 import asyncio
+import base64
 import datetime
+import secrets
+from collections.abc import Awaitable, Callable
 from typing import Any, cast
 
 import icalendar
+from cryptography.exceptions import InvalidTag
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from fastapi import HTTPException
 from loguru import logger
 from redis.asyncio import ConnectionPool, Redis
@@ -20,6 +25,8 @@ from . import schema
 from ..bulk import integration as bulk_integration
 from ..bulk import schema as bulk_schema
 from ..errors import is_auth_error
+from ..grades import integration as grades_integration
+from ..grades import schema as grades_schema
 from ..lms import integration as lms_integration
 from ..lms import schema as lms_schema
 from ..modeus import integration as modeus_integration
@@ -31,6 +38,30 @@ from ..vault import schema as vault_schema
 
 _CACHE_KEY = "ics_cache:{vault_id}"
 _LAST_KEY = "ics_last:{vault_id}"
+# A feed carries the student's attendance and grades, so it is stored
+# encrypted with the vault key, like the password it is built with.
+_SEALED = b"enc1:"
+
+LessonMarksLoader = Callable[[dict[str, datetime.datetime]], Awaitable[dict[str, grades_schema.LessonGrades]]]
+
+
+def _seal(dek: bytes, ics: bytes) -> bytes:
+    nonce = secrets.token_bytes(12)
+    return _SEALED + base64.b64encode(nonce + AESGCM(dek).encrypt(nonce, ics, None))
+
+
+def _unseal(dek: bytes, stored: Any) -> bytes | None:
+    """The stored feed, None when missing or unreadable; feeds cached before encryption read as they are."""
+    if not stored:
+        return None
+    stored = bytes(stored)
+    if not stored.startswith(_SEALED):
+        return stored
+    try:
+        payload = base64.b64decode(stored[len(_SEALED):])
+        return AESGCM(dek).decrypt(payload[:12], payload[12:], None)
+    except (InvalidTag, ValueError):
+        return None
 
 
 def build_time_bodies(today: datetime.date | None = None) -> list[modeus_schema.ModeusTimeBody]:
@@ -166,7 +197,11 @@ async def delete_subscription(redis_pool: ConnectionPool, vault_id: str, secret:
     logger.info(f"Deleted ICS subscription from vault {vault_id}")
 
 
-async def _build_ics(record: vault_schema.VaultRecord, tokens: vault_schema.CachedTokens) -> bytes:
+async def _build_ics(
+        record: vault_schema.VaultRecord,
+        tokens: vault_schema.CachedTokens,
+        lesson_marks: LessonMarksLoader | None = None,
+) -> bytes:
     cookies = netology_schema.NetologyCookies.model_validate(
         {"_netology-on-rails_session": tokens.netology_session},
     )
@@ -193,30 +228,33 @@ async def _build_ics(record: vault_schema.VaultRecord, tokens: vault_schema.Cach
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         )
     merged = merge_calendars(list(weekly_calendars)).change_timezone(record.time_zone)
-    return b"".join(bulk_integration.export_to_ics(merged))
+    marks = {}
+    if lesson_marks is not None:
+        marks = await lesson_marks({str(event.id): event.start_time for event in merged.utmn.modeus_events})
+    return b"".join(bulk_integration.export_to_ics(merged, marks))
 
 
-async def _serve_broken(redis: Redis, vault_id: str, record: vault_schema.VaultRecord) -> bytes:
+async def _serve_broken(redis: Redis, vault_id: str, record: vault_schema.VaultRecord, dek: bytes) -> bytes:
     await vault_integration.mark_broken(redis, vault_id, record, broken=True)
-    last_ics = await redis.get(_LAST_KEY.format(vault_id=vault_id))
+    last_ics = _unseal(dek, await redis.get(_LAST_KEY.format(vault_id=vault_id)))
     return build_warning_ics(last_ics)
 
 
-async def _serve_last_good(redis: Redis, vault_id: str, exception: BaseException) -> bytes:
+async def _serve_last_good(redis: Redis, vault_id: str, exception: BaseException, dek: bytes) -> bytes:
     """Upstream outage: keep serving the last good feed instead of failing the poll.
 
     Calendar clients drop a subscription that keeps failing, and events
     would vanish from the user's calendar; stale data is the lesser evil.
     The stale feed is cached only briefly so the next poll retries upstream.
     """
-    last_ics = await redis.get(_LAST_KEY.format(vault_id=vault_id))
+    last_ics = _unseal(dek, await redis.get(_LAST_KEY.format(vault_id=vault_id)))
     if not last_ics:
         raise exception
     logger.opt(exception=exception).warning(
         f"ICS subscription {vault_id}: upstream failed, serving the last good feed",
     )
-    await redis.set(_CACHE_KEY.format(vault_id=vault_id), last_ics, ex=settings.redis_degraded_retry_time)
-    return bytes(last_ics)
+    await redis.set(_CACHE_KEY.format(vault_id=vault_id), _seal(dek, last_ics), ex=settings.redis_degraded_retry_time)
+    return last_ics
 
 
 async def get_subscription_ics(redis_pool: ConnectionPool, vault_id: str, secret: str) -> bytes:
@@ -224,9 +262,15 @@ async def get_subscription_ics(redis_pool: ConnectionPool, vault_id: str, secret
     async with Redis(connection_pool=redis_pool) as redis:
         record, _, dek = await vault_integration.resolve(redis, vault_id, secret)
 
-        cached_ics = await redis.get(_CACHE_KEY.format(vault_id=vault_id))
+        cached_ics = _unseal(dek, await redis.get(_CACHE_KEY.format(vault_id=vault_id)))
         if cached_ics:
-            return bytes(cached_ics)
+            return cached_ics
+
+        async def get_modeus_token(force: bool) -> str:
+            return await vault_integration.get_modeus_token(redis, vault_id, record, dek, force=force)
+
+        async def lesson_marks(starts: dict[str, datetime.datetime]) -> dict[str, grades_schema.LessonGrades]:
+            return await grades_integration.vault_lesson_marks(get_modeus_token, starts)
 
         tokens = await vault_integration.get_cached_tokens(redis, vault_id)
 
@@ -238,13 +282,13 @@ async def get_subscription_ics(redis_pool: ConnectionPool, vault_id: str, secret
                 except Exception as exception:
                     if is_auth_error(exception):
                         logger.warning(f"ICS subscription {vault_id} is broken: credentials rejected")
-                        return await _serve_broken(redis, vault_id, record)
-                    return await _serve_last_good(redis, vault_id, exception)
+                        return await _serve_broken(redis, vault_id, record, dek)
+                    return await _serve_last_good(redis, vault_id, exception, dek)
             try:
-                ics_bytes = await _build_ics(record, tokens)
+                ics_bytes = await _build_ics(record, tokens, lesson_marks)
             except Exception as exception:
                 if not is_auth_error(exception):
-                    return await _serve_last_good(redis, vault_id, exception)
+                    return await _serve_last_good(redis, vault_id, exception, dek)
                 if attempt_with_fresh_tokens:
                     raise
                 # Cached tokens expired earlier than expected: retry once.
@@ -252,9 +296,9 @@ async def get_subscription_ics(redis_pool: ConnectionPool, vault_id: str, secret
                 continue
             await vault_integration.mark_broken(redis, vault_id, record, broken=False)
             await redis.set(
-                _CACHE_KEY.format(vault_id=vault_id), ics_bytes, ex=settings.ics_cache_time_live,
+                _CACHE_KEY.format(vault_id=vault_id), _seal(dek, ics_bytes), ex=settings.ics_cache_time_live,
             )
-            await redis.set(_LAST_KEY.format(vault_id=vault_id), ics_bytes)
+            await redis.set(_LAST_KEY.format(vault_id=vault_id), _seal(dek, ics_bytes))
             return ics_bytes
         raise HTTPException(  # pragma: no cover - unreachable
             detail="Can't build calendar", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

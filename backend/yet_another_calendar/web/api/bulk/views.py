@@ -3,7 +3,7 @@ Modeus API implemented using a controller.
 """
 from typing import Annotated
 
-from fastapi import APIRouter, Header, BackgroundTasks
+from fastapi import APIRouter, Cookie, Header, BackgroundTasks
 from fastapi.params import Depends
 from starlette.responses import StreamingResponse
 from redis.asyncio import ConnectionPool
@@ -11,6 +11,7 @@ from redis.asyncio import ConnectionPool
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.auth.utils import verify_tutor_token
 from . import integration, schema
+from ..grades import views as grades_views
 from ..lms import schema as lms_schema
 from ..modeus import schema as modeus_schema
 from ..modeus import integration as modeus_integration
@@ -79,10 +80,13 @@ async def export_ics(
             int | tuple[int, ...], Depends(netology_schema.get_calendar_ids_from_query),
         ] = settings.netology_default_course_id,
         time_zone: str = "Europe/Moscow",
-
+        redis_pool: Annotated[ConnectionPool | None, Depends(get_redis_pool)] = None,
+        yac_vault: Annotated[str | None, Cookie()] = None,
 ) -> StreamingResponse:
     """
-    Export into .ics format
+    Export into .ics format.
+
+    A remembered browser also gets attendance and grades of the past Modeus pairs.
     """
     fallback = await integration.load_cached_calendar(body, calendar_id, modeus_person_id)
     calendar = await integration.get_calendar(
@@ -90,7 +94,11 @@ async def export_ics(
         modeus_jwt_token=donor_token, lms_user=lms_user, cookies=cookies, fallback=fallback,
     )
     calendar_with_timezone = calendar.change_timezone(time_zone)
-    return StreamingResponse(integration.export_to_ics(calendar_with_timezone))
+    lesson_marks = await grades_views.remembered_lesson_marks(
+        redis_pool, yac_vault, modeus_person_id,
+        {str(event.id): event.start_time for event in calendar_with_timezone.utmn.modeus_events},
+    )
+    return StreamingResponse(integration.export_to_ics(calendar_with_timezone, lesson_marks))
 
 
 @router.get("/user_metrix/")

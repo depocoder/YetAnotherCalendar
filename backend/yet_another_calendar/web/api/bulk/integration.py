@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import hashlib
+import re
 import time
 from collections.abc import Awaitable, Iterable
 from typing import Any
@@ -19,6 +20,7 @@ from yet_another_calendar.settings import settings
 from . import schema
 from .. import upstream_health
 from ..errors import is_auth_error, leaf_exceptions
+from ..grades import schema as grades_schema
 from ..lms import schema as lms_schema
 from ..lms import views as lms_views
 from ..modeus import integration as modeus_integration
@@ -119,7 +121,35 @@ def describe_webinar(webinar: netology_schema.LessonWebinar) -> str:
     return "\n".join(lines)
 
 
-def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
+_ATTENDANCE_LINES = {"PRESENT": "✅ Был на паре", "ABSENT": "❌ Не был на паре"}  # noqa: RUF001 - Russian text
+
+
+def _grade_value(value: str) -> str:
+    """ "86.00" -> "86"; "2.26" and "отл." stay as they are."""
+    return re.sub(r"(?<=\d)\.0+$", "", value)
+
+
+def describe_modeus_lesson(name: str, marks: grades_schema.LessonGrades | None) -> str:
+    """The pair's name plus its attendance and grades, when Modeus marked them.
+
+    Unmarked attendance adds nothing: "no mark" is not "absent".
+    """
+    lines = [name]
+    if marks is not None:
+        if attendance := _ATTENDANCE_LINES.get(marks.attendance or ""):
+            lines.append(attendance)
+        if marks.results:
+            grades = ", ".join(f"{result.name}: {_grade_value(result.value)}" for result in marks.results)
+            lines.append(f"🎓 {grades}")
+    return "\n".join(lines)
+
+
+def export_to_ics(
+        calendar: schema.CalendarResponse,
+        lesson_marks: dict[str, grades_schema.LessonGrades] | None = None,
+) -> Iterable[bytes]:
+    """The calendar as ICS; ``lesson_marks`` (by Modeus event id) adds attendance and grades to past pairs."""
+    lesson_marks = lesson_marks or {}
     ics_calendar = icalendar.Calendar()
     ics_calendar.add('version', '2.0')
     ics_calendar.add('prodid', 'yet_another_calendar')
@@ -154,7 +184,10 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
     for modeus_lesson in calendar.utmn.modeus_events:
         event = create_ics_event(title=f"Modeus: {modeus_lesson.course_name}", starts_at=modeus_lesson.start_time,
                                  ends_at=modeus_lesson.end_time, lesson_id=modeus_lesson.id,
-                                 description=modeus_lesson.name, url=modeus_lesson.mts_url)
+                                 description=describe_modeus_lesson(
+                                     modeus_lesson.name, lesson_marks.get(str(modeus_lesson.id)),
+                                 ),
+                                 url=modeus_lesson.mts_url)
         ics_calendar.add_component(event)
     for lms_event in calendar.utmn.lms_events:
         dt_start = lms_event.dt_end - datetime.timedelta(hours=2)
