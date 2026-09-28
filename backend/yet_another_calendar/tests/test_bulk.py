@@ -1243,3 +1243,24 @@ async def test_views_export_ics():
             # Verify change_timezone was called (line 78)
             # and export_to_ics was called (line 79)
             mock_export.assert_called_once()
+
+
+def test_describe_webinar_lists_speakers_and_recording() -> None:
+    webinar = netology_schema.LessonWebinar.model_validate({
+        "id": 1, "lesson_id": 2, "type": "webinar", "title": "Вебинар 3", "block_title": "Бэкенд",
+        "experts": [{"full_name": "Спикер Один"}, {"full_name": "Спикер Два"}, {"avatar_path": "x"}],
+        "video_url": "https://kinescope.io/abc",
+    })
+    assert integration.describe_webinar(webinar) == (
+        "Вебинар 3\nСпикеры: Спикер Один, Спикер Два\nЗапись: https://kinescope.io/abc"
+    )
+
+
+def test_describe_webinar_without_extras_is_the_title() -> None:
+    webinar = netology_schema.LessonWebinar.model_validate({
+        "id": 1, "lesson_id": 2, "type": "webinar", "title": "Вебинар 3", "block_title": "Бэкенд",
+        "experts": [{"full_name": "Спикер Один"}],
+    })
+    assert integration.describe_webinar(webinar) == "Вебинар 3\nСпикер: Спикер Один"
+    webinar.experts = None
+    assert integration.describe_webinar(webinar) == "Вебинар 3"

@@ -108,6 +108,17 @@ def create_ics_event(title: str, starts_at: datetime.datetime, ends_at: datetime
     return event
 
 
+def describe_webinar(webinar: netology_schema.LessonWebinar) -> str:
+    """Webinar title plus its speakers and, once Netology has it, the recording."""
+    lines = [webinar.title]
+    speakers = [str(expert["full_name"]) for expert in webinar.experts or [] if expert.get("full_name")]
+    if speakers:
+        lines.append(f"{'Спикеры' if len(speakers) > 1 else 'Спикер'}: {', '.join(speakers)}")
+    if webinar.video_url:
+        lines.append(f"Запись: {webinar.video_url}")
+    return "\n".join(lines)
+
+
 def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
     ics_calendar = icalendar.Calendar()
     ics_calendar.add('version', '2.0')
@@ -122,7 +133,7 @@ def export_to_ics(calendar: schema.CalendarResponse) -> Iterable[bytes]:
             continue
         event = create_ics_event(title=f"Netology: {netology_lesson.block_title}", starts_at=netology_lesson.starts_at,
                                  ends_at=netology_lesson.ends_at, lesson_id=netology_lesson.id,
-                                 description=netology_lesson.title,
+                                 description=describe_webinar(netology_lesson),
                                  url=netology_lesson.webinar_url)
         ics_calendar.add_component(event)
     for netology_homework in calendar.netology.homework:
