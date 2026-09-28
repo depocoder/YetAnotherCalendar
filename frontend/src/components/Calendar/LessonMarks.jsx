@@ -1,26 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { getLessonGrades, subscribeModeusGrades } from '../../services/modeusGrades';
 import { formatGradeValue } from '../../utils/grades';
+import { CheckIcon, CrossIcon, StarIcon } from './icons';
 import '../../style/lesson-marks.scss';
-
-// Значки рисуем сами: эмодзи на плитках выглядят чужеродно и по-разному в системах.
-const CheckIcon = () => (
-    <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-        <path d="M2.6 6.4l2.2 2.2 4.6-4.8" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-);
-
-const CrossIcon = () => (
-    <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-        <path d="M3.4 3.4l5.2 5.2M8.6 3.4L3.4 8.6" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-    </svg>
-);
-
-const StarIcon = () => (
-    <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-        <path d="M6 1.2l1.5 3.1 3.4.5-2.5 2.4.6 3.4L6 9l-3 1.6.6-3.4L1.1 4.8l3.4-.5z" fill="currentColor" />
-    </svg>
-);
 
 const ATTENDANCE_MARK = {
     PRESENT: { Icon: CheckIcon, label: 'Был', text: 'Был на паре', modifier: 'present' },

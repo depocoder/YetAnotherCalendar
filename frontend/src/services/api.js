@@ -189,6 +189,22 @@ export async function getGrades(periodId = null) {
     }
 }
 
+// Баллы по элементам одного курса LMS (по module id): те же заголовки, что у bulk-запроса.
+// Возвращает ответ axios (или e.response): 200 {} — журнал курса закрыт, 401 — токен LMS истек.
+export async function getLmsGrades(courseId) {
+    try {
+        return await axios.get(`${BACKEND_URL}/api/grades/lms/`, {
+            params: {course_id: courseId},
+            headers: {
+                'lxp-token': getLMSTokenFromLocalStorage(),
+                'lxp-id': getLMSIdFromLocalStorage(),
+            },
+        });
+    } catch (e) {
+        return e.response || {status: 0};
+    }
+}
+
 // Статусы домашних заданий Нетологии: хватает обычной сессии Нетологии.
 export async function getNetologyGrades() {
     try {

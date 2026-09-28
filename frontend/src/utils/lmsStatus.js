@@ -42,9 +42,20 @@ export const isTaskDone = (event) => {
     return Boolean(getLmsStatus(event)?.done);
 };
 
-export const LMS_REQUIREMENT_MARKS = {
-    complete: '✅',
-    complete_pass: '✅',
-    complete_fail: '❌',
-    incomplete: '⏳',
+// Условие выполнения (completion_requirements[].status): выполнено, провалено, впереди.
+export const lmsRequirementState = (status) => {
+    if (status === 'complete' || status === 'complete_pass') return 'done';
+    if (status === 'complete_fail') return 'fail';
+    return 'pending';
 };
+
+// Тип элемента курса (modname) по-русски.
+export const LMS_MODULE_TYPES = {
+    assign: 'Задание',
+    quiz: 'Тест',
+    forum: 'Форум',
+    workshop: 'Семинар',
+};
+
+// Баллы как пишет LMS: 18.4 → «18,4», 20 → «20».
+export const formatLmsPoints = (value) => Number(value).toLocaleString('ru-RU', { maximumFractionDigits: 2 });

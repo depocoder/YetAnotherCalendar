@@ -1,0 +1,133 @@
+// Карточка элемента курса LMS (LmsCard): строки «подпись: значение» и пилюли
+// в том же языке, что отметки пар (lesson-marks.scss); акцент — розовый ТюмГУ.
+
+$lms-pink: #F46386;
+$lms-pink-text: #c2325c;
+$lms-text: #2c2d2e;
+$lms-muted: #6c757d;
+$lms-done-bg: #afcb8a;
+$lms-done-text: #3f5a26;
+$lms-fail-bg: #ffb3b3;
+$lms-fail-text: #a61e1e;
+
+.lms-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 18px;
+    padding: 0 8px 0 6px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    svg {
+        flex-shrink: 0;
+        width: 11px;
+        height: 11px;
+    }
+
+    &--done {
+        color: $lms-done-text;
+        background: $lms-done-bg;
+    }
+
+    &--fail {
+        color: $lms-fail-text;
+        background: $lms-fail-bg;
+    }
+
+    // Условие впереди и «еще не оценено»: тихая серая пилюля.
+    &--pending {
+        color: $lms-muted;
+        background: rgba(0, 0, 0, 0.06);
+        font-weight: 600;
+    }
+
+    // Баллы — главный акцент: белая пилюля с розовым кольцом.
+    &--points {
+        color: $lms-pink-text;
+        background: #fff;
+        box-shadow: 0 0 0 1px rgba($lms-pink, 0.4);
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+// Панель под расписанием.
+.lms-card {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+    text-align: left;
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+    color: $lms-text;
+
+    &__row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    &__label {
+        font-weight: 600;
+        color: $lms-pink;
+    }
+
+    &__text {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    // Тип элемента (Тест, Задание) — маленькая метка рядом с курсом.
+    &__type {
+        padding: 0 6px;
+        border-radius: 6px;
+        background: rgba($lms-pink, 0.14);
+        color: $lms-pink-text;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 16px;
+    }
+
+    &__note {
+        color: $lms-muted;
+        font-size: 11px;
+    }
+
+    // Строка пилюль в карточке-модалке — под подписью, чуть крупнее под ее шрифты.
+    &__pills {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+    }
+
+    &--modal {
+        .lms-pill {
+            height: 20px;
+            font-size: 12px;
+            line-height: 20px;
+
+            svg {
+                width: 12px;
+                height: 12px;
+            }
+        }
+
+        .lms-card__note {
+            font-size: 12px;
+        }
+    }
+}

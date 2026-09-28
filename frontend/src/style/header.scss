@@ -344,7 +344,8 @@ a {
 }
 
 // Кнопка «Перейти» висит в правом нижнем углу карточки — строки под нее не заходят.
-.rectangle-info.has-link .netology-text-info {
+.rectangle-info.has-link .netology-text-info,
+.rectangle-info.has-link .lms-card {
   padding-right: 120px;
 }
 

@@ -3,8 +3,8 @@ import arrowGreen from "../../img/ArrowGreen.svg";
 import arrowPink from "../../img/ArrowPink.svg";
 import arrowViolet from "../../img/ArrowViolet.svg";
 import { formatDate } from "../../utils/dateUtils";
-import { getLmsStatus, LMS_REQUIREMENT_MARKS } from "../../utils/lmsStatus";
 import LessonGrade, { ModeusCourseName } from "./LessonGrade";
+import LmsCard from "./LmsCard";
 import ExternalLink from "./ExternalLink";
 import { netologyProgramLinks } from "../../utils/grades";
 import NetologyTaskReview from "./NetologyTaskReview";
@@ -71,7 +71,6 @@ const EventsDetail = ({ event, mtsUrls = {}, onOpenGrades }) => {
 
     // Проверяем, что event существует перед вызовом getSourceInfo
     const sourceInfo = event ? getSourceInfo() : null;
-    const lmsStatus = getLmsStatus(event);
 
     // Функция для получения цвета кнопки в зависимости от типа события
     const getEventButtonColor = () => {
@@ -201,39 +200,7 @@ const EventsDetail = ({ event, mtsUrls = {}, onOpenGrades }) => {
                 )}
                 {event.source === 'utmn' && (
                     <div className="task-event">
-                        {event.course_name && (
-                            <>
-                                <span className="task-event-text">
-                                    Курс: {event.course_name}
-                                </span>
-                                <br/>
-                            </>
-                        )}
-                        {event.modname && (
-                            <span className="task-event-text">
-                                Тип: {event.modname === 'assign' ? 'Задание' :
-                                      event.modname === 'quiz' ? 'Тест' :
-                                      event.modname === 'forum' ? 'Форум' :
-                                      event.modname === 'workshop' ? 'Семинар' :
-                                      event.modname}
-                            </span>
-                        )}
-                        {lmsStatus && (
-                            <>
-                                <br/>
-                                <span className="task-event-text">
-                                    Статус: {lmsStatus.label} {lmsStatus.done ? '✅' : '❌'}
-                                </span>
-                            </>
-                        )}
-                        {event.completion_requirements?.map((requirement) => (
-                            <React.Fragment key={requirement.description}>
-                                <br/>
-                                <span className="task-event-text">
-                                    {LMS_REQUIREMENT_MARKS[requirement.status] || '⏳'} {requirement.description}
-                                </span>
-                            </React.Fragment>
-                        ))}
+                        <LmsCard event={event} />
                     </div>
                 )}
 
