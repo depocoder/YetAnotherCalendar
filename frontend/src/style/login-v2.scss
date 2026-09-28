@@ -159,6 +159,16 @@
         }
 
         small { display: block; color: #adb5bd; font-size: 11.5px; }
+
+        // Пока галочки нет — подсказка заметна: без нее пропадут оценки Модеуса.
+        &--attract &-note {
+            color: #7b61ff;
+            font-weight: 500;
+        }
+
+        &-note {
+            margin-top: 2px;
+        }
     }
 
     &__btn {
