@@ -176,3 +176,35 @@ async def test_one_off_export_adds_marks_for_the_remembered_person(client, fake_
         ) == {}
 
     loaded.assert_awaited_once()
+
+
+def _homework(**review: object) -> "bulk_integration.netology_schema.LessonTask":
+    return bulk_integration.netology_schema.LessonTask.model_validate({
+        "id": 1, "lesson_id": 2, "type": "task", "title": "ДЗ по теме 1", "block_title": "Многопоточность",
+        "path": "/profile/program/bhebdps-24-tpm-5/lessons/2/lesson_items/1", "passed": False, **review,
+    })
+
+
+def test_describe_netology_homework_says_who_checks_it() -> None:
+    expert = bulk_integration.describe_netology_homework(
+        _homework(task_type="common", review_status="accepted", score="good", passed=True),
+    )
+    assert expert.split("\n") == [
+        "ДЗ по теме 1",
+        "🧑‍🏫 Проверяет эксперт — примет или вернет на доработку и поставит оценку",
+        "Статус: принято",
+        "🎓 Оценка: хорошо",
+        "Практика: https://netology.ru/profile/program/bhebdps-24-tpm-5/execution/all",
+    ]
+    self_check = bulk_integration.describe_netology_homework(
+        _homework(task_type="independent", review_status="submitted", passed=True),
+    )
+    assert "🔁 Самопроверка — засчитывается, как только решение отправлено, оценки не будет" in self_check
+    assert "Статус: сдано" in self_check and "Оценка" not in self_check
+    # Nothing sent yet: no status line, the missing ✅ in the title already says so
+    pending = bulk_integration.describe_netology_homework(_homework(task_type="common", review_status=None))
+    assert "Статус" not in pending
+    # A calendar cached before the review was read: title and practice only
+    assert bulk_integration.describe_netology_homework(_homework(review_status=None)).split("\n") == [
+        "ДЗ по теме 1", "Практика: https://netology.ru/profile/program/bhebdps-24-tpm-5/execution/all",
+    ]

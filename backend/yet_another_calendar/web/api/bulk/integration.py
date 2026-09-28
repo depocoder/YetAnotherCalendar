@@ -5,6 +5,7 @@ import re
 import time
 from collections.abc import Awaitable, Iterable
 from typing import Any
+from urllib.parse import urljoin
 
 import httpx
 import icalendar
@@ -144,6 +145,33 @@ def describe_modeus_lesson(name: str, marks: grades_schema.LessonGrades | None) 
     return "\n".join(lines)
 
 
+# Who checks a Netology homework, and what became of it (netology.schema.review_status).
+_HOMEWORK_CHECK = {
+    "common": "🧑‍🏫 Проверяет эксперт — примет или вернет на доработку и поставит оценку",
+    "independent": "🔁 Самопроверка — засчитывается, как только решение отправлено, оценки не будет",
+}
+_HOMEWORK_STATUS = {
+    "accepted": "принято", "rework": "на доработке", "review": "на проверке у эксперта",  # noqa: RUF001 - Russian text
+    "submitted": "сдано", "passed": "пройден",
+}
+_HOMEWORK_SCORE = {"excellent": "отлично", "good": "хорошо", "satisfactory": "удовлетворительно"}
+_PROGRAM_PATH = re.compile(r"^/profile/program/[^/]+/")
+
+
+def describe_netology_homework(homework: netology_schema.LessonTask) -> str:
+    """The homework's title, who checks it, its status and grade, and the program's practice page."""
+    lines = [homework.title]
+    if check := _HOMEWORK_CHECK.get(homework.task_type or ""):
+        lines.append(check)
+    if homework.review_status:
+        lines.append(f"Статус: {_HOMEWORK_STATUS.get(homework.review_status, homework.review_status)}")
+    if homework.score:
+        lines.append(f"🎓 Оценка: {_HOMEWORK_SCORE.get(homework.score, homework.score)}")
+    if program_path := _PROGRAM_PATH.match(homework.path):
+        lines.append(f"Практика: {urljoin(settings.netology_url, program_path.group(0))}execution/all")
+    return "\n".join(lines)
+
+
 def export_to_ics(
         calendar: schema.CalendarResponse,
         lesson_marks: dict[str, grades_schema.LessonGrades] | None = None,
@@ -178,7 +206,7 @@ def export_to_ics(
         done = f"{DONE_MARK} " if netology_homework.passed else ""
         event = create_ics_event(title=f"{done}Netology ДЗ: {netology_homework.block_title}", starts_at=dt_start,
                                  ends_at=dt_end, lesson_id=netology_homework.id,
-                                 description=netology_homework.title,
+                                 description=describe_netology_homework(netology_homework),
                                  url=netology_homework.url)
         ics_calendar.add_component(event)
     for modeus_lesson in calendar.utmn.modeus_events:
