@@ -6,7 +6,7 @@ import '../../style/export-menu.scss';
  * перегружать её кнопками. Ховер на десктопе, тап (bottom sheet) на
  * мобильных — тот же паттерн, что у меню экспорта.
  */
-const SettingsMenu = ({ onOpenCourses, onOpenGrades, onOpenFeatures }) => {
+const SettingsMenu = ({ onOpenCourses, onOpenFeatures }) => {
     const [open, setOpen] = useState(false);
     const closeTimerRef = useRef(null);
 
@@ -33,7 +33,7 @@ const SettingsMenu = ({ onOpenCourses, onOpenGrades, onOpenFeatures }) => {
             <button
                 className="export-btn"
                 onClick={() => setOpen(prev => !prev)}
-                title="Курсы, оценки, приватность и информация о проекте"
+                title="Курсы, приватность и информация о проекте"
             >
                 ⚙️ Ещё <span className="export-menu__caret">▾</span>
             </button>
@@ -44,13 +44,6 @@ const SettingsMenu = ({ onOpenCourses, onOpenGrades, onOpenFeatures }) => {
                     <span>
                         <span className="export-menu__item-title">Мои курсы</span>
                         <span className="export-menu__item-hint">Какие курсы Нетологии подгружать</span>
-                    </span>
-                </button>
-                <button className="export-menu__item" onClick={pick(onOpenGrades)}>
-                    <span className="export-menu__item-icon">🎓</span>
-                    <span>
-                        <span className="export-menu__item-title">Мои оценки</span>
-                        <span className="export-menu__item-hint">Баллы, итоги и посещаемость из Модеуса</span>
                     </span>
                 </button>
                 <button

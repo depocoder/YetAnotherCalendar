@@ -1,0 +1,73 @@
+// «Мои оценки» в шапке: размеры и шрифт — как у «Экспорт» и «Ещё» (header.scss),
+// но с градиентом и тенью бейджа BETA — заметнее соседей, тише самого календаря.
+
+$grades-btn-purple: #7b61ff;
+$grades-btn-deep: #5856d6;
+
+.grades-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 28px;
+    margin-left: 18px;
+    padding: 4px 12px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, $grades-btn-purple 0%, $grades-btn-deep 100%);
+    color: #fff;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba($grades-btn-purple, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+
+    svg {
+        flex-shrink: 0;
+        width: 15px;
+        height: 15px;
+    }
+
+    &:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba($grades-btn-purple, 0.35);
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba($grades-btn-purple, 0.3);
+    }
+
+    &:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 0;
+        box-shadow: 0 0 0 4px rgba($grades-btn-purple, 0.45);
+    }
+}
+
+// На телефоне — первой строкой над остальными кнопками, на всю их ширину:
+// большая палец-цель там, куда смотрят в первую очередь. Десктопный экземпляр
+// в .shedule-export на телефоне прячем, как и соседние кнопки (calendar.scss).
+@media (max-width: 768px) {
+    .shedule-export .grades-btn {
+        display: none;
+    }
+
+    .mobile-header-actions .grades-btn {
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+        min-height: 48px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+}

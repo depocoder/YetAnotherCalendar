@@ -13,9 +13,11 @@
     backdrop-filter: blur(4px);
 }
 
+$modal-radius: 16px;
+
 .subscription-modal {
     background: white;
-    border-radius: 16px;
+    border-radius: $modal-radius;
     width: 100%;
     max-width: 600px;
     max-height: 90vh;
@@ -25,6 +27,10 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: subscriptionSlideIn 0.3s ease;
     font-family: "Roboto", sans-serif;
+    // Скругленные углы рисуют сами шапка и тело своим border-radius (ниже), а не
+    // обрезка overflow: hidden: обрезанные углы — особенно полосу прокрутки тела —
+    // Firefox и Chrome при дробном DPR и во время scale-анимации рисуют зубчато.
+    isolation: isolate;
 }
 
 @keyframes subscriptionSlideIn {
@@ -40,6 +46,7 @@
 
 .subscription-header {
     background: linear-gradient(135deg, #7b61ff 0%, #5856d6 100%);
+    border-radius: $modal-radius $modal-radius 0 0;
     color: white;
     padding: 20px 28px;
     display: flex;
@@ -85,6 +92,7 @@
 .subscription-body {
     padding: 22px 28px 26px;
     overflow-y: auto;
+    border-radius: 0 0 $modal-radius $modal-radius;
 }
 
 .subscription-vault-offer {
