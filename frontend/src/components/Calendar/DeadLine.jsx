@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { format, startOfDay } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import { isTaskDone } from '../../utils/lmsStatus';
+import { CheckIcon } from './icons';
 
 const DeadlineCell = ({ deadlines, setSelectedEvent }) => (
     <td className="vertical-deadline">
@@ -14,7 +15,7 @@ const DeadlineCell = ({ deadlines, setSelectedEvent }) => (
                         onClick={() => setSelectedEvent(deadline)}
                     >
                         <span className="source-tag">
-                            {deadline.isDone && '✅ '}
+                            {deadline.isDone && <span className="deadline-check" title="Выполнено"><CheckIcon /></span>}
                             {deadline.source === 'netology' ? 'Нетология' : 'ТюмГу'}
                         </span>
                     </div>

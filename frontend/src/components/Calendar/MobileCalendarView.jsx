@@ -3,6 +3,8 @@ import { formatDateToAMPM } from './LessonTimes';
 import camera from "../../img/camera.png";
 import { getLmsStatus, isTaskDone } from "../../utils/lmsStatus";
 import LessonMarks from './LessonMarks';
+import { CheckIcon, CrossIcon } from './icons';
+import '../../style/lms-card.scss';
 
 const MobileCalendarView = ({ 
     events, 
@@ -221,7 +223,7 @@ const MobileCalendarView = ({
                                     <div className="mobile-event-time">
                                         {event.isDeadline ? (
                                             <span className="mobile-event-deadline-label">
-                                                {isTaskDone(event) ? 'Выполнено' : 'Дедлайн'}
+                                                {isTaskDone(event) ? <><CheckIcon /> Выполнено</> : 'Дедлайн'}
                                             </span>
                                         ) : (
                                             <>
@@ -254,10 +256,12 @@ const MobileCalendarView = ({
                                             {event?.course_name || event?.block_title || event?.title || event?.name}
                                         </div>
                                         
+                                        {/* Статус LMS — той же пилюлей, что в карточке задания */}
                                         {event.type === 'lms' && event.lmsStatus && (
-                                            <div className="mobile-event-code">
-                                                {event.lmsStatus.done ? '✅' : '❌'} {event.lmsStatus.label}
-                                            </div>
+                                            <span className={`lms-pill lms-pill--${event.lmsStatus.done ? 'done' : 'fail'} mobile-event-status`}>
+                                                {event.lmsStatus.done ? <CheckIcon /> : <CrossIcon />}
+                                                {event.lmsStatus.label}
+                                            </span>
                                         )}
 
                                         {event.type === 'modeus' && event?.cycle_realization?.code && (

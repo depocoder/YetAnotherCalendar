@@ -214,6 +214,21 @@ $color-border-light: #e9ecef;
     }
 }
 
+// Галочка выполненного дедлайна в строке «Дедлайны»: тем же значком, что на
+// плитках и в карточках, цветом текста плитки (зеленый у .done).
+.deadline-info .deadline-check {
+    display: inline-flex;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    vertical-align: -1px;
+
+    svg {
+        width: 100%;
+        height: 100%;
+    }
+}
+
 .shedule-table {
     width: 100%;
     margin-top: 36px;
@@ -1183,7 +1198,8 @@ $color-border-light: #e9ecef;
         }
     }
     
-    &.utmn {
+    // LMS-события из мобильного списка приходят с type: 'lms' — та же розовая полоса ТюмГУ.
+    &.utmn, &.lms {
         .event-modal-source {
             border-left: 4px solid #F46386;
         }
@@ -1617,6 +1633,9 @@ $color-border-light: #e9ecef;
     }
     
     .mobile-event-deadline-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
         font-weight: 600;
         color: #ffffff;
         font-size: 10px;
@@ -1627,6 +1646,12 @@ $color-border-light: #e9ecef;
         border-radius: 10px;
         box-shadow: 0 2px 6px rgba(244, 99, 134, 0.3);
         line-height: 1;
+
+        svg {
+            width: 10px;
+            height: 10px;
+            flex-shrink: 0;
+        }
     }
 }
 
@@ -1667,6 +1692,23 @@ $color-border-light: #e9ecef;
     line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+// Пилюля статуса LMS в мобильном списке (стили пилюли — lms-card.scss):
+// колонка узкая, длинная подпись переносится, а не режется. Два класса —
+// чтобы перебить .lms-pill, чей файл подключается позже.
+.lms-pill.mobile-event-status {
+    align-self: flex-start;
+    height: auto;
+    min-height: 18px;
+    padding: 1px 8px 1px 6px;
+    line-height: 16px;
+    white-space: normal;
+    align-items: flex-start;
+
+    svg {
+        margin-top: 2.5px;
+    }
 }
 
 .mobile-event-code {
