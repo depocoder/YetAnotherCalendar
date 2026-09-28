@@ -216,3 +216,11 @@ $marks-muted: #6c757d;
         transform: rotate(360deg);
     }
 }
+
+// «Мои оценки» и «Модеус» — в конце строки отметок, отделены от пилюль небольшим зазором.
+.lesson-grade__links {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 4px;
+}

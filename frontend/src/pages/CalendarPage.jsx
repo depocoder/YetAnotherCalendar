@@ -305,6 +305,12 @@ const CalendarPage = () => {
         setShowGithubModal(false);
     };
 
+    // «Мои оценки» из карточки пары: карточка закрывается, окно оценок — поверх календаря.
+    const handleOpenGradesFromCard = () => {
+        setSelectedEvent(null);
+        setShowGradesModal(true);
+    };
+
     const handleCloseEventModal = () => {
         setSelectedEvent(null);
     };
@@ -327,6 +333,7 @@ const CalendarPage = () => {
                     isOpen={!!selectedEvent}
                     onClose={handleCloseEventModal}
                     mtsUrls={mtsUrls}
+                    onOpenGrades={handleOpenGradesFromCard}
                 />
             </ErrorBoundary>
             <CourseSelectorModal
@@ -386,7 +393,7 @@ const CalendarPage = () => {
 
                     <div className="events-container">
                         <ErrorBoundary resetKey={selectedEvent}>
-                            <EventsDetail event={selectedEvent} mtsUrls={mtsUrls} />
+                            <EventsDetail event={selectedEvent} mtsUrls={mtsUrls} onOpenGrades={handleOpenGradesFromCard} />
                         </ErrorBoundary>
                     </div>
                     <DatePicker setDate={setDate} initialDate={date} disableButtons={loading} />

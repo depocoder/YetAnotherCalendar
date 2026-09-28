@@ -3,6 +3,7 @@ import { fetchGrades } from '../../services/modeusGrades';
 import { ATTENDANCE, formatGradeValue as formatValue } from '../../utils/grades';
 import InlineLoader from '../../elements/InlineLoader';
 import NetologyGrades from './NetologyGrades';
+import ExternalLink from './ExternalLink';
 import { debug } from '../../utils/debug';
 import '../../style/subscription-modal.scss';
 import '../../style/grades-modal.scss';
@@ -61,7 +62,9 @@ const CourseCard = ({ course }) => {
         <div className="grades-course">
             <div className="grades-course__head">
                 <div className="grades-course__titles">
-                    <span className="grades-course__name">{course.name}</span>
+                    <span className="grades-course__name">
+                        <ExternalLink href={course.catalog_url} title="Предмет в каталоге Модеуса">{course.name}</ExternalLink>
+                    </span>
                     {showAcademicCourse && <span className="grades-course__parent">{course.academic_course}</span>}
                 </div>
                 <div className="grades-course__results">
@@ -213,6 +216,9 @@ const GradesModal = ({ isOpen, onClose }) => {
                             ))}
                         </select>
                         {status === 'loading' && <InlineLoader />}
+                        <ExternalLink href={data.modeus_url} className="ext-link--action" title="«Мои результаты» в Модеусе">
+                            Открыть в Модеусе
+                        </ExternalLink>
                     </div>
                 )}
                 <div className="grades-tiles">
@@ -271,6 +277,10 @@ const GradesModal = ({ isOpen, onClose }) => {
                             <NetologyGrades />
                         </div>
                     )}
+                    <p className="grades-privacy">
+                        🔒 Оценки — чувствительные данные, поэтому мы их не сохраняем: каждый раз читаем
+                        из Модеуса и Нетологии заново, и живут они только в этой вкладке.
+                    </p>
                 </div>
             </div>
         </div>

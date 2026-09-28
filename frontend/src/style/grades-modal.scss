@@ -437,3 +437,21 @@ $grades-muted: #6c757d;
 .info-content .grades-status {
     align-self: flex-start;
 }
+
+// Статус или оценка домашки и «Практика» рядом, в одной строке карточки.
+.netology-review__status-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+// Пометка внизу «Моих оценок»: оценки не сохраняются.
+.grades-privacy {
+    margin: 16px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid #f1f3f5;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #6c757d;
+}

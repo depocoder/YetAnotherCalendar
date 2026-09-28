@@ -30,6 +30,12 @@ export const NETOLOGY_CHECK = {
     independent: { label: 'самопроверка', hint: 'Засчитывается, как только вы отправили решение — оценки не будет' },
 };
 
+// Курс и «Практика» (все задания) программы Нетологии — по ссылке на любое ее задание.
+export const netologyProgramLinks = (taskUrl) => {
+    const match = /^(https?:\/\/[^/]+\/profile\/program\/[^/]+\/)/.exec(taskUrl || '');
+    return match ? { course: `${match[1]}schedule`, practice: `${match[1]}execution/all` } : {};
+};
+
 // Статус задания, у которого еще ничего не отправлено, зависит от срока.
 export const netologyStatusOf = ({ status, deadline }) => {
     if (status) return NETOLOGY_STATUS[status] || { label: status, className: '' };

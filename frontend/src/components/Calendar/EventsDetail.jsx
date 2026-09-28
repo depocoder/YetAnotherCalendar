@@ -4,10 +4,12 @@ import arrowPink from "../../img/ArrowPink.svg";
 import arrowViolet from "../../img/ArrowViolet.svg";
 import { formatDate } from "../../utils/dateUtils";
 import { getLmsStatus, LMS_REQUIREMENT_MARKS } from "../../utils/lmsStatus";
-import LessonGrade from "./LessonGrade";
+import LessonGrade, { ModeusCourseName } from "./LessonGrade";
+import ExternalLink from "./ExternalLink";
+import { netologyProgramLinks } from "../../utils/grades";
 import NetologyTaskReview from "./NetologyTaskReview";
 
-const EventsDetail = ({ event, mtsUrls = {} }) => {
+const EventsDetail = ({ event, mtsUrls = {}, onOpenGrades }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
 
@@ -152,7 +154,11 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
                 {['quiz', 'task', 'test'].includes(event.type) && event.type !== 'netology' && (
                     <div className="task-event">
                         <span className="task-event-text">
-                            {event.block_title || 'Название предмета не указано'}
+                            {event.block_title ? (
+                                <ExternalLink href={netologyProgramLinks(event.url).course} title="Курс в Нетологии">
+                                    {event.block_title}
+                                </ExternalLink>
+                            ) : 'Название предмета не указано'}
                         </span>
                         <NetologyTaskReview event={event} variant="detail" />
 
@@ -185,10 +191,10 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
                                 )}
                                 {event.course_name && (
                                     <div className="netology-info-row">
-                                        <span className="netology-label">📚 Курс: <span className="netology-value">{event.course_name}</span></span>
+                                        <span className="netology-label">📚 Курс: <span className="netology-value"><ModeusCourseName event={event} /></span></span>
                                     </div>
                                 )}
-                                <LessonGrade event={event} />
+                                <LessonGrade event={event} onOpenGrades={onOpenGrades} />
                             </div>
                         </div>
                     </div>

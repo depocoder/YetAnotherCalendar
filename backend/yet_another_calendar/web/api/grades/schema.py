@@ -125,6 +125,8 @@ class ModeusLesson(BaseModel):
 class ModeusCourseUnit(BaseModel):
     """A course unit realization: one subject (module part) of the semester."""
     id: str
+    # The subject in the Modeus course catalog.
+    course_unit_id: str | None = Field(alias="courseUnitId", default=None)
     name: str = ""
     lessons: list[ModeusLesson] = Field(default_factory=list)
 
@@ -240,6 +242,10 @@ class CourseGrades(BaseModel):
     id: str
     name: str
     academic_course: str | None = None
+    # The subject's page in the Modeus course catalog.
+    catalog_url: str | None = None
+    # Calendar events of every lesson of the subject, marked or not: a pair's card finds its subject by them.
+    event_ids: list[str] = Field(default_factory=list)
     results: list[Result] = Field(default_factory=list)
     attendance: AttendanceRate | None = None
     # Only the lessons that have a grade or an attendance mark.
@@ -255,6 +261,8 @@ class Period(BaseModel):
 
 
 class GradesResponse(BaseModel):
+    # The student's grades page in Modeus.
+    modeus_url: str = settings.modeus_my_results_url
     periods: list[Period] = Field(default_factory=list)
     period_id: str | None = None
     gpa: Rating | None = None
@@ -379,9 +387,16 @@ class NetologyTaskGrade(BaseModel):
         )
 
 
+_PROGRAM_PATH_RE = re.compile(r"^/profile/program/([^/]+)/")
+
+
 class NetologyProgramGrades(BaseModel):
     title: str
     semester: int | None = None
+    # The program's lessons and its "all homework" page (Netology calls it practice),
+    # read off its tasks' links; None when no task has one.
+    url: str | None = None
+    practice_url: str | None = None
     tasks: list[NetologyTaskGrade] = Field(default_factory=list)
     done: int = 0
     # False when only the summary was available: self-study homework is missing then.
@@ -424,9 +439,15 @@ class NetologyGradesResponse(BaseModel):
             tasks.sort(key=lambda task: (task.deadline is None, task.deadline or datetime.datetime.min.replace(
                 tzinfo=datetime.UTC)))
             match = _SEMESTER_RE.match(program.title)
+            program_path = next(
+                (found.group(0) for item in items if item.path and (found := _PROGRAM_PATH_RE.match(item.path))),
+                None,
+            )
             programs.append(NetologyProgramGrades(
                 title=program.title.strip(), semester=int(match.group(1)) if match else None, tasks=tasks,
                 done=sum(1 for task in tasks if task.status in DONE_STATUSES), complete=full is not None,
+                url=urljoin(settings.netology_url, f"{program_path}schedule") if program_path else None,
+                practice_url=urljoin(settings.netology_url, f"{program_path}execution/all") if program_path else None,
             ))
         programs.sort(key=lambda program: -(program.semester or 0))
         return cls(programs=programs, feedback=actual.expert_feedback if actual else None)

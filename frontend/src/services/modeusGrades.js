@@ -63,12 +63,16 @@ const eventDate = (event) => String(event.start || '').slice(0, 10);
 
 const lessonIndexes = new WeakMap();
 
+// event_id → {lesson, course}. Урок есть только у пар с отметками, предмет — у любой пары семестра.
 function lessonsByEvent(data) {
     if (!lessonIndexes.has(data)) {
         const index = new Map();
-        data.courses.forEach((course) => course.lessons.forEach((lesson) => {
-            if (lesson.event_id) index.set(lesson.event_id, { lesson, course });
-        }));
+        data.courses.forEach((course) => {
+            (course.event_ids || []).forEach((eventId) => index.set(eventId, { lesson: null, course }));
+            course.lessons.forEach((lesson) => {
+                if (lesson.event_id) index.set(lesson.event_id, { lesson, course });
+            });
+        });
         lessonIndexes.set(data, index);
     }
     return lessonIndexes.get(data);
@@ -102,5 +106,7 @@ export async function getLessonGrades(event, { force = false } = {}) {
         data = response.data;
     }
     const found = lessonsByEvent(data).get(event.id);
-    return { status: 'ok', lesson: found?.lesson || null, course: found?.course || null };
+    return {
+        status: 'ok', lesson: found?.lesson || null, course: found?.course || null, modeusUrl: data.modeus_url,
+    };
 }

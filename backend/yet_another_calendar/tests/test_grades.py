@@ -458,3 +458,29 @@ def test_netology_semester_is_read_from_the_title() -> None:
     grades = schema.NetologyGradesResponse.build(calendar, {}, None)
     assert [program.semester for program in grades.programs] == [12, None]
     assert grades.programs[0].tasks[0].status is None
+
+
+async def test_grades_link_to_modeus(modeus: FakeModeus) -> None:
+    """Each subject opens in the Modeus course catalog, the whole page in "Мои результаты"."""
+    grades = await integration.get_grades(_token(), PAST_SEMESTER)
+    primary = _fixture("results_primary.json")
+    unit_ids = {unit["id"]: unit["courseUnitId"] for unit in primary["courseUnitRealizations"]}
+
+    assert grades.modeus_url == "https://utmn.modeus.org/students-app/my-results"
+    # Every lesson's event, marked or not, leads to its subject
+    events = {unit["id"]: [lesson["eventId"] for lesson in unit["lessons"] if lesson["eventId"]]
+              for unit in primary["courseUnitRealizations"]}
+    assert all(course.event_ids == events[course.id] for course in grades.courses)
+    assert [course.catalog_url for course in grades.courses] == [
+        f"https://utmn.modeus.org/courses/catalog/{unit_ids[course.id]}" for course in grades.courses
+    ]
+
+
+async def test_netology_programs_link_to_the_course_and_its_practice(client, netology: dict[str, Any]) -> None:
+    response = await client.get("/api/grades/netology/", headers=NETOLOGY_HEADERS)
+    multithreading, *summary_only = schema.NetologyGradesResponse.model_validate(response.json()).programs
+
+    assert multithreading.url == "https://netology.ru/profile/program/bhebdps-24-tpm-5/schedule"
+    assert multithreading.practice_url == "https://netology.ru/profile/program/bhebdps-24-tpm-5/execution/all"
+    # The summary has no task links: nothing to build the program's links from
+    assert all(program.url is None and program.practice_url is None for program in summary_only)

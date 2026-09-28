@@ -1,5 +1,6 @@
 import React from 'react';
-import { NETOLOGY_CHECK, NETOLOGY_SCORE, netologyStatusOf } from '../../utils/grades';
+import { NETOLOGY_CHECK, NETOLOGY_SCORE, netologyProgramLinks, netologyStatusOf } from '../../utils/grades';
+import ExternalLink from './ExternalLink';
 import '../../style/grades-modal.scss';
 
 /**
@@ -17,6 +18,12 @@ const NetologyTaskReview = ({ event, variant = 'modal' }) => {
     const deadline = event.deadline ? new Date(new Date(event.deadline).getTime() + 24 * 60 * 60 * 1000) : null;
     const status = netologyStatusOf({ status: reviewStatus, deadline });
     const score = event.score ? NETOLOGY_SCORE[event.score] || event.score : null;
+    const practiceUrl = netologyProgramLinks(event.url).practice;
+    const practice = practiceUrl && (
+        <ExternalLink href={practiceUrl} className="ext-link--action" title="Все задания программы в Нетологии">
+            Практика
+        </ExternalLink>
+    );
     let note = null;
     if (event.task_type === 'independent') {
         note = 'Оценки не будет: самопроверка засчитывается, как только решение отправлено.';
@@ -37,6 +44,7 @@ const NetologyTaskReview = ({ event, variant = 'modal' }) => {
                         <strong>{score}</strong>
                     </span>
                 )}
+                {practice}
                 {note && <span className="netology-review__note">{note}</span>}
             </div>
         );
@@ -57,7 +65,10 @@ const NetologyTaskReview = ({ event, variant = 'modal' }) => {
                 <span className="info-icon">✅</span>
                 <div className="info-content">
                     <span className="info-label">Статус:</span>
-                    <span className={`grades-status ${status.className}`}>{status.label}</span>
+                    <span className="netology-review__status-row">
+                        <span className={`grades-status ${status.className}`}>{status.label}</span>
+                        {!score && practice}
+                    </span>
                 </div>
             </div>
             {score && (
@@ -65,7 +76,10 @@ const NetologyTaskReview = ({ event, variant = 'modal' }) => {
                     <span className="info-icon">🎓</span>
                     <div className="info-content">
                         <span className="info-label">Оценка:</span>
-                        <span className="info-value">{score}</span>
+                        <span className="netology-review__status-row">
+                            <span className="info-value">{score}</span>
+                            {practice}
+                        </span>
                     </div>
                 </div>
             )}

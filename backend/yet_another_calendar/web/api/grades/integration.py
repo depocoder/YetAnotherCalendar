@@ -101,6 +101,9 @@ def build_course_grades(
         rate = rates.get(unit.id)
         courses.append(schema.CourseGrades(
             id=unit.id, name=unit.name, academic_course=academic_course_by_unit.get(unit.id),
+            catalog_url=(settings.modeus_course_catalog_url.format(course_unit_id=unit.course_unit_id)
+                         if unit.course_unit_id else None),
+            event_ids=[lesson.event_id for lesson in unit.lessons if lesson.event_id],
             results=results, lessons=lessons,
             attendance=schema.AttendanceRate(**rate.model_dump()) if rate else None,
         ))

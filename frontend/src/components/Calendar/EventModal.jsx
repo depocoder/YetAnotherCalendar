@@ -4,10 +4,12 @@ import arrowPink from "../../img/ArrowPink.svg";
 import arrowViolet from "../../img/ArrowViolet.svg";
 import { formatDate } from "../../utils/dateUtils";
 import { getLmsStatus, LMS_REQUIREMENT_MARKS } from "../../utils/lmsStatus";
-import LessonGrade from "./LessonGrade";
+import LessonGrade, { ModeusCourseName } from "./LessonGrade";
+import ExternalLink from "./ExternalLink";
+import { netologyProgramLinks } from "../../utils/grades";
 import NetologyTaskReview from "./NetologyTaskReview";
 
-const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
+const EventModal = ({ event, isOpen, onClose, mtsUrls = {}, onOpenGrades }) => {
     const [isAnimating, setIsAnimating] = useState(false);
 
     useEffect(() => {
@@ -201,7 +203,11 @@ const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
                                         <span className="info-icon">📚</span>
                                         <div className="info-content">
                                             <span className="info-label">Предмет:</span>
-                                            <span className="info-value">{event.block_title || event.course_name || 'Не указано'}</span>
+                                            <span className="info-value">
+                                                <ExternalLink href={netologyProgramLinks(event.url).course} title="Курс в Нетологии">
+                                                    {event.block_title || event.course_name || 'Не указано'}
+                                                </ExternalLink>
+                                            </span>
                                         </div>
                                     </div>
                                     <NetologyTaskReview event={event} />
@@ -251,11 +257,11 @@ const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
                                             <span className="info-icon">📚</span>
                                             <div className="info-content">
                                                 <span className="info-label">Курс:</span>
-                                                <span className="info-value">{event.course_name}</span>
+                                                <span className="info-value"><ModeusCourseName event={event} /></span>
                                             </div>
                                         </div>
                                     )}
-                                    <LessonGrade event={event} variant="modal" />
+                                    <LessonGrade event={event} variant="modal" onOpenGrades={onOpenGrades} />
                                 </div>
                             </div>
                         )}

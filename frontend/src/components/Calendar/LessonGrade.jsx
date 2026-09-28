@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getLessonGrades } from '../../services/modeusGrades';
 import { MarkPills, describeMarks, hasMarks } from './LessonMarks';
+import ExternalLink from './ExternalLink';
 import '../../style/lesson-marks.scss';
 
 const RefreshIcon = () => (
@@ -23,8 +24,9 @@ const HINT = {
  * не отметка, карточка без нее остается как была. Данные — из общего кэша
  * «Моих оценок». Если Модеус не ответил — блока просто нет.
  * variant: 'detail' — строка в панели под расписанием, 'modal' — строка карточки-модалки.
+ * Рядом — «Мои оценки» (окно здесь же, если передан onOpenGrades) и «Модеус» (его страница оценок).
  */
-const LessonGrade = ({ event, variant = 'detail' }) => {
+const LessonGrade = ({ event, variant = 'detail', onOpenGrades }) => {
     const [state, setState] = useState({ status: 'loading' });
     // Карточка могла переключиться на другую пару, пока грузилась прежняя.
     const currentEventId = useRef(event?.id);
@@ -76,6 +78,23 @@ const LessonGrade = ({ event, variant = 'detail' }) => {
             >
                 <RefreshIcon />
             </button>
+            <span className="lesson-grade__links">
+                {onOpenGrades && (
+                    <button
+                        type="button"
+                        className="ext-link ext-link--action"
+                        onClick={(clickEvent) => {
+                            clickEvent.stopPropagation();
+                            onOpenGrades();
+                        }}
+                    >
+                        Мои оценки
+                    </button>
+                )}
+                <ExternalLink href={state.modeusUrl} className="ext-link--action" title="«Мои результаты» в Модеусе">
+                    Модеус
+                </ExternalLink>
+            </span>
         </MarkPills>
     );
 
@@ -94,3 +113,28 @@ const LessonGrade = ({ event, variant = 'detail' }) => {
 };
 
 export default LessonGrade;
+
+/**
+ * Название предмета пары Модеуса — ссылкой на него в каталоге Модеуса, когда
+ * предмет нашелся в оценках (нужно «Запомнить меня»); иначе просто текст.
+ */
+export const ModeusCourseName = ({ event }) => {
+    const [catalogUrl, setCatalogUrl] = useState(null);
+
+    useEffect(() => {
+        let active = true;
+        setCatalogUrl(null);
+        getLessonGrades(event)
+            .then((result) => { if (active) setCatalogUrl(result.course?.catalog_url || null); })
+            .catch(() => {});
+        return () => { active = false; };
+        // Предмет пары определяют ее id и дата.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [event?.id, event?.start]);
+
+    return (
+        <ExternalLink href={catalogUrl} title="Предмет в каталоге Модеуса">
+            {event.course_name}
+        </ExternalLink>
+    );
+};

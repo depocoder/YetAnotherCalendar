@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { getNetologyGrades } from '../../services/api';
 import InlineLoader from '../../elements/InlineLoader';
 import { debug } from '../../utils/debug';
+import ExternalLink from './ExternalLink';
 import { NETOLOGY_CHECK, NETOLOGY_SCORE as SCORE, netologyStatusOf as statusOf } from '../../utils/grades';
 
 // Нетология оценивает домашние задания статусом и словом, баллов у нее нет.
@@ -19,13 +20,18 @@ const ProgramCard = ({ program, initiallyOpen }) => {
     return (
         <div className="grades-course">
             <div className="grades-course__head">
-                <span className="grades-course__name">{program.title}</span>
+                <span className="grades-course__name">
+                    <ExternalLink href={program.url} title="Курс в Нетологии">{program.title}</ExternalLink>
+                </span>
                 <div className="grades-course__results">
                     <span className="grades-chip">
                         <span className="grades-chip__name">выполнено</span>
                         <strong>{program.done} из {program.tasks.length}</strong>
                     </span>
                     {rework > 0 && <span className="grades-status grades-status--rework">на доработке: {rework}</span>}
+                    <ExternalLink href={program.practice_url} className="ext-link--action" title="Все задания программы в Нетологии">
+                        Практика
+                    </ExternalLink>
                     {missed > 0 && <span className="grades-status grades-status--missed">не сдано: {missed}</span>}
                 </div>
             </div>

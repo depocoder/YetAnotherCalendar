@@ -125,6 +125,9 @@ class Settings(BaseSettings):
     modeus_results_secondary_part: str = (
         "/students-app/api/pages/student-card/my/academic-period-results-table/secondary"
     )
+    # Where a subject and the grades page live in Modeus itself (links from "Мои оценки").
+    modeus_course_catalog_url: str = "https://utmn.modeus.org/courses/catalog/{course_unit_id}"
+    modeus_my_results_url: str = "https://utmn.modeus.org/students-app/my-results"
     # Upper bound only: the token is dropped earlier when its own expiry is sooner.
     modeus_student_token_time_live: int = 60 * 60 * 12  # 12 hours
 
