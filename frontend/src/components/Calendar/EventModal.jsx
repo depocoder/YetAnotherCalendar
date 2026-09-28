@@ -4,6 +4,7 @@ import arrowPink from "../../img/ArrowPink.svg";
 import arrowViolet from "../../img/ArrowViolet.svg";
 import { formatDate } from "../../utils/dateUtils";
 import { getLmsStatus, LMS_REQUIREMENT_MARKS } from "../../utils/lmsStatus";
+import LessonGrade from "./LessonGrade";
 
 const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
     const [isAnimating, setIsAnimating] = useState(false);
@@ -263,6 +264,7 @@ const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
                                             </div>
                                         </div>
                                     )}
+                                    <LessonGrade event={event} />
                                 </div>
                             </div>
                         )}

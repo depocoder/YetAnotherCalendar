@@ -4,6 +4,7 @@ import arrowPink from "../../img/ArrowPink.svg";
 import arrowViolet from "../../img/ArrowViolet.svg";
 import { formatDate } from "../../utils/dateUtils";
 import { getLmsStatus, LMS_REQUIREMENT_MARKS } from "../../utils/lmsStatus";
+import LessonGrade from "./LessonGrade";
 
 const EventsDetail = ({ event, mtsUrls = {} }) => {
     const [isVisible, setIsVisible] = useState(false);
@@ -173,6 +174,7 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
                                         <span className="netology-label">📚 Курс: <span className="netology-value">{event.course_name}</span></span>
                                     </div>
                                 )}
+                                <LessonGrade event={event} />
                             </div>
                         </div>
                     </div>

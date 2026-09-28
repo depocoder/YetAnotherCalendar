@@ -1,18 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { getGrades } from '../../services/api';
+import { fetchGrades } from '../../services/modeusGrades';
+import { ATTENDANCE, formatGradeValue as formatValue } from '../../utils/grades';
 import InlineLoader from '../../elements/InlineLoader';
 import NetologyGrades from './NetologyGrades';
 import { debug } from '../../utils/debug';
 import '../../style/subscription-modal.scss';
 import '../../style/grades-modal.scss';
-
-const ATTENDANCE = {
-    PRESENT: { label: 'был', className: 'grades-attendance--present' },
-    ABSENT: { label: 'не был', className: 'grades-attendance--absent' },
-};
-
-// «86.00» → «86», «2.26» остается как есть, «отл.» — тоже.
-const formatValue = (value) => (/^-?\d+\.0+$/.test(value) ? value.replace(/\.0+$/, '') : value);
 
 const formatPercent = (rate) => `${Math.round((rate || 0) * 100)}%`;
 
@@ -143,7 +136,8 @@ const GradesModal = ({ isOpen, onClose }) => {
 
     const load = useCallback(async (requestedPeriodId) => {
         setState((prev) => ({ status: 'loading', data: prev.data }));
-        const response = await getGrades(requestedPeriodId);
+        // Модалка всегда читает свежее — заодно обновляя кэш карточек пар.
+        const response = await fetchGrades(requestedPeriodId, { force: true });
         if (response?.status === 200) {
             setState({ status: 'ok', data: response.data });
             setPeriodId(response.data.period_id);

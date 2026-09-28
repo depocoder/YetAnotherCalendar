@@ -117,6 +117,11 @@ async def test_grades_of_a_semester(modeus: FakeModeus) -> None:
     assert [(result.name, result.value) for result in first.results] == [
         ("Работа на учебной встрече", "1"), ("Самоанализ", "1"),
     ]
+    # Each lesson carries its calendar event id, for the event card to find it
+    primary = _fixture("results_primary.json")
+    event_ids = {lesson["id"]: lesson["eventId"] for unit in primary["courseUnitRealizations"] for lesson in unit["lessons"]}
+    assert all(lesson.event_id == event_ids[lesson.id] for course in grades.courses for lesson in course.lessons)
+    assert any(lesson.event_id for course in grades.courses for lesson in course.lessons)
     absent = next(lesson for lesson in reading.lessons if lesson.attendance == "ABSENT")
     assert [result.value for result in absent.results] == ["3"]
     assert all(lesson.results or lesson.attendance for course in grades.courses for lesson in course.lessons)

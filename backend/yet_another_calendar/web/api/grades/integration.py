@@ -93,7 +93,7 @@ def build_course_grades(
             if not lesson_grades and not attendance.get(lesson.id):
                 continue
             lessons.append(schema.LessonGrades(
-                id=lesson.id, name=lesson.name, type=lesson.type, type_name=lesson.type_name,
+                id=lesson.id, event_id=lesson.event_id, name=lesson.name, type=lesson.type, type_name=lesson.type_name,
                 team=lesson.team, starts_at=lesson.starts_at, attendance=attendance.get(lesson.id),
                 results=lesson_grades,
             ))

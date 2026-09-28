@@ -115,6 +115,9 @@ class ModeusLesson(BaseModel):
     team: str | None = Field(alias="teamName", default=None)
     type: str | None = Field(alias="lessonType", default=None)
     type_name: str | None = Field(alias="typeName", default=None)
+    # The calendar event of the lesson (the id the calendar shows it under);
+    # None for lessons without one (self-study, most consultations).
+    event_id: str | None = Field(alias="eventId", default=None)
     # Wall-clock time in the event's own time zone, as Modeus shows it.
     starts_at: datetime.datetime | None = Field(alias="eventStartsAtLocal", default=None)
 
@@ -221,6 +224,8 @@ class Result(BaseModel):
 
 class LessonGrades(BaseModel):
     id: str
+    # Links the lesson to its event in the calendar (the Modeus event id).
+    event_id: str | None = None
     name: str
     type: str | None = None
     type_name: str | None = None

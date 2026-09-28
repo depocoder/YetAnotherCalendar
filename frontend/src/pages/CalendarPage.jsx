@@ -44,6 +44,7 @@ import FeaturesModal from "../components/FeaturesModal";
 import { debug } from "../utils/debug";
 import { useNavigate } from "react-router-dom";
 import { handleApiError } from '../utils/errorHandler';
+import { prefetchModeusGrades } from '../services/modeusGrades';
 
 const CalendarPage = () => {
     const [date, setDate] = useState(() => getCurrentWeekDates());
@@ -86,6 +87,16 @@ const CalendarPage = () => {
             logoutUser(navigate);
         }
     };
+
+    // Оценки за пары показываются в карточках — тянем их фоном, один раз,
+    // когда календарь уже загрузился (только с «Запомнить меня»).
+    const gradesPrefetched = useRef(false);
+    useEffect(() => {
+        if (events && !gradesPrefetched.current) {
+            gradesPrefetched.current = true;
+            prefetchModeusGrades().catch((e) => debug.log('Оценки фоном не загрузились:', e));
+        }
+    }, [events]);
 
     // Проверяем наличие всех необходимых токенов при загрузке страницы
     useEffect(() => {
