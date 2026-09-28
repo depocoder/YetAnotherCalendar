@@ -1,0 +1,120 @@
+// Отметки прошедшей пары Модеуса на ее плитке (LessonMarks): посещение и оценки.
+// Цвета те же, что у выполненной домашки (зеленый) и статусов в «Моих оценках».
+
+$marks-purple: #7B61FF;
+$marks-present-bg: #afcb8a;
+$marks-present-text: #3f5a26;
+$marks-absent-bg: #ffb3b3;
+$marks-absent-text: #a61e1e;
+
+.lesson-marks {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    font-family: "Roboto", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 14px;
+    white-space: nowrap;
+    vertical-align: middle;
+
+    svg {
+        flex-shrink: 0;
+        width: 10px;
+        height: 10px;
+    }
+
+    &__attendance,
+    &__grade {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 14px;
+        border-radius: 999px;
+        box-sizing: border-box;
+    }
+
+    // Посещение: кружок с галочкой или крестиком. Плотные цвета — плитка
+    // прошедшей пары полупрозрачная, бледный значок на ней потеряется.
+    &__attendance {
+        width: 14px;
+        color: $marks-present-text;
+        background: $marks-present-bg;
+
+        &--absent {
+            color: $marks-absent-text;
+            background: $marks-absent-bg;
+        }
+    }
+
+    // На плитке недели подпись не помещается — она в подсказке.
+    &__label {
+        display: none;
+    }
+
+    // Оценки за пару: звездочка и баллы, через точку, если их несколько.
+    &__grade {
+        gap: 3px;
+        padding: 0 5px 0 4px;
+        color: $marks-purple;
+        background: #fff;
+        box-shadow: 0 0 0 1px rgba($marks-purple, 0.25);
+        font-variant-numeric: tabular-nums;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        svg {
+            width: 9px;
+            height: 9px;
+        }
+    }
+
+    // В сетке недели — в нижнем углу плитки, на одной линии с кодом группы.
+    &--corner {
+        position: absolute;
+        left: 8px;
+        bottom: 4px;
+    }
+
+    // В строке «Особое время» и на мобильной плитке — отдельной строкой под названием.
+    .special-timing-event & {
+        margin-top: 6px;
+    }
+
+    // Мобильный список: места больше — подписи видны, значки чуть крупнее.
+    &--mobile {
+        align-self: flex-start;
+        gap: 6px;
+        font-size: 11px;
+        line-height: 18px;
+
+        .lesson-marks__attendance,
+        .lesson-marks__grade {
+            height: 18px;
+            border-radius: 8px;
+            padding: 0 8px;
+        }
+
+        .lesson-marks__attendance {
+            width: auto;
+            gap: 4px;
+            padding-left: 6px;
+        }
+
+        .lesson-marks__label {
+            display: inline;
+        }
+
+        .lesson-marks__grade {
+            box-shadow: none;
+            background: rgba($marks-purple, 0.1);
+        }
+
+        svg,
+        .lesson-marks__grade svg {
+            width: 11px;
+            height: 11px;
+        }
+    }
+}

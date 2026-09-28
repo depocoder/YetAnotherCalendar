@@ -14,6 +14,14 @@ let vaultPromise = null;
 
 const isCacheable = (status) => status === 200 || status === 401 || status === 403;
 
+// Кто показывает оценки (плитки пар, карточки) узнает о свежих данных.
+const listeners = new Set();
+
+export function subscribeModeusGrades(listener) {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+}
+
 export function fetchGrades(periodId = null, { force = false } = {}) {
     const key = periodId || CURRENT;
     if (!force && responses.has(key)) {
@@ -24,6 +32,10 @@ export function fetchGrades(periodId = null, { force = false } = {}) {
             responses.delete(key);
         } else if (response.status === 200 && response.data?.period_id) {
             responses.set(response.data.period_id, promise);
+        }
+        if (response?.status === 200) {
+            // После return: слушатели читают кэш, где этот промис уже готов.
+            setTimeout(() => listeners.forEach((listener) => listener()), 0);
         }
         return response;
     });

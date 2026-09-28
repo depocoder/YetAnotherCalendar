@@ -3,6 +3,7 @@ import camera from "../../img/camera.png";
 //import {formatHours} from "../../utils/dateUtils";
 import { utcToZonedTime } from 'date-fns-tz';
 import { debug } from '../../utils/debug';
+import LessonMarks from './LessonMarks';
 
 export function formatDateToAMPM(date) {
   const hours = date.getHours().toString().padStart(2, '0');
@@ -77,6 +78,7 @@ const SpecialTimingEventsRow = ({ unrenderedEvents, selectedEvent, setSelectedEv
                             {event.type === "modeus" && event?.cycle_realization?.code && (
                                 <div className="group-code-bottom">{event.cycle_realization.code}</div>
                             )}
+                            <LessonMarks event={event} />
                         </div>
                     ))}
                 </td>
@@ -108,6 +110,7 @@ const EventCell = ({ lesson, selectedEvent, setSelectedEvent }) => (
                 {lesson.type === "modeus" && lesson?.cycle_realization?.code && (
                     <div className="group-code-bottom">{lesson.cycle_realization.code}</div>
                 )}
+                <LessonMarks event={lesson} className="lesson-marks--corner" />
             </div>
         ) : (
             <div className="no-lessons"></div>

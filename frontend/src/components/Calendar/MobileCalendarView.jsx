@@ -2,6 +2,7 @@ import React from 'react';
 import { formatDateToAMPM } from './LessonTimes';
 import camera from "../../img/camera.png";
 import { getLmsStatus, isTaskDone } from "../../utils/lmsStatus";
+import LessonMarks from './LessonMarks';
 
 const MobileCalendarView = ({ 
     events, 
@@ -264,6 +265,7 @@ const MobileCalendarView = ({
                                                 {event.cycle_realization.code}
                                             </div>
                                         )}
+                                        <LessonMarks event={event} className="lesson-marks--mobile" />
                                         
                                     </div>
                                     
