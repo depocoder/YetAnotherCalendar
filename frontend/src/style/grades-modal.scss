@@ -58,6 +58,17 @@ $grades-muted: #6c757d;
     }
 }
 
+// Нетология на телефоне: «Выполнено» — на всю ширину, «На проверке» и «Не сдано» — в одну строку.
+.grades-tiles--netology {
+    @media (max-width: 600px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        .grades-tile:first-child {
+            grid-column: 1 / -1;
+        }
+    }
+}
+
 .grades-tile {
     display: flex;
     flex-direction: column;
@@ -73,6 +84,8 @@ $grades-muted: #6c757d;
     }
 
     &__value {
+        // Заголовок соседней плитки перенесся на две строки — числа все равно на одной линии.
+        margin-top: auto;
         font-size: 24px;
         font-weight: 700;
         color: $grades-accent;

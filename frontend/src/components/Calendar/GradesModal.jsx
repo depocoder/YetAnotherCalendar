@@ -210,6 +210,7 @@ const GradesModal = ({ isOpen, onClose }) => {
                                 load(event.target.value);
                             }}
                             disabled={status === 'loading'}
+                            aria-label="Семестр"
                         >
                             {data.periods.map((period) => (
                                 <option key={period.id} value={period.id}>{periodLabel(period)}</option>

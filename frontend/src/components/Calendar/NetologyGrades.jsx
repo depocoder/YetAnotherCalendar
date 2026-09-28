@@ -91,8 +91,15 @@ const ProgramCard = ({ program, initiallyOpen }) => {
  * программам со статусами и ссылками, плюс последний отзыв эксперта.
  * Работает на обычной сессии Нетологии — «Запомнить меня» не нужно.
  */
+// Семестр программы берется из ее названия («5 семестр: …»); без номера — «Другие курсы».
+const ALL = 'all';
+const OTHER = 'other';
+const semesterKeyOf = (program) => (program.semester ? String(program.semester) : OTHER);
+
 const NetologyGrades = () => {
     const [state, setState] = useState({ status: 'loading', data: null });
+    // null — еще не выбран: тогда последний семестр, как во вкладке Модеуса.
+    const [semester, setSemester] = useState(null);
 
     const load = useCallback(async () => {
         setState({ status: 'loading', data: null });
@@ -133,17 +140,42 @@ const NetologyGrades = () => {
         );
     }
 
-    const tasks = data.programs.flatMap((program) => program.tasks);
+    const currentSemester = Math.max(0, ...data.programs.map((program) => program.semester || 0));
+    const semesters = [...new Set(data.programs.map((program) => program.semester).filter(Boolean))]
+        .sort((a, b) => b - a);
+    const hasOther = data.programs.some((program) => !program.semester);
+    const selected = semester || (currentSemester ? String(currentSemester) : ALL);
+    const programs = selected === ALL
+        ? data.programs
+        : data.programs.filter((program) => semesterKeyOf(program) === selected);
+
+    // Итоги — по выбранному семестру.
+    const tasks = programs.flatMap((program) => program.tasks);
     const done = tasks.filter((task) => DONE.includes(task.status)).length;
     const pending = tasks.filter((task) => task.status === 'rework' || task.status === 'review').length;
     const missed = tasks.filter(isOverdue).length;
-    const currentSemester = Math.max(0, ...data.programs.map((program) => program.semester || 0));
-    const feedback = data.feedback;
+    // Отзыв — последний вообще, а не за семестр: показываем его в семестре его
+    // программы и во «Всех семестрах»; программа не нашлась — только во «Всех».
+    const feedbackKey = data.feedback?.semester
+        ? String(data.feedback.semester)
+        : (data.feedback?.program_title ? OTHER : null);
+    const feedback = selected === ALL || feedbackKey === selected ? data.feedback : null;
     const feedbackStatus = feedback?.homework_status ? statusOf({ status: feedback.homework_status }) : null;
 
     return (
         <>
-            <div className="grades-tiles">
+            {data.programs.length > 0 && (
+                <div className="grades-period">
+                    <select value={selected} onChange={(event) => setSemester(event.target.value)} aria-label="Семестр">
+                        {semesters.map((number) => (
+                            <option key={number} value={String(number)}>{number}-й семестр</option>
+                        ))}
+                        {hasOther && <option value={OTHER}>Другие курсы</option>}
+                        <option value={ALL}>Все семестры</option>
+                    </select>
+                </div>
+            )}
+            <div className="grades-tiles grades-tiles--netology">
                 <div className="grades-tile">
                     <span className="grades-tile__title">Выполнено</span>
                     <span className="grades-tile__value">{done} из {tasks.length}</span>
@@ -170,6 +202,7 @@ const NetologyGrades = () => {
                         )}
                     </div>
                     {feedback.title && <span className="grades-course__parent">{feedback.title}</span>}
+                    {feedback.program_title && <span className="grades-course__parent">{feedback.program_title}</span>}
                     {feedback.content && <p className="grades-feedback__content">{feedback.content}</p>}
                     <div className="grades-feedback__footer">
                         {formatDate(feedback.date_time) && <span>{formatDate(feedback.date_time)}</span>}
@@ -182,14 +215,18 @@ const NetologyGrades = () => {
                 </div>
             )}
 
-            {data.programs.length === 0 ? (
+            {programs.length === 0 ? (
                 <p className="grades-empty">Домашних заданий пока нет.</p>
             ) : (
-                data.programs.map((program) => (
+                programs.map((program) => (
                     <ProgramCard
                         program={program}
-                        key={program.title}
-                        initiallyOpen={Boolean(program.semester) && program.semester === currentSemester}
+                        // Ключ с выбором: при смене семестра карточки пересоздаются и снова
+                        // раскрыты по правилу ниже, а не как их оставили в прошлом семестре.
+                        key={`${selected}:${program.title}`}
+                        // Выбран конкретный семестр — его программ немного, раскрываем все;
+                        // во «Всех семестрах» — только текущий (нет нумерованных — все).
+                        initiallyOpen={selected !== ALL || !currentSemester || program.semester === currentSemester}
                     />
                 ))
             )}

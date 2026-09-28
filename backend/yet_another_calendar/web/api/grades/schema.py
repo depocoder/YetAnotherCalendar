@@ -332,6 +332,10 @@ class NetologyFeedback(BaseModel):
     is_new: bool | None = None
     homework_status: str | None = None
     homework_url: str | None = None
+    # The program the reviewed homework belongs to, found by its link; None
+    # when it is not among the programs listed (then it belongs to no semester).
+    program_title: str | None = None
+    semester: int | None = None
 
 
 class NetologyActual(BaseModel):
@@ -450,4 +454,22 @@ class NetologyGradesResponse(BaseModel):
                 practice_url=urljoin(settings.netology_url, f"{program_path}execution/all") if program_path else None,
             ))
         programs.sort(key=lambda program: -(program.semester or 0))
-        return cls(programs=programs, feedback=actual.expert_feedback if actual else None)
+        feedback = actual.expert_feedback if actual else None
+        if feedback is not None:
+            feedback = feedback.model_copy(update=_feedback_program(feedback, programs))
+        return cls(programs=programs, feedback=feedback)
+
+
+_PROGRAM_CODE_RE = re.compile(r"/profile/program/([^/?#]+)")
+
+
+def _feedback_program(feedback: NetologyFeedback, programs: list[NetologyProgramGrades]) -> dict[str, Any]:
+    """Which listed program the review is about: the review is the latest overall, not the semester's."""
+    found = _PROGRAM_CODE_RE.search(feedback.homework_url or "")
+    if found is None:
+        return {}
+    for program in programs:
+        program_code = _PROGRAM_CODE_RE.search(program.url or "")
+        if program_code and program_code.group(1) == found.group(1):
+            return {"program_title": program.title, "semester": program.semester}
+    return {}

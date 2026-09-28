@@ -484,3 +484,26 @@ async def test_netology_programs_link_to_the_course_and_its_practice(client, net
     assert multithreading.practice_url == "https://netology.ru/profile/program/bhebdps-24-tpm-5/execution/all"
     # The summary has no task links: nothing to build the program's links from
     assert all(program.url is None and program.practice_url is None for program in summary_only)
+
+
+async def test_netology_feedback_knows_its_program(client, netology: dict[str, Any], monkeypatch) -> None:
+    """The latest review is the latest overall: it names its program so the tab shows it in that semester."""
+    actual = _fixture("netology_student_actual.json")
+    actual["expert_feedback"]["homework_url"] = "https://netology.ru/profile/program/bhebdps-24-tpm-5/lessons/659406"
+    from yet_another_calendar.web.api.netology import integration as netology_integration
+    original = netology_integration.send_request
+
+    async def send_request(cookies, request_settings, timeout=15):
+        if request_settings["url"] == settings.netology_student_actual_part:
+            return actual
+        return await original(cookies, request_settings, timeout)
+
+    monkeypatch.setattr(netology_integration, "send_request", send_request)
+    feedback = (await client.get("/api/grades/netology/", headers=NETOLOGY_HEADERS)).json()["feedback"]
+
+    assert (feedback["program_title"], feedback["semester"]) == ("5 семестр: Теория и практика многопоточности", 5)
+
+
+async def test_netology_feedback_of_an_unlisted_program_has_no_semester(client, netology: dict[str, Any]) -> None:
+    feedback = (await client.get("/api/grades/netology/", headers=NETOLOGY_HEADERS)).json()["feedback"]
+    assert (feedback["program_title"], feedback["semester"]) == (None, None)
