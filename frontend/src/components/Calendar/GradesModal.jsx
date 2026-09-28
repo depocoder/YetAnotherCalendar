@@ -5,6 +5,7 @@ import InlineLoader from '../../elements/InlineLoader';
 import NetologyGrades from './NetologyGrades';
 import ExternalLink from './ExternalLink';
 import { debug } from '../../utils/debug';
+import { isServiceRestarting, RESTART_HINT } from '../../utils/serviceRestart';
 import '../../style/subscription-modal.scss';
 import '../../style/grades-modal.scss';
 
@@ -150,7 +151,7 @@ const GradesModal = ({ isOpen, onClose }) => {
             setState({ status: 'rejected', data: null });
         } else {
             debug.error('Не удалось загрузить оценки:', response?.status);
-            setState({ status: 'error', data: null });
+            setState({ status: 'error', data: null, restarting: isServiceRestarting({ response }) });
         }
     }, []);
 
@@ -194,7 +195,7 @@ const GradesModal = ({ isOpen, onClose }) => {
         if (status === 'error') {
             return (
                 <div className="grades-error">
-                    <p>Модеус сейчас не отвечает. Попробуйте чуть позже.</p>
+                    <p>{state.restarting ? RESTART_HINT : 'Модеус сейчас не отвечает. Попробуйте чуть позже.'}</p>
                     <button className="subscription-create-btn" onClick={() => load(periodId)}>Повторить</button>
                 </div>
             );

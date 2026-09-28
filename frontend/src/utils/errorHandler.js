@@ -1,16 +1,30 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 import { exitApp } from "../utils/auth";
+import { isServiceRestarting, RESTART_TITLE, RESTART_TEXT } from "./serviceRestart";
 
 /**
  * Handles API errors by displaying a formatted toast message.
  * @param {Error} error - The error object (usually from axios).
  * @param {string} defaultTitle - A context-specific default error title.
  * @param {function|null} navigate - The navigate function from react-router-dom.
+ * @param {object} options - restartAware: перезапуск бэкенда (деплой) показывать
+ *   спокойным уведомлением, а не ошибкой; false — когда вызывающий уже сам ждал.
  */
-export const handleApiError = (error, defaultTitle = "Произошла ошибка", navigate = null) => {
+export const handleApiError = (error, defaultTitle = "Произошла ошибка", navigate = null, { restartAware = true } = {}) => {
     let title = defaultTitle;
     let details = "";
+
+    if (restartAware && isServiceRestarting(error)) {
+        toast.info(
+            <div>
+                <strong style={{ display: 'block', marginBottom: '4px' }}>{RESTART_TITLE}</strong>
+                <span style={{ fontSize: '0.9em' }}>{RESTART_TEXT} Попробуйте еще раз.</span>
+            </div>,
+            { toastId: 'service-restart', autoClose: 8000 },
+        );
+        return;
+    }
     // if (error.message === "Refresh token exception!"){
     //     // When we refresh token we don't use this func
     //     return

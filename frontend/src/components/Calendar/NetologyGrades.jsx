@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { getNetologyGrades } from '../../services/api';
 import InlineLoader from '../../elements/InlineLoader';
 import { debug } from '../../utils/debug';
+import { isServiceRestarting, RESTART_HINT } from '../../utils/serviceRestart';
 import ExternalLink from './ExternalLink';
 import { NETOLOGY_CHECK, NETOLOGY_SCORE as SCORE, netologyStatusOf as statusOf } from '../../utils/grades';
 
@@ -110,7 +111,7 @@ const NetologyGrades = () => {
             setState({ status: 'expired', data: null });
         } else {
             debug.error('Не удалось загрузить оценки Нетологии:', response?.status);
-            setState({ status: 'error', data: null });
+            setState({ status: 'error', data: null, restarting: isServiceRestarting({ response }) });
         }
     }, []);
 
@@ -134,7 +135,7 @@ const NetologyGrades = () => {
     if (status === 'error') {
         return (
             <div className="grades-error">
-                <p>Нетология сейчас не отвечает. Попробуйте чуть позже.</p>
+                <p>{state.restarting ? RESTART_HINT : 'Нетология сейчас не отвечает. Попробуйте чуть позже.'}</p>
                 <button className="subscription-create-btn" onClick={load}>Повторить</button>
             </div>
         );

@@ -32,6 +32,8 @@ import SettingsMenu from "../components/Calendar/SettingsMenu";
 import GradesBtn from "../components/Calendar/GradesBtn";
 import CacheUpdateBtn from "../components/Calendar/CacheUpdateBtn";
 import ServiceStatusBanner from "../components/Calendar/ServiceStatusBanner";
+import ServiceRestartNotice from "../components/Calendar/ServiceRestartNotice";
+import { isServiceRestarting, RESTART_RETRY_DELAYS } from '../utils/serviceRestart';
 import ServiceHealthIndicator from "../components/Calendar/ServiceHealthIndicator";
 import { getCurrentWeekDates } from "../utils/dateUtils";
 import EventsDetail from "../components/Calendar/EventsDetail";
@@ -71,6 +73,15 @@ const CalendarPage = () => {
     // дергает его через ref, чтобы не дублировать логику обновления.
     const refreshRef = useRef(null);
     const [retryingServices, setRetryingServices] = useState(false);
+    // Бэкенд перезапускается (деплой): ждем и пробуем снова сами. Таймер — в ref;
+    // после ухода со страницы цепочка повторов не должна жить дальше.
+    const [restarting, setRestarting] = useState(false);
+    const restartTimerRef = useRef(null);
+    const mountedRef = useRef(true);
+    useEffect(() => () => {
+        mountedRef.current = false;
+        clearTimeout(restartTimerRef.current);
+    }, []);
     const handleRetryServices = async () => {
         if (!refreshRef.current || retryingServices) return;
         setRetryingServices(true);
@@ -186,7 +197,8 @@ const CalendarPage = () => {
         // при быстром листании запросы идут параллельно и приходят вразнобой.
         const isCurrent = () => lastFetchedDate.current === dateKey;
 
-        const fetchData = async () => {
+        // attempt — номер повтора, пока бэкенд перезапускается (см. catch ниже).
+        const fetchData = async (attempt = 0) => {
             setLoading(true);
 
             try {
@@ -230,7 +242,8 @@ const CalendarPage = () => {
 
                 if (eventsResponse?.data) {
                     setEvents(eventsResponse.data);
-                    
+                    setRestarting(false);
+
                     // Извлекаем timestamp кэша для передачи в CacheUpdateBtn
                     debug.log('📅 Cache timestamp from API:', eventsResponse.data.cached_at);
                     
@@ -258,14 +271,24 @@ const CalendarPage = () => {
                 if (!isCurrent()) return;
                 debug.error('Ошибка при получении данных с сервера:', error);
 
-                // Сначала проверяем на 401/403, так как это требует выхода из приложения
-                // if (error?.response?.status === 401 || error?.response?.status === 403) {
+                // Деплой: прокси отвечает HTML-страницей 502/503/504 или не отвечает вовсе.
+                // Не пугаем ошибкой — спокойное уведомление и повтор сами, все реже.
+                const retryDelay = RESTART_RETRY_DELAYS[attempt];
+                if (isServiceRestarting(error) && retryDelay !== undefined) {
+                    if (!mountedRef.current) return;
+                    setEvents(null);
+                    setRestarting(true);
+                    clearTimeout(restartTimerRef.current);
+                    restartTimerRef.current = setTimeout(() => {
+                        if (mountedRef.current && isCurrent()) fetchData(attempt + 1);
+                    }, retryDelay);
+                    return;
+                }
+                setRestarting(false);
 
-                // }
-                
-                // Для всех остальных ошибок используем наш новый обработчик
-                handleApiError(error, "Ошибка при загрузке расписания.", navigate);
-                
+                // Настоящая ошибка (или повторы кончились) — обычный тост
+                handleApiError(error, "Ошибка при загрузке расписания.", navigate, { restartAware: false });
+
             } finally {
                 // Загрузку завершает только запрос текущей недели.
                 if (isCurrent()) {
@@ -435,6 +458,7 @@ const CalendarPage = () => {
                     <SimpleDatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
                 </div>
 
+                {restarting && <ServiceRestartNotice checking={loading} />}
                 {!loading && (
                     <ServiceStatusBanner
                         failures={events?.failures}
