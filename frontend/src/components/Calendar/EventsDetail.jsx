@@ -5,6 +5,7 @@ import arrowViolet from "../../img/ArrowViolet.svg";
 import { formatDate } from "../../utils/dateUtils";
 import { getLmsStatus, LMS_REQUIREMENT_MARKS } from "../../utils/lmsStatus";
 import LessonGrade from "./LessonGrade";
+import NetologyTaskReview from "./NetologyTaskReview";
 
 const EventsDetail = ({ event, mtsUrls = {} }) => {
     const [isVisible, setIsVisible] = useState(false);
@@ -137,10 +138,7 @@ const EventsDetail = ({ event, mtsUrls = {} }) => {
                         <span className="task-event-text">
                             {event.block_title || 'Название предмета не указано'}
                         </span>
-                        <br/>
-                        <span className="task-event-text">
-                            Пройдено: {event.passed ? '✅' : '❌'}
-                        </span>
+                        <NetologyTaskReview event={event} variant="detail" />
 
                     </div>
                 )}

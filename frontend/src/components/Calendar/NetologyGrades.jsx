@@ -2,32 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { getNetologyGrades } from '../../services/api';
 import InlineLoader from '../../elements/InlineLoader';
 import { debug } from '../../utils/debug';
+import { NETOLOGY_CHECK, NETOLOGY_SCORE as SCORE, netologyStatusOf as statusOf } from '../../utils/grades';
 
 // Нетология оценивает домашние задания статусом и словом, баллов у нее нет.
-// accepted/rework ставит эксперт, остальное бэкенд выводит сам (см. grades/schema.py).
-const STATUS = {
-    accepted: { label: 'принято', className: 'grades-status--accepted' },
-    submitted: { label: 'сдано', className: 'grades-status--accepted' },
-    passed: { label: 'пройден', className: 'grades-status--accepted' },
-    review: { label: 'на проверке', className: 'grades-status--review' },
-    rework: { label: 'на доработке', className: 'grades-status--rework' },
-};
 const DONE = ['accepted', 'submitted', 'passed'];
 
-const SCORE = {
-    excellent: 'отлично',
-    good: 'хорошо',
-    satisfactory: 'удовлетворительно',
-};
-
 const isOverdue = (task) => !task.status && (!task.deadline || new Date(task.deadline) < new Date());
-
-const statusOf = (task) => {
-    if (task.status) return STATUS[task.status] || { label: task.status, className: '' };
-    return isOverdue(task)
-        ? { label: 'не сдано', className: 'grades-status--missed' }
-        : { label: 'впереди', className: '' };
-};
 
 const formatDate = (value) => (value ? new Date(value).toLocaleDateString('ru-RU') : null);
 
@@ -72,6 +52,14 @@ const ProgramCard = ({ program, initiallyOpen }) => {
                                             <a href={task.url} target="_blank" rel="noopener noreferrer">{task.title}</a>
                                         ) : task.title}
                                         {task.type === 'test' && <span className="grades-lesson__type">тест</span>}
+                                        {NETOLOGY_CHECK[task.task_type] && (
+                                            <span
+                                                className={`grades-check grades-check--${task.task_type}`}
+                                                title={NETOLOGY_CHECK[task.task_type].hint}
+                                            >
+                                                {NETOLOGY_CHECK[task.task_type].label}
+                                            </span>
+                                        )}
                                     </span>
                                     <span className="grades-lesson__marks">
                                         <span className={`grades-status ${taskStatus.className}`}>{taskStatus.label}</span>

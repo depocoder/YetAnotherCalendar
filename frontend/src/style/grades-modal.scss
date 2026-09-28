@@ -460,3 +460,46 @@ $grades-muted: #6c757d;
         font-size: 12px;
     }
 }
+
+// Кто проверяет домашку Нетологии: эксперт или самопроверка.
+.grades-check {
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    white-space: nowrap;
+    background: #f1f3f5;
+    color: $grades-muted;
+
+    &--common {
+        background: rgba($grades-accent, 0.1);
+        color: $grades-accent;
+    }
+}
+
+.netology-review {
+    &--detail {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+
+        .grades-check {
+            margin-left: 0;
+        }
+    }
+
+    &__note {
+        flex-basis: 100%;
+        margin: 4px 0 0;
+        font-size: 12px;
+        line-height: 1.4;
+        color: $grades-muted;
+    }
+}
+
+// В строках карточки события (колонка info-content) статус не растягивается на всю ширину.
+.info-content .grades-status {
+    align-self: flex-start;
+}

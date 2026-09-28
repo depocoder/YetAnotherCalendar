@@ -31,6 +31,25 @@ def deadline_from_title(title: str) -> datetime.datetime | None:
         return None
 
 
+def review_status(
+        item_type: str | None, passed: bool | None, task_type: str | None,
+        expert_status: str | None, has_solutions: bool,
+) -> str | None:
+    """What became of a homework: None while nothing was sent.
+
+    An expert's own statuses (accepted, rework...) pass through. Otherwise:
+    "review" - sent to an expert, not reviewed yet; "submitted" - self-study
+    homework sent (nobody reviews it); "passed" - a test done.
+    """
+    if expert_status:
+        return expert_status
+    if task_type == "common" and has_solutions:
+        return "review"
+    if passed:
+        return "submitted" if item_type == "task" else "passed"
+    return None
+
+
 class NetologyCreds(BaseModel):
     """Netology creds."""
 
@@ -138,6 +157,30 @@ class LessonTask(BaseLesson):
     path: str
     deadline: datetime.datetime | None = Field(default=None)
     passed: bool = Field()
+    # "common" homework goes to an expert, "independent" is self-check;
+    # None for tests and for calendars cached before this was read.
+    task_type: str | None = None
+    review_status: str | None = None
+    # The expert's word ("good"), when the homework is graded.
+    score: str | None = None
+
+    @model_validator(mode='before')
+    @classmethod
+    def review_validation(cls, data: Any) -> Any:
+        """Read the review of the homework from its lesson_task (a cached calendar has it read already)."""
+        if not isinstance(data, dict) or 'review_status' in data:
+            return data
+        lesson_task = data.get('lesson_task') or {}
+        homework = lesson_task.get('homework') or {}
+        return {
+            **data,
+            'task_type': lesson_task.get('task_type'),
+            'score': homework.get('score'),
+            'review_status': review_status(
+                data.get('type'), data.get('passed'), lesson_task.get('task_type'),
+                homework.get('status'), bool(homework.get('solutions')),
+            ),
+        }
 
     @computed_field  # type: ignore
     @property

@@ -505,3 +505,22 @@ def test_validate_utc_date(input_dt: datetime.datetime, expected: datetime.datet
         assert result == expected
         assert result.tzinfo == datetime.UTC
         assert result.utcoffset() == datetime.timedelta(0)
+
+@pytest.mark.parametrize("lesson_task, passed, expected", [
+    ({"task_type": "common", "homework": {"status": "accepted", "score": "good"}}, True, ("common", "accepted", "good")),
+    ({"task_type": "common", "homework": {"status": None, "solutions": [{"id": 1}]}}, False, ("common", "review", None)),
+    ({"task_type": "independent", "homework": {"status": None, "solutions": [{"id": 1}]}}, True,
+     ("independent", "submitted", None)),
+    ({"task_type": "independent"}, False, ("independent", None, None)),
+    (None, True, (None, "submitted", None)),  # a calendar cached before the review was read
+])
+def test_homework_review_in_calendar(lesson_task: dict | None, passed: bool, expected: tuple) -> None:
+    """The calendar's homework says who checks it and how it went, so the card can show it."""
+    raw = {"id": 1, "lesson_id": 2, "type": "task", "title": "ДЗ", "block_title": "Курс",
+           "path": "/profile/program/x/lessons/2/lesson_items/1", "passed": passed}
+    if lesson_task is not None:
+        raw["lesson_task"] = lesson_task
+    task = schema.LessonTask.model_validate(raw)
+    assert (task.task_type, task.review_status, task.score) == expected
+    # Survives the cache: dumped and read back unchanged
+    assert schema.LessonTask.model_validate_json(task.model_dump_json(by_alias=True)) == task

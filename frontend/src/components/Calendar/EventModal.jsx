@@ -5,6 +5,7 @@ import arrowViolet from "../../img/ArrowViolet.svg";
 import { formatDate } from "../../utils/dateUtils";
 import { getLmsStatus, LMS_REQUIREMENT_MARKS } from "../../utils/lmsStatus";
 import LessonGrade from "./LessonGrade";
+import NetologyTaskReview from "./NetologyTaskReview";
 
 const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
     const [isAnimating, setIsAnimating] = useState(false);
@@ -203,17 +204,7 @@ const EventModal = ({ event, isOpen, onClose, mtsUrls = {} }) => {
                                             <span className="info-value">{event.block_title || event.course_name || 'Не указано'}</span>
                                         </div>
                                     </div>
-                                    {event.type !== 'homework' && (
-                                        <div className="event-info-row">
-                                            <span className="info-icon">✅</span>
-                                            <div className="info-content">
-                                                <span className="info-label">Статус:</span>
-                                                <span className={`info-badge ${event.passed ? 'passed' : 'not-passed'}`}>
-                                                    {event.passed ? 'Пройдено' : 'Не пройдено'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
+                                    <NetologyTaskReview event={event} />
                                     {event.type === 'homework' && (
                                         <div className="event-info-row">
                                             <span className="info-icon">📝</span>

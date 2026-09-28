@@ -14,7 +14,7 @@ from zoneinfo import ZoneInfo
 from pydantic import BaseModel, Field, field_validator
 
 from yet_another_calendar.settings import settings
-from ..netology.schema import deadline_from_title
+from ..netology.schema import deadline_from_title, review_status
 
 
 def _date_part(value: Any) -> Any:
@@ -331,12 +331,8 @@ class NetologyActual(BaseModel):
 
 
 HOMEWORK_TYPES = ("task", "test", "quiz")
-# Statuses we derive where Netology has none: an expert's own statuses
-# (accepted, rework...) pass through as they are.
-SUBMITTED = "submitted"  # self-study homework sent: nobody reviews it
-REVIEW = "review"        # sent to an expert, not reviewed yet
-PASSED = "passed"        # a test done
-DONE_STATUSES = ("accepted", SUBMITTED, PASSED)
+# Statuses see netology.schema.review_status.
+DONE_STATUSES = ("accepted", "submitted", "passed")
 
 
 _MOSCOW = ZoneInfo("Europe/Moscow")
@@ -356,13 +352,7 @@ def homework_status(item: NetologyLessonItem) -> str | None:
     """What became of the homework: None while nothing was sent."""
     task = item.lesson_task or NetologyLessonTask()
     homework = task.homework or NetologyHomework()
-    if homework.status:
-        return homework.status
-    if task.task_type == "common" and homework.solutions:
-        return REVIEW
-    if item.passed:
-        return SUBMITTED if item.type == "task" else PASSED
-    return None
+    return review_status(item.type, item.passed, task.task_type, homework.status, bool(homework.solutions))
 
 
 class NetologyTaskGrade(BaseModel):
@@ -372,7 +362,7 @@ class NetologyTaskGrade(BaseModel):
     task_type: str | None = None
     url: str | None = None
     deadline: datetime.datetime | None = None
-    # accepted, rework (an expert's), submitted, review, passed (see above); None while nothing was sent.
+    # accepted, rework (an expert's), submitted, review, passed; None while nothing was sent.
     status: str | None = None
     score: str | None = None
     locked: bool | None = None
