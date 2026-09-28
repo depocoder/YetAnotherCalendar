@@ -154,3 +154,33 @@ async def test_a_failure_is_not_retried_on_every_request() -> None:
         assert await integration.get_all_teachers() == {}
         assert await integration.get_all_teachers() == {}
     cached.assert_called_once()
+
+
+@pytest.fixture(autouse=True)
+def _no_teachers_task(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(integration, "_teachers_task", None)
+
+
+@pytest.mark.asyncio
+async def test_concurrent_requests_share_one_directory_read(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Calendars loading together after a deploy read the directory once, and none waits long."""
+    import asyncio
+
+    monkeypatch.setattr(integration, "_TEACHERS_WAIT", 0.05)
+    reads = 0
+    release = asyncio.Event()
+    teacher = schema.Teacher(avatar_profile="https://www.utmn.ru/a.jpg", profile_url="https://www.utmn.ru/a/")
+
+    async def slow_read(timeout: int = 30, per_page: int = 5) -> dict[str, schema.Teacher]:
+        nonlocal reads
+        reads += 1
+        await release.wait()
+        return {"Иванов Иван Иванович": teacher}
+
+    with patch.object(integration, "get_all_teachers_cached", new=slow_read):
+        # Still reading: both calendars go without photos, one read in flight
+        assert await asyncio.gather(integration.get_all_teachers(), integration.get_all_teachers()) == [{}, {}]
+        release.set()
+        assert await integration.get_all_teachers() == {"Иванов Иван Иванович": teacher}
+
+    assert reads == 1

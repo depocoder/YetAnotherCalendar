@@ -1,6 +1,7 @@
 """UTMN API implementation."""
 import asyncio
 import time
+from typing import cast
 
 import httpx
 import reretry
@@ -87,21 +88,43 @@ async def get_all_teachers_cached(timeout: int = 30, per_page: int = 5) -> dict[
 # for every calendar request, and a broken page must not cost each of them.
 _TEACHERS_RETRY_AFTER = 60 * 60
 _teachers_failed_at: float | None = None
+# Reading the whole directory (~140 pages) takes a while. One shared task
+# reads it, so calendar requests arriving together with an empty cache (every
+# deploy) don't each crawl the site; a request waits for it only this long
+# and otherwise goes without photos - the next one gets them from the cache.
+_TEACHERS_WAIT = 3
+_teachers_task: asyncio.Task[dict[str, schema.Teacher]] | None = None
+
+
+async def _read_teachers(timeout: int, per_page: int) -> dict[str, schema.Teacher]:
+    # @cache types its result as possibly a Response; here it is always the dict.
+    return cast(dict[str, schema.Teacher], await get_all_teachers_cached(timeout, per_page))
+
+
+def _remember_teachers_failure(task: asyncio.Task[dict[str, schema.Teacher]]) -> None:
+    global _teachers_failed_at  # noqa: PLW0603
+    if task.cancelled():
+        return
+    if (exception := task.exception()) is not None:
+        _teachers_failed_at = time.monotonic()
+        logger.opt(exception=exception).error(f"Error in get_all_teachers: {exception}")
 
 async def get_all_teachers(timeout: int = 30, per_page: int = 5) -> dict[str, schema.Teacher]:
     """
     Fetch teacher information from UTMN website.
     """
-    global _teachers_failed_at  # noqa: PLW0603
+    global _teachers_failed_at, _teachers_task  # noqa: PLW0603
     if _teachers_failed_at is not None and time.monotonic() - _teachers_failed_at < _TEACHERS_RETRY_AFTER:
         return {}
+    if _teachers_task is None or _teachers_task.done():
+        _teachers_task = asyncio.create_task(_read_teachers(timeout, per_page))
+        _teachers_task.add_done_callback(_remember_teachers_failure)
     try:
-        teachers = await get_all_teachers_cached(timeout, per_page)
-        adapter = TypeAdapter(dict[str, schema.Teacher])
-        result = adapter.validate_python(teachers)
-    except Exception as e:
-        _teachers_failed_at = time.monotonic()
-        logger.exception(f"Error in get_all_teachers: {e}")
+        teachers = await asyncio.wait_for(asyncio.shield(_teachers_task), timeout=_TEACHERS_WAIT)
+    except TimeoutError:
+        logger.info("UTMN teachers are still being read, this calendar goes without their photos")
         return {}
+    except Exception:
+        return {}  # logged by _remember_teachers_failure
     _teachers_failed_at = None
-    return result
+    return TypeAdapter(dict[str, schema.Teacher]).validate_python(teachers)
