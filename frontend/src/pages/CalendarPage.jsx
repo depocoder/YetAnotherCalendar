@@ -180,6 +180,10 @@ const CalendarPage = () => {
         // Запускаем анимацию перехода
         setIsTransitioning(true);
 
+        // Ответ недели, которую уже пролистали, не должен лечь поверх текущей:
+        // при быстром листании запросы идут параллельно и приходят вразнобой.
+        const isCurrent = () => lastFetchedDate.current === dateKey;
+
         const fetchData = async () => {
             setLoading(true);
 
@@ -220,6 +224,8 @@ const CalendarPage = () => {
                     lxpId: getLMSIdFromLocalStorage()
                 });
 
+                if (!isCurrent()) return;
+
                 if (eventsResponse?.data) {
                     setEvents(eventsResponse.data);
                     
@@ -233,7 +239,7 @@ const CalendarPage = () => {
                     if (lessonIds.length > 0) {
                         try {
                             const mtsResponse = await getMtsLinks(lessonIds);
-                            if (mtsResponse?.status === 200 && mtsResponse.data?.links) {
+                            if (isCurrent() && mtsResponse?.status === 200 && mtsResponse.data?.links) {
                                 setMtsUrls(mtsResponse.data.links);
                             }
                         } catch (error) {
@@ -247,6 +253,7 @@ const CalendarPage = () => {
                 }
 
             } catch (error) {
+                if (!isCurrent()) return;
                 debug.error('Ошибка при получении данных с сервера:', error);
 
                 // Сначала проверяем на 401/403, так как это требует выхода из приложения
@@ -258,9 +265,12 @@ const CalendarPage = () => {
                 handleApiError(error, "Ошибка при загрузке расписания.", navigate);
                 
             } finally {
-                setLoading(false);
-                // Небольшая задержка для завершения анимации
-                setTimeout(() => setIsTransitioning(false), 100);
+                // Загрузку завершает только запрос текущей недели.
+                if (isCurrent()) {
+                    setLoading(false);
+                    // Небольшая задержка для завершения анимации
+                    setTimeout(() => setIsTransitioning(false), 100);
+                }
             }
         };
 
