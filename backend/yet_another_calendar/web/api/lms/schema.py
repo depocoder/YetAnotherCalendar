@@ -148,6 +148,30 @@ class ModuleResponse(BaseModule):
     course_name: str
 
 
+# Moodle names every date of an activity by `dataid`: the deadline is the due
+# date of an assignment or a forum, the close time of a quiz, the deadline of
+# a lesson; most preferred first (a forum has both a due and a cut-off date).
+_DEADLINE_DATAIDS = ("duedate", "timeclose", "deadline")
+_START_DATAIDS = ("allowsubmissionsfromdate", "timeopen", "available")
+
+
+def pick_module_dates(dates: list[DateModule]) -> tuple[datetime.datetime, datetime.datetime] | None:
+    """(start, deadline) of an activity, None when it has no deadline.
+
+    An activity with a deadline alone (an assignment due on a date, a quiz
+    closing on a date) starts at its deadline. Activities of unknown kinds
+    keep the positional "opens, closes" reading of their first two dates.
+    """
+    by_dataid = {date.dataid: date.date for date in dates}
+    deadline = next((by_dataid[dataid] for dataid in _DEADLINE_DATAIDS if dataid in by_dataid), None)
+    if deadline is None:
+        if len(dates) < 2:
+            return None
+        return dates[0].date, dates[1].date
+    start = next((by_dataid[dataid] for dataid in _START_DATAIDS if dataid in by_dataid), deadline)
+    return start, deadline
+
+
 class ExtendedCourse(BaseModel):
     id: int
     name: str
@@ -165,13 +189,10 @@ class ExtendedCourse(BaseModel):
         """Filter module by time and user_visible."""
         filtered_modules = []
         for module in self.modules:
-            dt_end = None
-            dt_start = None
-            if module.dates and len(module.dates) > 1:
-                dt_start = module.dates[0].date
-                dt_end = module.dates[1].date
-            else:
+            module_dates = pick_module_dates(module.dates)
+            if module_dates is None:
                 continue
+            dt_start, dt_end = module_dates
             if self.is_suitable_time(dt_end, body.time_min, body.time_max) and module.user_visible:
                 completion = module.completion_state
                 filtered_modules.append(ModuleResponse(

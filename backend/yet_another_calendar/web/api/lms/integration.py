@@ -108,6 +108,10 @@ async def get_extended_course(user: schema.User, course_id: int) -> list[schema.
                 'wsfunction': 'core_course_get_contents',
                 'courseid': course_id,
                 'moodlewsrestformat': 'json',
+                # File lists of every resource are most of the response,
+                # and the calendar needs dates and completion only.
+                'options[0][name]': 'excludecontents',
+                'options[0][value]': 1,
             },
         })
     adapter = TypeAdapter(list[schema.ExtendedCourse])

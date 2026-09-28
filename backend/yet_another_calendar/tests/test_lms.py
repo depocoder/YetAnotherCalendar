@@ -340,3 +340,53 @@ def test_manual_completion_is_flagged() -> None:
                                                 "details": []})
     assert state.is_automatic is False
     assert state.is_completed is True
+
+
+def _dates(*pairs: tuple[str, int]) -> list[schema.DateModule]:
+    return [schema.DateModule.model_validate({"label": dataid, "dataid": dataid, "timestamp": timestamp})
+            for dataid, timestamp in pairs]
+
+
+def _utc(timestamp: int) -> datetime.datetime:
+    return datetime.datetime.fromtimestamp(timestamp, tz=datetime.UTC)
+
+
+@pytest.mark.parametrize(
+    "dates, expected",
+    [
+        # The usual pairs read the same as before
+        ([("allowsubmissionsfromdate", 100), ("duedate", 200)], (100, 200)),
+        ([("timeopen", 100), ("timeclose", 200)], (100, 200)),
+        ([("available", 100), ("deadline", 200)], (100, 200)),
+        # A deadline alone used to drop the activity from the calendar
+        ([("duedate", 200)], (200, 200)),
+        ([("timeclose", 200)], (200, 200)),
+        # Picked by name, not by position
+        ([("duedate", 200), ("allowsubmissionsfromdate", 100)], (100, 200)),
+        ([("duedate", 200), ("cutoffdate", 300)], (200, 200)),
+        # Unknown activities keep the positional reading
+        ([("submissionstart", 100), ("submissionend", 200)], (100, 200)),
+        # No deadline - no event
+        ([("timeopen", 100)], None),
+        ([], None),
+    ],
+)
+def test_pick_module_dates(dates: list[tuple[str, int]], expected: tuple[int, int] | None) -> None:
+    picked = schema.pick_module_dates(_dates(*dates))
+    assert picked == (None if expected is None else (_utc(expected[0]), _utc(expected[1])))
+
+
+def test_filtered_modules_keep_deadline_only_activities() -> None:
+    """An assignment with a due date and no opening date is a deadline too."""
+    body = ModeusTimeBody.model_validate({"timeMin": "2026-09-14T00:00:00Z", "timeMax": "2026-09-20T00:00:00Z"})
+    due = int(datetime.datetime(2026, 9, 16, 18, 59, tzinfo=datetime.UTC).timestamp())
+    course = schema.ExtendedCourse.model_validate({"id": 1, "name": "Неделя 1", "modules": [
+        {"id": 10, "name": "Эссе", "uservisible": True, "modname": "assign",
+         "dates": [{"label": "Срок сдачи:", "dataid": "duedate", "timestamp": due}]},
+        {"id": 11, "name": "Тест", "uservisible": True, "modname": "quiz",
+         "dates": [{"label": "Открыто с:", "dataid": "timeopen", "timestamp": due}]},
+    ]})
+
+    modules = course.get_filtered_modules(body, "ОИБ")
+
+    assert [(module.id, module.dt_start, module.dt_end) for module in modules] == [(10, _utc(due), _utc(due))]
