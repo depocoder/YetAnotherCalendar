@@ -10,6 +10,8 @@ from starlette import status
 
 from . import integration, schema
 from ..errors import is_auth_error
+from ..lms import integration as lms_integration
+from ..lms import schema as lms_schema
 from ..netology import schema as netology_schema
 from ..vault import integration as vault_integration
 from ..vault.views import parse_cookie
@@ -100,3 +102,25 @@ async def get_netology_grades(
         raise HTTPException(
             detail="Netology is unavailable", status_code=status.HTTP_502_BAD_GATEWAY,
         ) from exception
+
+
+@router.get("/lms/")
+async def get_lms_grades(
+        user: Annotated[lms_schema.User, Depends(lms_schema.get_user)],
+        course_id: int,
+) -> dict[int, lms_schema.ModuleGrade]:
+    """
+    The student's points in one LMS course, by activity (module) id.
+
+    Read on demand for an activity's card and never cached: grades are
+    personal. A course whose gradebook the LMS keeps closed gives an empty
+    answer; 401 means the LMS token expired.
+    """
+    try:
+        return await lms_integration.get_course_grades(user, course_id)
+    except HTTPException as exception:
+        if exception.status_code == status.HTTP_400_BAD_REQUEST:
+            return {}
+        raise
+    except (httpx.HTTPError, ValidationError) as exception:
+        raise HTTPException(detail="LMS is unavailable", status_code=status.HTTP_502_BAD_GATEWAY) from exception

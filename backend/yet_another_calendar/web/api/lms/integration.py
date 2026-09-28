@@ -8,6 +8,7 @@ from fastapi import HTTPException
 from httpx import AsyncClient
 from pydantic import TypeAdapter
 from starlette import status
+from loguru import logger
 
 from yet_another_calendar.settings import settings
 from . import schema
@@ -131,5 +132,49 @@ async def get_filtered_courses(user: schema.User, body: ModeusTimeBody) -> list[
         course_name = course_by_ids[course_id].full_name
         extended_course = task.result()
         for module in extended_course:
-            filtered_modules.extend(module.get_filtered_modules(body, course_name))
+            filtered_modules.extend(module.get_filtered_modules(body, course_name, course_id))
     return filtered_modules
+
+
+async def get_course_grades(user: schema.User, course_id: int) -> dict[int, schema.ModuleGrade]:
+    """The student's points in a course's activities, by module id.
+
+    Grades are personal: they are read on demand and never go into the
+    calendar cache.
+    """
+    response = await send_request(
+        request_settings={
+            'method': 'GET',
+            'url': settings.lms_get_course_part,
+            'params': {
+                'wstoken': user.token,
+                'moodlewsrestformat': 'json',
+                'wsfunction': 'gradereport_user_get_grade_items',
+                'courseid': course_id,
+                'userid': user.id,
+            },
+        })
+    return schema.CourseGradesResponse.model_validate(response).by_module()
+
+
+async def get_modules_grades(
+        user: schema.User, modules: list[schema.ModuleResponse],
+) -> dict[int, schema.ModuleGrade]:
+    """Points of the given activities for an exported calendar: best effort.
+
+    One request per course they belong to; a course whose gradebook is
+    closed (the LMS answers an error) or any other trouble leaves its
+    activities without points - the export must not suffer for them.
+    """
+    course_ids = sorted({module.course_id for module in modules if module.course_id is not None})
+    results = await asyncio.gather(
+        *[get_course_grades(user, course_id) for course_id in course_ids], return_exceptions=True,
+    )
+    wanted = {module.id for module in modules}
+    grades: dict[int, schema.ModuleGrade] = {}
+    for course_id, result in zip(course_ids, results, strict=True):
+        if isinstance(result, BaseException):
+            logger.warning(f"Can't read LMS grades of course {course_id}: {type(result).__name__}")
+            continue
+        grades.update({module_id: grade for module_id, grade in result.items() if module_id in wanted})
+    return grades

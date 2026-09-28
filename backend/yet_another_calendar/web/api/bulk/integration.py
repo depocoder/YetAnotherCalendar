@@ -172,12 +172,21 @@ def describe_netology_homework(homework: netology_schema.LessonTask) -> str:
     return "\n".join(lines)
 
 
+def describe_lms_activity(name: str, grade: lms_schema.ModuleGrade | None) -> str:
+    """The activity's name plus its points once the teacher graded it."""
+    if grade is None or grade.text is None:
+        return name
+    return f"{name}\n🎓 Оценка: {grade.text}"
+
+
 def export_to_ics(
         calendar: schema.CalendarResponse,
         lesson_marks: dict[str, grades_schema.LessonGrades] | None = None,
+        lms_grades: dict[int, lms_schema.ModuleGrade] | None = None,
 ) -> Iterable[bytes]:
     """The calendar as ICS; ``lesson_marks`` (by Modeus event id) adds attendance and grades to past pairs."""
     lesson_marks = lesson_marks or {}
+    lms_grades = lms_grades or {}
     ics_calendar = icalendar.Calendar()
     ics_calendar.add('version', '2.0')
     ics_calendar.add('prodid', 'yet_another_calendar')
@@ -223,7 +232,8 @@ def export_to_ics(
         done = f"{DONE_MARK} " if lms_event.is_completed else ""
         event = create_ics_event(title=f"{done}LMS: {lms_event.course_name}", starts_at=dt_start,
                                  ends_at=lms_event.dt_end, lesson_id=lms_event.id,
-                                 description=lms_event.name, url=lms_event.url)
+                                 description=describe_lms_activity(lms_event.name, lms_grades.get(lms_event.id)),
+                                 url=lms_event.url)
         ics_calendar.add_component(event)
     yield ics_calendar.to_ical()
 

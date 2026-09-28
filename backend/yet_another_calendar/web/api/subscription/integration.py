@@ -231,7 +231,8 @@ async def _build_ics(
     marks = {}
     if lesson_marks is not None:
         marks = await lesson_marks({str(event.id): event.start_time for event in merged.utmn.modeus_events})
-    return b"".join(bulk_integration.export_to_ics(merged, marks))
+    lms_grades = await lms_integration.get_modules_grades(lms_user, merged.utmn.lms_events)
+    return b"".join(bulk_integration.export_to_ics(merged, marks, lms_grades))
 
 
 async def _serve_broken(redis: Redis, vault_id: str, record: vault_schema.VaultRecord, dek: bytes) -> bytes:

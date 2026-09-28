@@ -12,6 +12,7 @@ from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.auth.utils import verify_tutor_token
 from . import integration, schema
 from ..grades import views as grades_views
+from ..lms import integration as lms_integration
 from ..lms import schema as lms_schema
 from ..modeus import schema as modeus_schema
 from ..modeus import integration as modeus_integration
@@ -98,7 +99,8 @@ async def export_ics(
         redis_pool, yac_vault, modeus_person_id,
         {str(event.id): event.start_time for event in calendar_with_timezone.utmn.modeus_events},
     )
-    return StreamingResponse(integration.export_to_ics(calendar_with_timezone, lesson_marks))
+    lms_grades = await lms_integration.get_modules_grades(lms_user, calendar_with_timezone.utmn.lms_events)
+    return StreamingResponse(integration.export_to_ics(calendar_with_timezone, lesson_marks, lms_grades))
 
 
 @router.get("/user_metrix/")

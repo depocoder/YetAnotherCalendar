@@ -3,7 +3,7 @@ from enum import StrEnum
 from typing import Any, Annotated
 
 from fastapi import Header
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, computed_field, model_validator
 
 from yet_another_calendar.web.api.modeus.schema import Creds, ModeusTimeBody
 
@@ -137,6 +137,8 @@ class Module(BaseModule):
 
 
 class ModuleResponse(BaseModule):
+    # The course the activity is in: its grades are asked per course.
+    course_id: int | None = None
     dt_start: datetime.datetime
     dt_end: datetime.datetime
     is_completed: bool
@@ -185,7 +187,9 @@ class ExtendedCourse(BaseModel):
             return True
         return False
 
-    def get_filtered_modules(self, body: ModeusTimeBody, course_name: str) -> list[ModuleResponse]:
+    def get_filtered_modules(
+            self, body: ModeusTimeBody, course_name: str, course_id: int | None = None,
+    ) -> list[ModuleResponse]:
         """Filter module by time and user_visible."""
         filtered_modules = []
         for module in self.modules:
@@ -204,6 +208,59 @@ class ExtendedCourse(BaseModel):
                     completion_is_manual=not completion.is_automatic if completion else False,
                     dt_end=dt_end, dt_start=dt_start,
                     course_name=course_name,
+                    course_id=course_id,
 
                 ))
         return filtered_modules
+
+
+def _number(value: float) -> str:
+    """18.4 -> "18,4", 20.0 -> "20": points the way the LMS writes them."""
+    return f"{value:.2f}".rstrip("0").rstrip(".").replace(".", ",")
+
+
+class ModuleGrade(BaseModel):
+    """Points of one activity from the LMS gradebook; grade is None until it is graded."""
+    grade: float | None = None
+    grade_max: float | None = None
+    graded_at: datetime.datetime | None = None
+
+    @computed_field  # type: ignore
+    @property
+    def text(self) -> str | None:
+        """ "18,4 из 20" once graded, None before."""
+        if self.grade is None:
+            return None
+        return f"{_number(self.grade)} из {_number(self.grade_max)}" if self.grade_max else _number(self.grade)
+
+
+class GradeItem(BaseModel):
+    """One row of gradereport_user_get_grade_items."""
+    item_type: str | None = Field(alias="itemtype", default=None)
+    cmid: int | None = None
+    grade_raw: float | None = Field(alias="graderaw", default=None)
+    grade_max: float | None = Field(alias="grademax", default=None)
+    graded_at: int | None = Field(alias="gradedategraded", default=None)
+    hidden: bool | None = Field(alias="gradeishidden", default=None)
+
+
+class UserGrades(BaseModel):
+    grade_items: list[GradeItem] = Field(alias="gradeitems", default_factory=list)
+
+
+class CourseGradesResponse(BaseModel):
+    user_grades: list[UserGrades] = Field(alias="usergrades", default_factory=list)
+
+    def by_module(self) -> dict[int, ModuleGrade]:
+        """Grades of the course's activities by module id (cmid), hidden ones left out."""
+        grades = {}
+        for user_grades in self.user_grades:
+            for item in user_grades.grade_items:
+                if item.item_type != "mod" or item.cmid is None or item.hidden:
+                    continue
+                grades[item.cmid] = ModuleGrade(
+                    grade=item.grade_raw, grade_max=item.grade_max,
+                    graded_at=datetime.datetime.fromtimestamp(item.graded_at, tz=datetime.UTC)
+                    if item.graded_at else None,
+                )
+        return grades
