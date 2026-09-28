@@ -8,6 +8,7 @@ import httpx
 import reretry
 from bs4 import BeautifulSoup, Tag
 from fastapi import HTTPException
+from fastapi_cache import FastAPICache
 from fastapi_cache.decorator import cache
 from httpx import URL, AsyncClient
 from pydantic import TypeAdapter
@@ -178,6 +179,12 @@ async def get_events(
 
     response = await post_modeus(__jwt, body, settings.modeus_search_events_part)
     modeus_calendar = ModeusCalendar.model_validate_json(response)
+    page = modeus_calendar.page
+    if page and page.total_elements > len(modeus_calendar.embedded.events):
+        logger.warning(
+            f"Modeus returned {len(modeus_calendar.embedded.events)} of {page.total_elements} events "
+            f"for {body.time_min.date()}..{body.time_max.date()}, raise modeus_search_page_size",
+        )
     teachers = await utmn_integration.get_all_teachers()
     return modeus_calendar.serialize_modeus_response(teachers_profiles=teachers)
 
@@ -209,6 +216,30 @@ async def get_donor_token() -> str:
     )
     logger.info("Donor account authenticated successfully")
     return token
+
+
+_donor_refresh_lock = asyncio.Lock()
+
+
+async def refresh_donor_token(rejected_token: str) -> str:
+    """Replace a cached donor token Modeus has just rejected.
+
+    Without this a dead token stayed cached for up to 12 hours, and every
+    calendar in the meantime failed as if the user's own login had expired.
+    Requests failing together re-login once: whoever comes second finds
+    the token already replaced.
+    """
+    async with _donor_refresh_lock:
+        backend = FastAPICache.get_backend()
+        coder = FastAPICache.get_coder()
+        key = key_builder(get_donor_token, f"{FastAPICache.get_prefix()}:", args=(), kwargs={})
+        cached = await backend.get(key)
+        if cached is not None and coder.decode(cached) != rejected_token:
+            return str(coder.decode(cached))
+        logger.warning("Modeus rejected the donor token, authenticating again")
+        token = await login(settings.modeus_username, settings.modeus_password)
+        await backend.set(key, coder.encode(token), settings.redis_jwt_time_live)
+        return token
 
 
 @cache(expire=settings.redis_modeus_profiles_time_live, key_builder=key_builder)  # 1 day

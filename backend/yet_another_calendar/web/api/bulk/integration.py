@@ -21,6 +21,7 @@ from .. import upstream_health
 from ..errors import is_auth_error, leaf_exceptions
 from ..lms import schema as lms_schema
 from ..lms import views as lms_views
+from ..modeus import integration as modeus_integration
 from ..modeus import schema as modeus_schema
 from ..modeus import views as modeus_views
 from ..netology import schema as netology_schema
@@ -221,6 +222,32 @@ async def _timed(call: Awaitable[Any]) -> tuple[Any, int]:
     return result, round((time.perf_counter() - started) * 1000)
 
 
+async def get_modeus_events_by_donor(
+        body: modeus_schema.ModeusEventsBody, donor_token: str, person_id: str,
+) -> list[modeus_schema.FullEvent]:
+    """Modeus events read with the donor account, surviving a revoked donor token.
+
+    A 401 here is about the donor account, never about the user: the token
+    is replaced and the call retried once. Should Modeus reject the fresh
+    token too, the failure is reported as an upstream error, so the calendar
+    serves its cached Modeus part instead of logging the user out.
+    """
+    try:
+        return await modeus_views.get_calendar(body, donor_token, person_id)
+    except HTTPException as exception:
+        if exception.status_code != status.HTTP_401_UNAUTHORIZED:
+            raise
+    fresh_token = await modeus_integration.refresh_donor_token(donor_token)
+    try:
+        return await modeus_views.get_calendar(body, fresh_token, person_id)
+    except HTTPException as exception:
+        if exception.status_code != status.HTTP_401_UNAUTHORIZED:
+            raise
+        raise HTTPException(
+            detail="Modeus rejected the donor account", status_code=status.HTTP_502_BAD_GATEWAY,
+        ) from exception
+
+
 async def get_calendar(
         body: modeus_schema.ModeusTimeBody,
         calendar_id: int | tuple[int, ...],
@@ -237,13 +264,14 @@ async def get_calendar(
     so its part comes from ``fallback`` (the cached calendar) or stays empty,
     and the failure is reported in ``failures`` for the frontend to show.
     Every outcome is counted in the anonymous upstream health statistics.
+    ``modeus_jwt_token`` is the donor account token, see get_modeus_events_by_donor.
     """
     full_body = modeus_schema.ModeusEventsBody.model_validate(
         {**body.create_dump_date(), 'attendeePersonId': [person_id]},
     )
     results = await asyncio.gather(
         _timed(netology_views.get_calendar(body, calendar_id, cookies)),
-        _timed(modeus_views.get_calendar(full_body, modeus_jwt_token, person_id)),
+        _timed(get_modeus_events_by_donor(full_body, modeus_jwt_token, person_id)),
         _timed(lms_views.get_events(lms_user, full_body)),
     )
     parts: dict[schema.ServiceName, Any] = {}

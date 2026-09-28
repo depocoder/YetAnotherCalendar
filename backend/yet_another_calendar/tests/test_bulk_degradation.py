@@ -322,3 +322,62 @@ async def test_refresh_keeps_cached_part_of_failed_service(upstreams: SimpleName
     assert refreshed.changed is False  # same events as before, only the flag changed
     stored = await integration.load_cached_calendar(BODY, CALENDAR_ID, PERSON_ID)
     assert stored is not None and stored.failures[0].from_cache is True
+
+
+DONOR_EXPIRED = HTTPException(detail="Modeus token expired!", status_code=401)
+
+
+async def test_rejected_donor_token_is_replaced(upstreams: SimpleNamespace) -> None:
+    """A donor token Modeus revoked is renewed, the user's calendar is not touched."""
+    upstreams.modeus.side_effect = [DONOR_EXPIRED, []]
+    refresh = AsyncMock(return_value="fresh-jwt")
+
+    with patch.object(integration.modeus_integration, "refresh_donor_token", new=refresh):
+        calendar = await _get_calendar()
+
+    refresh.assert_awaited_once_with("jwt")
+    assert upstreams.modeus.await_args_list[1].args[1] == "fresh-jwt"
+    assert calendar.failures == []
+
+
+async def test_donor_rejected_twice_is_an_outage_not_a_logout(upstreams: SimpleNamespace) -> None:
+    """Only the donor account is broken: serve the cached Modeus part instead of a 401."""
+    upstreams.modeus.side_effect = DONOR_EXPIRED
+    cached = _calendar()
+    cached.utmn.modeus_events = []
+
+    with patch.object(integration.modeus_integration, "refresh_donor_token", new=AsyncMock(return_value="jwt2")):
+        calendar = await _get_calendar(fallback=cached)
+
+    (failure,) = calendar.failures
+    assert failure.service == "modeus"
+    assert failure.from_cache is True
+    assert "donor" in failure.error
+
+
+async def test_refresh_donor_token_replaces_the_cached_token() -> None:
+    """The fresh token lands under the very key the real @cache reads get_donor_token from."""
+    import importlib
+
+    import fastapi_cache.decorator
+
+    from yet_another_calendar.web.api.modeus import integration as modeus_integration
+    from yet_another_calendar.web.cache_builder import key_builder
+
+    # conftest stubs @cache out for the whole session: take a real one for this test only.
+    stub = fastapi_cache.decorator.cache
+    try:
+        real_cache = importlib.reload(fastapi_cache.decorator).cache
+    finally:
+        fastapi_cache.decorator.cache = stub
+    cached_donor_token = real_cache(expire=60, key_builder=key_builder)(modeus_integration.get_donor_token)
+    login = AsyncMock(side_effect=["dead", "fresh"])
+
+    with patch.object(modeus_integration, "login", new=login):
+        assert await cached_donor_token() == "dead"
+        assert await modeus_integration.refresh_donor_token("dead") == "fresh"
+        # A request that failed with the same dead token meanwhile reuses the fresh one
+        assert await modeus_integration.refresh_donor_token("dead") == "fresh"
+        assert await cached_donor_token() == "fresh"
+
+    assert login.await_count == 2

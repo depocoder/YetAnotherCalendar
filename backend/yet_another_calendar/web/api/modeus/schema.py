@@ -71,7 +71,9 @@ class ModeusTimeBody(BaseModel):
 # noinspection PyNestedDecorators
 class ModeusEventsBody(ModeusTimeBody):
     """Modeus search events body."""
-    size: int = Field(default=50)
+    # A student's week fits one page this size, the way the Modeus UI asks;
+    # a smaller page silently cut busy weeks short.
+    size: int = Field(default=settings.modeus_search_page_size)
     attendee_person_id: list[uuid.UUID] = Field(alias="attendeePersonId")
 
     @model_validator(mode='after')
