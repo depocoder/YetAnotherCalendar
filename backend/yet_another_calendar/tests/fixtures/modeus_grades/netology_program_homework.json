@@ -1,0 +1,471 @@
+{
+ "lesson_items": [
+  {
+   "id": 3540292,
+   "position": 1,
+   "lesson_id": 659406,
+   "locked": false,
+   "type": "task",
+   "approximate_progress_time": 120,
+   "title": "Домашнее задание по теме 1 (дедлайн 09.09.2026)",
+   "path": "/profile/program/bhebdps-24-tpm-5/lessons/659406/lesson_items/3540292",
+   "feedback": {
+    "passed": false
+   },
+   "passed_rule": "task_submit",
+   "passed_value": null,
+   "passed": true,
+   "lesson_task": {
+    "id": 291223,
+    "task_type": "independent",
+    "dynamic_deadline_calculation": false,
+    "complete_type": "individual",
+    "recommended_deadline": null,
+    "questions_disabled": false,
+    "prolongation_request_forbidden": false,
+    "can_be_reviewed_by_ai_expert": false,
+    "assigned_to_group": [],
+    "classmates": [],
+    "deadline": null,
+    "deadline_endless": true,
+    "available_for_solve": true,
+    "deadline_in_days": 0,
+    "can_send_solution": false,
+    "can_send_deadline_request": false,
+    "deadline_requests": [],
+    "experts": [],
+    "stupid_flag_meaning_independent_task_was_started": true,
+    "independent_homework_example": null,
+    "homework": {
+     "id": 1898853,
+     "started_at": "2026-09-07T08:44:06.000Z",
+     "status": null,
+     "score": null,
+     "comments": [],
+     "solutions": [
+      {
+       "id": 1176089,
+       "solution_type": "link",
+       "created_at": "2026-09-07T08:44:20.000Z",
+       "title": "",
+       "updated_at": "2026-09-07T08:44:20.000Z",
+       "link": "https://gist.github.com/student/solution"
+      }
+     ]
+    }
+   },
+   "content": "",
+   "content_type": "markdown",
+   "preview": "",
+   "resource_package_ids": []
+  },
+  {
+   "id": 3549541,
+   "position": 1,
+   "lesson_id": 659409,
+   "locked": false,
+   "type": "task",
+   "approximate_progress_time": 120,
+   "title": "Домашнее задание по теме 2 (дедлайн 15.09.2026)",
+   "path": "/profile/program/bhebdps-24-tpm-5/lessons/659409/lesson_items/3549541",
+   "feedback": {
+    "passed": false
+   },
+   "passed_rule": "task_submit",
+   "passed_value": null,
+   "passed": true,
+   "lesson_task": {
+    "id": 291926,
+    "task_type": "independent",
+    "dynamic_deadline_calculation": false,
+    "complete_type": "individual",
+    "recommended_deadline": null,
+    "questions_disabled": false,
+    "prolongation_request_forbidden": false,
+    "can_be_reviewed_by_ai_expert": false,
+    "assigned_to_group": [],
+    "classmates": [],
+    "deadline": null,
+    "deadline_endless": true,
+    "available_for_solve": true,
+    "deadline_in_days": 0,
+    "can_send_solution": false,
+    "can_send_deadline_request": false,
+    "deadline_requests": [],
+    "experts": [],
+    "stupid_flag_meaning_independent_task_was_started": true,
+    "independent_homework_example": null,
+    "homework": {
+     "id": 1905989,
+     "started_at": "2026-09-15T15:58:06.000Z",
+     "status": null,
+     "score": null,
+     "comments": [],
+     "solutions": [
+      {
+       "id": 1181664,
+       "solution_type": "link",
+       "created_at": "2026-09-15T15:58:57.000Z",
+       "title": "",
+       "updated_at": "2026-09-15T15:58:57.000Z",
+       "link": "https://gist.github.com/student/solution"
+      }
+     ]
+    }
+   },
+   "content": "",
+   "content_type": "markdown",
+   "preview": "",
+   "resource_package_ids": []
+  },
+  {
+   "id": 3551286,
+   "position": 1,
+   "lesson_id": 659412,
+   "locked": false,
+   "type": "task",
+   "approximate_progress_time": 180,
+   "title": "Домашнее задание по теме 3 (дедлайн 16.09.2026)",
+   "path": "/profile/program/bhebdps-24-tpm-5/lessons/659412/lesson_items/3551286",
+   "feedback": {
+    "passed": false
+   },
+   "passed_rule": "task_submit",
+   "passed_value": null,
+   "passed": true,
+   "lesson_task": {
+    "id": 292074,
+    "task_type": "independent",
+    "dynamic_deadline_calculation": false,
+    "complete_type": "individual",
+    "recommended_deadline": null,
+    "questions_disabled": false,
+    "prolongation_request_forbidden": false,
+    "can_be_reviewed_by_ai_expert": false,
+    "assigned_to_group": [],
+    "classmates": [],
+    "deadline": null,
+    "deadline_endless": true,
+    "available_for_solve": true,
+    "deadline_in_days": 0,
+    "can_send_solution": false,
+    "can_send_deadline_request": false,
+    "deadline_requests": [],
+    "experts": [],
+    "stupid_flag_meaning_independent_task_was_started": true,
+    "independent_homework_example": null,
+    "homework": {
+     "id": 1906916,
+     "started_at": "2026-09-16T15:13:11.000Z",
+     "status": null,
+     "score": null,
+     "comments": [],
+     "solutions": [
+      {
+       "id": 1182376,
+       "solution_type": "link",
+       "created_at": "2026-09-16T15:13:24.000Z",
+       "title": "",
+       "updated_at": "2026-09-16T15:13:24.000Z",
+       "link": "https://gist.github.com/student/solution"
+      }
+     ]
+    }
+   },
+   "content": "",
+   "content_type": "markdown",
+   "preview": "",
+   "resource_package_ids": []
+  },
+  {
+   "id": 3558090,
+   "position": 1,
+   "lesson_id": 659415,
+   "locked": false,
+   "type": "task",
+   "approximate_progress_time": 180,
+   "title": "Домашнее задание по теме 4 (дедлайн 21.09.2026)",
+   "path": "/profile/program/bhebdps-24-tpm-5/lessons/659415/lesson_items/3558090",
+   "feedback": {
+    "passed": false
+   },
+   "passed_rule": "task_submit",
+   "passed_value": null,
+   "passed": true,
+   "lesson_task": {
+    "id": 292653,
+    "task_type": "independent",
+    "dynamic_deadline_calculation": false,
+    "complete_type": "individual",
+    "recommended_deadline": null,
+    "questions_disabled": false,
+    "prolongation_request_forbidden": false,
+    "can_be_reviewed_by_ai_expert": false,
+    "assigned_to_group": [],
+    "classmates": [],
+    "deadline": null,
+    "deadline_endless": true,
+    "available_for_solve": true,
+    "deadline_in_days": 0,
+    "can_send_solution": false,
+    "can_send_deadline_request": false,
+    "deadline_requests": [],
+    "experts": [],
+    "stupid_flag_meaning_independent_task_was_started": true,
+    "independent_homework_example": null,
+    "homework": {
+     "id": 1911675,
+     "started_at": "2026-09-22T10:28:42.000Z",
+     "status": null,
+     "score": null,
+     "comments": [],
+     "solutions": [
+      {
+       "id": 1186172,
+       "solution_type": "link",
+       "created_at": "2026-09-22T10:28:54.000Z",
+       "title": "",
+       "updated_at": "2026-09-22T10:28:54.000Z",
+       "link": "https://gist.github.com/student/solution"
+      }
+     ]
+    }
+   },
+   "content": "",
+   "content_type": "markdown",
+   "preview": "",
+   "resource_package_ids": []
+  },
+  {
+   "id": 3558096,
+   "position": 1,
+   "lesson_id": 659418,
+   "locked": false,
+   "type": "task",
+   "approximate_progress_time": 180,
+   "title": "Домашнее задание по теме 5 (дедлайн 23.09.2026)",
+   "path": "/profile/program/bhebdps-24-tpm-5/lessons/659418/lesson_items/3558096",
+   "feedback": {
+    "passed": false
+   },
+   "passed_rule": "task_submit",
+   "passed_value": null,
+   "passed": true,
+   "lesson_task": {
+    "id": 292654,
+    "task_type": "independent",
+    "dynamic_deadline_calculation": false,
+    "complete_type": "individual",
+    "recommended_deadline": null,
+    "questions_disabled": false,
+    "prolongation_request_forbidden": false,
+    "can_be_reviewed_by_ai_expert": false,
+    "assigned_to_group": [],
+    "classmates": [],
+    "deadline": null,
+    "deadline_endless": true,
+    "available_for_solve": true,
+    "deadline_in_days": 0,
+    "can_send_solution": false,
+    "can_send_deadline_request": false,
+    "deadline_requests": [],
+    "experts": [],
+    "stupid_flag_meaning_independent_task_was_started": true,
+    "independent_homework_example": null,
+    "homework": {
+     "id": 1911676,
+     "started_at": "2026-09-22T10:29:01.000Z",
+     "status": null,
+     "score": null,
+     "comments": [],
+     "solutions": [
+      {
+       "id": 1186173,
+       "solution_type": "link",
+       "created_at": "2026-09-22T10:29:12.000Z",
+       "title": "",
+       "updated_at": "2026-09-22T10:29:12.000Z",
+       "link": "https://gist.github.com/student/solution"
+      }
+     ]
+    }
+   },
+   "content": "",
+   "content_type": "markdown",
+   "preview": "",
+   "resource_package_ids": []
+  },
+  {
+   "id": 3558100,
+   "position": 1,
+   "lesson_id": 659421,
+   "locked": false,
+   "type": "task",
+   "approximate_progress_time": 180,
+   "title": "Домашнее задание по теме 6 (дедлайн 28.09.2026)",
+   "path": "/profile/program/bhebdps-24-tpm-5/lessons/659421/lesson_items/3558100",
+   "feedback": {
+    "passed": false
+   },
+   "passed_rule": "task_submit",
+   "passed_value": null,
+   "passed": true,
+   "lesson_task": {
+    "id": 292655,
+    "task_type": "independent",
+    "dynamic_deadline_calculation": false,
+    "complete_type": "individual",
+    "recommended_deadline": null,
+    "questions_disabled": false,
+    "prolongation_request_forbidden": false,
+    "can_be_reviewed_by_ai_expert": false,
+    "assigned_to_group": [],
+    "classmates": [],
+    "deadline": null,
+    "deadline_endless": true,
+    "available_for_solve": true,
+    "deadline_in_days": 0,
+    "can_send_solution": false,
+    "can_send_deadline_request": false,
+    "deadline_requests": [],
+    "experts": [],
+    "stupid_flag_meaning_independent_task_was_started": true,
+    "independent_homework_example": null,
+    "homework": {
+     "id": 1916983,
+     "started_at": "2026-09-28T10:27:33.000Z",
+     "status": null,
+     "score": null,
+     "comments": [],
+     "solutions": [
+      {
+       "id": 1190368,
+       "solution_type": "link",
+       "created_at": "2026-09-28T10:27:36.000Z",
+       "title": "",
+       "updated_at": "2026-09-28T10:27:36.000Z",
+       "link": "https://gist.github.com/student/solution"
+      }
+     ]
+    }
+   },
+   "content": "",
+   "content_type": "markdown",
+   "preview": "",
+   "resource_package_ids": []
+  },
+  {
+   "id": 3583499,
+   "position": 1,
+   "lesson_id": 659424,
+   "locked": false,
+   "type": "task",
+   "approximate_progress_time": 180,
+   "title": "Домашнее задание 7 (дедлайн 07.10.2026)",
+   "path": "/profile/program/bhebdps-24-tpm-5/lessons/659424/lesson_items/3583499",
+   "feedback": {
+    "passed": false
+   },
+   "passed_rule": "task_submit",
+   "passed_value": null,
+   "passed": false,
+   "lesson_task": {
+    "id": 294501,
+    "task_type": "independent",
+    "dynamic_deadline_calculation": false,
+    "complete_type": "individual",
+    "recommended_deadline": null,
+    "questions_disabled": false,
+    "prolongation_request_forbidden": false,
+    "can_be_reviewed_by_ai_expert": false,
+    "assigned_to_group": [],
+    "classmates": [],
+    "deadline": null,
+    "deadline_endless": true,
+    "available_for_solve": true,
+    "deadline_in_days": 0,
+    "can_send_solution": true,
+    "can_send_deadline_request": false,
+    "deadline_requests": [],
+    "experts": [],
+    "stupid_flag_meaning_independent_task_was_started": false
+   },
+   "content": "",
+   "content_type": "markdown",
+   "preview": "",
+   "resource_package_ids": []
+  },
+  {
+   "id": 3592121,
+   "position": 1,
+   "lesson_id": 659427,
+   "locked": true,
+   "type": "task",
+   "approximate_progress_time": 180,
+   "title": "Домашнее задание по теме 8 (Дедлайн - 06.10.2026)",
+   "path": "/profile/program/bhebdps-24-tpm-5/lessons/659427/lesson_items/3592121",
+   "passed_rule": "task_submit",
+   "passed_value": null,
+   "passed": false,
+   "lesson_task": {
+    "experts": [],
+    "id": 295138,
+    "task_type": "independent",
+    "dynamic_deadline_calculation": false,
+    "complete_type": "individual",
+    "recommended_deadline": null,
+    "questions_disabled": false,
+    "prolongation_request_forbidden": false,
+    "can_be_reviewed_by_ai_expert": false,
+    "assigned_to_group": [],
+    "classmates": []
+   },
+   "resource_package_ids": [],
+   "content": "",
+   "preview": ""
+  },
+  {
+   "id": 3544793,
+   "position": 1,
+   "lesson_id": 659447,
+   "locked": false,
+   "type": "task",
+   "approximate_progress_time": 2400,
+   "title": "Итоговое домашнее задание (дедлайн 08.11.2026)",
+   "path": "/profile/program/bhebdps-24-tpm-5/lessons/659447/lesson_items/3544793",
+   "feedback": {
+    "passed": false
+   },
+   "passed_rule": "task_finish_correct",
+   "passed_value": null,
+   "passed": false,
+   "lesson_task": {
+    "id": 291540,
+    "task_type": "common",
+    "dynamic_deadline_calculation": false,
+    "complete_type": "individual",
+    "recommended_deadline": null,
+    "questions_disabled": false,
+    "prolongation_request_forbidden": true,
+    "can_be_reviewed_by_ai_expert": false,
+    "assigned_to_group": [],
+    "classmates": [],
+    "deadline": "2026-11-08T20:59:59.000Z",
+    "deadline_endless": false,
+    "available_for_solve": true,
+    "deadline_in_days": 5,
+    "can_send_solution": true,
+    "can_send_deadline_request": true,
+    "deadline_requests": [],
+    "experts": []
+   },
+   "content": "",
+   "content_type": "markdown",
+   "preview": "",
+   "resource_package_ids": [
+    235571
+   ]
+  }
+ ],
+ "resource_packages": []
+}

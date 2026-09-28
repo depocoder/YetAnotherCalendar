@@ -34,6 +34,7 @@ YetAnotherCalendar provides a unified interface to manage all your educational e
 - **📚 LMS Integration**: Moodle-based learning management system with course modules and deadlines
 - **🌐 Netology Integration**: Professional education platform with webinars and homework tracking
 - **🔗 Unified API**: Single endpoint combining all platforms for seamless experience
+- **🎓 My Grades**: Modeus grades, GPA rating and attendance per semester (for "remember me" users: Modeus shows grades to the student's own account only), plus every Netology homework and test with its status and a link to it, and the latest expert feedback
 
 ### 📱 **Modern User Interface**
 - **📱 Mobile-First Design**: BETA mobile interface with responsive calendar views

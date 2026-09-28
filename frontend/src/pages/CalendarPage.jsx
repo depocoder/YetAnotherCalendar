@@ -17,6 +17,7 @@ import {
 } from '../services/api';
 import CourseSelectorModal from "../components/Calendar/CourseSelectorModal";
 import SubscriptionModal from "../components/Calendar/SubscriptionModal";
+import GradesModal from "../components/Calendar/GradesModal";
 import { toast } from 'react-toastify';
 import Loader from "../elements/Loader";
 import '../style/header.scss';
@@ -57,6 +58,7 @@ const CalendarPage = () => {
     const [netologyCourses, setNetologyCourses] = useState(() => getNetologyCoursesLocalStorage());
     const [showCourseModal, setShowCourseModal] = useState(false);
     const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+    const [showGradesModal, setShowGradesModal] = useState(false);
 
     const navigate = useNavigate();
     const lastFetchedDate = useRef(null);
@@ -315,6 +317,10 @@ const CalendarPage = () => {
                 courses={netologyCourses}
                 selectedIds={calendarIds}
             />
+            <GradesModal
+                isOpen={showGradesModal}
+                onClose={() => setShowGradesModal(false)}
+            />
             <LogoutModal
                 isOpen={showLogoutModal}
                 onClose={() => setShowLogoutModal(false)}
@@ -342,6 +348,7 @@ const CalendarPage = () => {
                             />
                             <SettingsMenu
                                 onOpenCourses={handleOpenCourseModal}
+                                onOpenGrades={() => setShowGradesModal(true)}
                                 onOpenFeatures={() => setShowFeaturesModal(true)}
                             />
                             <ServiceHealthIndicator refreshKey={events?.cached_at} />
@@ -378,6 +385,7 @@ const CalendarPage = () => {
                         <div className="mobile-buttons-row">
                             <SettingsMenu
                                 onOpenCourses={handleOpenCourseModal}
+                                onOpenGrades={() => setShowGradesModal(true)}
                                 onOpenFeatures={() => setShowFeaturesModal(true)}
                             />
                             <button

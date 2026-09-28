@@ -20,7 +20,7 @@ _INVALID_COOKIE = HTTPException(
 )
 
 
-def _parse_cookie(cookie_value: str | None) -> tuple[str, str]:
+def parse_cookie(cookie_value: str | None) -> tuple[str, str]:
     if not cookie_value or "." not in cookie_value:
         raise _INVALID_COOKIE
     vault_id, secret = cookie_value.split(".", 1)
@@ -81,7 +81,7 @@ async def vault_status(
     if not yac_vault:
         return schema.VaultStatus(active=False)
     try:
-        vault_id, secret = _parse_cookie(yac_vault)
+        vault_id, secret = parse_cookie(yac_vault)
         async with Redis(connection_pool=redis_pool) as redis:
             record, _, _ = await integration.resolve(redis, vault_id, secret)
     except HTTPException:
@@ -104,7 +104,7 @@ async def refresh_session(
     Returns fresh tokens for the frontend to store. 401 means the grant is
     gone or the remembered password no longer works.
     """
-    vault_id, secret = _parse_cookie(yac_vault)
+    vault_id, secret = parse_cookie(yac_vault)
     async with Redis(connection_pool=redis_pool) as redis:
         record, _, dek = await integration.resolve(redis, vault_id, secret)
         if force:
@@ -139,7 +139,7 @@ async def forget_me(
     """
     if yac_vault:
         try:
-            vault_id, secret = _parse_cookie(yac_vault)
+            vault_id, secret = parse_cookie(yac_vault)
             async with Redis(connection_pool=redis_pool) as redis:
                 await integration.delete_grant(redis, vault_id, secret)
         except HTTPException:

@@ -1,0 +1,389 @@
+{
+ "programs": [
+  {
+   "title": "2 семестр: Проектно-исследовательская работа",
+   "type": "distance_course",
+   "format_type": "new_format",
+   "lesson_items": [
+    {
+     "id": 2661138,
+     "lesson_id": 491334,
+     "locked": false,
+     "type": "task",
+     "title": "Домашнее задание 1. Чек-пойнт 2. Прототип решения (дедлайн 11.05.25)",
+     "lesson_task": {
+      "id": 223976,
+      "task_type": "common",
+      "dynamic_deadline_calculation": true,
+      "deadline_in_days": 5,
+      "first_deadline_in_days": 7,
+      "complete_type": "in_group",
+      "deadline": "2025-06-08T20:59:59.000Z",
+      "recommended_deadline": null,
+      "homework": {
+       "id": 3341748,
+       "status": "accepted",
+       "score": "good"
+      }
+     }
+    },
+    {
+     "id": 2713413,
+     "lesson_id": 501143,
+     "locked": false,
+     "type": "task",
+     "title": "Паспорт компетенций (дедлайн 17.06.25)",
+     "lesson_task": {
+      "id": 228155,
+      "task_type": "independent",
+      "dynamic_deadline_calculation": false,
+      "deadline_in_days": 0,
+      "first_deadline_in_days": 0,
+      "complete_type": "individual",
+      "deadline": null,
+      "recommended_deadline": null,
+      "homework": {
+       "id": 1525515,
+       "status": null,
+       "score": null
+      }
+     }
+    },
+    {
+     "id": 2729461,
+     "lesson_id": 504284,
+     "locked": false,
+     "type": "task",
+     "title": "Домашнее задание 2. Чек-пойнт 3. Документация проекта (дедлайн 17.06.25)",
+     "lesson_task": {
+      "id": 229450,
+      "task_type": "independent",
+      "dynamic_deadline_calculation": false,
+      "deadline_in_days": 0,
+      "first_deadline_in_days": 0,
+      "complete_type": "individual",
+      "deadline": null,
+      "recommended_deadline": null,
+      "homework": {
+       "id": 1521229,
+       "status": null,
+       "score": null
+      }
+     }
+    },
+    {
+     "id": 2788662,
+     "lesson_id": 514750,
+     "locked": false,
+     "type": "task",
+     "title": "Задание для переаттестации. Чек-пойнт 2. Прототип решения (дедлайн 05.10.25)",
+     "lesson_task": {
+      "id": 234137,
+      "task_type": "common",
+      "dynamic_deadline_calculation": true,
+      "deadline_in_days": 5,
+      "first_deadline_in_days": 7,
+      "complete_type": "in_group",
+      "deadline": null,
+      "recommended_deadline": null
+     }
+    },
+    {
+     "id": 2788664,
+     "lesson_id": 514750,
+     "locked": false,
+     "type": "task",
+     "title": "Задание для переаттестации. Чек-пойнт 3. Документация проекта (дедлайн 05.10.25)",
+     "lesson_task": {
+      "id": 234138,
+      "task_type": "independent",
+      "dynamic_deadline_calculation": false,
+      "deadline_in_days": 0,
+      "first_deadline_in_days": 0,
+      "complete_type": "individual",
+      "deadline": null,
+      "recommended_deadline": null
+     }
+    },
+    {
+     "id": 2523422,
+     "lesson_id": 466702,
+     "locked": false,
+     "type": "webinar",
+     "title": "Вебинар 1. Основы командной работы для разработчиков ПО",
+     "starts_at": "2025-02-18T15:50:00.000Z",
+     "ends_at": "2025-02-18T17:20:00.000Z",
+     "status": "passed"
+    }
+   ],
+   "resource_packages": [],
+   "access_levels": [
+    {
+     "current_program_id": 50489,
+     "level_type": "common"
+    }
+   ]
+  },
+  {
+   "title": "3 семестр: Базы данных",
+   "type": "distance_course",
+   "format_type": "new_format",
+   "lesson_items": [
+    {
+     "id": 2847213,
+     "lesson_id": 524180,
+     "locked": false,
+     "type": "task",
+     "title": "Промежуточное задание с проверкой (дедлайн 26.10.25)",
+     "lesson_task": {
+      "id": 238728,
+      "task_type": "common",
+      "dynamic_deadline_calculation": false,
+      "deadline_in_days": 5,
+      "first_deadline_in_days": 7,
+      "complete_type": "individual",
+      "deadline": "2025-11-08T20:59:59.000Z",
+      "recommended_deadline": null,
+      "homework": {
+       "id": 3636440,
+       "status": "accepted",
+       "score": "good"
+      }
+     }
+    },
+    {
+     "id": 3036073,
+     "lesson_id": 523962,
+     "locked": false,
+     "type": "task",
+     "title": "Промежуточное задание с проверкой (дедлайн продлён до 29.12.25)",
+     "lesson_task": {
+      "id": 252535,
+      "task_type": "common",
+      "dynamic_deadline_calculation": false,
+      "deadline_in_days": 1,
+      "first_deadline_in_days": 2,
+      "complete_type": "individual",
+      "deadline": "2025-12-29T20:59:59.000Z",
+      "recommended_deadline": null,
+      "homework": {
+       "id": 3698664,
+       "status": "rework",
+       "score": null
+      }
+     }
+    },
+    {
+     "id": 2839076,
+     "lesson_id": 523933,
+     "locked": false,
+     "type": "webinar",
+     "title": "Вебинар 1. Подключение к БД. Структура БД",
+     "starts_at": "2025-09-03T15:50:00.000Z",
+     "ends_at": "2025-09-03T17:20:00.000Z",
+     "status": "passed"
+    }
+   ],
+   "resource_packages": [],
+   "access_levels": [
+    {
+     "current_program_id": 66064,
+     "level_type": "common"
+    }
+   ]
+  },
+  {
+   "title": "1 семестр: Введение в специальность",
+   "type": "distance_course",
+   "format_type": "new_format",
+   "lesson_items": [
+    {
+     "id": 2265576,
+     "lesson_id": 419629,
+     "locked": false,
+     "type": "task",
+     "title": "Домашнее задание с самопроверкой (дедлайн 12.12.24)",
+     "lesson_task": {
+      "id": 192986,
+      "task_type": "independent",
+      "dynamic_deadline_calculation": false,
+      "deadline_in_days": 0,
+      "first_deadline_in_days": 0,
+      "complete_type": "individual",
+      "deadline": null,
+      "recommended_deadline": null,
+      "homework": {
+       "id": 1354130,
+       "status": null,
+       "score": null
+      }
+     }
+    },
+    {
+     "id": 2263846,
+     "lesson_id": 419231,
+     "locked": false,
+     "type": "webinar",
+     "title": "Вебинар 1. Введение в  информационные технологии. Часть 1",
+     "starts_at": "2024-09-11T14:10:00.000Z",
+     "ends_at": "2024-09-11T15:40:00.000Z",
+     "status": "passed"
+    }
+   ],
+   "resource_packages": [],
+   "access_levels": [
+    {
+     "current_program_id": 56076,
+     "level_type": "common"
+    }
+   ]
+  },
+  {
+   "title": "5 семестр: Теория и практика многопоточности",
+   "type": "distance_course",
+   "format_type": "new_format",
+   "lesson_items": [
+    {
+     "id": 3540292,
+     "lesson_id": 659406,
+     "locked": false,
+     "type": "task",
+     "title": "Домашнее задание по теме 1 (дедлайн 09.09.2026)",
+     "lesson_task": {
+      "id": 291223,
+      "task_type": "independent",
+      "dynamic_deadline_calculation": false,
+      "deadline_in_days": 0,
+      "first_deadline_in_days": 0,
+      "complete_type": "individual",
+      "deadline": null,
+      "recommended_deadline": null,
+      "homework": {
+       "id": 1898853,
+       "status": null,
+       "score": null
+      }
+     }
+    },
+    {
+     "id": 3549541,
+     "lesson_id": 659409,
+     "locked": false,
+     "type": "task",
+     "title": "Домашнее задание по теме 2 (дедлайн 15.09.2026)",
+     "lesson_task": {
+      "id": 291926,
+      "task_type": "independent",
+      "dynamic_deadline_calculation": false,
+      "deadline_in_days": 0,
+      "first_deadline_in_days": 0,
+      "complete_type": "individual",
+      "deadline": null,
+      "recommended_deadline": null,
+      "homework": {
+       "id": 1905989,
+       "status": null,
+       "score": null
+      }
+     }
+    },
+    {
+     "id": 3551286,
+     "lesson_id": 659412,
+     "locked": false,
+     "type": "task",
+     "title": "Домашнее задание по теме 3 (дедлайн 16.09.2026)",
+     "lesson_task": {
+      "id": 292074,
+      "task_type": "independent",
+      "dynamic_deadline_calculation": false,
+      "deadline_in_days": 0,
+      "first_deadline_in_days": 0,
+      "complete_type": "individual",
+      "deadline": null,
+      "recommended_deadline": null,
+      "homework": {
+       "id": 1906916,
+       "status": null,
+       "score": null
+      }
+     }
+    },
+    {
+     "id": 3558090,
+     "lesson_id": 659415,
+     "locked": false,
+     "type": "task",
+     "title": "Домашнее задание по теме 4 (дедлайн 21.09.2026)",
+     "lesson_task": {
+      "id": 292653,
+      "task_type": "independent",
+      "dynamic_deadline_calculation": false,
+      "deadline_in_days": 0,
+      "first_deadline_in_days": 0,
+      "complete_type": "individual",
+      "deadline": null,
+      "recommended_deadline": null,
+      "homework": {
+       "id": 1911675,
+       "status": null,
+       "score": null
+      }
+     }
+    },
+    {
+     "id": 3558096,
+     "lesson_id": 659418,
+     "locked": false,
+     "type": "task",
+     "title": "Домашнее задание по теме 5 (дедлайн 23.09.2026)",
+     "lesson_task": {
+      "id": 292654,
+      "task_type": "independent",
+      "dynamic_deadline_calculation": false,
+      "deadline_in_days": 0,
+      "first_deadline_in_days": 0,
+      "complete_type": "individual",
+      "deadline": null,
+      "recommended_deadline": null,
+      "homework": {
+       "id": 1911676,
+       "status": null,
+       "score": null
+      }
+     }
+    },
+    {
+     "id": 3535742,
+     "lesson_id": 659405,
+     "locked": false,
+     "type": "webinar",
+     "title": "Вебинар 1. Основы потоков",
+     "starts_at": "2026-09-03T14:20:00.000Z",
+     "ends_at": "2026-09-03T15:50:00.000Z",
+     "status": "passed"
+    }
+   ],
+   "resource_packages": [],
+   "access_levels": [
+    {
+     "current_program_id": 86895,
+     "level_type": "common"
+    }
+   ]
+  },
+  {
+   "title": "Бакалавриат «Разработка ИТ-продуктов и информационных систем»",
+   "type": "distance_course",
+   "format_type": "new_format",
+   "lesson_items": [],
+   "resource_packages": [],
+   "access_levels": [
+    {
+     "current_program_id": 45526,
+     "level_type": "common"
+    }
+   ]
+  }
+ ]
+}

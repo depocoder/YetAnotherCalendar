@@ -175,6 +175,31 @@ export async function refreshVaultSession(force = false) {
     return response.data;
 }
 
+// Оценки из Модеуса: читаются токеном самого студента, который сервер
+// получает по сохраненному в vault паролю, — поэтому только с «Запомнить меня».
+// Возвращает ответ axios (или e.response): статус разбирает модалка.
+export async function getGrades(periodId = null) {
+    try {
+        return await axios.get(`${BACKEND_URL}/api/grades/`, {
+            params: periodId ? {period_id: periodId} : {},
+            withCredentials: true,
+        });
+    } catch (e) {
+        return e.response || {status: 0};
+    }
+}
+
+// Статусы домашних заданий Нетологии: хватает обычной сессии Нетологии.
+export async function getNetologyGrades() {
+    try {
+        return await axios.get(`${BACKEND_URL}/api/grades/netology/`, {
+            headers: {'_netology-on-rails_session': getTokenFromLocalStorage()},
+        });
+    } catch (e) {
+        return e.response || {status: 0};
+    }
+}
+
 export async function forgetMe() {
     try {
         return await axios.delete(`${BACKEND_URL}/api/vault/`, {withCredentials: true});

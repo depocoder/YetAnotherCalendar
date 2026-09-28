@@ -15,6 +15,22 @@ from yet_another_calendar.web.api.validators import OptionalUTCDate
 
 _DATE_PATTERN = re.compile(r"(?<!\d)(\d{2})[^\w]+(\d{2})[^\w]+(?:\d{2})?(\d{2})(?!\d)")
 
+def deadline_from_title(title: str) -> datetime.datetime | None:
+    """The "DD.MM.YY(YY)" date Netology writes into homework titles ("дедлайн 09.09.2026")."""
+    match = _DATE_PATTERN.search(title)
+    if not match:
+        return None
+    try:
+        day, month, year = match.groups()
+        day = "01" if day == "00" else day
+        month = "01" if month == "00" else month
+        normalized_date = f"{day}.{month}.{year}"
+        return datetime.datetime.strptime(normalized_date, "%d.%m.%y").astimezone(datetime.UTC)
+    except (OverflowError, ValueError) as e:
+        logger.exception(f"Error in deadline validation: {title}. Exception: {e}")
+        return None
+
+
 class NetologyCreds(BaseModel):
     """Netology creds."""
 
@@ -145,18 +161,9 @@ class LessonTask(BaseLesson):
         """
         if not isinstance(data, dict):
             return data
-        title = str(data.get('title', ''))
-        match = _DATE_PATTERN.search(title)
-        if not match:
-            return data
-        try:
-            day, month, year = match.groups()
-            day = "01" if day == "00" else day
-            month = "01" if month == "00" else month
-            normalized_date = f"{day}.{month}.{year}"
-            data['deadline'] = datetime.datetime.strptime(normalized_date, "%d.%m.%y").astimezone(datetime.UTC)
-        except (OverflowError, ValueError) as e:
-            logger.exception(f"Error in deadline validation: {data}. Exception: {e}")
+        deadline = deadline_from_title(str(data.get('title', '')))
+        if deadline is not None:
+            data['deadline'] = deadline
         return data
 
     def is_suitable_time(self, time_min: datetime.datetime, time_max: datetime.datetime) -> bool:

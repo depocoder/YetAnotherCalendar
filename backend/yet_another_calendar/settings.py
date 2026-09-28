@@ -98,6 +98,14 @@ class Settings(BaseSettings):
     netology_get_events_part: str = '/backend/api/user/programs/{program_id}/schedule'
     netology_sign_in_part: str = '/backend/api/user/sign_in'
     netology_get_course_part: str = '/backend/api/user/programs/calendar/filters'
+    # Every program of the student at once, homework statuses included; slow (~4 s).
+    netology_student_calendar_part: str = '/backend/api/user/student_learning/calendar'
+    netology_student_actual_part: str = '/backend/api/user/student_learning/actual'
+    # The program's "all homework" page: every homework and test with its status and link.
+    netology_program_homework_part: str = '/backend/api/user/programs/{program_id}/lesson_items'
+    netology_homework_resource_types: tuple[str, ...] = (
+        "LMS::LessonResources::Test", "LMS::LessonResources::Task", "LMS::LessonResources::Simulator",
+    )
 
     modeus_base_url: str = "https://utmn.modeus.org/"
     modeus_login_part: str = "/schedule-calendar/assets/app.config.json"
@@ -108,6 +116,17 @@ class Settings(BaseSettings):
     # Modeus pages search results, 10 per page unless asked otherwise: a day
     # of several cohorts has more events than that, so ask for one big page.
     modeus_search_page_size: int = 500
+    # Student card of the Modeus "Мои результаты" page: grades need the
+    # student's own token, so they are served to remembered users only.
+    modeus_student_card_part: str = "/students-app/api/pages/student-card/my/primary"
+    modeus_attendance_rates_part: str = "/students-app/api/pages/student-card/my/attendance-rates"
+    modeus_ratings_part: str = "/students-app/api/pages/student-card/my/ratings"
+    modeus_results_primary_part: str = "/students-app/api/pages/student-card/my/academic-period-results-table/primary"
+    modeus_results_secondary_part: str = (
+        "/students-app/api/pages/student-card/my/academic-period-results-table/secondary"
+    )
+    # Upper bound only: the token is dropped earlier when its own expiry is sooner.
+    modeus_student_token_time_live: int = 60 * 60 * 12  # 12 hours
 
     # Donor account for tutors (no personal Modeus accounts needed)
     modeus_username: str = env.str("YET_ANOTHER_CALENDAR_MODEUS_USERNAME", "")

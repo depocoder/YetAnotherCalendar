@@ -14,9 +14,12 @@ So neither a redis dump alone nor a leaked secret alone reveals passwords,
 and both "remember me" and calendar subscriptions share one stored blob.
 """
 import base64
+import datetime
 import hashlib
 import hmac
 import secrets as secrets_module
+
+import jwt
 
 from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives import hashes
@@ -30,10 +33,13 @@ from starlette import status
 from yet_another_calendar.settings import settings
 from . import schema
 from ..lms import integration as lms_integration
+from ..modeus import integration as modeus_integration
 from ..netology import integration as netology_integration
 
 VAULT_KEY = "vault:{vault_id}"
 TOKENS_KEY = "vault_tokens:{vault_id}"
+# The student's own Modeus token (grades), encrypted with the vault DEK.
+MODEUS_TOKEN_KEY = "vault_modeus_token:{vault_id}"
 
 _NOT_FOUND = HTTPException(detail="Not found", status_code=status.HTTP_404_NOT_FOUND)
 
@@ -189,7 +195,10 @@ async def delete_grant(redis: Redis, vault_id: str, secret: str) -> None:
     if record.grants:
         await save_record(redis, vault_id, record)
     else:
-        await redis.delete(VAULT_KEY.format(vault_id=vault_id), TOKENS_KEY.format(vault_id=vault_id))
+        await redis.delete(
+            VAULT_KEY.format(vault_id=vault_id), TOKENS_KEY.format(vault_id=vault_id),
+            MODEUS_TOKEN_KEY.format(vault_id=vault_id),
+        )
     logger.info(f"Deleted a grant from vault {vault_id}")
 
 
@@ -231,3 +240,45 @@ async def get_cached_tokens(redis: Redis, vault_id: str) -> schema.CachedTokens 
 async def drop_cached_tokens(redis: Redis, vault_id: str) -> None:
     await redis.delete(TOKENS_KEY.format(vault_id=vault_id))
 
+
+
+def _token_expires_at(token: str) -> datetime.datetime | None:
+    try:
+        expires = jwt.decode(token, options={"verify_signature": False}).get("exp")
+    except jwt.exceptions.DecodeError:
+        return None
+    return datetime.datetime.fromtimestamp(expires, tz=datetime.UTC) if isinstance(expires, int) else None
+
+
+async def get_modeus_token(
+        redis: Redis, vault_id: str, record: schema.VaultRecord, dek: bytes, *, force: bool = False,
+) -> str:
+    """The student's own Modeus token, logging in with the remembered password when needed.
+
+    The donor account sees schedules only, grades need the student's token.
+    It lives about a day, so it is cached - encrypted with the vault key,
+    like the password it comes from - and dropped a bit before it expires.
+    Modeus accepts the same university login the vault keeps for LMS.
+    """
+    key = MODEUS_TOKEN_KEY.format(vault_id=vault_id)
+    now = datetime.datetime.now(tz=datetime.UTC)
+    if not force and (cached := await redis.get(key)):
+        nonce, _, ciphertext = bytes(cached).decode().partition(".")
+        try:
+            token = AESGCM(dek).decrypt(base64.b64decode(nonce), base64.b64decode(ciphertext), None).decode()
+        except (InvalidTag, ValueError):
+            token = None
+        expires_at = _token_expires_at(token) if token else None
+        if token and (expires_at is None or expires_at - now > datetime.timedelta(minutes=5)):
+            return token
+    creds = decrypt_creds(dek, record)
+    token = await modeus_integration.login(creds.lxp.username, creds.lxp.password)
+    time_live = settings.modeus_student_token_time_live
+    if expires_at := _token_expires_at(token):
+        time_live = min(time_live, int((expires_at - now).total_seconds()) - 10 * 60)
+    if time_live > 0:
+        nonce_bytes = secrets_module.token_bytes(12)
+        ciphertext_bytes = AESGCM(dek).encrypt(nonce_bytes, token.encode(), None)
+        blob = f"{base64.b64encode(nonce_bytes).decode()}.{base64.b64encode(ciphertext_bytes).decode()}"
+        await redis.set(key, blob, ex=time_live)
+    return token

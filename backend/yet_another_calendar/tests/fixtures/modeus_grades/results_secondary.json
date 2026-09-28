@@ -1,0 +1,781 @@
+{
+ "errors": [],
+ "courseUnitRealizationAttendanceRates": [
+  {
+   "courseUnitRealizationId": "00000000-0000-0000-0000-abc000026aac",
+   "presentRate": 0.69,
+   "absentRate": 0.09,
+   "undefinedRate": 0.22
+  },
+  {
+   "courseUnitRealizationId": "00000000-0000-0000-0000-abc00006866a",
+   "presentRate": 0.0,
+   "absentRate": 0.0,
+   "undefinedRate": 0.0
+  },
+  {
+   "courseUnitRealizationId": "00000000-0000-0000-0000-abc000024bbd",
+   "presentRate": 0.0,
+   "absentRate": 0.0,
+   "undefinedRate": 1.0
+  }
+ ],
+ "eventPersonAttendances": [
+  {
+   "resultId": "PRESENT",
+   "eventId": "00000000-0000-0000-0000-abc00003fccf",
+   "lessonId": "00000000-0000-0000-0000-abc00003bef1",
+   "createdTs": "2025-12-21T15:20:36.213553",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2025-12-21T15:20:36.213553",
+   "updatedBy": "Преподаватель"
+  },
+  {
+   "resultId": "PRESENT",
+   "eventId": "00000000-0000-0000-0000-abc00004b669",
+   "lessonId": "00000000-0000-0000-0000-abc00004788b",
+   "createdTs": "2025-12-21T15:20:36.213553",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2025-12-21T15:20:36.213553",
+   "updatedBy": "Преподаватель"
+  },
+  {
+   "resultId": "PRESENT",
+   "eventId": "00000000-0000-0000-0000-abc000051336",
+   "lessonId": "00000000-0000-0000-0000-abc00004d558",
+   "createdTs": "2025-12-21T15:20:36.213553",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2025-12-21T15:20:36.213553",
+   "updatedBy": "Преподаватель"
+  },
+  {
+   "resultId": "PRESENT",
+   "eventId": "00000000-0000-0000-0000-abc000034335",
+   "lessonId": "00000000-0000-0000-0000-abc000030557",
+   "createdTs": "2025-12-21T15:20:36.213553",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2025-12-21T15:20:36.213553",
+   "updatedBy": "Преподаватель"
+  },
+  {
+   "resultId": "PRESENT",
+   "eventId": "00000000-0000-0000-0000-abc000057003",
+   "lessonId": "00000000-0000-0000-0000-abc000053225",
+   "createdTs": "2025-12-21T15:20:36.213553",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2025-12-21T15:20:36.213553",
+   "updatedBy": "Преподаватель"
+  },
+  {
+   "resultId": "PRESENT",
+   "eventId": "00000000-0000-0000-0000-abc00004599c",
+   "lessonId": "00000000-0000-0000-0000-abc000041bbe",
+   "createdTs": "2025-12-21T15:20:36.213553",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2025-12-21T15:20:36.213553",
+   "updatedBy": "Преподаватель"
+  },
+  {
+   "resultId": "PRESENT",
+   "eventId": "00000000-0000-0000-0000-abc00003a002",
+   "lessonId": "00000000-0000-0000-0000-abc000036224",
+   "createdTs": "2025-12-21T15:20:36.213553",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2025-12-21T15:20:36.213553",
+   "updatedBy": "Преподаватель"
+  },
+  {
+   "resultId": "ABSENT",
+   "eventId": "00000000-0000-0000-0000-abc00002e668",
+   "lessonId": "00000000-0000-0000-0000-abc00002a88a",
+   "createdTs": "2025-12-21T15:20:36.213553",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2025-12-21T15:20:36.213553",
+   "updatedBy": "Преподаватель"
+  },
+  {
+   "resultId": "PRESENT",
+   "eventId": "00000000-0000-0000-0000-abc00007bbc0",
+   "lessonId": "00000000-0000-0000-0000-abc000077de2",
+   "createdTs": "2026-01-02T17:26:28.737677",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2026-01-02T17:26:28.737677",
+   "updatedBy": "Преподаватель"
+  },
+  {
+   "resultId": "PRESENT",
+   "eventId": "00000000-0000-0000-0000-abc000075ef3",
+   "lessonId": "00000000-0000-0000-0000-abc000072115",
+   "createdTs": "2026-01-02T17:26:28.737677",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2026-01-02T17:26:28.737677",
+   "updatedBy": "Преподаватель"
+  },
+  {
+   "resultId": "PRESENT",
+   "eventId": "00000000-0000-0000-0000-abc00008188d",
+   "lessonId": "00000000-0000-0000-0000-abc00007daaf",
+   "createdTs": "2026-01-02T17:26:28.737677",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2026-01-02T17:26:28.737677",
+   "updatedBy": "Преподаватель"
+  },
+  {
+   "resultId": "PRESENT",
+   "eventId": "00000000-0000-0000-0000-abc000070226",
+   "lessonId": "00000000-0000-0000-0000-abc00006c448",
+   "createdTs": "2026-01-02T17:26:28.737677",
+   "createdBy": "Преподаватель",
+   "updatedTs": "2026-01-02T17:26:28.737677",
+   "updatedBy": "Преподаватель"
+  }
+ ],
+ "academicCourseControlObjects": [],
+ "courseUnitRealizationControlObjects": [
+  {
+   "controlObjectId": null,
+   "typeName": "Итог текущ.",
+   "typeShortName": "Итог текущ.",
+   "typeCode": "CURRENT_COURSE_UNIT_RESULT",
+   "orderIndex": 1,
+   "courseUnitRealizationId": "00000000-0000-0000-0000-abc000026aac",
+   "mainGradingScaleCode": "GPA",
+   "resultCurrent": {
+    "id": "00000000-0000-0000-0000-abc0000d0cd4",
+    "controlObjectId": null,
+    "resultValue": "86.00",
+    "createdTs": "2026-01-20T12:57:02.311726",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-20T12:57:02.311726",
+    "updatedBy": "Преподаватель"
+   },
+   "resultFinal": null
+  },
+  {
+   "controlObjectId": null,
+   "typeName": "Итог текущ.",
+   "typeShortName": "Итог текущ.",
+   "typeCode": "CURRENT_COURSE_UNIT_RESULT",
+   "orderIndex": 1,
+   "courseUnitRealizationId": "00000000-0000-0000-0000-abc00006866a",
+   "mainGradingScaleCode": "GPA",
+   "resultCurrent": {
+    "id": "00000000-0000-0000-0000-abc0000d2bc3",
+    "controlObjectId": null,
+    "resultValue": "100.00",
+    "createdTs": "2025-12-09T11:01:34.13724",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-09T11:01:34.13724",
+    "updatedBy": "Преподаватель"
+   },
+   "resultFinal": null
+  },
+  {
+   "controlObjectId": null,
+   "typeName": "Итог текущ.",
+   "typeShortName": "Итог текущ.",
+   "typeCode": "CURRENT_COURSE_UNIT_RESULT",
+   "orderIndex": 1,
+   "courseUnitRealizationId": "00000000-0000-0000-0000-abc000024bbd",
+   "mainGradingScaleCode": "GPA",
+   "resultCurrent": {
+    "id": "00000000-0000-0000-0000-abc0000d4ab2",
+    "controlObjectId": null,
+    "resultValue": "61.00",
+    "createdTs": "2026-01-15T11:10:39.02828",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-15T11:10:39.02828",
+    "updatedBy": "Преподаватель"
+   },
+   "resultFinal": null
+  },
+  {
+   "controlObjectId": null,
+   "typeName": "Итог модуля",
+   "typeShortName": "Итог модуля",
+   "typeCode": "COURSE_UNIT_RESULT",
+   "orderIndex": 2,
+   "courseUnitRealizationId": "00000000-0000-0000-0000-abc000024bbd",
+   "mainGradingScaleCode": "RU-01",
+   "resultCurrent": null,
+   "resultFinal": {
+    "courseUnitRealizationId": "00000000-0000-0000-0000-abc000024bbd",
+    "controlObjectId": null,
+    "resultValue": "зачет",
+    "updatedTs": "2026-01-15T13:41:33.045373",
+    "updatedBy": "Преподаватель"
+   }
+  },
+  {
+   "controlObjectId": null,
+   "typeName": "Итог модуля",
+   "typeShortName": "Итог модуля",
+   "typeCode": "COURSE_UNIT_RESULT",
+   "orderIndex": 2,
+   "courseUnitRealizationId": "00000000-0000-0000-0000-abc000026aac",
+   "mainGradingScaleCode": "RU-EXAM",
+   "resultCurrent": null,
+   "resultFinal": {
+    "courseUnitRealizationId": "00000000-0000-0000-0000-abc000026aac",
+    "controlObjectId": null,
+    "resultValue": "хор.",
+    "updatedTs": "2026-01-20T13:00:47.047161",
+    "updatedBy": "Преподаватель"
+   }
+  },
+  {
+   "controlObjectId": null,
+   "typeName": "Итог модуля",
+   "typeShortName": "Итог модуля",
+   "typeCode": "COURSE_UNIT_RESULT",
+   "orderIndex": 2,
+   "courseUnitRealizationId": "00000000-0000-0000-0000-abc00006866a",
+   "mainGradingScaleCode": "RU-EXAM",
+   "resultCurrent": null,
+   "resultFinal": {
+    "courseUnitRealizationId": "00000000-0000-0000-0000-abc00006866a",
+    "controlObjectId": null,
+    "resultValue": "отл.",
+    "updatedTs": "2026-01-17T20:16:24.462044",
+    "updatedBy": "Преподаватель"
+   }
+  }
+ ],
+ "lessonControlObjects": [
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000d69a1",
+   "typeName": "Самоанализ",
+   "typeShortName": null,
+   "typeCode": "SELF_REFLECTION",
+   "orderIndex": 2,
+   "lessonId": "00000000-0000-0000-0000-abc00004d558",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc0000d8890",
+    "controlObjectId": "00000000-0000-0000-0000-abc0000d69a1",
+    "resultValue": "1",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000da77f",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc00004d558",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc0000dc66e",
+    "controlObjectId": "00000000-0000-0000-0000-abc0000da77f",
+    "resultValue": "1",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000de55d",
+   "typeName": "Самостоятельная работа",
+   "typeShortName": null,
+   "typeCode": "SELF_WORK",
+   "orderIndex": 2,
+   "lessonId": "00000000-0000-0000-0000-abc00007daaf",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc0000e044c",
+    "controlObjectId": "00000000-0000-0000-0000-abc0000de55d",
+    "resultValue": "18",
+    "createdTs": "2026-01-02T17:26:28.737677",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-02T17:26:28.737677",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000e233b",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc000053225",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc0000e422a",
+    "controlObjectId": "00000000-0000-0000-0000-abc0000e233b",
+    "resultValue": "5",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000e6119",
+   "typeName": "Работа с текстом",
+   "typeShortName": null,
+   "typeCode": "TEXT_MANIPULATION",
+   "orderIndex": 2,
+   "lessonId": "00000000-0000-0000-0000-abc000036224",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc0000e8008",
+    "controlObjectId": "00000000-0000-0000-0000-abc0000e6119",
+    "resultValue": "1",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000e9ef7",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc00007daaf",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc0000ebde6",
+    "controlObjectId": "00000000-0000-0000-0000-abc0000e9ef7",
+    "resultValue": "15",
+    "createdTs": "2026-01-02T17:26:28.737677",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-02T17:26:28.737677",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000edcd5",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc00004788b",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc0000efbc4",
+    "controlObjectId": "00000000-0000-0000-0000-abc0000edcd5",
+    "resultValue": "2",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000f1ab3",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc0000b7ab1",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc0000f39a2",
+    "controlObjectId": "00000000-0000-0000-0000-abc0000f1ab3",
+    "resultValue": "0",
+    "createdTs": "2026-01-19T08:27:26.284441",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-19T08:27:26.284441",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000f5891",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc000077de2",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc0000f7780",
+    "controlObjectId": "00000000-0000-0000-0000-abc0000f5891",
+    "resultValue": "15",
+    "createdTs": "2026-01-02T17:26:28.737677",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-02T17:26:28.737677",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000f966f",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc000091005",
+   "mainGradingScaleCode": null,
+   "result": null,
+   "resultRequired": false
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000fb55e",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc0000c344b",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc0000fd44d",
+    "controlObjectId": "00000000-0000-0000-0000-abc0000fb55e",
+    "resultValue": "0",
+    "createdTs": "2026-01-19T08:27:26.284441",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-19T08:27:26.284441",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc0000ff33c",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc0000a8339",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc00010122b",
+    "controlObjectId": "00000000-0000-0000-0000-abc0000ff33c",
+    "resultValue": "0",
+    "createdTs": "2026-01-19T08:27:26.284441",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-19T08:27:26.284441",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc00010311a",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc000072115",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc000105009",
+    "controlObjectId": "00000000-0000-0000-0000-abc00010311a",
+    "resultValue": "15",
+    "createdTs": "2026-01-02T17:26:28.737677",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-02T17:26:28.737677",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc000106ef8",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc0000ac117",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc000108de7",
+    "controlObjectId": "00000000-0000-0000-0000-abc000106ef8",
+    "resultValue": "0",
+    "createdTs": "2026-01-19T08:27:26.284441",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-19T08:27:26.284441",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc00010acd6",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc000030557",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc00010cbc5",
+    "controlObjectId": "00000000-0000-0000-0000-abc00010acd6",
+    "resultValue": "2",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc00010eab4",
+   "typeName": "Работа с текстом",
+   "typeShortName": null,
+   "typeCode": "TEXT_MANIPULATION",
+   "orderIndex": 2,
+   "lessonId": "00000000-0000-0000-0000-abc00004788b",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc0001109a3",
+    "controlObjectId": "00000000-0000-0000-0000-abc00010eab4",
+    "resultValue": "1",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc000112892",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc0000bb88f",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc000114781",
+    "controlObjectId": "00000000-0000-0000-0000-abc000112892",
+    "resultValue": "3",
+    "createdTs": "2026-01-19T08:27:26.284441",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-19T08:27:26.284441",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc000116670",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc000089449",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc00011855f",
+    "controlObjectId": "00000000-0000-0000-0000-abc000116670",
+    "resultValue": "5",
+    "createdTs": "2026-01-17T20:25:17.552186",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-17T20:25:17.552186",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": false
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc00011a44e",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc00003bef1",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc00011c33d",
+    "controlObjectId": "00000000-0000-0000-0000-abc00011a44e",
+    "resultValue": "3",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc00011e22c",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc000036224",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc00012011b",
+    "controlObjectId": "00000000-0000-0000-0000-abc00011e22c",
+    "resultValue": "1",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc00012200a",
+   "typeName": "Тест",
+   "typeShortName": null,
+   "typeCode": "TEST",
+   "orderIndex": 2,
+   "lessonId": "00000000-0000-0000-0000-abc00008377c",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc000123ef9",
+    "controlObjectId": "00000000-0000-0000-0000-abc00012200a",
+    "resultValue": "17",
+    "createdTs": "2026-01-16T07:48:15.531208",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-16T07:48:15.531208",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc000125de8",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc00002a88a",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc000127cd7",
+    "controlObjectId": "00000000-0000-0000-0000-abc000125de8",
+    "resultValue": "3",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc000129bc6",
+   "typeName": "Работа с текстом",
+   "typeShortName": null,
+   "typeCode": "TEXT_MANIPULATION",
+   "orderIndex": 2,
+   "lessonId": "00000000-0000-0000-0000-abc000030557",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc00012bab5",
+    "controlObjectId": "00000000-0000-0000-0000-abc000129bc6",
+    "resultValue": "0",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc00012d9a4",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc0000b3cd3",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc00012f893",
+    "controlObjectId": "00000000-0000-0000-0000-abc00012d9a4",
+    "resultValue": "3",
+    "createdTs": "2026-01-19T08:27:26.284441",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-19T08:27:26.284441",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc000131782",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc0000afef5",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc000133671",
+    "controlObjectId": "00000000-0000-0000-0000-abc000131782",
+    "resultValue": "3",
+    "createdTs": "2026-01-19T08:27:26.284441",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-19T08:27:26.284441",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc000135560",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc00008377c",
+   "mainGradingScaleCode": null,
+   "result": null,
+   "resultRequired": false
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc00013744f",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc0000bf66d",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc00013933e",
+    "controlObjectId": "00000000-0000-0000-0000-abc00013744f",
+    "resultValue": "3",
+    "createdTs": "2026-01-19T08:27:26.284441",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-19T08:27:26.284441",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc00013b22d",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc000041bbe",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc00013d11c",
+    "controlObjectId": "00000000-0000-0000-0000-abc00013b22d",
+    "resultValue": "7",
+    "createdTs": "2025-12-21T15:20:36.213553",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2025-12-21T15:20:36.213553",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  },
+  {
+   "controlObjectId": "00000000-0000-0000-0000-abc00013f00b",
+   "typeName": "Работа на учебной встрече",
+   "typeShortName": null,
+   "typeCode": "LESSON_REALIZATION_RESULT",
+   "orderIndex": 1,
+   "lessonId": "00000000-0000-0000-0000-abc00006c448",
+   "mainGradingScaleCode": "GPA",
+   "result": {
+    "id": "00000000-0000-0000-0000-abc000140efa",
+    "controlObjectId": "00000000-0000-0000-0000-abc00013f00b",
+    "resultValue": "15",
+    "createdTs": "2026-01-02T17:26:28.737677",
+    "createdBy": "Преподаватель",
+    "updatedTs": "2026-01-02T17:26:28.737677",
+    "updatedBy": "Преподаватель"
+   },
+   "resultRequired": true
+  }
+ ]
+}

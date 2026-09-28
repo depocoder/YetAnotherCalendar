@@ -1,0 +1,396 @@
+// Модалка оценок: каркас (overlay, шапка, тело) — из subscription-modal.scss.
+
+$grades-accent: #5856d6;
+$grades-present: #34c759;
+$grades-absent: #ff6b6b;
+$grades-muted: #6c757d;
+
+.subscription-modal.grades-modal {
+    max-width: 760px;
+}
+
+.grades-loading,
+.grades-empty,
+.grades-error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: $grades-muted;
+    font-size: 14px;
+    padding: 12px 0;
+}
+
+.grades-error {
+    flex-direction: column;
+    align-items: flex-start;
+
+    p {
+        margin: 0;
+    }
+}
+
+.grades-period {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+
+    select {
+        flex: 1;
+        min-width: 0;
+        padding: 9px 12px;
+        border: 1px solid #d5ccff;
+        border-radius: 10px;
+        background: #fff;
+        font-size: 14px;
+        color: #2d2a3e;
+    }
+}
+
+.grades-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.grades-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #f6f4ff;
+    border: 1px solid #e3ddff;
+    border-radius: 12px;
+    padding: 12px 14px;
+
+    &__title {
+        font-size: 12px;
+        color: $grades-muted;
+    }
+
+    &__value {
+        font-size: 24px;
+        font-weight: 700;
+        color: $grades-accent;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__hint {
+        font-size: 12px;
+        color: #43395f;
+    }
+}
+
+.grades-attendance-bar {
+    display: flex;
+    height: 6px;
+    width: 100%;
+    border-radius: 3px;
+    overflow: hidden;
+    background: #e9ecef;
+
+    &__present {
+        background: $grades-present;
+    }
+
+    &__absent {
+        background: $grades-absent;
+    }
+}
+
+.grades-course {
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+
+    &__head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+
+        @media (max-width: 600px) {
+            flex-direction: column;
+        }
+    }
+
+    &__titles {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    &__name {
+        font-size: 15px;
+        font-weight: 600;
+        color: #2d2a3e;
+    }
+
+    &__parent {
+        font-size: 12px;
+        color: $grades-muted;
+    }
+
+    &__results {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px;
+        flex-shrink: 0;
+
+        @media (max-width: 600px) {
+            justify-content: flex-start;
+        }
+    }
+
+    &__attendance {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 12px;
+        color: $grades-muted;
+        white-space: nowrap;
+
+        .grades-attendance-bar {
+            max-width: 220px;
+        }
+    }
+
+    &__toggle {
+        margin-top: 8px;
+        padding: 4px 0;
+        background: none;
+        border: none;
+        color: $grades-accent;
+        font-size: 13px;
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.grades-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #efeaff;
+    color: #2d2a3e;
+    font-size: 13px;
+    max-width: 100%;
+
+    &__name {
+        color: $grades-muted;
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    strong {
+        color: $grades-accent;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &--small {
+        padding: 2px 8px;
+        font-size: 12px;
+    }
+
+    &--empty {
+        background: #f1f3f5;
+        color: $grades-muted;
+    }
+}
+
+.grades-lessons {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+}
+
+.grades-lesson {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 4px 10px;
+    padding: 8px 0;
+    border-top: 1px solid #f1f3f5;
+    font-size: 13px;
+
+    &__date {
+        color: $grades-muted;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__name {
+        color: #2d2a3e;
+    }
+
+    &__type {
+        margin-left: 6px;
+        font-size: 11px;
+        color: $grades-muted;
+    }
+
+    &__marks {
+        grid-column: 2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+}
+
+.grades-attendance {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    background: #f1f3f5;
+    color: $grades-muted;
+
+    &--present {
+        background: rgba($grades-present, 0.15);
+        color: #1e7e34;
+    }
+
+    &--absent {
+        background: rgba($grades-absent, 0.15);
+        color: #c92a2a;
+    }
+}
+
+.grades-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 16px;
+    background: #f1f3f5;
+    border-radius: 10px;
+
+    &__tab {
+        flex: 1;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        background: none;
+        color: $grades-muted;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+
+        &--active {
+            background: #fff;
+            color: $grades-accent;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+    }
+}
+
+.grades-status {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    background: #f1f3f5;
+    color: $grades-muted;
+    white-space: nowrap;
+
+    &--accepted {
+        background: rgba($grades-present, 0.15);
+        color: #1e7e34;
+    }
+
+    &--rework {
+        background: rgba(#ff9500, 0.15);
+        color: #b35900;
+    }
+
+    &--review {
+        background: rgba(#0a84ff, 0.12);
+        color: #0a5bb5;
+    }
+
+    &--missed {
+        background: rgba($grades-absent, 0.15);
+        color: #c92a2a;
+    }
+}
+
+.grades-lesson__name a {
+    color: #2d2a3e;
+    text-decoration: none;
+    border-bottom: 1px solid #d5ccff;
+
+    &:hover {
+        color: $grades-accent;
+        border-bottom-color: $grades-accent;
+    }
+}
+
+.grades-course__note {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #b35900;
+}
+
+.grades-feedback {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border: 1px solid #d5ccff;
+    background: #f6f4ff;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+
+    &__head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    &__title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2d2a3e;
+    }
+
+    &__new {
+        margin-left: 8px;
+        padding: 1px 6px;
+        border-radius: 999px;
+        background: $grades-accent;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    &__content {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.5;
+        color: #43395f;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: $grades-muted;
+
+        a {
+            color: $grades-accent;
+        }
+    }
+}

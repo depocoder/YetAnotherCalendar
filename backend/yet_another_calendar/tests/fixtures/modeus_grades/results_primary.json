@@ -1,0 +1,528 @@
+{
+ "academicCourses": [
+  {
+   "id": "00000000-0000-0000-0000-abc000022cce",
+   "name": "Физическая культура и спорт: элективные курсы по видам спорта",
+   "courseUnitRealizationIds": [
+    "00000000-0000-0000-0000-abc000024bbd"
+   ]
+  }
+ ],
+ "courseUnitRealizations": [
+  {
+   "id": "00000000-0000-0000-0000-abc000026aac",
+   "courseUnitId": "00000000-0000-0000-0000-abc00002899b",
+   "name": "Аналитическое чтение",
+   "lessons": [
+    {
+     "id": "00000000-0000-0000-0000-abc00002a88a",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc00002c779",
+     "name": "Причинно-следственные связи — 3",
+     "orderIndex": 25,
+     "teamName": "Аналитическое чтение П-09 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc00002e668",
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-12-04T19:10:00",
+     "eventEndsAtLocal": "2025-12-04T20:40:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc000030557",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc000032446",
+     "name": "Причинно-следственные связи — 1",
+     "orderIndex": 22,
+     "teamName": "Аналитическое чтение П-09 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc000034335",
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-11-27T17:30:00",
+     "eventEndsAtLocal": "2025-11-27T19:00:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc000036224",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc000038113",
+     "name": "Ключевые слова в тексте и их определение — 1",
+     "orderIndex": 14,
+     "teamName": "Аналитическое чтение П-09 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc00003a002",
+     "eventFormat": "DISCUSSION",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-10-30T17:30:00",
+     "eventEndsAtLocal": "2025-10-30T19:00:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc00003bef1",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc00003dde0",
+     "name": "Тезис и структура поддерживающей его аргументации — 3",
+     "orderIndex": 21,
+     "teamName": "Аналитическое чтение П-09 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc00003fccf",
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-11-20T19:10:00",
+     "eventEndsAtLocal": "2025-11-20T20:40:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc000041bbe",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc000043aad",
+     "name": "Возможности искусственного интеллекта в реконструкции смысловой системы текста — 1",
+     "orderIndex": 28,
+     "teamName": "Аналитическое чтение П-09 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc00004599c",
+     "eventFormat": "DISCUSSION",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-12-18T17:30:00",
+     "eventEndsAtLocal": "2025-12-18T19:00:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc00004788b",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc00004977a",
+     "name": "Тезис и структура поддерживающей его аргументации — 1",
+     "orderIndex": 18,
+     "teamName": "Аналитическое чтение П-09 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc00004b669",
+     "eventFormat": "DISCUSSION",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-11-13T17:30:00",
+     "eventEndsAtLocal": "2025-11-13T19:00:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc00004d558",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc00004f447",
+     "name": "Дискуссия №1 Роль чтения в профессиональной и образовательной деятельности.",
+     "orderIndex": 6,
+     "teamName": "Аналитическое чтение П-09 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc000051336",
+     "eventFormat": "DISCUSSION",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-10-02T17:30:00",
+     "eventEndsAtLocal": "2025-10-02T19:00:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc000053225",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc000055114",
+     "name": "Тезис и структура поддерживающей его аргументации — 3",
+     "orderIndex": 20,
+     "teamName": "Аналитическое чтение П-09 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc000057003",
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-11-20T17:30:00",
+     "eventEndsAtLocal": "2025-11-20T19:00:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    }
+   ],
+   "trainingTeams": [
+    {
+     "id": "00000000-0000-0000-0000-abc000058ef2",
+     "cycleRealizationId": "00000000-0000-0000-0000-abc00005ade1"
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc00005ccd0",
+     "cycleRealizationId": "00000000-0000-0000-0000-abc00005ebbf"
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc000060aae",
+     "cycleRealizationId": "00000000-0000-0000-0000-abc00006299d"
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc00006488c",
+     "cycleRealizationId": "00000000-0000-0000-0000-abc00006677b"
+    }
+   ],
+   "midCheckModule": true,
+   "learningPathElementActive": true
+  },
+  {
+   "id": "00000000-0000-0000-0000-abc00006866a",
+   "courseUnitId": "00000000-0000-0000-0000-abc00006a559",
+   "name": "Финансовое мышление",
+   "lessons": [
+    {
+     "id": "00000000-0000-0000-0000-abc00006c448",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc00006e337",
+     "name": "Конструктор личного бюджета",
+     "orderIndex": 4,
+     "teamName": "ФМ П-15 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc000070226",
+     "eventFormat": "SEMINAR",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-10-04T12:05:00",
+     "eventEndsAtLocal": "2025-10-04T15:25:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc000072115",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc000074004",
+     "name": "Сбережения и инвестиции",
+     "orderIndex": 6,
+     "teamName": "ФМ П-15 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc000075ef3",
+     "eventFormat": "SEMINAR",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-10-18T12:05:00",
+     "eventEndsAtLocal": "2025-10-18T15:25:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc000077de2",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc000079cd1",
+     "name": "Кредиты и расчеты",
+     "orderIndex": 5,
+     "teamName": "ФМ П-15 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc00007bbc0",
+     "eventFormat": "SEMINAR",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-10-11T12:05:00",
+     "eventEndsAtLocal": "2025-10-11T15:25:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc00007daaf",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc00007f99e",
+     "name": "Личные финансовые решения",
+     "orderIndex": 7,
+     "teamName": "ФМ П-15 нетология",
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": "00000000-0000-0000-0000-abc00008188d",
+     "eventFormat": "SEMINAR",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-10-25T12:05:00",
+     "eventEndsAtLocal": "2025-10-25T15:25:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc00008377c",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc00008566b",
+     "name": "Финансовая безопасность: как нам не потерять деньги",
+     "orderIndex": 3,
+     "teamName": "ФМ Л-01",
+     "lessonType": "LECT",
+     "typeName": "Лекционное занятие",
+     "eventId": "00000000-0000-0000-0000-abc00008755a",
+     "eventFormat": "INFORMATION",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-09-26T20:50:00",
+     "eventEndsAtLocal": "2025-09-26T22:20:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc000089449",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc00008b338",
+     "name": "Консультация",
+     "orderIndex": 13,
+     "teamName": null,
+     "lessonType": "CONS",
+     "typeName": "Консультация",
+     "eventId": null,
+     "eventFormat": null,
+     "eventHoldingStatus": null,
+     "eventStartsAtLocal": null,
+     "eventEndsAtLocal": null,
+     "eventTimeZoneName": null,
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc00008d227",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc00008f116",
+     "name": "Консультация",
+     "orderIndex": 9,
+     "teamName": null,
+     "lessonType": "CONS",
+     "typeName": "Консультация",
+     "eventId": null,
+     "eventFormat": null,
+     "eventHoldingStatus": null,
+     "eventStartsAtLocal": null,
+     "eventEndsAtLocal": null,
+     "eventTimeZoneName": null,
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc000091005",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc000092ef4",
+     "name": "Финансовое поведение: как мы принимаем решения и как построить отношения с деньгами",
+     "orderIndex": 0,
+     "teamName": "ФМ Л-01",
+     "lessonType": "LECT",
+     "typeName": "Лекционное занятие",
+     "eventId": "00000000-0000-0000-0000-abc000094de3",
+     "eventFormat": "INFORMATION",
+     "eventHoldingStatus": "HELD",
+     "eventStartsAtLocal": "2025-09-11T20:50:00",
+     "eventEndsAtLocal": "2025-09-11T22:20:00",
+     "eventTimeZoneName": "Тюмень",
+     "learningPathElementActive": true
+    }
+   ],
+   "trainingTeams": [
+    {
+     "id": "00000000-0000-0000-0000-abc000096cd2",
+     "cycleRealizationId": "00000000-0000-0000-0000-abc000098bc1"
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc00009aab0",
+     "cycleRealizationId": "00000000-0000-0000-0000-abc00009c99f"
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc00009e88e",
+     "cycleRealizationId": "00000000-0000-0000-0000-abc0000a077d"
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc0000a266c",
+     "cycleRealizationId": "00000000-0000-0000-0000-abc0000a455b"
+    }
+   ],
+   "midCheckModule": true,
+   "learningPathElementActive": true
+  },
+  {
+   "id": "00000000-0000-0000-0000-abc000024bbd",
+   "courseUnitId": "00000000-0000-0000-0000-abc0000a644a",
+   "name": "Физическая культура и спорт: элективные курсы по видам спорта 3 семестр",
+   "lessons": [
+    {
+     "id": "00000000-0000-0000-0000-abc0000a8339",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc0000aa228",
+     "name": "Обучение тактике вида спорта",
+     "orderIndex": 13,
+     "teamName": null,
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": null,
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": null,
+     "eventStartsAtLocal": null,
+     "eventEndsAtLocal": null,
+     "eventTimeZoneName": null,
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc0000ac117",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc0000ae006",
+     "name": "Соревновательная практика",
+     "orderIndex": 16,
+     "teamName": null,
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": null,
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": null,
+     "eventStartsAtLocal": null,
+     "eventEndsAtLocal": null,
+     "eventTimeZoneName": null,
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc0000afef5",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc0000b1de4",
+     "name": "Особенности избранного вида спорта. ",
+     "orderIndex": 1,
+     "teamName": null,
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": null,
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": null,
+     "eventStartsAtLocal": null,
+     "eventEndsAtLocal": null,
+     "eventTimeZoneName": null,
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc0000b3cd3",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc0000b5bc2",
+     "name": "Обучение технике вида спорта",
+     "orderIndex": 6,
+     "teamName": null,
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": null,
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": null,
+     "eventStartsAtLocal": null,
+     "eventEndsAtLocal": null,
+     "eventTimeZoneName": null,
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc0000b7ab1",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc0000b99a0",
+     "name": "Развитие общей выносливости",
+     "orderIndex": 27,
+     "teamName": null,
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": null,
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": null,
+     "eventStartsAtLocal": null,
+     "eventEndsAtLocal": null,
+     "eventTimeZoneName": null,
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc0000bb88f",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc0000bd77e",
+     "name": "Специальная физическая подготовка бакалавра",
+     "orderIndex": 4,
+     "teamName": null,
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": null,
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": null,
+     "eventStartsAtLocal": null,
+     "eventEndsAtLocal": null,
+     "eventTimeZoneName": null,
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc0000bf66d",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc0000c155c",
+     "name": "Специальная физическая подготовка бакалавра",
+     "orderIndex": 5,
+     "teamName": null,
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": null,
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": null,
+     "eventStartsAtLocal": null,
+     "eventEndsAtLocal": null,
+     "eventTimeZoneName": null,
+     "learningPathElementActive": true
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc0000c344b",
+     "lessonRealizationTemplateId": "00000000-0000-0000-0000-abc0000c533a",
+     "name": "Обучение технике вида спорта",
+     "orderIndex": 12,
+     "teamName": null,
+     "lessonType": "SEMI",
+     "typeName": "Практическое занятие",
+     "eventId": null,
+     "eventFormat": "TRAINING",
+     "eventHoldingStatus": null,
+     "eventStartsAtLocal": null,
+     "eventEndsAtLocal": null,
+     "eventTimeZoneName": null,
+     "learningPathElementActive": true
+    }
+   ],
+   "trainingTeams": [
+    {
+     "id": "00000000-0000-0000-0000-abc0000c7229",
+     "cycleRealizationId": "00000000-0000-0000-0000-abc0000c9118"
+    },
+    {
+     "id": "00000000-0000-0000-0000-abc0000cb007",
+     "cycleRealizationId": "00000000-0000-0000-0000-abc0000ccef6"
+    }
+   ],
+   "midCheckModule": true,
+   "learningPathElementActive": true
+  }
+ ],
+ "gradingScales": [
+  {
+   "uniqueCode": "RU-01",
+   "title": "зачетная",
+   "totalDeterminationMethod": null,
+   "scale": {
+    "from": null,
+    "to": null,
+    "step": null
+   }
+  },
+  {
+   "uniqueCode": "RU-05",
+   "title": "5-балльная РФ",
+   "totalDeterminationMethod": null,
+   "scale": {
+    "from": "0",
+    "to": "5",
+    "step": "1.0"
+   }
+  },
+  {
+   "uniqueCode": "RU-100",
+   "title": "100-балльная",
+   "totalDeterminationMethod": null,
+   "scale": {
+    "from": "0",
+    "to": "100",
+    "step": "0.01"
+   }
+  },
+  {
+   "uniqueCode": "ATTENDANCE",
+   "title": "факт посещения",
+   "totalDeterminationMethod": null,
+   "scale": {
+    "from": null,
+    "to": null,
+    "step": null
+   }
+  },
+  {
+   "uniqueCode": "GPA",
+   "title": "балльная",
+   "totalDeterminationMethod": null,
+   "scale": {
+    "from": "0",
+    "to": null,
+    "step": "0.01"
+   }
+  }
+ ],
+ "errors": [],
+ "eventId": [
+  "00000000-0000-0000-0000-abc0000cede5",
+  "00000000-0000-0000-0000-abc00002e668",
+  "00000000-0000-0000-0000-abc000034335"
+ ]
+}

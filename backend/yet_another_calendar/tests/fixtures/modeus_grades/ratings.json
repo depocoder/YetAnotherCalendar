@@ -1,0 +1,28 @@
+{
+ "cgpaRating": {
+  "score": 4.5,
+  "byCurriculumFlow": 100,
+  "totalByCurriculumFlow": 700
+ },
+ "gpaRatings": [
+  {
+   "aprId": "00000000-0000-0000-0000-abc000005ccd",
+   "score": 4.1,
+   "byCurriculumFlow": 10,
+   "totalByCurriculumFlow": 110
+  },
+  {
+   "aprId": "00000000-0000-0000-0000-abc00000d889",
+   "score": 4.2,
+   "byCurriculumFlow": 11,
+   "totalByCurriculumFlow": 110
+  },
+  {
+   "aprId": "00000000-0000-0000-0000-abc00000b99a",
+   "score": 4.3,
+   "byCurriculumFlow": 12,
+   "totalByCurriculumFlow": 110
+  }
+ ],
+ "errors": []
+}
