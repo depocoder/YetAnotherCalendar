@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import json
 
@@ -9,7 +10,7 @@ from starlette import status
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api import validators
-from yet_another_calendar.web.api.netology import integration, schema
+from yet_another_calendar.web.api.netology import integration, schema, views
 
 
 mock_cookies = schema.NetologyCookies.model_validate({"_netology-on-rails_session": "aboba"})
@@ -73,6 +74,34 @@ async def test_auth_netology_ok(netology_client) -> None:
     netology_client.cookies = httpx.Cookies({"_netology-on-rails_session": "aboba"})
     netology_cookies = await integration.auth_netology("alex", "password12345")
     assert netology_cookies == schema.NetologyCookies.model_validate(netology_client.cookies)
+
+
+@pytest.mark.asyncio
+async def test_auth_netology_transport_error_is_user_facing(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def unavailable(*args, **kwargs):
+        raise httpx.ReadTimeout("slow", request=httpx.Request("POST", settings.netology_base_url))
+
+    monkeypatch.setattr(integration, "auth_netology", unavailable)
+
+    with pytest.raises(HTTPException) as exc_info:
+        await views.get_netology_cookies(schema.NetologyCreds(username="alex", password="password12345"), None)
+
+    assert exc_info.value.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
+    assert exc_info.value.detail == "Нетология сейчас не отвечает. Попробуйте еще раз через несколько минут."
+
+
+@pytest.mark.asyncio
+async def test_auth_netology_has_total_deadline(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def hangs(*args, **kwargs):
+        await asyncio.sleep(1)
+
+    monkeypatch.setattr(integration, "auth_netology", hangs)
+    monkeypatch.setattr(settings, "netology_auth_deadline", 0.001)
+
+    with pytest.raises(HTTPException) as exc_info:
+        await views.get_netology_cookies(schema.NetologyCreds(username="alex", password="password12345"), None)
+
+    assert exc_info.value.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
 
 
 @pytest.mark.asyncio

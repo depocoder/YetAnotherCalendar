@@ -33,8 +33,12 @@ export const handleApiError = (error, defaultTitle = "Произошла оши�
     if (error.response) {
         // Server responded with a status code (4xx, 5xx)
         const status = error.response.status;
-        // Try to get message from { message: "..." } or use data as string
-        const responseMessage = error.response.data?.message || error.response.data;
+        // FastAPI returns useful errors as { detail: "..." }; other APIs may
+        // use { message: "..." } or a plain string.
+        const responseData = error.response.data;
+        const responseMessage = typeof responseData === 'string'
+            ? responseData
+            : responseData?.detail || responseData?.message;
 
         switch (status) {
             case 500:
@@ -61,8 +65,11 @@ export const handleApiError = (error, defaultTitle = "Произошла оши�
                 title = `${defaultTitle} (Ошибка ${status}).`;
         }
 
-        // Overwrite generic details with specific server message if available
-        
+        // Prefer the service-specific reason returned by our backend.
+        if (typeof responseMessage === 'string' && responseMessage.trim()) {
+            details = responseMessage;
+        }
+
     } else if (error.request) {
         // Request was made but no response received (network error)
         title = "Ошибка сети.";

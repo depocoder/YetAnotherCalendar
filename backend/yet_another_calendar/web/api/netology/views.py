@@ -2,9 +2,15 @@
 Netology API implemented using a controller.
 """
 
-from fastapi import APIRouter, Depends
+import asyncio
+
+import httpx
+from fastapi import APIRouter, Depends, HTTPException
+from loguru import logger
+from starlette import status
 
 import yet_another_calendar.web.api.modeus.schema
+from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.auth.rate_limiter import rate_limited_dependency
 from . import integration, schema
 
@@ -19,10 +25,18 @@ async def get_netology_cookies(
     """
     Auth in Netology and return cookies.
     """
-    return await integration.auth_netology(
-        item.username,
-        item.password,
-    )
+    try:
+        async with asyncio.timeout(settings.netology_auth_deadline):
+            return await integration.auth_netology(
+                item.username,
+                item.password,
+            )
+    except (TimeoutError, httpx.TransportError) as exc:
+        logger.warning(f"Netology authentication is unavailable: {type(exc).__name__}")
+        raise HTTPException(
+            detail="Нетология сейчас не отвечает. Попробуйте еще раз через несколько минут.",
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        ) from exc
 
 
 @router.get('/course/')

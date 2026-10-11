@@ -97,6 +97,10 @@ class Settings(BaseSettings):
     netology_get_programs_part: str = '/backend/api/user/professions/{calendar_id}/schedule'
     netology_get_events_part: str = '/backend/api/user/programs/{program_id}/schedule'
     netology_sign_in_part: str = '/backend/api/user/sign_in'
+    # Keep login below the reverse proxy timeout.  The integration retries
+    # transient failures, but users must still receive our structured error
+    # instead of an nginx 504 page when Netology itself hangs.
+    netology_auth_deadline: float = 20.0
     netology_get_course_part: str = '/backend/api/user/programs/calendar/filters'
     # Every program of the student at once, homework statuses included; slow (~4 s).
     netology_student_calendar_part: str = '/backend/api/user/student_learning/calendar'
