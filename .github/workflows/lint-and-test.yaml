@@ -44,11 +44,15 @@ jobs:
           uv run mypy --config-file=pyproject.toml yet_another_calendar
 
       - name: Run tests
+        id: tests
+        shell: bash
         working-directory: backend
+        env:
+          YET_ANOTHER_CALENDAR_DEBUG: 'false'
+          YET_ANOTHER_CALENDAR_MODEUS_USERNAME: 'test'
+          YET_ANOTHER_CALENDAR_MODEUS_PASSWORD: 'test'
+          YET_ANOTHER_CALENDAR_TUTOR_SECRET_KEY: 'test'
         run: |
-            YET_ANOTHER_CALENDAR_MODEUS_USERNAME='test' \
-            YET_ANOTHER_CALENDAR_MODEUS_PASSWORD='test' \
-            YET_ANOTHER_CALENDAR_TUTOR_SECRET_KEY='test' \
             uv run pytest --junitxml=../pytest.xml \
               --cov-report=term-missing:skip-covered \
               --cov-fail-under=80 \
@@ -56,6 +60,7 @@ jobs:
               yet_another_calendar/tests/* | tee ../pytest-coverage.txt
 
       - name: Pytest coverage comment
+        if: ${{ always() && steps.tests.outcome != 'skipped' }}
         id: coverage
         uses: MishaKav/pytest-coverage-comment@main
         with:

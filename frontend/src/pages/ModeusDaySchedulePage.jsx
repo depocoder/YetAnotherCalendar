@@ -486,7 +486,7 @@ const ModeusDaySchedulePage = () => {
         
         // Generate message
         let message = "Студенты, доброе утро!\nУчебные мероприятия на сегодня:\n\n ";
-        message += "**" + formatDateForMessage(selectedDate) + "**" + ": \n";
+        message += `**${formatDateForMessage(selectedDate)}**: \n`;
         
         // Process each group for message formatting
         for (const group of processedGroups) {
@@ -538,7 +538,7 @@ const ModeusDaySchedulePage = () => {
                 
             } else {
                 // Individual events
-                group.events.forEach(event => {
+                for (const event of group.events) {
                     const timeStr = `**${formatTime(event.start || '00:00')} (мск)**`;
                     const link = linkFor(event);
                     const teacherName = formatTeacherName(getEventProperty(event, 'teacher_full_name'));
@@ -554,7 +554,7 @@ const ModeusDaySchedulePage = () => {
                     if (link) {
                         message += `${link}\n`;
                     }
-                });
+                }
             }
         }
         

@@ -78,7 +78,8 @@ async def client(
     :param fastapi_app: the application.
     :yield: client for the app.
     """
-    async with AsyncClient(app=fastapi_app, base_url="http://test", timeout=2.0) as ac:
+    # Match production HTTPS so Secure cookies are sent when debug is disabled.
+    async with AsyncClient(app=fastapi_app, base_url="https://test", timeout=2.0) as ac:
         yield ac
 
 

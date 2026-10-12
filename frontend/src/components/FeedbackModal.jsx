@@ -20,23 +20,21 @@ const FeedbackModal = ({ isOpen, onClose }) => {
         }
     };
 
-    const handleKeyDown = (e) => {
-        if (e.key === 'Escape') {
-            onClose();
-        }
-    };
-
     React.useEffect(() => {
-        if (isOpen) {
-            document.addEventListener('keydown', handleKeyDown);
-            document.body.style.overflow = 'hidden';
-        }
+        if (!isOpen) return;
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+        const previousOverflow = document.body.style.overflow;
+        document.addEventListener('keydown', handleKeyDown);
+        document.body.style.overflow = 'hidden';
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
-            document.body.style.overflow = 'unset';
+            document.body.style.overflow = previousOverflow;
         };
-    }, [isOpen]);
+    }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 

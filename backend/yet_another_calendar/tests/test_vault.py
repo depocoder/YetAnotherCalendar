@@ -49,7 +49,9 @@ def upstream_auth(monkeypatch):
 
 
 @pytest.mark.anyio
-async def test_vault_lifecycle(client, upstream_auth) -> None:
+@pytest.mark.parametrize("debug", [False, True])
+async def test_vault_lifecycle(client, upstream_auth, monkeypatch, debug: bool) -> None:
+    monkeypatch.setattr(settings, "debug", debug)
     # Not remembered yet
     response = await client.get("/api/vault/")
     assert response.json() == {"active": False, "broken": False}
@@ -58,6 +60,9 @@ async def test_vault_lifecycle(client, upstream_auth) -> None:
     response = await client.post("/api/vault/", json=VAULT_BODY)
     assert response.status_code == 200
     assert "yac_vault" in response.cookies
+    cookie = next(cookie for cookie in response.cookies.jar if cookie.name == "yac_vault")
+    assert cookie.secure is (not debug)
+    assert "httponly" in response.headers["set-cookie"].lower()
     assert upstream_auth == {"netology": 0, "lms": 0}
 
     response = await client.get("/api/vault/")
@@ -71,6 +76,17 @@ async def test_vault_lifecycle(client, upstream_auth) -> None:
     assert response.status_code == 200
     client.cookies.delete("yac_vault")
     response = await client.get("/api/vault/")
+    assert response.json() == {"active": False, "broken": False}
+
+
+@pytest.mark.anyio
+async def test_vault_secure_cookie_is_not_sent_over_http(client, monkeypatch) -> None:
+    monkeypatch.setattr(settings, "debug", False)
+    response = await client.post("/api/vault/", json=VAULT_BODY)
+    assert response.status_code == 200
+    assert (await client.get("/api/vault/")).json()["active"] is True
+    response = await client.get("http://test/api/vault/")
+    assert response.status_code == 200
     assert response.json() == {"active": False, "broken": False}
 
 

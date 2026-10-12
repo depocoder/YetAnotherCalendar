@@ -231,7 +231,7 @@ const LessonTimes = ({ events, selectedEvent, setSelectedEvent }) => {
 
     useEffect(() => {
         populateWeekDays(events);
-    }, [events]);
+    }, [events, populateWeekDays]);
 
     return (
         <>

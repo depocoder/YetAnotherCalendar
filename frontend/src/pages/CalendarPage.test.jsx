@@ -37,7 +37,7 @@ test('cached mode works without tokens and prevents refresh, grades and course c
     expect(await screen.findByText('Просмотр сохраненного расписания')).toBeInTheDocument();
     screen.getAllByRole('button', {name: 'Мои оценки'}).forEach(button => expect(button).toBeDisabled());
     screen.getAllByText('Сбросить кэш').forEach(button => expect(button).toBeDisabled());
-    screen.getAllByText('Мои курсы').forEach(label => expect(label.closest('button')).toBeDisabled());
+    screen.getAllByRole('button', {name: /Мои курсы/}).forEach(button => expect(button).toBeDisabled());
     expect(api.getNetologyCourses).not.toHaveBeenCalled();
     expect(api.getGrades).not.toHaveBeenCalled();
     expect(api.refreshBulkEvents).not.toHaveBeenCalled();

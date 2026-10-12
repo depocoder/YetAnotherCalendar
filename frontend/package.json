@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "overrides": {
-    "eslint-plugin-jest": "27.9.0"
+    "eslint-plugin-jest": "25.7.0"
   },
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.14.5",
@@ -30,6 +30,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "lint": "eslint src --ext .js,.jsx --max-warnings 0",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
