@@ -490,7 +490,7 @@ const CalendarPage = () => {
                 </div>
 
                 {cacheOnly && (
-                    <div className="service-status-banner" role="status">
+                    <div className="service-status-banner service-status-banner--cached" role="status">
                         <div className="service-status-body">
                             <div className="service-status-title">Просмотр сохраненного расписания</div>
                             <div className="service-status-hint">

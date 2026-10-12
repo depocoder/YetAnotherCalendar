@@ -2336,3 +2336,11 @@ $color-border-light: #e9ecef;
         }
     }
 }
+
+.calendar-page .service-status-banner--cached {
+    margin: 20px 3% 24px 10%;
+
+    @media (max-width: 768px) {
+        margin: 0 12px 20px;
+    }
+}

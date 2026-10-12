@@ -229,11 +229,13 @@ export async function forgetMe() {
 
 // Кладем свежие токены из vault в localStorage (формат ответа /api/vault/refresh)
 export function applyVaultSession(session) {
+    const samePerson = getModeusPersonIdFromLocalStorage() === session.modeus_person_id;
     localStorage.setItem('token', session.netology_session);
     localStorage.setItem('lms-id', session.lms_id);
     localStorage.setItem('lms-token', session.lms_token);
     localStorage.setItem('modeus_person_id', session.modeus_person_id);
-    if (Array.isArray(session.calendar_ids) && session.calendar_ids.length > 0) {
+    if ((!samePerson || !getCalendarIdsLocalStorage().length)
+        && Array.isArray(session.calendar_ids) && session.calendar_ids.length > 0) {
         setCalendarIdsLocalStorage(session.calendar_ids);
     }
 }

@@ -66,11 +66,15 @@ const LoginPage = () => {
             try {
                 const vault = await getVaultStatus();
                 if (!cancelled && vault?.active && vault.modeus_person_id && vault.calendar_ids?.length) {
-                    if (getModeusPersonIdFromLocalStorage() !== vault.modeus_person_id) {
+                    const samePerson = getModeusPersonIdFromLocalStorage() === vault.modeus_person_id;
+                    if (!samePerson) {
                         ['token', 'lms-id', 'lms-token', 'netologyCourses'].forEach(key => localStorage.removeItem(key));
                     }
                     localStorage.setItem('modeus_person_id', vault.modeus_person_id);
-                    setCalendarIdsLocalStorage(vault.calendar_ids);
+                    // Vault remembers the login-time selection, not later course changes.
+                    if (!samePerson || !getCalendarIdsLocalStorage().length) {
+                        setCalendarIdsLocalStorage(vault.calendar_ids);
+                    }
                 }
                 if (!cancelled && vault?.active && !vault.broken) {
                     const session = await refreshVaultSession();

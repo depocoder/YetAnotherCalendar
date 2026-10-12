@@ -88,3 +88,47 @@ test('a first visit offers login rather than an unidentified cache', async () =>
     await waitFor(() => expect(screen.getByText(/Для первого входа/)).toBeInTheDocument());
     expect(screen.queryByRole('button', {name: 'Открыть сохраненное расписание'})).not.toBeInTheDocument();
 });
+
+test('a vault outage preserves the same user current course selection for cache lookup', async () => {
+    localStorage.setItem('modeus_person_id', personId);
+    localStorage.setItem('calendarIds', '[70685]');
+    api.getVaultStatus.mockResolvedValue({active: true, broken: false, modeus_person_id: personId, calendar_ids: [45526]});
+    api.refreshVaultSession.mockRejectedValue({response: {status: 503}});
+    await renderLogin();
+    expect(await screen.findByText('Открыт календарь')).toBeInTheDocument();
+    expect(localStorage.getItem('calendarIds')).toBe('[70685]');
+});
+
+test('a vault for another user replaces course selection and clears old tokens', async () => {
+    localStorage.setItem('modeus_person_id', '11111111-1111-1111-1111-111111111111');
+    localStorage.setItem('calendarIds', '[70685]');
+    localStorage.setItem('token', 'previous-session');
+    api.getVaultStatus.mockResolvedValue({active: true, broken: false, modeus_person_id: personId, calendar_ids: [45526]});
+    api.refreshVaultSession.mockRejectedValue({response: {status: 503}});
+    await renderLogin();
+    expect(await screen.findByText('Открыт календарь')).toBeInTheDocument();
+    expect(localStorage.getItem('calendarIds')).toBe('[45526]');
+    expect(localStorage.getItem('token')).toBeNull();
+});
+
+test('a successful vault refresh preserves course selection for the same user', () => {
+    localStorage.setItem('modeus_person_id', personId);
+    localStorage.setItem('calendarIds', '[70685]');
+    api.applyVaultSession({modeus_person_id: personId, calendar_ids: [45526],
+        netology_session: 'new-session', lms_id: 1, lms_token: 'new-lms-session'});
+    expect(localStorage.getItem('calendarIds')).toBe('[70685]');
+    expect(localStorage.getItem('token')).toBe('new-session');
+});
+
+test('a vault refresh restores courses for a different user or empty storage', () => {
+    localStorage.setItem('modeus_person_id', '11111111-1111-1111-1111-111111111111');
+    localStorage.setItem('calendarIds', '[70685]');
+    const session = {modeus_person_id: personId, calendar_ids: [45526],
+        netology_session: 'new-session', lms_id: 1, lms_token: 'new-lms-session'};
+    api.applyVaultSession(session);
+    expect(localStorage.getItem('calendarIds')).toBe('[45526]');
+    localStorage.removeItem('calendarIds');
+    localStorage.removeItem('calendarId');
+    api.applyVaultSession(session);
+    expect(localStorage.getItem('calendarIds')).toBe('[45526]');
+});
