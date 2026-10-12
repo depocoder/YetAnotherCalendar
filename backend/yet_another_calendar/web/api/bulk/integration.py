@@ -305,7 +305,7 @@ async def _timed(call: Awaitable[Any]) -> tuple[Any, int]:
 
 
 async def get_modeus_events_by_donor(
-        body: modeus_schema.ModeusEventsBody, donor_token: str, person_id: str,
+        body: modeus_schema.ModeusEventsBody, donor_token: str | None, person_id: str,
 ) -> list[modeus_schema.FullEvent]:
     """Modeus events read with the donor account, surviving a revoked donor token.
 
@@ -314,6 +314,8 @@ async def get_modeus_events_by_donor(
     token too, the failure is reported as an upstream error, so the calendar
     serves its cached Modeus part instead of logging the user out.
     """
+    if donor_token is None:
+        donor_token = await modeus_integration.get_donor_token()
     try:
         return await modeus_views.get_calendar(body, donor_token, person_id)
     except HTTPException as exception:
@@ -336,7 +338,7 @@ async def get_calendar(
         person_id: str,
         lms_user: lms_schema.User,
         cookies: netology_schema.NetologyCookies,
-        modeus_jwt_token: str,
+        modeus_jwt_token: str | None,
         fallback: schema.CalendarResponse | None = None,
 ) -> schema.CalendarResponse:
     """Collect events from every upstream, surviving an outage of any one of them.
@@ -468,7 +470,7 @@ async def get_cached_calendar(
         *,
         lms_user: lms_schema.User,
         cookies: netology_schema.NetologyCookies,
-        modeus_jwt_token: str,
+        modeus_jwt_token: str | None = None,
 ) -> schema.CalendarResponse:
     """The calendar from the cache, fetched from upstreams on a miss.
 

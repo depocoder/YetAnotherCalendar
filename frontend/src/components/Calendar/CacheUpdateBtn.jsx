@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom';
 // уже через несколько минут: сервис мог подняться, и его данные надо подтянуть.
 const DEGRADED_CACHE_MINUTES = 5;
 
-const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, failures, refreshRef, calendarReady = false }) => {
+const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, failures, refreshRef, calendarReady = false, disabled = false }) => {
     const [cacheUpdated, setCacheUpdated] = useState(false);
     const timeOffset = parseInt(process.env.REACT_APP_TIME_OFFSET, 10) || 6;
     const hasFailures = Array.isArray(failures) && failures.length > 0;
@@ -65,6 +65,7 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, failures, refreshRef, ca
     const refreshingRef = useRef(false);
 
     const handleRefreshEvents = useCallback(async () => {
+        if (disabled) return;
         const modeusPersonId = getModeusPersonIdFromLocalStorage();
         if (localStorage.getItem("refresh_in_progress") === "true" || refreshingRef.current) return;
         localStorage.setItem("refresh_in_progress", "true");
@@ -112,7 +113,7 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, failures, refreshRef, ca
             refreshingRef.current = false;
             localStorage.setItem("refresh_in_progress", "false");
         }
-    }, [date, onDataUpdate]);
+    }, [date, onDataUpdate, disabled, navigate]);
 
     // Даем странице (баннеру о недоступных сервисах) вызывать обновление
     useEffect(() => {
@@ -139,7 +140,7 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, failures, refreshRef, ca
             autoRefreshTimerRef.current = null;
         }
         
-        if (!calendarReady) {
+        if (disabled || !calendarReady) {
             debug.log('⏳ Calendar not ready yet - waiting...');
             return;
         }
@@ -180,7 +181,7 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, failures, refreshRef, ca
                 autoRefreshTimerRef.current = null;
             }
         };
-    }, [calendarReady, isCurrentOrFutureWeek, isCacheStale, handleRefreshEvents]);
+    }, [calendarReady, disabled, isCurrentOrFutureWeek, isCacheStale, handleRefreshEvents]);
 
     const isPastWeek = !isCurrentOrFutureWeek();
     
@@ -188,6 +189,7 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, failures, refreshRef, ca
     
     return (
         <button
+            disabled={disabled}
             onClick={handleRefreshEvents}
             className={`cache-btn ${cacheUpdated === true ? 'updated' : ''} ${isPastWeek ? 'past-week' : ''}`}
             title='Так как мы не храним логины и пароли, все расписание находится в кэше, а его рано или поздно надо обновлять для актуальности. Само расписание обновляется автоматически, но вы можете обновить его вручную, если вам это нужно.'

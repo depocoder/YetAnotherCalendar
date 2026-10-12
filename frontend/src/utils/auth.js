@@ -9,13 +9,18 @@ import {
 } from '../services/api';
 
 /**
- * Принудительный выход (сессия истекла, битые токены): чистим только
- * браузер. Vault и подписку НЕ трогаем — живой vault сам восстановит
- * сессию на странице входа.
+ * Истекшая сессия: предлагаем повторный вход, сохраняя данные, с которыми
+ * можно прочитать предыдущий календарь из Redis при сбое авторизации.
+ * Осознанный выход пользователя ниже по-прежнему очищает хранилище.
  */
 export const exitApp = (navigate) => {
     setTimeout(() => {
+        const calendarKeys = ['modeus_person_id', 'calendarIds', 'calendarId', 'netologyCourses'];
+        const savedCalendar = calendarKeys.map(key => [key, localStorage.getItem(key)]);
         clearWithBackup();
+        savedCalendar.forEach(([key, value]) => {
+            if (value !== null) localStorage.setItem(key, value);
+        });
         navigate('/login');
     }, 100);
 };
@@ -34,9 +39,8 @@ export const logoutUser = async (navigate, { deleteSubscription = false } = {}) 
     if (deleteSubscription && subscriptionUrl) {
         deleteIcsSubscription(subscriptionUrl);
     }
-    if (hadVault) {
-        forgetMe();
-    }
+    // Удаляем также cookie доступа к кэшу, которая есть и без «Запомнить меня».
+    await forgetMe();
 
     const removedSubscription = deleteSubscription && subscriptionUrl;
     if (hadVault && removedSubscription) {

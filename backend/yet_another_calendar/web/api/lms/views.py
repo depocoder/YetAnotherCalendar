@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 
 from . import integration, schema
 from ..modeus import schema as modeus_schema
+from ..auth.upstream import authenticate
 
 router = APIRouter()
 
@@ -15,7 +16,7 @@ async def get_netology_cookies(
     """
     Auth in LXP and return token.
     """
-    return await integration.auth_lms(creds)
+    return await authenticate("lms", integration.auth_lms(creds))
 
 
 @router.get("/courses")

@@ -199,6 +199,30 @@
         line-height: 1.5;
     }
 
+    &__error {
+        padding: 12px;
+        background: #fff8e6;
+        border-radius: 10px;
+        color: #705613;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    &__cached {
+        width: 100%;
+        margin-top: 12px;
+        padding: 12px;
+        border: 1px solid #d5ccff;
+        border-radius: 10px;
+        background: #f6f4ff;
+        color: #5856d6;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+
+        &:disabled { opacity: 0.6; cursor: not-allowed; }
+    }
+
     &__right {
         flex: 1;
         background: linear-gradient(160deg, #7b61ff 0%, #5856d6 60%, #4340a8 100%);

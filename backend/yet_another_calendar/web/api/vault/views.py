@@ -7,6 +7,7 @@ from starlette import status
 
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.auth.rate_limiter import rate_limited_dependency
+from yet_another_calendar.web.api.auth.utils import CALENDAR_COOKIE
 from . import integration, schema
 from ..errors import is_auth_error
 from ...lifespan import get_redis_pool
@@ -70,23 +71,26 @@ async def remember_me(
     return schema.VaultStatus(active=True)
 
 
-@router.get("/")
+@router.get("/", response_model_exclude_none=True)
 async def vault_status(
         redis_pool: Annotated[ConnectionPool, Depends(get_redis_pool)],
         yac_vault: Annotated[str | None, Cookie()] = None,
-) -> schema.VaultStatus:
+) -> schema.VaultCalendarStatus:
     """
     Whether this browser holds a working remember-me grant.
     """
     if not yac_vault:
-        return schema.VaultStatus(active=False)
+        return schema.VaultCalendarStatus(active=False)
     try:
         vault_id, secret = parse_cookie(yac_vault)
         async with Redis(connection_pool=redis_pool) as redis:
             record, _, _ = await integration.resolve(redis, vault_id, secret)
     except HTTPException:
-        return schema.VaultStatus(active=False)
-    return schema.VaultStatus(active=True, broken=record.broken)
+        return schema.VaultCalendarStatus(active=False)
+    return schema.VaultCalendarStatus(
+        active=True, broken=record.broken,
+        modeus_person_id=record.modeus_person_id, calendar_ids=record.calendar_ids,
+    )
 
 
 @router.post("/refresh")
@@ -145,4 +149,5 @@ async def forget_me(
         except HTTPException:
             pass  # Cookie is stale: still clear it below.
     clear_vault_cookie(response)
+    response.delete_cookie(key=CALENDAR_COOKIE, path="/api")
     return schema.VaultStatus(active=False)

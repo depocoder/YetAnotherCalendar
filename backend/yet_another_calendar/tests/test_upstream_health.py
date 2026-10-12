@@ -20,6 +20,7 @@ from yet_another_calendar.web.api.bulk import integration as bulk_integration
 from yet_another_calendar.web.api.lms import schema as lms_schema
 from yet_another_calendar.web.api.modeus import schema as modeus_schema
 from yet_another_calendar.web.api.netology import schema as netology_schema
+from yet_another_calendar.web.api.auth.upstream import authenticate
 
 NOW = datetime.datetime(2026, 9, 16, 12, 3, 20, tzinfo=datetime.UTC)
 
@@ -59,6 +60,23 @@ def _request() -> httpx.Request:
 ])
 def test_classify(exception: BaseException | None, expected: str) -> None:
     assert upstream_health.classify(exception) == expected
+
+
+async def test_login_errors_are_counted_separately_from_wrong_passwords(health_pool) -> None:
+    async def unavailable():
+        raise httpx.ReadTimeout("slow", request=_request())
+
+    async def wrong_password():
+        raise HTTPException(status_code=401, detail="Wrong password")
+
+    for call in (unavailable(), wrong_password()):
+        with pytest.raises(HTTPException):
+            await authenticate("netology", call)
+    async with Redis(connection_pool=health_pool) as redis:
+        summary = await upstream_health.build_summary(redis)
+    netology = summary.services[0]
+    assert netology.windows["15m"].errors == {"timeout": 1}
+    assert netology.windows["15m"].auth == 1
 
 
 def test_bucket_start_floors_to_five_minutes() -> None:

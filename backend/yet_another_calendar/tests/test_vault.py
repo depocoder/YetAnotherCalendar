@@ -61,7 +61,10 @@ async def test_vault_lifecycle(client, upstream_auth) -> None:
     assert upstream_auth == {"netology": 0, "lms": 0}
 
     response = await client.get("/api/vault/")
-    assert response.json() == {"active": True, "broken": False}
+    assert response.json() == {
+        "active": True, "broken": False,
+        "modeus_person_id": VAULT_BODY["modeus_person_id"], "calendar_ids": VAULT_BODY["calendar_ids"],
+    }
 
     # Forget: everything is gone
     response = await client.delete("/api/vault/")
@@ -105,7 +108,10 @@ async def test_refresh_marks_vault_broken_on_rejected_creds(client, upstream_aut
     assert response.status_code == 401
 
     response = await client.get("/api/vault/")
-    assert response.json() == {"active": True, "broken": True}
+    assert response.json() == {
+        "active": True, "broken": True,
+        "modeus_person_id": VAULT_BODY["modeus_person_id"], "calendar_ids": VAULT_BODY["calendar_ids"],
+    }
 
 
 @pytest.mark.anyio

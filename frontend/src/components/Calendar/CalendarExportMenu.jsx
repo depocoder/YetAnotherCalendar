@@ -19,13 +19,14 @@ import '../../style/export-menu.scss';
  * в одном выпадающем меню. На десктопе меню открывается по наведению,
  * на мобильных - по нажатию.
  */
-const CalendarExportMenu = ({ date, onOpenSubscription }) => {
+const CalendarExportMenu = ({ date, onOpenSubscription, disabled = false }) => {
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const closeTimerRef = useRef(null);
 
     const openMenu = () => {
+        if (disabled) return;
         if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
         setOpen(true);
     };
@@ -101,7 +102,7 @@ const CalendarExportMenu = ({ date, onOpenSubscription }) => {
             <button
                 className="export-btn"
                 onClick={() => setOpen(prev => !prev)}
-                disabled={loading}
+                disabled={loading || disabled}
                 title="Экспорт во внешний календарь (Google, Apple, Outlook): разовый файл или авто-обновляемая подписка"
             >
                 {loading ? <InlineLoader /> : <>📤 Экспорт <span className="export-menu__caret">▾</span></>}

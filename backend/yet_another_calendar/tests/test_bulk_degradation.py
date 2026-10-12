@@ -15,6 +15,7 @@ from pydantic import ValidationError
 from yet_another_calendar.settings import settings
 from yet_another_calendar.web.api.bulk import integration, schema
 from yet_another_calendar.web.api.errors import is_auth_error, leaf_exceptions
+from yet_another_calendar.web.api.auth.utils import create_calendar_token
 from yet_another_calendar.web.api.lms import schema as lms_schema
 from yet_another_calendar.web.api.modeus import schema as modeus_schema
 from yet_another_calendar.web.api.netology import schema as netology_schema
@@ -97,6 +98,93 @@ async def test_lms_outage_serves_cached_part(upstreams: SimpleNamespace) -> None
     assert failure.from_cache is True
     assert failure.cached_at == T0
     assert "технического обслуживания" in failure.error
+
+
+async def test_cache_only_reads_saved_week_without_tokens_or_upstreams(client, upstreams, monkeypatch) -> None:
+    client.cookies.set("yac_calendar", create_calendar_token(PERSON_ID))
+    donor = AsyncMock(side_effect=httpx.ConnectError("Modeus is down"))
+    monkeypatch.setattr(integration.modeus_integration, "get_donor_token", donor)
+    saved = _calendar(lms_events=[LMS_EVENT])
+    await integration.store_calendar(BODY, CALENDAR_ID, PERSON_ID, saved)
+
+    response = await client.get("/api/bulk/events/", params={
+        "timeMin": "2025-01-06", "timeMax": "2025-01-12", "calendar_id": CALENDAR_ID, "cache_only": "true",
+    }, headers={"modeus-person-id": PERSON_ID})
+
+    assert response.status_code == 200
+    assert response.json()["utmn"]["lms_events"][0]["id"] == LMS_EVENT.id
+    assert response.json()["cached_at"] == saved.model_dump(mode="json")["cached_at"]
+    donor.assert_not_called()
+    upstreams.netology.assert_not_called()
+    upstreams.lms.assert_not_called()
+    upstreams.modeus.assert_not_called()
+
+
+async def test_cache_only_does_not_build_missing_week(client, upstreams, monkeypatch) -> None:
+    client.cookies.set("yac_calendar", create_calendar_token(PERSON_ID))
+    donor = AsyncMock()
+    monkeypatch.setattr(integration.modeus_integration, "get_donor_token", donor)
+    response = await client.get("/api/bulk/events/", params={
+        "timeMin": "2025-01-06", "timeMax": "2025-01-12", "calendar_id": CALENDAR_ID, "cache_only": "true",
+    }, headers={"modeus-person-id": PERSON_ID})
+    assert response.status_code == 404
+    assert await integration.load_cached_calendar(BODY, CALENDAR_ID, PERSON_ID) is None
+    donor.assert_not_called()
+    upstreams.netology.assert_not_called()
+    upstreams.modeus.assert_not_called()
+    upstreams.lms.assert_not_called()
+
+
+async def test_regular_cached_week_does_not_authenticate_donor(client, upstreams, monkeypatch) -> None:
+    donor = AsyncMock(side_effect=httpx.ConnectError("Modeus is down"))
+    monkeypatch.setattr(integration.modeus_integration, "get_donor_token", donor)
+    await integration.store_calendar(BODY, CALENDAR_ID, PERSON_ID, _calendar())
+    response = await client.get("/api/bulk/events/", params={
+        "timeMin": "2025-01-06", "timeMax": "2025-01-12", "calendar_id": CALENDAR_ID,
+    }, headers={
+        "modeus-person-id": PERSON_ID, "_netology-on-rails_session": "expired", "lxp-token": "expired", "lxp-id": "123",
+    })
+    assert response.status_code == 200
+    donor.assert_not_called()
+    upstreams.netology.assert_not_called()
+
+
+async def test_new_weeks_require_login(client, upstreams) -> None:
+    response = await client.get("/api/bulk/events/", params={
+        "timeMin": "2025-01-06", "timeMax": "2025-01-12", "calendar_id": CALENDAR_ID,
+    }, headers={"modeus-person-id": PERSON_ID})
+    assert response.status_code == 401
+    upstreams.netology.assert_not_called()
+
+
+@pytest.mark.parametrize("cookie", [None, "forged", create_calendar_token("another-person")])
+async def test_cache_only_rejects_unknown_or_different_owner(client, cookie) -> None:
+    await integration.store_calendar(BODY, CALENDAR_ID, PERSON_ID, _calendar(lms_events=[LMS_EVENT]))
+    if cookie:
+        client.cookies.set("yac_calendar", cookie)
+    response = await client.get("/api/bulk/events/", params={
+        "timeMin": "2025-01-06", "timeMax": "2025-01-12", "calendar_id": CALENDAR_ID, "cache_only": "true",
+    }, headers={"modeus-person-id": PERSON_ID})
+    assert response.status_code == 403
+    assert "utmn" not in response.json()
+
+
+async def test_cache_only_accepts_existing_vault_without_refreshing_tokens(client, upstreams, monkeypatch) -> None:
+    monkeypatch.setattr(settings, "ics_pepper", "test-pepper")
+    await client.post("/api/vault/", json={
+        "netology": {"username": "user@example.com", "password": "secret"},
+        "lxp": {"username": "user@study.utmn.ru", "password": "secret"},
+        "modeus_person_id": PERSON_ID, "calendar_ids": [CALENDAR_ID],
+    })
+    await integration.store_calendar(BODY, CALENDAR_ID, PERSON_ID, _calendar(lms_events=[LMS_EVENT]))
+    response = await client.get("/api/bulk/events/", params={
+        "timeMin": "2025-01-06", "timeMax": "2025-01-12", "calendar_id": CALENDAR_ID, "cache_only": "true",
+    }, headers={"modeus-person-id": PERSON_ID})
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "private, no-store"
+    upstreams.netology.assert_not_called()
+    upstreams.modeus.assert_not_called()
+    upstreams.lms.assert_not_called()
 
 
 async def test_outage_without_cache_serves_empty_part(upstreams: SimpleNamespace) -> None:

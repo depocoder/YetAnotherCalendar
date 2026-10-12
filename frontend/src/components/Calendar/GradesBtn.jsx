@@ -14,9 +14,10 @@ const CapIcon = () => (
  * Нетологии — самое востребованное, поэтому не в меню «Ещё», а на виду.
  * Работает для всех: что нужно «Запомнить меня» для Модеуса, объяснит само окно.
  */
-const GradesBtn = ({ onClick, className = '' }) => (
+const GradesBtn = ({ onClick, className = '', disabled = false }) => (
     <button
         type="button"
+        disabled={disabled}
         className={`grades-btn ${className}`}
         onClick={onClick}
         title="Оценки и посещаемость из Модеуса, домашние задания Нетологии"

@@ -13,16 +13,21 @@ import {
     rememberMe,
     getVaultStatus,
     refreshVaultSession,
-    applyVaultSession
+    applyVaultSession,
+    getModeusPersonIdFromLocalStorage,
+    getCalendarIdsLocalStorage
 } from '../services/api';
 import Logo from '../components/Logo';
 import InlineLoader from '../elements/InlineLoader';
 import { debug } from '../utils/debug';
 import { handleApiError } from '../utils/errorHandler';
+import ServiceHealthIndicator from '../components/Calendar/ServiceHealthIndicator';
 import '../style/login-v2.scss';
 
 const GITHUB_URL = 'https://github.com/depocoder/YetAnotherCalendar';
 const PERSON_ID_RE = /^[0-9a-fA-F-]{16,64}$/;
+const hasSavedCalendar = () => Boolean(getModeusPersonIdFromLocalStorage() && getCalendarIdsLocalStorage().length);
+const isServiceUnavailable = response => !response || response.status >= 500;
 
 /**
  * Вход: один экран, шаговый мастер (1 — Нетология, 2 — Модеус/LMS).
@@ -49,6 +54,10 @@ const LoginPage = () => {
     const [restoring, setRestoring] = useState(true);
     // Креды Нетологии держим в памяти до конца второго шага — для vault.
     const [netologyCreds, setNetologyCreds] = useState(null);
+    const [netologySession, setNetologySession] = useState(null);
+    const cacheAvailable = hasSavedCalendar();
+    const [loginError, setLoginError] = useState('');
+    const [healthRefresh, setHealthRefresh] = useState(0);
 
     // Если браузер «запомнен» — восстанавливаем сессию без паролей.
     useEffect(() => {
@@ -56,6 +65,13 @@ const LoginPage = () => {
         (async () => {
             try {
                 const vault = await getVaultStatus();
+                if (!cancelled && vault?.active && vault.modeus_person_id && vault.calendar_ids?.length) {
+                    if (getModeusPersonIdFromLocalStorage() !== vault.modeus_person_id) {
+                        ['token', 'lms-id', 'lms-token', 'netologyCourses'].forEach(key => localStorage.removeItem(key));
+                    }
+                    localStorage.setItem('modeus_person_id', vault.modeus_person_id);
+                    setCalendarIdsLocalStorage(vault.calendar_ids);
+                }
                 if (!cancelled && vault?.active && !vault.broken) {
                     const session = await refreshVaultSession();
                     if (cancelled) return;
@@ -66,6 +82,13 @@ const LoginPage = () => {
                 }
             } catch (e) {
                 debug.log('Автовход через vault не удался:', e?.response?.status);
+                if (!cancelled && isServiceUnavailable(e?.response)) {
+                    if (hasSavedCalendar()) {
+                        navigate('/?cache_only=true');
+                        return;
+                    }
+                    setLoginError('Не удалось восстановить вход: один из сервисов не отвечает.');
+                }
             }
             if (!cancelled) setRestoring(false);
         })();
@@ -76,22 +99,22 @@ const LoginPage = () => {
         const response = await loginNetology(email, password);
         if (response?.status === 200) {
             const token = response.data['_netology-on-rails_session'];
-            localStorage.setItem('token', token);
 
             // Все курсы пользователя: по умолчанию подгружаем каждый
             const coursesData = await getNetologyCourses(token);
             const programs = coursesData?.programs || [];
+            let calendarIds = [];
             if (programs.length > 0) {
-                setNetologyCoursesLocalStorage(programs);
-                setCalendarIdsLocalStorage(defaultCalendarIds(programs));
+                calendarIds = defaultCalendarIds(programs);
             } else {
                 const courseData = await getNetologyCourse(token);
                 if (courseData?.id) {
-                    setCalendarIdsLocalStorage([courseData.id]);
+                    calendarIds = [courseData.id];
                 }
             }
 
             setNetologyCreds({ username: email, password });
+            setNetologySession({ token, programs, calendarIds });
             setEmail('');
             setPassword('');
             setStep(2);
@@ -106,7 +129,7 @@ const LoginPage = () => {
             return;
         }
         debug.error('Ошибка API Нетологии:', response);
-        handleApiError({ response }, 'Ошибка при входе в Нетологию', navigate);
+        reportLoginFailure(response, 'Нетология');
     };
 
     const handleModeusStep = async () => {
@@ -135,7 +158,7 @@ const LoginPage = () => {
         }
         if (!modeusResponse || modeusResponse.status >= 400) {
             debug.error('Ошибка API Modeus:', modeusResponse);
-            handleApiError({ response: modeusResponse }, 'Ошибка при входе в Модеус', navigate);
+            reportLoginFailure(modeusResponse, 'Модеус');
             return;
         }
 
@@ -145,8 +168,6 @@ const LoginPage = () => {
             toast.error('Не удалось получить идентификатор Модеус. Попробуйте позже.');
             return;
         }
-        localStorage.setItem('modeus_person_id', personId);
-
         const lmsResponse = await loginLms(modeusEmail, password);
         if (lmsResponse?.status === 401) {
             toast.error('LMS: неверный логин или пароль.');
@@ -154,9 +175,13 @@ const LoginPage = () => {
         }
         if (!lmsResponse || lmsResponse.status >= 400) {
             debug.error('Ошибка API LMS:', lmsResponse);
-            handleApiError({ response: lmsResponse }, 'Ошибка при входе в LMS', navigate);
+            reportLoginFailure(lmsResponse, 'LMS');
             return;
         }
+        localStorage.setItem('token', netologySession.token);
+        setNetologyCoursesLocalStorage(netologySession.programs);
+        setCalendarIdsLocalStorage(netologySession.calendarIds);
+        localStorage.setItem('modeus_person_id', personId);
         localStorage.setItem('lms-id', lmsResponse.data.id);
         localStorage.setItem('lms-token', lmsResponse.data.token);
 
@@ -179,10 +204,21 @@ const LoginPage = () => {
         navigate('/');
     };
 
+    const reportLoginFailure = (response, service) => {
+        if (isServiceUnavailable(response)) {
+            setLoginError(`${service} сейчас не отвечает.${cacheAvailable
+                ? ' Можно открыть сохраненное расписание предыдущего входа.'
+                : ' Для первого входа нужно дождаться восстановления сервиса.'}`);
+            return;
+        }
+        handleApiError({ response }, `Ошибка при входе в ${service}`, navigate);
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (loading) return;
         setLoading(true);
+        setLoginError('');
         try {
             if (step === 1) {
                 await handleNetologyStep();
@@ -194,6 +230,7 @@ const LoginPage = () => {
             handleApiError(error, 'Ошибка при входе', navigate);
         } finally {
             setLoading(false);
+            setHealthRefresh(value => value + 1);
         }
     };
 
@@ -203,6 +240,7 @@ const LoginPage = () => {
                 <div className="login-v2__restore">
                     <Logo size={40} />
                     <p>Проверяем сохраненную сессию…</p>
+                    <ServiceHealthIndicator inline refreshKey={healthRefresh} />
                 </div>
             </div>
         );
@@ -220,6 +258,7 @@ const LoginPage = () => {
                     </div>
                     <h1>Мое расписание</h1>
                     <p className="login-v2__sub">Нетология, Модеус и LMS — в одном календаре</p>
+                    <ServiceHealthIndicator inline refreshKey={healthRefresh} />
 
                     <div className="login-v2__steps">
                         <div className={`login-v2__step ${isNetologyStep ? '' : 'login-v2__step--done'}`}>
@@ -265,6 +304,12 @@ const LoginPage = () => {
                             {loading ? <InlineLoader /> : (isNetologyStep ? 'Далее →' : 'Войти')}
                         </button>
                     </form>
+                    {loginError && <p className="login-v2__error" role="status">{loginError}</p>}
+                    {cacheAvailable && (
+                        <button type="button" className="login-v2__cached" onClick={() => navigate('/?cache_only=true')} disabled={loading}>
+                            Открыть сохраненное расписание
+                        </button>
+                    )}
                     <p className="login-v2__hint">
                         {isNetologyStep
                             ? 'Следующий шаг — вход в Модеус. Если пароль не подойдет, скажем об этом сразу.'

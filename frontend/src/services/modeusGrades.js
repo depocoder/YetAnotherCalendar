@@ -1,4 +1,4 @@
-import { getGrades, getVaultStatus } from './api';
+import { getGrades, getVaultStatus, isCacheOnlyView } from './api';
 
 /**
  * Общий кэш оценок Модеуса для «Моих оценок» и карточек пар.
@@ -86,6 +86,7 @@ function lessonsByEvent(data) {
  * при 'ok' без lesson — отметок за пару нет.
  */
 export async function getLessonGrades(event, { force = false } = {}) {
+    if (isCacheOnlyView()) return { status: 'cached' };
     const vault = await getVault({ force });
     if (!vault?.active) return { status: 'no-vault' };
     if (vault.broken) return { status: 'rejected' };

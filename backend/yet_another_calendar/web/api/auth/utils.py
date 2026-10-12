@@ -1,5 +1,7 @@
 """Auth utilities for tutor authentication."""
 from datetime import datetime, timedelta, UTC
+import hashlib
+import hmac
 from typing import Annotated
 
 import bcrypt
@@ -10,6 +12,33 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from yet_another_calendar.settings import settings
 
 security = HTTPBearer()
+
+CALENDAR_COOKIE = "yac_calendar"
+CALENDAR_AUDIENCE = "calendar-cache"
+
+
+def create_calendar_token(person_id: str) -> str:
+    """Proof of a successful Modeus login, limited to reading its calendar cache."""
+    key = hmac.digest(settings.tutor_secret_key.encode(), b"calendar-cache", hashlib.sha256)
+    return jwt.encode(
+        {"sub": person_id, "aud": CALENDAR_AUDIENCE,
+         "exp": datetime.now(UTC) + timedelta(seconds=settings.redis_events_time_live)},
+        key, algorithm="HS256",
+    )
+
+
+def calendar_person_id(value: str | None) -> str | None:
+    if not value:
+        return None
+    key = hmac.digest(settings.tutor_secret_key.encode(), b"calendar-cache", hashlib.sha256)
+    try:
+        payload = jwt.decode(
+            value, key, algorithms=["HS256"], audience=CALENDAR_AUDIENCE,
+            options={"require": ["exp", "sub", "aud"]},
+        )
+    except jwt.PyJWTError:
+        return None
+    return payload["sub"] if isinstance(payload["sub"], str) else None
 
 
 def verify_password(password: str, hashed_password: str) -> bool:

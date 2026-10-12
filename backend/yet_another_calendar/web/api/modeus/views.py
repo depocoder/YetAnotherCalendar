@@ -3,12 +3,15 @@ Modeus API implemented using a controller.
 """
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Response
 
 from yet_another_calendar.web.api.auth.rate_limiter import rate_limited_dependency
 from yet_another_calendar.web.api.auth.utils import verify_tutor_token
 from . import integration
 from . import schema
+from ..auth.upstream import authenticate
+from ..auth.utils import CALENDAR_COOKIE, create_calendar_token
+from yet_another_calendar.settings import settings
 
 router = APIRouter()
 
@@ -40,12 +43,19 @@ async def auth(
 
 @router.post("/person-id/")
 async def get_modeus_person_id(
-    person_id: Annotated[str, Depends(integration.get_person_id_depends)],
+    creds: schema.Creds,
+    response: Response,
     _: None = Depends(rate_limited_dependency),
 ) -> str:
     """
     Get modeus person id.
     """
+    person_id = await authenticate("modeus", integration.get_person_id_depends(creds))
+    response.set_cookie(
+        key=CALENDAR_COOKIE, value=create_calendar_token(person_id),
+        max_age=settings.redis_events_time_live, httponly=True,
+        secure=not settings.debug, samesite="lax", path="/api",
+    )
     return person_id
 
 @router.post(

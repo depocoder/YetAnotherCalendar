@@ -6,7 +6,7 @@ import '../../style/export-menu.scss';
  * перегружать её кнопками. Ховер на десктопе, тап (bottom sheet) на
  * мобильных — тот же паттерн, что у меню экспорта.
  */
-const SettingsMenu = ({ onOpenCourses, onOpenFeatures }) => {
+const SettingsMenu = ({ onOpenCourses, onOpenFeatures, coursesDisabled = false }) => {
     const [open, setOpen] = useState(false);
     const closeTimerRef = useRef(null);
 
@@ -39,7 +39,7 @@ const SettingsMenu = ({ onOpenCourses, onOpenFeatures }) => {
             </button>
             {open && <div className="export-menu__backdrop" onClick={() => setOpen(false)} />}
             <div className="export-menu__dropdown">
-                <button className="export-menu__item" onClick={pick(onOpenCourses)}>
+                <button className="export-menu__item" disabled={coursesDisabled} onClick={pick(onOpenCourses)}>
                     <span className="export-menu__item-icon">📚</span>
                     <span>
                         <span className="export-menu__item-title">Мои курсы</span>

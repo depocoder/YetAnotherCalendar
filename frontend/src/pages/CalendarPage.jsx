@@ -45,12 +45,15 @@ import LessonTimes from "../components/Calendar/LessonTimes";
 import GitHubStarModal from "../components/GitHubStarModal";
 import FeaturesModal from "../components/FeaturesModal";
 import { debug } from "../utils/debug";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { handleApiError } from '../utils/errorHandler';
 import { prefetchModeusGrades } from '../services/modeusGrades';
 import ErrorBoundary from '../elements/ErrorBoundary';
 
 const CalendarPage = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const cacheOnly = searchParams.get('cache_only') === 'true';
+    const [cacheMessage, setCacheMessage] = useState('');
     const [date, setDate] = useState(() => getCurrentWeekDates());
     const [events, setEvents] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -105,14 +108,15 @@ const CalendarPage = () => {
     // когда календарь уже загрузился (только с «Запомнить меня»).
     const gradesPrefetched = useRef(false);
     useEffect(() => {
-        if (events && !gradesPrefetched.current) {
+        if (!cacheOnly && events && !gradesPrefetched.current) {
             gradesPrefetched.current = true;
             prefetchModeusGrades().catch((e) => debug.log('Оценки фоном не загрузились:', e));
         }
-    }, [events]);
+    }, [events, cacheOnly]);
 
     // Проверяем наличие всех необходимых токенов при загрузке страницы
     useEffect(() => {
+        if (cacheOnly) return;
         // calendarIds здесь сознательно не проверяем: у старых пользователей
         // их может не быть, fetchData сам подгрузит список курсов по токену.
         const requiredTokens = {
@@ -130,12 +134,16 @@ const CalendarPage = () => {
         }
 
         if (missingTokens.length > 0) {
+            if (getModeusPersonIdFromLocalStorage() && getCalendarIdsLocalStorage().length > 0) {
+                setSearchParams({cache_only: 'true'}, {replace: true});
+                return;
+            }
             debug.error('Missing required tokens:', missingTokens);
             toast.error("Отсутствуют данные авторизации. Необходимо войти заново.");
             exitApp(navigate);
             return;
         }
-    }, [navigate]);
+    }, [navigate, cacheOnly, setSearchParams]);
 
     // Проверяем, нужно ли показать модальное окно GitHub Star
     useEffect(() => {
@@ -183,12 +191,14 @@ const CalendarPage = () => {
     }, []);
 
     useEffect(() => {
-        const dateKey = `${date.start}_${date.end}_${[...calendarIds].sort().join(',')}`;
+        const dateKey = `${date.start}_${date.end}_${[...calendarIds].sort().join(',')}_${cacheOnly}`;
         if (lastFetchedDate.current === dateKey) return;
         lastFetchedDate.current = dateKey;
 
         // Очищаем выбранное событие при смене недели
         setSelectedEvent(null);
+        setCacheMessage('');
+        setEvents(null);
         
         // Запускаем анимацию перехода
         setIsTransitioning(true);
@@ -205,7 +215,7 @@ const CalendarPage = () => {
                 let ids = calendarIds;
 
                 // Если выбранных курсов нет — подгружаем список и берем все по умолчанию
-                if (!ids || ids.length === 0) {
+                if (!cacheOnly && (!ids || ids.length === 0)) {
                     const coursesData = await getNetologyCourses(getTokenFromLocalStorage());
                     const programs = coursesData?.programs || [];
                     if (programs.length > 0) {
@@ -235,7 +245,8 @@ const CalendarPage = () => {
                     sessionToken: getTokenFromLocalStorage(),
                     modeusPersonId: getModeusPersonIdFromLocalStorage(),
                     lxpToken: getLMSTokenFromLocalStorage(),
-                    lxpId: getLMSIdFromLocalStorage()
+                    lxpId: getLMSIdFromLocalStorage(),
+                    cacheOnly
                 });
 
                 if (!isCurrent()) return;
@@ -251,7 +262,7 @@ const CalendarPage = () => {
                     const modeusEvents = eventsResponse.data?.utmn?.modeus_events || [];
                     const lessonIds = modeusEvents.map(event => event.id).filter(Boolean);
                     
-                    if (lessonIds.length > 0) {
+                    if (!cacheOnly && lessonIds.length > 0) {
                         try {
                             const mtsResponse = await getMtsLinks(lessonIds);
                             if (isCurrent() && mtsResponse?.status === 200 && mtsResponse.data?.links) {
@@ -270,6 +281,20 @@ const CalendarPage = () => {
             } catch (error) {
                 if (!isCurrent()) return;
                 debug.error('Ошибка при получении данных с сервера:', error);
+                if (cacheOnly) {
+                    setEvents(null);
+                    const status = error?.response?.status;
+                    setCacheMessage(status === 404
+                        ? 'Эта неделя не сохранена. Выберите ранее загруженную неделю или войдите, чтобы загрузить новые данные.'
+                        : status === 401 || status === 403
+                            ? 'Доступ к сохраненному расписанию истек. Войдите заново.'
+                            : 'Не удалось прочитать сохраненное расписание. Попробуйте позже.');
+                    return;
+                }
+                if (error?.response?.status === 401 || error?.response?.status === 403) {
+                    setSearchParams({cache_only: 'true'}, {replace: true});
+                    return;
+                }
 
                 // Деплой: прокси отвечает HTML-страницей 502/503/504 или не отвечает вовсе.
                 // Не пугаем ошибкой — спокойное уведомление и повтор сами, все реже.
@@ -300,7 +325,7 @@ const CalendarPage = () => {
         };
 
         fetchData();
-    }, [date, navigate, calendarIds]); // Перезапрашиваем события при смене недели или набора курсов
+    }, [date, navigate, calendarIds, cacheOnly, setSearchParams]);
 
     // Открытие модалки выбора курсов (при необходимости подгружаем их список)
     const handleOpenCourseModal = async () => {
@@ -391,10 +416,12 @@ const CalendarPage = () => {
                         <div className="shedule-export">
                             <span className="shedule">Мое расписание <span className="beta-badge">BETA</span></span>
                             <CalendarExportMenu
+                                disabled={cacheOnly}
                                 date={date}
                                 onOpenSubscription={() => setShowSubscriptionModal(true)}
                             />
                             <CacheUpdateBtn 
+                                disabled={cacheOnly}
                                 date={date} 
                                 onDataUpdate={handleDataUpdate}
                                 cachedAt={events?.cached_at}
@@ -402,8 +429,9 @@ const CalendarPage = () => {
                                 refreshRef={refreshRef}
                                 calendarReady={!loading && !isTransitioning && events !== null}
                             />
-                            <GradesBtn onClick={() => setShowGradesModal(true)} />
+                            <GradesBtn disabled={cacheOnly} onClick={() => setShowGradesModal(true)} />
                             <SettingsMenu
+                                coursesDisabled={cacheOnly}
                                 onOpenCourses={handleOpenCourseModal}
                                 onOpenFeatures={() => setShowFeaturesModal(true)}
                             />
@@ -426,13 +454,15 @@ const CalendarPage = () => {
                 {/* Mobile Controls Container */}
                 <div className="mobile-controls-container">
                     <div className="mobile-header-actions">
-                        <GradesBtn onClick={() => setShowGradesModal(true)} />
+                        <GradesBtn disabled={cacheOnly} onClick={() => setShowGradesModal(true)} />
                         <div className="mobile-buttons-row">
                             <CalendarExportMenu
+                                disabled={cacheOnly}
                                 date={date}
                                 onOpenSubscription={() => setShowSubscriptionModal(true)}
                             />
                             <CacheUpdateBtn 
+                                disabled={cacheOnly}
                                 date={date} 
                                 onDataUpdate={handleDataUpdate}
                                 cachedAt={events?.cached_at}
@@ -443,6 +473,7 @@ const CalendarPage = () => {
                         </div>
                         <div className="mobile-buttons-row">
                             <SettingsMenu
+                                coursesDisabled={cacheOnly}
                                 onOpenCourses={handleOpenCourseModal}
                                 onOpenFeatures={() => setShowFeaturesModal(true)}
                             />
@@ -458,8 +489,23 @@ const CalendarPage = () => {
                     <SimpleDatePicker setDate={setDate} initialDate={date} disableButtons={loading} />
                 </div>
 
-                {restarting && <ServiceRestartNotice checking={loading} />}
-                {!loading && (
+                {cacheOnly && (
+                    <div className="service-status-banner" role="status">
+                        <div className="service-status-body">
+                            <div className="service-status-title">Просмотр сохраненного расписания</div>
+                            <div className="service-status-hint">
+                                {events?.cached_at && `Копия от ${new Date(events.cached_at).toLocaleString('ru-RU')}. `}
+                                Данные могут быть неактуальны. Доступны только ранее загруженные недели.
+                                Обновление, оценки и новые недели будут доступны после входа.
+                            </div>
+                        </div>
+                        <button type="button" className="service-status-retry" onClick={() => navigate('/login')}>
+                            Войти заново
+                        </button>
+                    </div>
+                )}
+                {!cacheOnly && restarting && <ServiceRestartNotice checking={loading} />}
+                {!cacheOnly && !loading && (
                     <ServiceStatusBanner
                         failures={events?.failures}
                         onRetry={handleRetryServices}
@@ -470,6 +516,8 @@ const CalendarPage = () => {
                 <div className={`calendar ${loading || isTransitioning ? 'calendar-loading' : 'calendar-loaded'}`}>
                     {loading ? (
                         <Loader />
+                    ) : cacheMessage ? (
+                        <div className="cached-week-empty" role="status">{cacheMessage}</div>
                     ) : (
                         <>
                             {/* Desktop Calendar Table */}

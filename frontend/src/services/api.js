@@ -6,6 +6,8 @@ import { debug } from '../utils/debug';
 // env variable
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `https://yetanothercalendar.ru`;
 
+export const isCacheOnlyView = () => new URLSearchParams(window.location.search).get('cache_only') === 'true';
+
 
 export function getTokenFromLocalStorage() {
     return localStorage.getItem('token')
@@ -92,7 +94,7 @@ export async function loginNetology(username, password) {
 // get Modeus person ID
 export async function getModeusPersonId(username, password) {
     try {
-        return await axios.post(`${BACKEND_URL}/api/modeus/person-id/`, {username, password});
+        return await axios.post(`${BACKEND_URL}/api/modeus/person-id/`, {username, password}, {withCredentials: true});
     } catch (e) {
         return e.response;
     }
@@ -179,6 +181,7 @@ export async function refreshVaultSession(force = false) {
 // получает по сохраненному в vault паролю, — поэтому только с «Запомнить меня».
 // Возвращает ответ axios (или e.response): статус разбирает модалка.
 export async function getGrades(periodId = null) {
+    if (isCacheOnlyView()) return {status: 0};
     try {
         return await axios.get(`${BACKEND_URL}/api/grades/`, {
             params: periodId ? {period_id: periodId} : {},
@@ -192,6 +195,7 @@ export async function getGrades(periodId = null) {
 // Баллы по элементам одного курса LMS (по module id): те же заголовки, что у bulk-запроса.
 // Возвращает ответ axios (или e.response): 200 {} — журнал курса закрыт, 401 — токен LMS истек.
 export async function getLmsGrades(courseId) {
+    if (isCacheOnlyView()) return {status: 0};
     try {
         return await axios.get(`${BACKEND_URL}/api/grades/lms/`, {
             params: {course_id: courseId},
@@ -207,6 +211,7 @@ export async function getLmsGrades(courseId) {
 
 // Статусы домашних заданий Нетологии: хватает обычной сессии Нетологии.
 export async function getNetologyGrades() {
+    if (isCacheOnlyView()) return {status: 0};
     try {
         return await axios.get(`${BACKEND_URL}/api/grades/netology/`, {
             headers: {'_netology-on-rails_session': getTokenFromLocalStorage()},
@@ -244,7 +249,7 @@ axios.interceptors.response.use(
         const status = error?.response?.status;
         const url = error?.config?.url || '';
         const isBulk = url.includes('/api/bulk/');
-        if ((status === 401 || status === 403) && isBulk && !error.config.__vaultRetried) {
+        if ((status === 401 || status === 403) && isBulk && !isCacheOnlyView() && !error.config.__vaultRetried) {
             try {
                 if (!vaultRefreshInFlight) {
                     // Токены только что не сработали — форсируем реаутентификацию.
@@ -320,7 +325,8 @@ const apiRequest = async (endpoint, {
     lxpToken,
     lxpId,
     no_cache = true,
-    withCredentials = false
+    cacheOnly = false,
+    withCredentials = true
 }) => {
     // Формируем тело запроса
     const headers = {
@@ -346,6 +352,7 @@ const apiRequest = async (endpoint, {
     params.append('time_zone', timeZone);
     params.append('timeMin', timeMin);
     params.append('timeMax', timeMax);
+    if (cacheOnly) params.append('cache_only', 'true');
 
     try {
         const response = await axios.get(

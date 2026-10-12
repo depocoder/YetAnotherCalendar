@@ -79,3 +79,9 @@ class VaultStatus(BaseModel):
 
     active: bool
     broken: bool = False
+
+
+class VaultCalendarStatus(VaultStatus):
+    """Saved calendar coordinates, available even when upstream login fails."""
+    modeus_person_id: str | None = None
+    calendar_ids: list[int] | None = None

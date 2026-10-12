@@ -35,6 +35,7 @@ from . import schema
 from ..lms import integration as lms_integration
 from ..modeus import integration as modeus_integration
 from ..netology import integration as netology_integration
+from ..auth.upstream import authenticate
 
 VAULT_KEY = "vault:{vault_id}"
 TOKENS_KEY = "vault_tokens:{vault_id}"
@@ -216,10 +217,11 @@ async def refresh_tokens(
     Sequential on purpose: the raised error names the exact service that
     rejected the credentials.
     """
-    netology_cookies = await netology_integration.auth_netology(
-        creds.netology.username, creds.netology.password,
+    netology_cookies = await authenticate(
+        "netology", netology_integration.auth_netology(creds.netology.username, creds.netology.password),
+        settings.netology_auth_deadline,
     )
-    lms_user = await lms_integration.auth_lms(creds.lxp)
+    lms_user = await authenticate("lms", lms_integration.auth_lms(creds.lxp))
     tokens = schema.CachedTokens(
         netology_session=netology_cookies.rails_session,
         lms_id=lms_user.id,

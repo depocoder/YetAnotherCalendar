@@ -12,7 +12,7 @@ import icalendar
 from fastapi import BackgroundTasks
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
-from starlette.responses import StreamingResponse
+from starlette.responses import Response, StreamingResponse
 from icalendar.prop import vText
 
 from yet_another_calendar.web.api.bulk import integration, schema, views
@@ -1133,9 +1133,10 @@ async def test_views_get_calendar_cached_response_type(fake_redis_pool, backgrou
 
         result = await views.get_calendar(
             body=body,
-            lms_user=lms_user,
-            cookies=cookies,
-            donor_token="test_token",
+            response=Response(),
+            lxp_id=lms_user.id,
+            lxp_token=lms_user.token,
+            netology_session=cookies.rails_session,
             modeus_person_id="550e8400-e29b-41d4-a716-446655440000",
             redis=fake_redis_pool,
             background_tasks=background_tasks,
@@ -1155,9 +1156,10 @@ async def test_views_get_calendar_cached_response_type(fake_redis_pool, backgrou
 
         result = await views.get_calendar(
             body=body,
-            lms_user=lms_user,
-            cookies=cookies,
-            donor_token="test_token",
+            response=Response(),
+            lxp_id=lms_user.id,
+            lxp_token=lms_user.token,
+            netology_session=cookies.rails_session,
             modeus_person_id="550e8400-e29b-41d4-a716-446655440000",
             redis=fake_redis_pool,
             background_tasks=background_tasks,

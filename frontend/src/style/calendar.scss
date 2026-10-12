@@ -2248,6 +2248,17 @@ $color-border-light: #e9ecef;
 
 // Баннер о недоступных сервисах (Нетология / Модеус / LMS): бэкенд собрал
 // неделю без одного из них и отдал его часть из кэша или пустой.
+.cached-week-empty {
+    padding: 32px 20px;
+    text-align: center;
+    color: #868e96;
+}
+
+.calendar-page button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .service-status-banner {
     display: flex;
     align-items: flex-start;

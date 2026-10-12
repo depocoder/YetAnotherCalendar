@@ -20,6 +20,34 @@ from yet_another_calendar.web.api.auth.rate_limiter import LoginRateLimiter
 from yet_another_calendar.web.api.auth.schema import TutorLoginRequest, TutorLoginResponse
 
 
+def test_calendar_token_is_not_a_tutor_token(monkeypatch) -> None:
+    token = utils.create_calendar_token("student-person-id")
+    assert utils.calendar_person_id(token) == "student-person-id"
+    with pytest.raises(HTTPException):
+        utils.verify_tutor_token(HTTPAuthorizationCredentials(scheme="Bearer", credentials=token))
+    assert utils.calendar_person_id(utils.create_access_token()) is None
+    monkeypatch.setattr(settings, "redis_events_time_live", -1)
+    assert utils.calendar_person_id(utils.create_calendar_token("student-person-id")) is None
+
+
+@pytest.mark.asyncio
+async def test_cache_cookie_is_issued_by_successful_modeus_login_and_cleared_on_logout(client, monkeypatch) -> None:
+    from unittest.mock import AsyncMock
+    from yet_another_calendar.web.api.modeus import integration
+    person_id = "00000000-0000-0000-0000-000000000000"
+    monkeypatch.setattr(integration, "get_person_id_depends", AsyncMock(return_value=person_id))
+    response = await client.post("/api/modeus/person-id/", json={
+        "username": "user@study.utmn.ru", "password": "password",
+    })
+    assert response.status_code == 200
+    assert utils.calendar_person_id(response.cookies[utils.CALENDAR_COOKIE]) == person_id
+    assert "httponly" in response.headers["set-cookie"].lower()
+    assert "path=/api" in response.headers["set-cookie"].lower()
+    response = await client.delete("/api/vault/")
+    assert response.status_code == 200
+    assert utils.CALENDAR_COOKIE not in client.cookies
+
+
 class TestAuthUtils:
     """Tests for authentication utilities."""
 

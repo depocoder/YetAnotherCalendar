@@ -372,6 +372,24 @@ $health-border: #e9ecef;
     }
 }
 
+.service-health.service-health--inline {
+    display: block;
+    position: static;
+    margin: 0 0 22px;
+    width: 100%;
+
+    .service-health__popover {
+        display: block;
+        position: static;
+        width: 100%;
+        max-height: none;
+        box-shadow: none;
+        animation: none;
+
+        &::before { display: none; }
+    }
+}
+
 // На мобильных пилюля сжимается до точки рядом с заголовком, а карточка
 // открывается нижним листом поверх всего — как остальные меню шапки.
 @media (max-width: 768px) {

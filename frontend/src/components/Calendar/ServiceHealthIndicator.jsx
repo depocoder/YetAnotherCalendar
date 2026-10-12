@@ -147,7 +147,7 @@ const ServiceRow = ({ service }) => {
  * refreshKey — любое значение, смена которого перезапрашивает статус
  * (например, cached_at только что загруженного расписания).
  */
-const ServiceHealthIndicator = ({ refreshKey }) => {
+const ServiceHealthIndicator = ({ refreshKey, inline = false }) => {
     const [health, setHealth] = useState(null);
     const [updatedAt, setUpdatedAt] = useState(null);
     const [open, setOpen] = useState(false);
@@ -172,7 +172,7 @@ const ServiceHealthIndicator = ({ refreshKey }) => {
 
     // Закрытие по клику вне индикатора и по Escape (актуально для тапа на мобильных)
     useEffect(() => {
-        if (!open) return undefined;
+        if (!open || inline) return undefined;
         const onPointerDown = (event) => {
             if (rootRef.current && !rootRef.current.contains(event.target)) {
                 setOpen(false);
@@ -187,7 +187,7 @@ const ServiceHealthIndicator = ({ refreshKey }) => {
             document.removeEventListener('pointerdown', onPointerDown);
             document.removeEventListener('keydown', onKeyDown);
         };
-    }, [open]);
+    }, [open, inline]);
 
     const openPopover = () => {
         if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
@@ -204,11 +204,11 @@ const ServiceHealthIndicator = ({ refreshKey }) => {
     return (
         <div
             ref={rootRef}
-            className={`service-health service-health--${overall} ${open ? 'service-health--open' : ''}`}
-            onMouseEnter={openPopover}
-            onMouseLeave={scheduleClose}
+            className={`service-health service-health--${overall} ${inline ? 'service-health--inline' : ''} ${open || inline ? 'service-health--open' : ''}`}
+            onMouseEnter={inline ? undefined : openPopover}
+            onMouseLeave={inline ? undefined : scheduleClose}
         >
-            <button
+            {!inline && <button
                 type="button"
                 className="service-health__pill"
                 aria-haspopup="dialog"
@@ -220,8 +220,8 @@ const ServiceHealthIndicator = ({ refreshKey }) => {
             >
                 <span className="service-health__dot" aria-hidden="true" />
                 <span className="service-health__text">{label}</span>
-            </button>
-            {open && <div className="service-health__backdrop" onClick={() => setOpen(false)} />}
+            </button>}
+            {!inline && open && <div className="service-health__backdrop" onClick={() => setOpen(false)} />}
             <div className="service-health__popover" role="dialog" aria-label="Состояние сервисов">
                 <div className="service-health__header">
                     <span className="service-health__title">Состояние сервисов</span>
