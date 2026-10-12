@@ -315,7 +315,12 @@ async def get_modeus_events_by_donor(
     serves its cached Modeus part instead of logging the user out.
     """
     if donor_token is None:
-        donor_token = await modeus_integration.get_donor_token()
+        cached_token = await modeus_integration.get_donor_token()
+        if not isinstance(cached_token, str):
+            raise HTTPException(
+                detail="Modeus authentication is unavailable", status_code=status.HTTP_502_BAD_GATEWAY,
+            )
+        donor_token = cached_token
     try:
         return await modeus_views.get_calendar(body, donor_token, person_id)
     except HTTPException as exception:
