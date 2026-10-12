@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
 import {
     getCalendarIdsLocalStorage,
     getTokenFromLocalStorage,
@@ -21,7 +20,6 @@ const CacheUpdateBtn = ({ date, onDataUpdate, cachedAt, failures, refreshRef, ca
     const [cacheUpdated, setCacheUpdated] = useState(false);
     const timeOffset = parseInt(process.env.REACT_APP_TIME_OFFSET, 10) || 6;
     const hasFailures = Array.isArray(failures) && failures.length > 0;
-    const toastShownRef = useRef(false);
     const navigate = useNavigate();
 
     // ✅ Очистка флагов при первом монтировании

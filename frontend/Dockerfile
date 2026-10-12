@@ -6,7 +6,7 @@ COPY package*.json /app/
 # --retry/--retry-delay are not real npm flags (npm silently ignores them);
 # the actual retry knobs are fetch-retries/fetch-retry-*. The arm64 build
 # under QEMU regularly hits ECONNRESET/ETIMEDOUT without them.
-RUN npm install --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 --fetch-timeout=600000
+RUN npm ci --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 --fetch-timeout=600000
 COPY . /app
 
 RUN npm run build

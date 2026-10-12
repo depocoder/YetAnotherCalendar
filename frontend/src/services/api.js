@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
-import { clearWithBackup } from '../utils/localStorageBackup';
 import { debug } from '../utils/debug';
 
 // env variable
