@@ -33,12 +33,21 @@ async def auth_netology(username: str, password: str, timeout: int = 15) -> sche
         base_url=settings.netology_base_url,
         timeout=timeout,
     ) as session:
-        response = await session.post(settings.netology_sign_in_part, data={
-            "login": username,
-            "password": password,
-            "remember": "1",
-        },
-                                      )
+        # Match the browser's sign-in form. Netology rejects the previous
+        # URL-encoded request without Origin/Referer with an empty HTTP 403.
+        response = await session.post(
+            settings.netology_sign_in_part,
+            files={
+                "login": (None, username),
+                "password": (None, password),
+                "remember": (None, "1"),
+            },
+            headers={
+                "Origin": settings.netology_base_url,
+                "Referer": f"{settings.netology_base_url}/?modal=sign_in",
+                "Accept": "application/json, text/plain, */*",
+            },
+        )
         if response.status_code == status.HTTP_401_UNAUTHORIZED:
             raise HTTPException(detail='Netology error. Username/password is incorrect.',
                                 status_code=response.status_code)

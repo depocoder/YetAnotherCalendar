@@ -64,8 +64,8 @@ async def test_auth_netology_unauthorized(netology_bad_client) -> None:
     with pytest.raises(HTTPException) as exc_info:
         await integration.auth_netology("alex", "password12345")
 
-        assert exc_info.value.status_code == 401
-        assert exc_info.value.detail == "Netology error. Username/password is incorrect."
+    assert exc_info.value.status_code == 401
+    assert exc_info.value.detail == "Netology error. Username/password is incorrect."
 
 
 
@@ -74,6 +74,43 @@ async def test_auth_netology_ok(netology_client) -> None:
     netology_client.cookies = httpx.Cookies({"_netology-on-rails_session": "aboba"})
     netology_cookies = await integration.auth_netology("alex", "password12345")
     assert netology_cookies == schema.NetologyCookies.model_validate(netology_client.cookies)
+
+
+@pytest.mark.asyncio
+async def test_auth_netology_browser_form(monkeypatch) -> None:
+    """The upstream rejects the old form request with 403 (October 2026 HAR)."""
+    from email import policy
+    from email.parser import BytesParser
+
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        if (not request.headers.get("content-type", "").startswith("multipart/form-data; boundary=")
+                or request.headers.get("origin") != settings.netology_base_url
+                or request.headers.get("referer") != f"{settings.netology_base_url}/?modal=sign_in"):
+            return httpx.Response(403)
+        message = BytesParser(policy=policy.default).parsebytes(
+            f"Content-Type: {request.headers['content-type']}\r\nMIME-Version: 1.0\r\n\r\n".encode()
+            + request.content,
+        )
+        fields = {part.get_param("name", header="content-disposition"): part.get_payload(decode=True).decode("utf-8")
+                  for part in message.iter_parts()}
+        assert fields == {"login": "student@example.com", "password": "p&=+ пароль", "remember": "1"}
+        assert request.method == "POST"
+        assert request.url.path == settings.netology_sign_in_part
+        return httpx.Response(200, json={"server_time": 0, "app_options": {}}, headers={
+            "set-cookie": "_netology-on-rails_session=fresh-session; Path=/; Secure; HttpOnly",
+        })
+
+    client_factory = httpx.AsyncClient
+    monkeypatch.setattr(integration, "AsyncClient", lambda **kwargs: client_factory(
+        **kwargs, transport=httpx.MockTransport(handler),
+    ))
+    cookies = await integration.auth_netology("student@example.com", "p&=+ пароль")
+
+    assert len(requests) == 1
+    assert cookies.rails_session == "fresh-session"
 
 
 @pytest.mark.asyncio
