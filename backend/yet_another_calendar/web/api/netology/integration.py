@@ -11,7 +11,7 @@ from httpx import AsyncClient
 from starlette import status
 
 from yet_another_calendar.settings import settings
-from . import schema
+from . import schema, transport
 from ..modeus.schema import ModeusTimeBody
 
 
@@ -35,8 +35,8 @@ async def auth_netology(username: str, password: str, timeout: int = 15) -> sche
     ) as session:
         # Match the browser's sign-in form. Netology rejects the previous
         # URL-encoded request without Origin/Referer with an empty HTTP 403.
-        response = await session.post(
-            settings.netology_sign_in_part,
+        response = await transport.request(
+            session, method="POST", url=settings.netology_sign_in_part,
             files={
                 "login": (None, username),
                 "password": (None, password),
@@ -52,7 +52,10 @@ async def auth_netology(username: str, password: str, timeout: int = 15) -> sche
             raise HTTPException(detail='Netology error. Username/password is incorrect.',
                                 status_code=response.status_code)
         response.raise_for_status()
-        return schema.NetologyCookies(**session.cookies)
+        rails_session = session.cookies.get("_netology-on-rails_session")
+        if not rails_session:
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=transport.UNAVAILABLE)
+        return schema.NetologyCookies.model_validate({"_netology-on-rails_session": rails_session})
 
 
 @reretry.retry(exceptions=httpx.TransportError, tries=settings.retry_tries, delay=settings.retry_delay)
@@ -63,7 +66,7 @@ async def send_request(
             http2=True, base_url=settings.netology_base_url, timeout=timeout,
     ) as session:
         session.cookies = httpx.Cookies(cookies.model_dump(by_alias=True))
-        response = await session.request(**request_settings)
+        response = await transport.request(session, **request_settings)
         if response.status_code == status.HTTP_401_UNAUTHORIZED:
             raise HTTPException(detail='Netology error. Cookies expired.', status_code=response.status_code)
         response.raise_for_status()
